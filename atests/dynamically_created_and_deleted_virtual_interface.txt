@@ -1,0 +1,14 @@
+As a tester I want to run test cases through dynamically generated virtual interface so that I can simulate multiple network elements.
+
+*** Test Case ***
+Creating Interface  
+  Given Rammbock is using dynamically allocoted interfaces
+  When tester starts test case
+  Then new virtual interface is created
+
+Deleting interface
+  Given Rammbock is using dynamically allocoted interfaces
+  When tester starts test case
+  And new virtual interface is created
+  And test case ends
+  Then virtual interface is deleted
