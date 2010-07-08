@@ -12,3 +12,10 @@ Deleting interface
   And new virtual interface is created
   And test case ends
   Then virtual interface is deleted
+
+*** Keywords ***
+Rammbock is using dynamically allocoted interfaces
+tester starts test case
+new virtual interface is created
+test case ends
+virtual interface is deleted
