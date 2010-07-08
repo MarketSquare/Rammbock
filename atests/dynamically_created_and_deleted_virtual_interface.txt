@@ -1,21 +1,31 @@
+*** Settings ***
+Library ../src/
+
 As a tester I want to run test cases through dynamically generated virtual interface so that I can simulate multiple network elements.
 
 *** Test Case ***
-Creating Interface  
-  Given Rammbock is using dynamically allocoted interfaces
-  When tester starts test case
+Creating physical Interface  
+  When Rammbock is using physical interface
+  Then new virtual interface is created
+
+Creating virtuall Interface   
+  When Rammbock is using dynamically allocoted interface
   Then new virtual interface is created
 
 Deleting interface
-  Given Rammbock is using dynamically allocoted interfaces
-  When tester starts test case
+  Given Rammbock is using dynamically allocoted interface
   And new virtual interface is created
-  And test case ends
+  When test case ends
   Then virtual interface is deleted
 
-*** Keywords ***
+*** Keyword ***
 Rammbock is using dynamically allocoted interfaces
+   use_interface  TEST1  eth1 
+
 tester starts test case
+
 new virtual interface is created
+
 test case ends
+
 virtual interface is deleted
