@@ -4,23 +4,39 @@ As a tester I want to run test cases through dynamically generated virtual inter
 Library  ../src
 
 *** Test Case ***
-Creating physical Interface  
-  When Rammbock is using physical interface
-  Then new virtual interface is created
 
 Creating virtuall Interface   
-  When Rammbock is using dynamically allocated interface
+  When Rammbock is creating virtual interface dynamically
   Then new virtual interface is created
 
 Deleting interface
-  Given Rammbock is using dynamically allocated interface
+  Given Rammbock is creating virtual interface dynamically
   And new virtual interface is created
   When test case ends
   Then virtual interface is deleted
 
+Creating two dynamically allocated interfaces
+  Given Rammbock is creating virtual interface dynamically
+  when Rammbock is creating virtual interface dynamically
+  then two virtual interfaces are created
+
+Deleting two dynamically allocated interfaces
+  Given Rammbock is creating virtual interface dynamically
+  and Rammbock is creating virtual interface dynamically
+  and two virtual interfaces are created
+  When test case ends
+  Then virtual interfaces are deleted
+  
+  
+Creating physical Interface  
+  When Rammbock is using physical interface
+  Then defined physical interface is used in test case.
+
+
+
 *** Keyword ***
-Rammbock is using dynamically allocated interfaces
-   use_interface  TEST1  eth1 
+Rammbock Given Rammbock is using dynamically allocating interface
+   use_interface  TEST1  eth1  1.1.1.1  255.255.255.255
 
 tester starts test case
 
