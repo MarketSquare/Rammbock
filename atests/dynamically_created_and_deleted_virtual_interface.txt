@@ -6,23 +6,23 @@ Library  ../src
 *** Test Case ***
 
 Creating virtuall Interface   
-  When Rammbock is creating virtual interface dynamically
+  When Rammbock allocates virtual interface dynamically
   Then new virtual interface is created
 
 Deleting interface
-  Given Rammbock is creating virtual interface dynamically
+  Given Rammbock allocates virtual interface dynamically
   And new virtual interface is created
   When test case ends
   Then virtual interface is deleted
 
 Creating two dynamically allocated interfaces
-  Given Rammbock is creating virtual interface dynamically
-  when Rammbock is creating virtual interface dynamically
+  Given Rammbock allocates virtual interface dynamically
+  when Rammbock allocates virtual interface dynamically
   then two virtual interfaces are created
 
 Deleting two dynamically allocated interfaces
-  Given Rammbock is creating virtual interface dynamically
-  and Rammbock is creating virtual interface dynamically
+  Given Rammbock allocates virtual interface dynamically
+  and Rammbock allocates virtual interface dynamically
   and two virtual interfaces are created
   When test case ends
   Then virtual interfaces are deleted
@@ -35,7 +35,7 @@ Creating physical Interface
 
 
 *** Keyword ***
-Rammbock Given Rammbock is using dynamically allocating interface
+Rammbock allocates virtual interface dynamically
    use_interface  TEST1  eth1  1.1.1.1  255.255.255.255
 
 tester starts test case
