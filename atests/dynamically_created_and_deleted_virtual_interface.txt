@@ -1,7 +1,7 @@
 As a tester I want to run test cases through dynamically generated virtual interface so that I can simulate multiple network elements.
 
 *** Settings ***
-Library  ../src
+Library  ../src/Interface.py
 
 *** Test Case ***
 
@@ -38,9 +38,8 @@ Creating physical Interface
 Rammbock allocates virtual interface dynamically
    use_interface  TEST1  eth1  1.1.1.1  255.255.255.255
 
-tester starts test case
-
 new virtual interface is created
+   is_interface_up  TEST1  eth1  1.1.1.1  255.255.255.255
 
 test case ends
 
