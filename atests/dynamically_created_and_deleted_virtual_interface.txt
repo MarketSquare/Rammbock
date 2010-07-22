@@ -36,7 +36,7 @@ Creating physical Interface
 
 *** Keyword ***
 Rammbock allocates virtual interface dynamically
-   use_interface  TEST1  eth1  1.1.1.1  255.255.255.255 True
+   use_interface  TEST1  eth1  1.1.1.1  255.255.255.255  True
 
 new virtual interface is created
    is_interface_up  TEST1
