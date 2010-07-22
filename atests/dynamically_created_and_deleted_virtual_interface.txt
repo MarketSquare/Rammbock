@@ -39,7 +39,7 @@ Rammbock allocates virtual interface dynamically
    use_interface  TEST1  eth0  1.1.1.1  255.255.255.255  True
 
 new virtual interface is created
-   is_interface_up  TEST1
+   is_interface_up  eth0
 
 test case ends
 

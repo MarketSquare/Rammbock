@@ -5,5 +5,7 @@ class Interface:
     def create_interface(self, int_alias, ifname, ip_address, netmask):
         os.popen("ifconfig "+ifname+":1 "+ip_address+" netmask "+netmask)
 
-    def is_interface_up (int_alias):
+    def check_interface (self, ifname):
+        output = os.popen("ifconfig "+ifname+":1")
+        print output
         raise NotImplementedError("This is not ready yet!")
