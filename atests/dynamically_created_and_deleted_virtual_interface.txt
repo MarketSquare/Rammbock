@@ -1,7 +1,7 @@
 As a tester I want to run test cases through dynamically generated virtual interface so that I can simulate multiple network elements.
 
 *** Settings ***
-Library  ../src/Interface.py
+Library  ../src/
 
 *** Test Case ***
 
