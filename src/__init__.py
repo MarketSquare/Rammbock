@@ -8,4 +8,6 @@ def use_interface(int_alias, ifname, ip_address = None, netmask = None, virtual_
         raise NotImplementedError("This is not ready yet!")
 
 def is_interface_up(ifname):
-    Interface().check_interface(ifname)
+    interface_state =  Interface().check_interface(ifname)
+    return interface_state
+       
