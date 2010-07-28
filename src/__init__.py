@@ -10,4 +10,7 @@ def use_interface(int_alias, ifname, ip_address = None, netmask = None, virtual_
 def is_interface_up(ifname):
     interface_state =  Interface().check_interface(ifname)
     return interface_state
+
+def delete_interface(ifname):
+    Interface().del_interface(ifname)
        
