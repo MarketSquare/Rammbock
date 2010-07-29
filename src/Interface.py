@@ -8,7 +8,7 @@ class Interface:
 
     def check_interface (self, ifname):
         """Checks if interface have ip address. Returns False or True"""
-        ipaddress= self.get_ip_address(ifname+":1")
+        ipaddress= self.get_ip_address(ifname)
         print "ipaddress=" +ipaddress 
         if ipaddress == "":
             return False
@@ -17,7 +17,7 @@ class Interface:
 
     def del_interface (self, ifname):
         """Deletes given interface"""
-        os.popen("ifconfig "+ifname+":1 down")
+        os.popen("ifconfig "+ifname+" down")
 
     def get_ip_address(self, ifname):
         """
