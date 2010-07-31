@@ -36,17 +36,23 @@ Creating physical Interface
 
 *** Keyword ***
 Rammbock allocates virtual interface dynamically
-   use_interface  TEST1  eth0  1.1.1.1  255.255.255.255  True
+  use_interface  TEST1  eth0  1.1.1.1  255.255.255.255  True
 
 new virtual interface is created
-   ${interface_state}=   is_interface_up  eth0:1
-   Should Be True   ${interface_state}
+  interface is up  eth0:1
 
 test case ends
-   Log  "No test case here!"
+  Log  "No test case here!"
 
 virtual interface is deleted
-   delete interface  eth0:1
-   ${interface_state}=   is_interface_up  eth0:1
-   Should Not Be True   ${interface_state}
+  delete interface  eth0:1
+  ${interface_state}=   is_interface_up  eth0:1
+  Should Not Be True   ${interface_state}
    
+two virtual interfaces are created
+  interface is up  eth0:1
+  interface is up  eth0:2
+
+interface is up  [Arguments]  ${ifname}
+  ${interface_state}=   is_interface_up  ${ifname}
+  Should Be True   ${interface_state}
