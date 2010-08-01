@@ -4,14 +4,23 @@ class Interface:
     
     def create_interface(self, int_alias, ifname, ip_address, netmask):
         """ Creates interface """
+        if_ip_address = "1"
+        vertaus = ""
         i = 1
-        while if_ip_address  == "":
-            virtual_if_name = ifname+":"+i
-            if_ip_address == self.get_ip_address(virtual_if_name)
-            if if_ip_address = "":
-                os.popen("ifconfig "+ifname+":1 "+ip_address+" netmask "+netmask)
+        while if_ip_address  != "":
+            print "taal1"
+            virtual_if_name = ifname+":"+str(i)
+            print "taal2"
+            if_ip_address = self.get_ip_address(virtual_if_name)
+            print "taal3"
+            print type(if_ip_address) 
+            print type(vertaus)
+            if if_ip_address == vertaus:
+                print "taal4"
+                os.popen("ifconfig "+virtual_if_name+" "+ip_address+" netmask "+netmask)
+                return True
             else:
-                i++
+                i = i+1
 
     def check_interface (self, ifname):
         """Checks if interface have ip address. Returns False or True"""
