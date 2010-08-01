@@ -4,7 +4,14 @@ class Interface:
     
     def create_interface(self, int_alias, ifname, ip_address, netmask):
         """ Creates interface """
-        os.popen("ifconfig "+ifname+":1 "+ip_address+" netmask "+netmask)
+        i = 1
+        while if_ip_address  == "":
+            virtual_if_name = ifname+":"+i
+            if_ip_address == self.get_ip_address(virtual_if_name)
+            if if_ip_address = "":
+                os.popen("ifconfig "+ifname+":1 "+ip_address+" netmask "+netmask)
+            else:
+                i++
 
     def check_interface (self, ifname):
         """Checks if interface have ip address. Returns False or True"""
