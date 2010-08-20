@@ -1,6 +1,9 @@
 import os
 class Interface:
-    """Interface class for interface handling"""
+
+    def __init__(self):
+        self.ifname = ""
+        self.ifUp = False
     
     def create_interface(self, int_alias, ifname, ip_address, netmask):
         """ Creates interface """
@@ -13,22 +16,26 @@ class Interface:
                 command = "ifconfig "+virtual_if_name+" "+ip_address+" netmask "+netmask
                 print command
                 os.popen(command)
-                return True
+                self.ifname = virtual_if_name                
+                ifUp = True                
+                break
             else:
                 i = i+1
+        return self
 
-    def check_interface (self, ifname):
+    def check_interface (self):
         """Checks if interface have ip address. Returns False or True"""
-        ipaddress= self.get_ip_address(ifname)
-        print "ipaddress=" +ipaddress 
+        ipaddress= self.get_ip_address(self.ifname)
+        print "ipaddress=" + ipaddress 
         if ipaddress == "":
             return False
         else:
             return True
 
-    def del_interface (self, ifname):
+    def del_interface (self):
         """Deletes given interface"""
-        os.popen("ifconfig "+ifname+" down")
+        print "ifconfig " + self.ifname + " down"
+        os.popen("ifconfig " + self.ifname + " down")
 
     def get_ip_address(self, ifname):
         """
