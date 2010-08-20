@@ -1,20 +1,27 @@
 import socket
 from Interface import Interface
 
+
 interfaces = {}
 
 def use_interface(if_alias, ifname, ip_address = None, netmask = None, virtual_interface = False):
-    print "lsdjflsfj"    
+    global interfaces
+    print "use_interface " + if_alias
     if virtual_interface != False:
-        interfaces[if_alias] = Interface().create_interface(if_alias, ifname, ip_address, netmask)
-        print interfaces[if_alias]
+        interfaces[if_alias] = Interface()
+        interfaces[if_alias].create_interface(if_alias, ifname, ip_address, netmask)
+        print interfaces
     else:
         raise NotImplementedError("This is not ready yet!")
 
 def is_interface_up(ifname):
+    global interfaces
+    print interfaces
     print "is_interface_up " + ifname
-    print interfaces[ifname].check_interface
-    return interfaces[ifname].check_interface
+    print interfaces[ifname]
+    return interfaces[ifname].check_interface()
 
 def delete_interface(ifname):
-    return interfaces[ifname].del_interface
+    global interfaces
+    print "delete_interface " + ifname
+    return interfaces[ifname].del_interface()
