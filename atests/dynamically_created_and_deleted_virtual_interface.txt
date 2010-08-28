@@ -25,7 +25,7 @@ Deleting two dynamically allocated interfaces
   and Rammbock allocates second virtual interface dynamically
   and two virtual interfaces are created
   When test case ends
-  Then virtual interfaces are deleted
+  Then two virtual interfaces are deleted
     
 Creating physical Interface  
   When Rammbock is using physical interface
@@ -36,7 +36,7 @@ Rammbock allocates first virtual interface dynamically
   use_interface  TEST1  eth0  1.1.1.1  255.255.255.255  True
 
 Rammbock allocates second virtual interface dynamically
-  use_interface  TEST2 eth0  1.1.1.2  255.255.255.255  True
+  use_interface  TEST2  eth0  1.1.1.2  255.255.255.255  True
 
 new virtual interface is created
   interface is up  TEST1
@@ -44,15 +44,22 @@ new virtual interface is created
 test case ends
   Log  "No test case here!"
 
-virtual interface is deleted
-  delete interface  TEST1
-  ${interface_state}=   is_interface_up  TEST1
+virtual interface is deleted  
+  delete virtual interface  TEST1
+
+delete virtual interface  [Arguments]  @{INTERFACE_NAME}
+  delete interface  @{INTERFACE_NAME}
+  ${interface_state}=   is_interface_up  @{INTERFACE_NAME}
   Should Not Be True   ${interface_state}
+
+two virtual interfaces are deleted
+  delete virtual interface  TEST1
+  delete virtual interface  TEST2
    
 two virtual interfaces are created
   interface is up  TEST1
   interface is up  TEST2
 
-interface is up  [Arguments]  ${ifname}
-  ${interface_state}=   is_interface_up  ${ifname}
+interface is up  [Arguments]  @{ifname}
+  ${interface_state}=   is_interface_up  @{ifname}
   Should Be True   ${interface_state}
