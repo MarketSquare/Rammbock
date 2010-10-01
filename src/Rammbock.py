@@ -10,9 +10,13 @@ class Rammbock:
 
     def use_virtual_interface(self, if_alias, ifname, ip_address, netmask):
         print "use_virtual_interface " + if_alias
-        if self.interfaces.has_key(if_alias) == False:
+        if self.interfaces.has_key(if_alias) == True:
+            if self.interfaces[if_alias].ifUp == True:
+		        return
+        else:
             self.interfaces[if_alias] = Interface()
-            self.interfaces[if_alias].create_interface(if_alias, ifname, ip_address, netmask)
+
+        self.interfaces[if_alias].create_interface(if_alias, ifname, ip_address, netmask)
 
     def use_interface(self, if_alias, ifname, ip_address = None, netmask = None, 
                       virtual_interface = False):

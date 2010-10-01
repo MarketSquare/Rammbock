@@ -4,23 +4,28 @@ class Interface:
     def __init__(self):
         self.ifname = ""
         self.ifUp = False
-    
+
     def create_interface(self, int_alias, ifname, ip_address, netmask):
         """ Creates interface """
         if_ip_address = "1"
         i = 1
         while if_ip_address  != "":
-            virtual_if_name = ifname + ":" + str(i*100)
+            print "round " + str(i)
+            virtual_if_name = ifname + ":" + str(i)
             if_ip_address = self.get_ip_address(virtual_if_name)
             if if_ip_address == "":
                 command = "ifconfig " + virtual_if_name + " " + ip_address + " netmask " + netmask
                 print command
                 os.popen(command)
-                self.ifname = virtual_if_name                
-                self.ifUp = True                
-                return self
+                self.ifname = virtual_if_name
+                if self.check_interface():
+                    self.ifUp = True
+                    return self
+                else:
+                    self.ifname = ""
+                    raise Exception("Creating new interface failed")
             else:
-                i = i+1
+                i = i + 1
         return self
 
     def check_interface(self):
@@ -33,7 +38,7 @@ class Interface:
             return True
 
     def del_interface(self):
-        """Deletes given interface"""
+        """Deletes this interface"""
         print "ifconfig " + self.ifname + " down"
         os.popen("ifconfig " + self.ifname + " down")
         self.ifUp = False
@@ -44,8 +49,10 @@ class Interface:
         get_ip_address | <interface>
         e.g. get_ip_address | eth0
         """
-        ipAddressList = os.popen("/sbin/ifconfig "+ifname+" | grep inet | awk '{print $2}' | sed -e s/.*://").readlines()
+        command =  "/sbin/ifconfig " + ifname + " | grep inet | awk '{print $2}' | sed -e s/.*://"
+        print command
+        ipAddressList = os.popen(command).readlines()
         ipAddress = "".join(ipAddressList)
         ipAddress = ipAddress.strip()
-        print ipAddress
+        print "ip_address " + ipAddress
         return ipAddress 
