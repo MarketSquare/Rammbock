@@ -1,0 +1,10 @@
+*** Test Cases ***
+Send and Receive string using network socket.
+    GIVEN Server is started
+    WHEN Send String from Client to Server
+    THEN Server Reiceves String
+
+*** Keywords ***
+GIVEN Server is started
+    Start Server  interface  port
+
