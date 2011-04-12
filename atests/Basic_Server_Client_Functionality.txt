@@ -17,14 +17,14 @@ Send String Over UDP
 
 *** Keywords ***
 Server is started
-    Start Server  interface  615
+    Start Server  interface  ${port}
 
 Server Reiceves String Over UDP
     ${rcv_string}=  receive_packet_over_udp
     Should Be Equal  ${rcv_string}  ${expected_string}
 
 Connect to Server
-    estabslih connection to server  ${host}  ${port}
+    Rammbock.connect to server  ${host}  ${port}
 
 Send string over UDP
     send packet over udp  ${expected_string}

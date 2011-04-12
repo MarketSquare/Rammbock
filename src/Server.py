@@ -6,6 +6,7 @@
 import socket
 import sys
 
+UDP_PACKET_MAX_SIZE = 1024
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 class Server:
@@ -14,6 +15,6 @@ class Server:
           s.bind((host, int(port)))
      
      def receive_packet_over_udp(self):
-          return s.recv(1024)    
+          return s.recv(UDP_PACKET_MAX_SIZE)    
           conn.close()
           

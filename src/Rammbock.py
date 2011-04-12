@@ -1,8 +1,8 @@
 from Interface import Interface
-#from Client import Client
+from Client import Client
 from Server import Server
 
-class Rammbock(Server):
+class Rammbock(Server, Client):
 
     ROBOT_LIBRARY_SCOPE = 'GLOBAL'
 
@@ -40,3 +40,6 @@ class Rammbock(Server):
     
     def start_server(self, interface, port):
         Server.server_startup(self, interface, port)
+
+    def connect_to_server(self, host, port):
+        Client.establish_connection_to_server(self, host, port)
