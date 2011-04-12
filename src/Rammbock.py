@@ -1,6 +1,8 @@
 from Interface import Interface
+#from Client import Client
+from Server import Server
 
-class Rammbock:
+class Rammbock(Server):
 
     ROBOT_LIBRARY_SCOPE = 'GLOBAL'
 
@@ -35,3 +37,6 @@ class Rammbock:
         self.interfaces
         print "delete_interface " + ifname
         return self.interfaces[ifname].del_interface()
+    
+    def start_server(self, interface, port):
+        Server.server_startup(self, interface, port)

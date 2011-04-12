@@ -1,10 +1,31 @@
+*** Settings ***
+Library         ../src/Rammbock.py
+
+*** Variables ***
+${expected_string}  ismo_rulettaa
+${host}  localhost
+${port}  2010
+
 *** Test Cases ***
-Send and Receive string using network socket.
-    GIVEN Server is started
-    WHEN Send String from Client to Server
-    THEN Server Reiceves String
+Receive string over UDP
+    Server is started
+    Server Reiceves String Over UDP
+
+Send String Over UDP
+    Connect to Server
+    Send string over UDP
 
 *** Keywords ***
-GIVEN Server is started
-    Start Server  interface  port
+Server is started
+    Start Server  interface  615
+
+Server Reiceves String Over UDP
+    ${rcv_string}=  receive_packet_over_udp
+    Should Be Equal  ${rcv_string}  ${expected_string}
+
+Connect to Server
+    estabslih connection to server  ${host}  ${port}
+
+Send string over UDP
+    send packet over udp  ${expected_string}
 
