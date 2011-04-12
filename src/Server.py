@@ -1,8 +1,6 @@
 #!/usr/bin/python
 #-*- coding: iso-8859-15 -*-
-
-# Socket-server
-
+     
 import socket
 import sys
 

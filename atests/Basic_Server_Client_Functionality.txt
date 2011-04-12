@@ -7,19 +7,17 @@ ${host}  localhost
 ${port}  2010
 
 *** Test Cases ***
-Receive string over UDP
+Send and Receive string over UDP
     Server is started
-    Server Reiceves String Over UDP
-
-Send String Over UDP
     Connect to Server
-    Send string over UDP
+    Send String Over UDP
+    Server Receives String Over UDP
 
 *** Keywords ***
 Server is started
     Start Server  interface  ${port}
 
-Server Reiceves String Over UDP
+Server Receives String Over UDP
     ${rcv_string}=  receive_packet_over_udp
     Should Be Equal  ${rcv_string}  ${expected_string}
 
