@@ -39,8 +39,9 @@ class Rammbock(Server, Client):
         print "delete_interface " + ifname
         return self.interfaces[ifname].del_interface()
     
-    def start_server(self, interface, port):
-        Server.server_startup(self, interface, port)
+    def start_server(self, if_alias, interface, port):
+        self.use_interface(if_alias, interface)
+        Server.server_startup(self, if_alias, port)
 
     def connect_to_server(self, host, port):
         Client.establish_connection_to_server(self, host, port)

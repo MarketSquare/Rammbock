@@ -5,9 +5,10 @@ Library         ../src/Rammbock.py
 ${expected_string}  ismo_rulettaa
 ${host}  localhost
 ${port}  2010
+${interface}  lo
 
 *** Test Cases ***
-Send and Receive string over UDP
+Send and Receive string over UDP using physical interface
     [Setup]  Initialize UDP Server and Client
     Send String Over UDP
     Server Receives String Over UDP
@@ -15,7 +16,7 @@ Send and Receive string over UDP
 
 *** Keywords ***
 Server is started
-    Start Server  interface  ${port}
+    Start Server  LOCALHOST  ${interface}  ${port}
 
 Server Receives String Over UDP
     ${rcv_string}=  receive_packet_over_udp

@@ -9,7 +9,8 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 class Server:
      
-     def server_startup(self, interface, port, host=''):
+     def server_startup(self, interface, port):
+          host = self.interfaces[interface].ifIpAddress
           s.bind((host, int(port)))
      
      def receive_packet_over_udp(self):
