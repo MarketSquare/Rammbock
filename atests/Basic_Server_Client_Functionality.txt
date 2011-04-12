@@ -9,12 +9,16 @@ ${interface}  lo
 
 *** Test Cases ***
 Send and Receive string over UDP using physical interface
-    [Setup]  Initialize UDP Server and Client
+    [Setup]  Initialize UDP Server and Client to physical interface
     Send String Over UDP
     Server Receives String Over UDP
     [Teardown]  Close Connections
 
 Send and Receive string over UDP using virtual interface
+    [Setup]  Initialize UDP Client and Server to virtual interface
+    Send String Over UDP
+    Server Receives String Over UDP
+    [Teardown]  Close Connections and remove virtual interface
 
 *** Keywords ***
 Server is started
@@ -30,7 +34,7 @@ Connect to Server
 Send string over UDP
     send packet over udp  ${expected_string}
 
-Initialize UDP Server and Client
+Initialize UDP Server and Client to physical interface
     Server is Started
     Connect to Server
 
