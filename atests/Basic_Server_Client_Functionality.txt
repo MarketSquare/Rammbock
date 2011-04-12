@@ -14,6 +14,8 @@ Send and Receive string over UDP using physical interface
     Server Receives String Over UDP
     [Teardown]  Close Connections
 
+Send and Receive string over UDP using virtual interface
+
 *** Keywords ***
 Server is started
     Start Server  LOCALHOST  ${interface}  ${port}
