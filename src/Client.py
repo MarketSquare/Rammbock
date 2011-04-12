@@ -15,4 +15,6 @@ class Client:
 
      def send_packet_over_udp(self, packet): 
           s.send(packet) # send test string
+
+     def close_client(self):
           s.close()     

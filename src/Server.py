@@ -14,4 +14,6 @@ class Server:
      
      def receive_packet_over_udp(self):
           return s.recv(UDP_PACKET_MAX_SIZE)    
+     
+     def close_server(self):
           s.close()         

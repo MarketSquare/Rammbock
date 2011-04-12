@@ -25,9 +25,9 @@ Deleting two dynamically allocated interfaces
     When test case ends
     Then two virtual interfaces are deleted
 
-Creating physical Interface
-    When Rammbock is using physical interface
-    Then defined physical interface is used in test case.
+Use physical Interface
+    Rammbock is using physical interface
+    Then defined physical interface is used.
 
 *** Keywords ***
 Rammbock allocates second virtual interface dynamically
@@ -60,4 +60,13 @@ interface is up
     [Arguments]  @{ifname}
     ${interface_state}=  is_interface_up  @{ifname}
     Should Be True  ${interface_state}
+
+Rammbock allocates first virtual interface dynamically
+    use_interface  TEST1  eth0  1.1.1.1  255.255.255.255  True
+
+Rammbock is using physical interface
+    use_interface  LOKAALI  lo
+
+Then defined physical interface is used.
+    is_interface_up  LOKAALI
 

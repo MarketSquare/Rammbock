@@ -4,8 +4,9 @@ class Interface:
     def __init__(self):
         self.ifname = ""
         self.ifUp = False
+        self.ifIpAddress =""
 
-    def create_interface(self, int_alias, ifname, ip_address, netmask):
+    def create_virtual_interface(self, int_alias, ifname, ip_address, netmask):
         """ Creates interface """
         if_ip_address = "1"
         i = 1
@@ -19,6 +20,7 @@ class Interface:
                 os.popen(command)
                 self.ifname = virtual_if_name
                 if self.check_interface():
+                    self.ifIpAddress = self.get_ip_address(virtual_if_name)
                     self.ifUp = True
                     return self
                 else:
@@ -27,6 +29,16 @@ class Interface:
             else:
                 i = i + 1
         return self
+
+    def create_physical_interface(self, int_alias, ifname, ip_address = None, Netmask = None):
+         print "jeba"
+         if self.check_interface():
+              self.ifIpAddress = self.get_ip_address(ifname)
+              self.ifUp = True
+              print "jeba2"
+              return self
+         else:
+              raise Exeption("Physical interface has not been configured correctly")
 
     def check_interface(self):
         """Checks if interface have ip address. Returns False or True"""

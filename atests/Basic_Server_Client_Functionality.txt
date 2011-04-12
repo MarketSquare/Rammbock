@@ -8,10 +8,10 @@ ${port}  2010
 
 *** Test Cases ***
 Send and Receive string over UDP
-    Server is started
-    Connect to Server
+    [Setup]  Initialize UDP Server and Client
     Send String Over UDP
     Server Receives String Over UDP
+    [Teardown]  Close Connections
 
 *** Keywords ***
 Server is started
@@ -26,4 +26,12 @@ Connect to Server
 
 Send string over UDP
     send packet over udp  ${expected_string}
+
+Initialize UDP Server and Client
+    Server is Started
+    Connect to Server
+
+Close Connections
+    Close Server
+    Close Client
 

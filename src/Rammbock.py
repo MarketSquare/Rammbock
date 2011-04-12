@@ -9,7 +9,6 @@ class Rammbock(Server, Client):
     def __init__(self):
         self.interfaces = {}
 
-
     def use_virtual_interface(self, if_alias, ifname, ip_address, netmask):
         print "use_virtual_interface " + if_alias
         if self.interfaces.has_key(if_alias) == True:
@@ -18,7 +17,7 @@ class Rammbock(Server, Client):
         else:
             self.interfaces[if_alias] = Interface()
 
-        self.interfaces[if_alias].create_interface(if_alias, ifname, ip_address, netmask)
+        self.interfaces[if_alias].create_virtual_interface(if_alias, ifname, ip_address, netmask)
 
     def use_interface(self, if_alias, ifname, ip_address = None, netmask = None, 
                       virtual_interface = False):
@@ -26,7 +25,9 @@ class Rammbock(Server, Client):
         if virtual_interface:
             self.use_virtual_interface(if_alias, ifname, ip_address, netmask)
         else:
-            raise NotImplementedError("This is not ready yet!")
+            self.interfaces[if_alias] = Interface()
+            self.interfaces[if_alias].create_physical_interface(if_alias, ifname, ip_address, netmask)
+ 
 
     def is_interface_up(self, ifname):
         self.interfaces
@@ -43,3 +44,9 @@ class Rammbock(Server, Client):
 
     def connect_to_server(self, host, port):
         Client.establish_connection_to_server(self, host, port)
+
+    def close_server(self):
+         Server.close_server(self)
+
+    def close_client(self):
+         Client.close_client(self)
