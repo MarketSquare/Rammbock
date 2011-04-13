@@ -1,6 +1,6 @@
 *** Settings ***
+Default Tags    regression
 Library         ../src/Rammbock.py
-Resource        interface.txt
 
 *** Test Cases ***
 Creating virtual Interface

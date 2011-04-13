@@ -1,4 +1,5 @@
 *** Settings ***
+Default Tags    regression
 Library         ../src/Rammbock.py
 
 *** Variables ***
@@ -15,6 +16,7 @@ Send and Receive string over UDP using physical interface
     [Teardown]  Close Connections
 
 Send and Receive string over UDP using virtual interface
+    [Tags]
     [Setup]  Initialize UDP Client and Server to virtual interface
     Send String Over UDP
     Server Receives String Over UDP
@@ -41,4 +43,6 @@ Initialize UDP Server and Client to physical interface
 Close Connections
     Close Server
     Close Client
+
+Initialize UDP Client and Server to virtual interface
 

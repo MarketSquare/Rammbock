@@ -31,11 +31,10 @@ class Interface:
         return self
 
     def create_physical_interface(self, int_alias, ifname, ip_address = None, Netmask = None):
-         print "jeba"
          if self.check_interface():
               self.ifIpAddress = self.get_ip_address(ifname)
               self.ifUp = True
-              print "jeba2"
+              self.ifname = ifname
               return self
          else:
               raise Exeption("Physical interface has not been configured correctly")
