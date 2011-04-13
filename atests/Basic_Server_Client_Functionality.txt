@@ -7,6 +7,7 @@ ${expected_string}  ismo_rulettaa
 ${host}  localhost
 ${port}  2010
 ${physical_interface}  lo
+${virtual_host}  1.1.1.1
 
 *** Test Cases ***
 Send and Receive string over UDP using physical interface
@@ -25,13 +26,14 @@ Send and Receive string over UDP using virtual interface
 *** Keywords ***
 Server is started
     [Arguments]  ${interface}
-    Start Server  LOCALHOST  ${interface}  ${port}
+    Start Server  ${interface}  ${port}
 
 Server Receives String Over UDP
     ${rcv_string}=  receive_packet_over_udp
     Should Be Equal  ${rcv_string}  ${expected_string}
 
 Connect to Server
+    [Arguments]  ${host}
     Rammbock.connect to server  ${host}  ${port}
 
 Send string over UDP
@@ -40,11 +42,19 @@ Send string over UDP
 Initialize UDP Server and Client to physical interface
     use interface  PHYSICAL  ${physical_interface}
     Server is Started  PHYSICAL
-    Connect to Server
+    Connect to Server  ${host}
 
 Close Connections
     Close Server
     Close Client
 
 Initialize UDP Client and Server to virtual interface
+    use interface  VIRTUAL_INTERFACE  ${physical_interface}  1.1.1.1  255.255.255.255  True
+    Server is Started  VIRTUAL_INTERFACE
+    connect to server  ${virtual_host}
+
+Close Connections and remove virtual interface
+    Close Server
+    Close Client
+    Delete Interface  VIRTUAL_INTERFACE
 
