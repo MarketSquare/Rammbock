@@ -6,7 +6,7 @@ Library         ../src/Rammbock.py
 ${expected_string}  ismo_rulettaa
 ${host}  localhost
 ${port}  2010
-${interface}  lo
+${physical_interface}  lo
 
 *** Test Cases ***
 Send and Receive string over UDP using physical interface
@@ -24,6 +24,7 @@ Send and Receive string over UDP using virtual interface
 
 *** Keywords ***
 Server is started
+    [Arguments]  ${interface}
     Start Server  LOCALHOST  ${interface}  ${port}
 
 Server Receives String Over UDP
@@ -37,7 +38,8 @@ Send string over UDP
     send packet over udp  ${expected_string}
 
 Initialize UDP Server and Client to physical interface
-    Server is Started
+    use interface  PHYSICAL  ${physical_interface}
+    Server is Started  PHYSICAL
     Connect to Server
 
 Close Connections
