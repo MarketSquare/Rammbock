@@ -11,6 +11,7 @@ class Server(object):
      
      def __init__(self, interfaces): 
           self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+          self._server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
           self._interfaces = interfaces
      
      def server_startup(self, interface, port):
@@ -22,6 +23,7 @@ class Server(object):
           return self._server_socket.recv(UDP_PACKET_MAX_SIZE)    
      
      def close_server(self):
-          #self._server_socket.shutdown(socket.SHUT_RDWR)
+          #self._server_socket.shutdown(socket.SHUT_RD)
           self._server_socket.close()
+          self._server_socket = None
           print 'closing server'

@@ -16,6 +16,6 @@ class Client(object):
           self._client_socket.send(packet) # send test string
 
      def close_client(self):
-          #self._client_socket.shutdown(socket.SHUT_WR)
+          self._client_socket.shutdown(socket.SHUT_WR)
           self._client_socket.close()
           print 'close client' 
