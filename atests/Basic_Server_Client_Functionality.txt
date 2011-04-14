@@ -17,7 +17,6 @@ Send and Receive string over UDP using physical interface
     [Teardown]  Close Connections
 
 Send and Receive string over UDP using virtual interface
-    [Tags]
     [Setup]  Initialize UDP Client and Server to virtual interface
     Send String Over UDP
     Server Receives String Over UDP
@@ -45,7 +44,7 @@ Initialize UDP Server and Client to physical interface
     Connect to Server  ${host}
 
 Close Connections
-    Comment  Close Client
+    Close Client
     Close Server
 
 Initialize UDP Client and Server to virtual interface
