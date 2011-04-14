@@ -19,7 +19,11 @@ class Server(object):
           self._server_socket.bind((host, int(port)))
      
      def receive_packet_over_udp(self):
-          return self._server_socket.recv(UDP_PACKET_MAX_SIZE)    
+          data, self._address = self._server_socket.recvfrom(UDP_PACKET_MAX_SIZE)
+          return data
+     
+     def send_packet_over_udp(self, packet):
+          self._server_socket.sendto(packet, self._address)
      
      def close_server(self):
           self._server_socket.close()

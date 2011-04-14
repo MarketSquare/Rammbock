@@ -4,6 +4,8 @@
 import socket
 import sys
 
+UDP_PACKET_MAX_SIZE = 1024
+
 class Client(object):
 
      def __init__(self):
@@ -14,6 +16,9 @@ class Client(object):
 
      def send_packet_over_udp(self, packet): 
           self._client_socket.send(packet) # send test string
+
+     def receive_packet_over_udp(self):
+        return self._client_socket.recv(UDP_PACKET_MAX_SIZE)     
 
      def close_client(self):
           self._client_socket.close()
