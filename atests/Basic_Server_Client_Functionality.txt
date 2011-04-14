@@ -45,8 +45,8 @@ Initialize UDP Server and Client to physical interface
     Connect to Server  ${host}
 
 Close Connections
+    Comment  Close Client
     Close Server
-    Close Client
 
 Initialize UDP Client and Server to virtual interface
     use interface  VIRTUAL_INTERFACE  ${physical_interface}  1.1.1.1  255.255.255.255  True
@@ -54,7 +54,7 @@ Initialize UDP Client and Server to virtual interface
     connect to server  ${virtual_host}
 
 Close Connections and remove virtual interface
+    Comment  Close Client
     Close Server
-    Close Client
     Delete Interface  VIRTUAL_INTERFACE
 

@@ -4,17 +4,18 @@
 import socket
 import sys
 
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+class Client(object):
 
-
-class Client:
+     def __init__(self):
+          self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
      def establish_connection_to_server(self, host, port):
-           s.connect((host, int(port)))
-
+          self._client_socket.connect((host, int(port)))
 
      def send_packet_over_udp(self, packet): 
-          s.send(packet) # send test string
+          self._client_socket.send(packet) # send test string
 
      def close_client(self):
-          s.close()     
+          #self._client_socket.shutdown(socket.SHUT_WR)
+          self._client_socket.close()
+          print 'close client' 

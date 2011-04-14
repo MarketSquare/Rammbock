@@ -2,12 +2,14 @@ from Interface import Interface
 from Client import Client
 from Server import Server
 
-class Rammbock(Server, Client):
+class Rammbock(object):
 
     ROBOT_LIBRARY_SCOPE = 'GLOBAL'
 
     def __init__(self):
         self.interfaces = {}
+        self._server = Server(self.interfaces)
+        self._client = Client()
 
     def use_virtual_interface(self, if_alias, ifname, ip_address, netmask):
         print "use_virtual_interface " + if_alias
@@ -40,13 +42,19 @@ class Rammbock(Server, Client):
         return self.interfaces[ifname].del_interface()
     
     def start_server(self, if_alias, port):
-        Server.server_startup(self, if_alias, port)
+        self._server.server_startup(if_alias, port)
 
     def connect_to_server(self, host, port):
-        Client.establish_connection_to_server(self, host, port)
+        self._client.establish_connection_to_server(host, port)
 
     def close_server(self):
-         Server.close_server(self)
+        self._server.close_server()
          
     def close_client(self):
-         Client.close_client(self)
+        self._client.close_client()
+
+    def send_packet_over_udp(self, packet): 
+        self._client.send_packet_over_udp(packet)
+     
+    def receive_packet_over_udp(self):
+        return self._server.receive_packet_over_udp()  

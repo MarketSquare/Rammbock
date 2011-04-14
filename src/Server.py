@@ -6,19 +6,22 @@ import sys
 import time
 
 UDP_PACKET_MAX_SIZE = 1024
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-class Server:
+class Server(object):
+     
+     def __init__(self, interfaces): 
+          self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+          self._interfaces = interfaces
      
      def server_startup(self, interface, port):
-          host = str(self.interfaces[interface].ifIpAddress)
+          host = str(self._interfaces[interface].ifIpAddress)
           print "used host address is: "+host+":"+port
-          s.bind((host, int(port)))
+          self._server_socket.bind((host, int(port)))
      
      def receive_packet_over_udp(self):
-          return s.recv(UDP_PACKET_MAX_SIZE)    
+          return self._server_socket.recv(UDP_PACKET_MAX_SIZE)    
      
      def close_server(self):
-          s.close()
-          del self     
+          #self._server_socket.shutdown(socket.SHUT_RDWR)
+          self._server_socket.close()
+          print 'closing server'

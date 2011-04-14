@@ -11,12 +11,10 @@ class Interface:
         if_ip_address = "1"
         i = 1
         while if_ip_address  != "":
-            print "round " + str(i)
             virtual_if_name = ifname + ":" + str(i)
             if_ip_address = self.get_ip_address(virtual_if_name)
             if if_ip_address == "":
                 command = "ifconfig " + virtual_if_name + " " + ip_address + " netmask " + netmask
-                print command
                 os.popen(command)
                 self.ifname = virtual_if_name
                 if self.check_interface():
@@ -65,5 +63,5 @@ class Interface:
         ipAddressList = os.popen(command).readlines()
         ipAddress = "".join(ipAddressList)
         ipAddress = ipAddress.strip()
-        print "ip_address " + ipAddress
+        print "ip address is:" + ipAddress
         return ipAddress 
