@@ -68,3 +68,6 @@ Close Connections and remove virtual interface
     Close Server
     Delete Interface  VIRTUAL_INTERFACE
 
+Server Modifies String
+    Set Test Variable  \${RECEIVED_STRING}  ${RECEIVED_STRING} _koviten
+
