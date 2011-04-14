@@ -4,10 +4,10 @@ from Server import Server
 
 class Rammbock(object):
 
-    ROBOT_LIBRARY_SCOPE = 'GLOBAL'
-
     def __init__(self):
         self.interfaces = {}
+        self._client = Client()
+        self._server = Server(self.interfaces)
 
     def use_virtual_interface(self, if_alias, ifname, ip_address, netmask):
         print "use_virtual_interface " + if_alias
@@ -27,7 +27,6 @@ class Rammbock(object):
         else:
             self.interfaces[if_alias] = Interface()
             self.interfaces[if_alias].create_physical_interface(if_alias, ifname, ip_address, netmask)
- 
 
     def is_interface_up(self, ifname):
         self.interfaces
@@ -40,11 +39,9 @@ class Rammbock(object):
         return self.interfaces[ifname].del_interface()
     
     def start_server(self, if_alias, port):
-        self._server = Server(self.interfaces)
         self._server.server_startup(if_alias, port)
 
     def connect_to_server(self, host, port):
-        self._client = Client()
         self._client.establish_connection_to_server(host, port)
 
     def close_server(self):
