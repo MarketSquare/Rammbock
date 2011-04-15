@@ -20,6 +20,12 @@ Use physical Interface
     Rammbock is using physical interface
     Then defined physical interface is used.
 
+Try to Use Non Exitence Physical Interface
+    [Tags]
+
+Try to Create new virtual interface to non-exictence physical interface
+    [Tags]  ${EMPTY}
+
 *** Keywords ***
 Rammbock allocates second virtual interface dynamically
     use_interface  TEST2  eth0  1.1.1.2  255.255.255.255  True
