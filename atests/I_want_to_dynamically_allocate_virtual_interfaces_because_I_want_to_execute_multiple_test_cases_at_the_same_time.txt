@@ -18,8 +18,8 @@ Adding and Deleting two dynamically allocated interfaces
 
 Try to Create new virtual interface to non-exictence physical interface
     [Tags]  ${EMPTY}
-    Try to create virtual interface to physical interface which does not exist
-    Exeption 'Tried to use physical interface: foo probably does not exist' should occure
+    WHEN Try to create virtual interface to physical interface which does not exist
+    THEN Exeption 'Tried to use physical interface: foo probably does not exist' should occure
 
 *** Keywords ***
 Rammbock allocates second virtual interface dynamically

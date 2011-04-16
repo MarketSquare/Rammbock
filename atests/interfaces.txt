@@ -2,7 +2,7 @@
 Library         ../src/Rammbock.py
 
 *** Keywords ***
-Try to Use interface which don't exist
+WHEN Trying to Use interface which don't exist
     ${EXCEPTION}  Run Keyword And Expect Error  *  Use Interface  WRONG_INTERFACE  foo
     Set Test Variable  ${EXCEPTION}
 

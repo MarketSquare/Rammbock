@@ -13,25 +13,27 @@ ${EXPECTED_MODIFIED_STRING}  ismo_rulettaa_koviten
 
 *** Test Cases ***
 Send and Receive string over UDP using physical interface
-    [Setup]  Initialize UDP Server and Client to physical interface
-    Client Sends String
-    Server Receives String
+    [Setup]
+    GIVEN UDP Server and Client are initialized to physical interface
+    WHEN Client Sends String
+    THEN Server Receives String
     [Teardown]  Close Connections
 
 Send and Receive string over UDP using virtual interface
-    [Setup]  Initialize UDP Client and Server to virtual interface
-    Client Sends String
-    Server Receives String
+    [Setup]
+    GIVEN UDP Client and Server are initialized to virtual interface
+    WHEN Client Sends String
+    THEN Server Receives String
     [Teardown]  Close Connections and remove virtual interface
 
 Send data over UDP and modify it and return it back
-    [Tags]  ${EMPTY}
-    [Setup]  Initialize UDP Server and Client to physical interface
-    Client Sends String
-    Server Receives String
-    Server Modifies String
-    Server Sends Modified String
-    Client Receives String Over
+    [Setup]
+    GIVEN UDP Server and Client are initialized to physical interface
+    WHEN Client Sends String
+    THEN Server Receives String
+    AND Server Modifies String
+    AND Server Sends Modified String
+    AND Client Receives String Over
     [Teardown]  Close Connections
 
 *** Keywords ***
@@ -51,7 +53,7 @@ Connect to Server
 Client Sends String
     client send packet over udp  ${EXPECTED_STRING}
 
-Initialize UDP Server and Client to physical interface
+UDP Server and Client are initialized to physical interface
     use interface  PHYSICAL  ${PHYSICAL_INTERFACE}
     Server is Started  PHYSICAL
     Connect to Server  ${HOST}
@@ -60,7 +62,7 @@ Close Connections
     Close Client
     Close Server
 
-Initialize UDP Client and Server to virtual interface
+UDP Client and Server are initialized to virtual interface
     use interface  VIRTUAL_INTERFACE  ${PHYSICAL_INTERFACE}  1.1.1.1  255.255.255.255  True
     Server is Started  VIRTUAL_INTERFACE
     connect to server  ${VIRTUAL_HOST}
