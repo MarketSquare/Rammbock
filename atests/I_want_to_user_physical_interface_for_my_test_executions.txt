@@ -1,0 +1,21 @@
+*** Settings ***
+Default Tags    regression
+Resource        interfaces.txt
+
+*** Test Cases ***
+Use physical Interface
+    Rammbock is using physical interface
+    Then defined physical interface is used.
+
+Try to Use Non Exitence Physical Interface
+    [Tags]
+    Try to Use interface which don't exist
+    Exeption 'Tried to use physical interface: foo probably does not exist' should occure
+
+*** Keywords ***
+Rammbock is using physical interface
+    use_interface  LOKAALI  lo
+
+Then defined physical interface is used.
+    is_interface_up  LOKAALI
+
