@@ -23,32 +23,31 @@ class Interface:
                     return self
                 else:
                     self.ifname = ""
-                    raise Exception("Creating new interface failed")
+                    raise Exception("Creating new Virtual interface failed")
             else:
                 i = i + 1
         return self
 
     def create_physical_interface(self, int_alias, ifname, ip_address = None, Netmask = None):
+         self.ifname = ifname
          if self.check_interface():
               self.ifIpAddress = self.get_ip_address(ifname)
               self.ifUp = True
-              self.ifname = ifname
               return self
          else:
-              raise Exeption("Physical interface has not been configured correctly")
+              raise Exception("Tried to use physical interface: "+ifname+" probably does not exist")
 
     def check_interface(self):
         """Checks if interface have ip address. Returns False or True"""
         ipaddress= self.get_ip_address(self.ifname)
         print "ipaddress=" + ipaddress 
-        if ipaddress == "":
-            return False
-        else:
+        if ipaddress != "":
             return True
+        else:
+            return False
 
     def del_interface(self):
         """Deletes this interface"""
-        print "ifconfig " + self.ifname + " down"
         os.popen("ifconfig " + self.ifname + " down")
         self.ifUp = False
 
@@ -59,8 +58,11 @@ class Interface:
         e.g. get_ip_address | eth0
         """
         command =  "/sbin/ifconfig " + ifname + " | grep inet | awk '{print $2}' | sed -e s/.*://"
-        print command
-        ipAddressList = os.popen(command).readlines()
+        try:
+             ipAddressList = os.popen(command).readlines()
+        except Error, e:
+             print type(e)
+             raise
         ipAddress = "".join(ipAddressList)
         ipAddress = ipAddress.strip()
         print "ip address is:" + ipAddress
