@@ -8,7 +8,6 @@ Use physical Interface
     THEN defined physical interface is used.
 
 Try to Use Non Exitence Physical Interface
-    [Tags]
     WHEN Trying to Use interface which don't exist
     THEN Exeption 'Tried to use physical interface: foo probably does not exist' should occure
 

@@ -23,7 +23,7 @@ class Interface:
                     return self
                 else:
                     self.ifname = ""
-                    raise Exception("Creating new Virtual interface failed")
+                    raise Exception("Creating new Virtual interface failed. Probably physical interface: "+ifname)
             else:
                 i = i + 1
         return self

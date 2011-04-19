@@ -17,9 +17,8 @@ Adding and Deleting two dynamically allocated interfaces
     Then two virtual interfaces are deleted
 
 Try to Create new virtual interface to non-exictence physical interface
-    [Tags]  ${EMPTY}
     WHEN Try to create virtual interface to physical interface which does not exist
-    THEN Exeption 'Tried to use physical interface: foo probably does not exist' should occure
+    THEN Exeption 'Creating new Virtual interface failed. Probably physical interface: foo' should occure
 
 *** Keywords ***
 Rammbock allocates second virtual interface dynamically
@@ -50,4 +49,9 @@ two virtual interfaces are created
 
 Rammbock allocates first virtual interface dynamically
     use_interface  TEST1  eth0  1.1.1.1  255.255.255.255  True
+
+WHEN Try to create virtual interface to physical interface which does not exist
+    ${EXCEPTION}=  Run Keyword And Expect Error  *  Use Interface  WRONG_IF  foo  1.1.1.2  255.255.255.255
+    ...  True
+    Set Test Variable  ${EXCEPTION}
 
