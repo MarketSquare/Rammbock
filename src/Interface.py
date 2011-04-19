@@ -1,4 +1,5 @@
 import os
+import subprocess
 class Interface:
 
     def __init__(self):
@@ -14,8 +15,8 @@ class Interface:
             virtual_if_name = ifname + ":" + str(i)
             if_ip_address = self.get_ip_address(virtual_if_name)
             if if_ip_address == "":
-                command = "ifconfig " + virtual_if_name + " " + ip_address + " netmask " + netmask
-                os.popen(command)
+                command = ["ifconfig", virtual_if_name, ip_address, "netmask", netmask]
+                subprocess.Popen(command).stdin
                 self.ifname = virtual_if_name
                 if self.check_interface():
                     self.ifIpAddress = self.get_ip_address(virtual_if_name)
