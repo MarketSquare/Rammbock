@@ -23,6 +23,7 @@ Try to Create new virtual interface to non-exictence physical interface
     THEN Exeption 'Creating new Virtual interface failed. Probably physical interface: foo' should occure
 
 Try to Configure interface using wrong action
+    [Tags]
 
 *** Keywords ***
 Rammbock allocates second virtual interface dynamically
