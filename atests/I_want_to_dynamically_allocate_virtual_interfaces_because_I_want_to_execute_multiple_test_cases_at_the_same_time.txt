@@ -22,6 +22,8 @@ Try to Create new virtual interface to non-exictence physical interface
     WHEN Try to create virtual interface to physical interface which does not exist
     THEN Exeption 'Creating new Virtual interface failed. Probably physical interface: foo' should occure
 
+Try to Configure interface using wrong action
+
 *** Keywords ***
 Rammbock allocates second virtual interface dynamically
     use_interface  TEST2  eth0  1.1.1.2  255.255.255.255  True
