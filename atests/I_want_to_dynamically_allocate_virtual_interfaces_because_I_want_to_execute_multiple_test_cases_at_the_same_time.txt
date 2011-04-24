@@ -5,17 +5,15 @@ Resource        interfaces.txt
 *** Test Cases ***
 Adding and Deleting virtual interface
     [Tags]  ${EMPTY}
-    Given Rammbock allocates first virtual interface dynamically
-    And new virtual interface is created
-    When test case ends
-    Then virtual interface is deleted
+    Allocate first virtual interface dynamically
+    Virtual interface is created
+    Delete Virtual Interface
 
 Adding and Deleting two dynamically allocated interfaces
     [Tags]  ${EMPTY}
-    Given Rammbock allocates first virtual interface dynamically
-    and Rammbock allocates second virtual interface dynamically
+    Allocate second virtual interface dynamically
+    Allocate second virtual interface dynamically
     and two virtual interfaces are created
-    When test case ends
     Then two virtual interfaces are deleted
 
 Try to Create new virtual interface to non-exictence physical interface
@@ -26,14 +24,11 @@ Try to Configure interface using wrong action
     [Tags]
 
 *** Keywords ***
-Rammbock allocates second virtual interface dynamically
+Allocate second virtual interface dynamically
     use_interface  TEST2  eth0  1.1.1.2  255.255.255.255  True
 
-new virtual interface is created
+Virtual interface is created
     interface is up  TEST1
-
-test case ends
-    Log  "No test case here!"
 
 virtual interface is deleted
     delete virtual interface  TEST1
@@ -52,7 +47,7 @@ two virtual interfaces are created
     interface is up  TEST1
     interface is up  TEST2
 
-Rammbock allocates first virtual interface dynamically
+Allocate first virtual interface dynamically
     Configure Interface  add  TEST1  eth0  1.1.1.1  255.255.255.255  True
 
 WHEN Try to create virtual interface to physical interface which does not exist
