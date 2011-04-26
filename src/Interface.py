@@ -1,6 +1,8 @@
 import os
 import subprocess
-class Interface:
+
+
+class Interface(object):
 
     def __init__(self):
         self.ifname = ""

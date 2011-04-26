@@ -2,16 +2,19 @@
 Default Tags    regression
 Resource        interfaces.txt
 
+*** Variables ***
+${PHYSICAL_INTERFACE}  eth0
+
 *** Test Cases ***
 Adding and Deleting virtual interface
     [Tags]  ${EMPTY}
     Allocate first virtual interface dynamically
     Virtual interface is created
-    Delete Virtual Interface
+    Delete Virtual Interface  TEST1
 
 Adding and Deleting two dynamically allocated interfaces
     [Tags]  ${EMPTY}
-    Allocate second virtual interface dynamically
+    Allocate first virtual interface dynamically
     Allocate second virtual interface dynamically
     and two virtual interfaces are created
     Then two virtual interfaces are deleted
@@ -20,12 +23,9 @@ Try to Create new virtual interface to non-exictence physical interface
     WHEN Try to create virtual interface to physical interface which does not exist
     THEN Exeption 'Creating new Virtual interface failed. Probably physical interface: foo' should occure
 
-Try to Configure interface using wrong action
-    [Tags]
-
 *** Keywords ***
 Allocate second virtual interface dynamically
-    use_interface  TEST2  eth0  1.1.1.2  255.255.255.255  True
+    create virtual interface  TEST2  ${PHYSICAL_INTERFACE}  1.1.1.2  255.255.255.255
 
 Virtual interface is created
     interface is up  TEST1
@@ -34,9 +34,9 @@ virtual interface is deleted
     delete virtual interface  TEST1
 
 delete virtual interface
-    [Arguments]  @{INTERFACE_NAME}
-    delete interface  @{INTERFACE_NAME}
-    ${interface_state}=  is_interface_up  @{INTERFACE_NAME}
+    [Arguments]  ${virtual_interface}
+    delete interface  ${virtual_interface}
+    ${interface_state}=  is_interface_up  ${virtual_interface}
     Should Not Be True  ${interface_state}
 
 two virtual interfaces are deleted
@@ -48,10 +48,9 @@ two virtual interfaces are created
     interface is up  TEST2
 
 Allocate first virtual interface dynamically
-    Configure Interface  add  TEST1  eth0  1.1.1.1  255.255.255.255  True
+    create virtual interface  TEST1  ${PHYSICAL_INTERFACE}  1.1.1.1  255.255.255.255
 
 WHEN Try to create virtual interface to physical interface which does not exist
-    ${EXCEPTION}=  Run Keyword And Expect Error  *  Use Interface  WRONG_IF  foo  1.1.1.2  255.255.255.255
-    ...  True
+    ${EXCEPTION}=  Run Keyword And Expect Error  *  create virtual Interface  WRONG_IF  foo  1.1.1.2  255.255.255.255
     Set Test Variable  ${EXCEPTION}
 

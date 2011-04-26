@@ -63,7 +63,7 @@ Close Connections
     Close Server
 
 UDP Client and Server are initialized to virtual interface
-    use interface  VIRTUAL_INTERFACE  ${PHYSICAL_INTERFACE}  1.1.1.1  255.255.255.255  True
+    create virtual interface  VIRTUAL_INTERFACE  ${PHYSICAL_INTERFACE}  1.1.1.1  255.255.255.255
     Server is Started  VIRTUAL_INTERFACE
     connect to server  ${VIRTUAL_HOST}
 

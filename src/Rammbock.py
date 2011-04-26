@@ -9,27 +9,18 @@ class Rammbock(object):
              self._client = Client()
              self._server = Server(self.interfaces)
         
-     def configure_interface(self, action, if_alias, ifname, ip_address = None, netmask = None, virtual_interface = False):
-          if action == add:
-               raise NotImplementedError
           
-     def use_virtual_interface(self, if_alias, ifname, ip_address, netmask):
-        print "use_virtual_interface " + if_alias
-        if self.interfaces.has_key(if_alias) == True:
-            if self.interfaces[if_alias].ifUp == True:
-		        return
-        else:
-            self.interfaces[if_alias] = Interface()
-
+     def create_virtual_interface(self, if_alias, ifname, ip_address, netmask):
+        print "create_virtual_interface " + if_alias
+        if if_alias in self.interfaces and  self.interfaces[if_alias].ifUp:
+		raise Exception('Interface "%s" already exists' % if_alias)
+        self.interfaces[if_alias] = Interface()
         self.interfaces[if_alias].create_virtual_interface(if_alias, ifname, ip_address, netmask)
-     def use_interface(self, if_alias, ifname, ip_address = None, netmask = None, 
-                      virtual_interface = False):
+
+     def use_interface(self, if_alias, ifname, ip_address = None, netmask = None):
         print "use_interface " + if_alias
-        if virtual_interface:
-            self.use_virtual_interface(if_alias, ifname, ip_address, netmask)
-        else:
-            self.interfaces[if_alias] = Interface()
-            self.interfaces[if_alias].create_physical_interface(if_alias, ifname, ip_address, netmask)
+        self.interfaces[if_alias] = Interface()
+        self.interfaces[if_alias].create_physical_interface(if_alias, ifname, ip_address, netmask)
 
      def is_interface_up(self, ifname):
         self.interfaces
