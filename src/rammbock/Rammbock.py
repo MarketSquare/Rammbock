@@ -1,6 +1,6 @@
-from Interface import Interface
 from Client import Client
 from Server import Server
+from rammbock.Interface import VirtualInterface, PhysicalInterface
 
 class Rammbock(object):
 
@@ -13,13 +13,11 @@ class Rammbock(object):
         print "create_virtual_interface " + if_alias
         if if_alias in self.interfaces and  self.interfaces[if_alias].ifUp:
             raise Exception('Interface "%s" already exists' % if_alias)
-        self.interfaces[if_alias] = Interface()
-        self.interfaces[if_alias].create_virtual_interface(if_alias, ifname, ip_address, netmask)
+        self.interfaces[if_alias] = VirtualInterface(if_alias, ifname, ip_address, netmask)
 
-    def use_interface(self, if_alias, ifname, ip_address = None, netmask = None):
+    def use_interface(self, if_alias, ifname, ip_address=None, netmask=None):
         print "use_interface " + if_alias
-        self.interfaces[if_alias] = Interface()
-        self.interfaces[if_alias].create_physical_interface(if_alias, ifname, ip_address, netmask)
+        self.interfaces[if_alias] = PhysicalInterface(if_alias, ifname, ip_address, netmask)
 
     def is_interface_up(self, ifname):
         self.interfaces

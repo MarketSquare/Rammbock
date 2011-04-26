@@ -1,6 +1,11 @@
 import os
 import subprocess
 
+def PhysicalInterface(int_alias, ifname, ip_address=None, Netmask=None):
+    return Interface().create_physical_interface(int_alias, ifname, ip_address=ip_address, Netmask=Netmask)
+
+def VirtualInterface(int_alias, ifname, ip_address, netmask):
+    return Interface().create_virtual_interface(int_alias, ifname, ip_address, netmask)
 
 class Interface(object):
 
