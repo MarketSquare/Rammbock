@@ -1,5 +1,5 @@
 *** Settings ***
-Library         ../src/Rammbock.py
+Library         rammbock.Rammbock
 
 *** Keywords ***
 WHEN Trying to Use interface which don't exist

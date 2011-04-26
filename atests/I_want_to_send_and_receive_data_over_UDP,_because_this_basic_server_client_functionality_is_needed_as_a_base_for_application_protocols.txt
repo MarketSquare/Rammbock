@@ -1,6 +1,6 @@
 *** Settings ***
 Default Tags    regression
-Library         ../src/Rammbock.py
+Library         rammbock.Rammbock
 
 *** Variables ***
 ${EXPECTED_STRING}  ismo_rulettaa
@@ -48,7 +48,7 @@ Server Receives String
 
 Connect to Server
     [Arguments]  ${host}
-    Rammbock.connect to server  ${host}  ${PORT}
+    rammbock.Rammbock.connect to server  ${host}  ${PORT}
 
 Client Sends String
     client send packet over udp  ${EXPECTED_STRING}

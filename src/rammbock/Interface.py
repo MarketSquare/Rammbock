@@ -32,13 +32,13 @@ class Interface(object):
         return self
 
     def create_physical_interface(self, int_alias, ifname, ip_address = None, Netmask = None):
-         self.ifname = ifname
-         if self.check_interface():
-              self.ifIpAddress = self.get_ip_address(ifname)
-              self.ifUp = True
-              return self
-         else:
-              raise Exception("Tried to use physical interface: "+ifname+" probably does not exist")
+        self.ifname = ifname
+        if self.check_interface():
+            self.ifIpAddress = self.get_ip_address(ifname)
+            self.ifUp = True
+            return self
+        else:
+            raise Exception("Tried to use physical interface: "+ifname+" probably does not exist")
 
     def check_interface(self):
         """Checks if interface have ip address. Returns False or True"""
@@ -61,11 +61,7 @@ class Interface(object):
         e.g. get_ip_address | eth0
         """
         command =  "/sbin/ifconfig " + ifname + " | grep inet | awk '{print $2}' | sed -e s/.*://"
-        try:
-             ipAddressList = os.popen(command).readlines()
-        except Error, e:
-             print type(e)
-             raise
+        ipAddressList = os.popen(command).readlines()
         ipAddress = "".join(ipAddressList)
         ipAddress = ipAddress.strip()
         print "ip address is:" + ipAddress
