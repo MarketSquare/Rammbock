@@ -70,7 +70,7 @@ UDP Client and Server are initialized to virtual interface
 Close Connections and remove virtual interface
     Close Client
     Close Server
-    Delete Interface  VIRTUAL_INTERFACE
+    Delete All Created Virtual Interfaces
 
 Server Modifies String
     Set Test Variable  \${RECEIVED_STRING}  ${RECEIVED_STRING}_koviten
