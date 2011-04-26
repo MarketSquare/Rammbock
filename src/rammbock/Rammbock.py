@@ -20,12 +20,10 @@ class Rammbock(object):
         self.interfaces[if_alias] = PhysicalInterface(if_alias, ifname, ip_address, netmask)
 
     def is_interface_up(self, ifname):
-        self.interfaces
         print "is_interface_up " + ifname
         return self.interfaces[ifname].check_interface()
 
     def delete_interface(self, ifname):
-        self.interfaces
         print "delete_interface " + ifname
         return self.interfaces[ifname].del_interface()
 
