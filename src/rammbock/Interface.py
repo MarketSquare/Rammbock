@@ -38,7 +38,7 @@ class Interface(object):
             virtual_if_name = ifname + ":" + str(i)
             if_ip_address = get_ip_address(virtual_if_name)
             if if_ip_address == "":
-                subprocess.Popen(["ifconfig", virtual_if_name, ip_address, "netmask", netmask])
+                subprocess.Popen(["ifconfig", virtual_if_name, ip_address, "netmask", netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 self.ifname = virtual_if_name
                 if self.check_interface():
                     self.ifIpAddress = get_ip_address(virtual_if_name)
@@ -68,5 +68,5 @@ class Interface(object):
 
     def del_interface(self):
         """Deletes this interface"""
-        os.popen("ifconfig " + self.ifname + " down")
+        subprocess.Popen(["ifconfig", self.ifname, "down"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         self.ifUp = False
