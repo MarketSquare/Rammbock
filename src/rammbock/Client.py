@@ -19,5 +19,5 @@ class Client(object):
     def receive_packet_over_udp(self):
         return self._client_socket.recv(UDP_PACKET_MAX_SIZE)     
 
-    def close_client(self):
+    def close(self):
         self._client_socket.close()

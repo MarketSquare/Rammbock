@@ -34,10 +34,10 @@ class Rammbock(object):
         self._client.establish_connection_to_server(host, port)
 
     def close_server(self):
-        self._server.close_server()
+        self._server.close()
 
     def close_client(self):
-        self._client.close_client()
+        self._client.close()
 
     def client_send_packet_over_udp(self, packet): 
         self._client.send_packet_over_udp(packet)
