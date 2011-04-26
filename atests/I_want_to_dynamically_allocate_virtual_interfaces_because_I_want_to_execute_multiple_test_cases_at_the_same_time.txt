@@ -7,13 +7,11 @@ ${PHYSICAL_INTERFACE}  eth0
 
 *** Test Cases ***
 Adding and Deleting virtual interface
-    [Tags]  ${EMPTY}
     Allocate first virtual interface dynamically
     Virtual interface is created
     Delete Virtual Interface  TEST1
 
 Adding and Deleting two dynamically allocated interfaces
-    [Tags]  ${EMPTY}
     Allocate first virtual interface dynamically
     Allocate second virtual interface dynamically
     and two virtual interfaces are created
