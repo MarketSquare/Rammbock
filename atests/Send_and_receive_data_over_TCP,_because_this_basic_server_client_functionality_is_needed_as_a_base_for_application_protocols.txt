@@ -1,3 +1,6 @@
 *** Test Cases ***
-NO TESTS
+Send and Receive packet over TCP
+    TCP Server and Client are Initialized
+
+Send and receive stream over TCP
 

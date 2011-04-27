@@ -28,7 +28,10 @@ class Rammbock(object):
 
     def delete_interface(self, ifname):
         print "delete_interface " + ifname
-        return self.interfaces[ifname].del_interface()
+        interface = self.interfaces[ifname]
+        if interface in self._virtual_interfaces:
+            self._virtual_interfaces.remove(interface)
+        return interface.del_interface()
 
     def delete_all_created_virtual_interfaces(self):
         for interface in self._virtual_interfaces:

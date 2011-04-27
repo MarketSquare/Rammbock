@@ -1,6 +1,6 @@
-import os
 import subprocess
 import re
+from random import randint
 
 def PhysicalInterface(int_alias, ifname, ip_address=None, Netmask=None):
     return Interface().create_physical_interface(int_alias, ifname, ip_address=ip_address, Netmask=Netmask)
@@ -33,22 +33,24 @@ class Interface(object):
     def create_virtual_interface(self, int_alias, ifname, ip_address, netmask):
         """ Creates interface """
         if_ip_address = "1"
-        i = 1
         while if_ip_address != "":
-            virtual_if_name = ifname + ":" + str(i)
+            virtual_if_name = ifname + ":" + str(randint(1000, 10000))
             if_ip_address = get_ip_address(virtual_if_name)
             if if_ip_address == "":
-                subprocess.Popen(["ifconfig", virtual_if_name, ip_address, "netmask", netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                process = subprocess.Popen(["ifconfig", virtual_if_name, ip_address, "netmask", netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 self.ifname = virtual_if_name
-                if self.check_interface():
+                if process.wait() == 0:
                     self.ifIpAddress = get_ip_address(virtual_if_name)
                     self.ifUp = True
                     return self
                 else:
+                    print 'WARN virtual_if_name '+virtual_if_name
+                    try:
+                        self.del_interface()
+                    except Exception:
+                        pass
                     self.ifname = ""
                     raise Exception("Creating new Virtual interface failed. Probably physical interface: "+ifname)
-            else:
-                i = i + 1
         return self
 
     def create_physical_interface(self, int_alias, ifname, ip_address = None, Netmask = None):
@@ -68,5 +70,7 @@ class Interface(object):
 
     def del_interface(self):
         """Deletes this interface"""
-        subprocess.Popen(["ifconfig", self.ifname, "down"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        self.ifUp = False
+        process = subprocess.Popen(["ifconfig", self.ifname, "down"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        self.ifUp = process.wait() != 0
+        if self.ifUp:
+            raise Exception('Could not delete interface '+self.ifname)
