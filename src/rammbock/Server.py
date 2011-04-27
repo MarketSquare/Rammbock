@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #-*- coding: iso-8859-15 -*-
-     
+#     
 import socket
 
 UDP_PACKET_MAX_SIZE = 1024
