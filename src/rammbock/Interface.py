@@ -16,6 +16,9 @@ def get_ip_address(ifname):
     """
     process = subprocess.Popen(['/sbin/ifconfig', ifname], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = process.communicate()[0]
+    return _return_ip_address_from_ifconfig_output(output)
+
+def _return_ip_address_from_ifconfig_output(output):
     for line in output.split('\n'):
         if 'inet addr:' in line:
             ipAddress = re.compile('addr\:([^\s]+)\s').search(line).group(1)
