@@ -48,7 +48,7 @@ two virtual interfaces are created
 Allocate first virtual interface dynamically
     create virtual interface  TEST1  ${PHYSICAL_INTERFACE}  1.1.1.1  255.255.255.255
 
-WHEN Try to create virtual interface to physical interface which does not exist
+Try to create virtual interface to physical interface which does not exist
     ${EXCEPTION}=  Run Keyword And Expect Error  *  create virtual Interface  WRONG_IF  foo  1.1.1.2  255.255.255.255
     Set Test Variable  ${EXCEPTION}
 

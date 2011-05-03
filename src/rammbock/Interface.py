@@ -3,10 +3,10 @@ import re
 from random import randint
 
 def PhysicalInterface(int_alias, ifname, ip_address=None, Netmask=None):
-    return Interface().create_physical_interface(int_alias, ifname, ip_address=ip_address, Netmask=Netmask)
+    return Interface()._create_physical_interface(int_alias, ifname, ip_address=ip_address, Netmask=Netmask)
 
 def VirtualInterface(int_alias, ifname, ip_address, netmask):
-    return Interface().create_virtual_interface(int_alias, ifname, ip_address, netmask)
+    return Interface()._create_virtual_interface(int_alias, ifname, ip_address, netmask)
 
 def get_ip_address(ifname):
     """
@@ -30,7 +30,7 @@ class Interface(object):
         self.ifUp = False
         self.ifIpAddress =""
 
-    def create_virtual_interface(self, int_alias, ifname, ip_address, netmask):
+    def _create_virtual_interface(self, int_alias, ifname, ip_address, netmask):
         """ Creates interface """
         if_ip_address = "1"
         while if_ip_address != "":
@@ -53,7 +53,7 @@ class Interface(object):
                     raise Exception("Creating new Virtual interface failed. Probably physical interface: "+ifname)
         return self
 
-    def create_physical_interface(self, int_alias, ifname, ip_address = None, Netmask = None):
+    def _create_physical_interface(self, int_alias, ifname, ip_address = None, Netmask = None):
         self.ifname = ifname
         if self.check_interface():
             self.ifIpAddress = get_ip_address(ifname)
