@@ -1,3 +1,4 @@
 *** Test Cases ***
-NO TEST CASES
+Create and delete two set intances of Clients and Servers
 
+Send data between multiple Client and Server instances
