@@ -13,6 +13,7 @@ class Client(object):
                      
     def establish_connection_to_server(self, host, port, ifalias):
         ifname = str(self._interfaces[ifalias].ifname)
+        print "Network interface used by client: %s" % ifname
         self._client_socket.setsockopt(socket.SOL_SOCKET, IN.SO_BINDTODEVICE, ifname + '\0')
         self._client_socket.connect((host, int(port)))
 
