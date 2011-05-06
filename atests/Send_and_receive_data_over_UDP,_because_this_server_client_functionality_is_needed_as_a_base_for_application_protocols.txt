@@ -63,7 +63,7 @@ Client Receives String Over
     Should Be Equal  ${RECEIVED_STRING}  ${EXPECTED_MODIFIED_STRING}
 
 Try to bind server to ${interface} interface
-    Start Server  ${interface}  ${PORT}
-
+    ${error}=  Run Keyword And Expect Error  *  Start Server  ${interface}  ${PORT}
+    Set Test Variable  ${EXCEPTION}  ${error}
 
 Exeception ${exception} should raise
