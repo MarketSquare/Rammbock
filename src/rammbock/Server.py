@@ -14,7 +14,10 @@ class Server(object):
 
     def server_startup(self, interface, port):
         print interface
-        host = str(self.__get_ip_address(interface))
+        try:
+            host = str(self.__get_ip_address(interface))
+        except IOError:
+            raise IOError('cannot bind server to interface: '+interface)
         print "used host address is: "+host+":"+port
         self._server_socket.bind((host, int(port)))
 

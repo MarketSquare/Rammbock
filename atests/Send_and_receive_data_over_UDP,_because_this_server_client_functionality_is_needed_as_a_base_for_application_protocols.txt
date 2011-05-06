@@ -30,9 +30,8 @@ Send data over UDP and modify it and return it back
     [Teardown]  Close Connections
 
 Try to bind server to network interface which does not exict
-    [tags]  
     Try to bind server to 'foo' interface
-    Exeception 'cannot bind server to interface: foo' should raise
+    Exeception "IOError: cannot bind server to interface: 'foo'" should raise
 
 **** Keywords ***
 
@@ -67,4 +66,4 @@ Try to bind server to ${interface} interface
     Set Test Variable  ${EXCEPTION}  ${error}
 
 Exeception ${except} should raise
-    Should Be Equal  ${EXCEPTION}  ${except}
+    Should Be Equal  "${EXCEPTION}"  ${except}
