@@ -1,0 +1,29 @@
+*** Settings ***
+Library interface
+
+*** Test Cases ***
+Create and delete alias to interface
+    Create first alias to interface 'lo'
+    Delete first alias
+
+Create and delete multiple aliases
+    Create first alias to interface 'lo'
+    Create second alias to interface 'lo'
+    Delete first alias
+    Delete second alias
+
+Transfer data trough interface aliase
+    [Setup]  Initialize server and client
+    Client Sends String
+    Server Receives String
+    [Teardown]  Close Connections
+
+*** Keywords ***
+Initialize server and client
+    Create first alias to interface 'lo'
+    Create second alias to interface 'lo'
+    Start Server  ${PHYSICAL_INTERFACE}  ${PORT}
+    rammbock.Rammbock.connect to server  ${HOST}  ${PORT}
+
+Create first alias to interface ${interface}
+    
