@@ -25,7 +25,7 @@ Send and Receive string over UDP using virtual interface
     GIVEN UDP Client and Server are initialized to virtual interface
     WHEN Client Sends String
     THEN Server Receives String
-    #[Teardown]  Close Connections and remove virtual interface
+    [Teardown]  Close Connections and remove virtual interface
 
 Send data over UDP and modify it and return it back
     [Setup]
