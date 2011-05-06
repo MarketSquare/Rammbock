@@ -41,10 +41,6 @@ Server Receives String
     Set Test Variable  \${RECEIVED_STRING}  ${RECEIVED_STRING}
     Should Be Equal  ${RECEIVED_STRING}  ${EXPECTED_STRING}
 
-Connect to Server
-    [Arguments]  ${host}  ${interface}
-    rammbock.Rammbock.connect to server  ${host}  ${PORT}   ${interface} 
-
 Client Sends String
     client send packet over udp  ${EXPECTED_STRING}
 
@@ -67,5 +63,6 @@ Client Receives String Over
     Should Be Equal  ${RECEIVED_STRING}  ${EXPECTED_MODIFIED_STRING}
 
 Try to bind server to ${interface} interface
+
 
 Exeception ${exception} should raise
