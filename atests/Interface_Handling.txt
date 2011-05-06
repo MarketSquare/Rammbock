@@ -1,6 +1,12 @@
 *** Settings ***
 Library  Interface
 
+*** Variables ***
+${1ST_ALIAS_IP}  10.0.0.1
+${1ST_ALIAS_NETMASK}  255.255.255.252
+${2ND_ALIAS_IP}  10.0.0.2
+${2ND_ALIAS_NETMASK}  255.255.255.252
+
 *** Test Cases ***
 Create and delete alias to interface
     Create first alias to interface 'lo'
@@ -25,5 +31,5 @@ Initialize server and client
     Start Server  ${PHYSICAL_INTERFACE}  ${PORT}
     rammbock.Rammbock.connect to server  ${HOST}  ${PORT}
 
-Create first alias to interface ${interface}
-    
+Create first alias to interface '${interface}'
+    ${ifname}=  create_interface_alias  ${interface}  ${1ST_ALIAS_IP}  ${1ST_ALIAS_NETMASK}

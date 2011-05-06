@@ -20,29 +20,18 @@ def __return_ip_address_from_ifconfig_output(output):
             return ipAddress
     return ''
 
-def create_interface_alias(int_alias, ifname, ip_address, netmask):
+def create_interface_alias(ifname, ip_address, netmask):
     """ Creates interface """
-    if_ip_address = "1"
-    while if_ip_address != "":
-        virtual_if_name = ifname + ":" + str(randint(1000, 10000))
-        if_ip_address = get_ip_address(virtual_if_name)
-        if if_ip_address == "":
-            process = subprocess.Popen(["ifconfig", virtual_if_name, ip_address, "netmask", netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            ifname = virtual_if_name
-            if process.wait() == 0:
-                ifIpAddress = get_ip_address(virtual_if_name)
-                ifUp = True
-                return self
-            else:
-                print 'WARN virtual_if_name '+virtual_if_name
-                #try:
-                    #self.del_interface()
-                #except Exception:
-                #    pass
-                #ifname = ""
-                #raise Exception("Creating new Virtual interface failed. Probably physical interface: "+ifname)
-    return self
-
+    virtual_if_name = ifname + ":" + str(randint(1000, 10000))
+    if_ip_address = get_ip_address(virtual_if_name)
+    if if_ip_address == "":
+        process = subprocess.Popen(["ifconfig", virtual_if_name, ip_address, "netmask", netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process.wait()
+        return virtual_if_name
+    else:
+        print 'WARN virtual_if_name '+virtual_if_name
+        raise Exception("Creating new Virtual interface failed. Probably physical interface missing: "+ifname)
+    
 def check_interface(self):
     """Checks if interface have ip address. Returns False or True"""
     ipaddress= get_ip_address(self.ifname)
