@@ -66,4 +66,5 @@ Try to bind server to ${interface} interface
     ${error}=  Run Keyword And Expect Error  *  Start Server  ${interface}  ${PORT}
     Set Test Variable  ${EXCEPTION}  ${error}
 
-Exeception ${exception} should raise
+Exeception ${except} should raise
+    Should Be Equal  ${EXCEPTION}  ${except}
