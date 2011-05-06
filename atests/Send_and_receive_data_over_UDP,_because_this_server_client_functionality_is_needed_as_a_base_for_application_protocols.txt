@@ -5,7 +5,7 @@ Library         rammbock.Rammbock
 *** Variables ***
 ${EXPECTED_STRING}  ismo_rulettaa
 ${HOST}  localhost
-${PORT}  2010
+${PORT}  3011
 ${PHYSICAL_INTERFACE}  lo
 ${VIRTUAL_HOST}  1.1.1.1
 ${RECEIVED_STRING}  ${EMPTY}
