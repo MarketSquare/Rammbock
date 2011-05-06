@@ -1,4 +1,3 @@
 *** Settings ***
 Test Teardown   Delete All Created Virtual Interfaces
-Resource        interfaces.txt
 

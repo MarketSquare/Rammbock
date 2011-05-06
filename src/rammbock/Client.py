@@ -1,20 +1,18 @@
 #!/usr/bin/python
 #-*- coding: iso-8859-15 -*-
 
-import socket, IN
+import socket
 
 UDP_PACKET_MAX_SIZE = 1024
 
 class Client(object):
 
-    def __init__(self, interfaces):
+    def __init__(self):
         self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self._interfaces = interfaces
                      
-    def establish_connection_to_server(self, host, port, ifalias):
-        ifname = str(self._interfaces[ifalias].ifname)
-        print 'Connecting to host and port: '+host+':'+port+' via network interface: '+ifname
-        self._client_socket.setsockopt(socket.SOL_SOCKET, IN.SO_BINDTODEVICE, ifname + '\0')
+    def establish_connection_to_server(self, host, port, interface = None):
+        print 'Connecting to host and port: '+host+':'+port
+        #self._client_socket.bind((host, int(port)))
         self._client_socket.connect((host, int(port)))
 
     def send_packet_over_udp(self, packet): 

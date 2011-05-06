@@ -1,45 +1,15 @@
 from Client import Client
 from Server import Server
-from rammbock.Interface import VirtualInterface, PhysicalInterface
+#from rammbock.Interface import VirtualInterface, PhysicalInterface
 
 class Rammbock(object):
 
     def __init__(self):
-        self.interfaces = {}
-        self._virtual_interfaces = set()
-        self._client = Client(self.interfaces)
-        self._server = Server(self.interfaces)
+        self._client = Client()
+        self._server = Server()
 
-    def create_virtual_interface(self, if_alias, ifname, ip_address, netmask):
-        print "create_virtual_interface " + if_alias
-        if if_alias in self.interfaces and  self.interfaces[if_alias].ifUp:
-            raise Exception('Interface "%s" already exists' % if_alias)
-        interface = VirtualInterface(if_alias, ifname, ip_address, netmask)
-        self.interfaces[if_alias] = interface
-        self._virtual_interfaces.add(interface)
-
-    def use_interface(self, if_alias, ifname, ip_address=None, netmask=None):
-        print "use_interface " + if_alias
-        self.interfaces[if_alias] = PhysicalInterface(if_alias, ifname, ip_address, netmask)
-
-    def is_interface_up(self, ifname):
-        print "is_interface_up " + ifname
-        return self.interfaces[ifname].check_interface()
-
-    def delete_interface(self, ifname):
-        print "delete_interface " + ifname
-        interface = self.interfaces[ifname]
-        if interface in self._virtual_interfaces:
-            self._virtual_interfaces.remove(interface)
-        return interface.del_interface()
-
-    def delete_all_created_virtual_interfaces(self):
-        for interface in self._virtual_interfaces:
-            interface.del_interface()
-        self._virtual_interfaces.clear()
-
-    def start_server(self, if_alias, port):
-        self._server.server_startup(if_alias, port)
+    def start_server(self, nwinterface, port):
+        self._server.server_startup(nwinterface, port)
 
     def connect_to_server(self, host, port, ifname = 'None'):
         self._client.establish_connection_to_server(host, port, ifname)
