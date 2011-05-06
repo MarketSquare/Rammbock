@@ -29,7 +29,12 @@ Send data over UDP and modify it and return it back
     AND Client Receives String Over
     [Teardown]  Close Connections
 
-*** Keywords ***
+Try to bind server to network interface which does not exict
+    [tags]  
+    Try to bind server to 'foo' interface
+    Exeception 'cannot bind server to interface: foo' should raise
+
+**** Keywords ***
 
 Server Receives String
     ${RECEIVED_STRING}=  server receive packet over udp
@@ -60,3 +65,7 @@ Server Sends Modified String
 Client Receives String Over
     ${RECEIVED_STRING}=  client receive packet over udp
     Should Be Equal  ${RECEIVED_STRING}  ${EXPECTED_MODIFIED_STRING}
+
+Try to bind server to ${interface} interface
+
+Exeception ${exception} should raise
