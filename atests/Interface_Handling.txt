@@ -13,7 +13,7 @@ Create and delete alias to interface
     Delete first alias
 
 Create and delete multiple aliases
-    #Create first alias to interface 'lo'
+    Create first alias to interface 'lo'
     Create second alias to interface 'lo'
     Delete first alias
     Delete second alias
@@ -27,7 +27,7 @@ Transfer data trough interface aliase
 *** Keywords ***
 Initialize server and client
     #Create first alias to interface 'lo'
-    Create second alias to interface 'lo'
+    #Create second alias to interface 'lo'
     Start Server  ${PHYSICAL_INTERFACE}  ${PORT}
     rammbock.Rammbock.connect to server  ${HOST}  ${PORT}
 
@@ -37,7 +37,18 @@ Create first alias to interface '${interface}'
     ${interfacestate}=  check interface  ${ifname}
     Should Be Equal  ${interfacestate}  ${True}
 
+Create second alias to interface '${interface}'
+    ${ifname}=  create_interface_alias  ${interface}  ${2ND_ALIAS_IP}  ${2ND_ALIAS_NETMASK}
+    Set Test Variable  ${2ND_ALIAS_NAME}  ${ifname}
+    ${interfacestate}=  check interface  ${ifname}
+    Should Be Equal  ${interfacestate}  ${True}
+
 Delete first alias
     Del Interface  ${1ST_ALIAS_NAME}
     ${interfacestate}=  check interface  ${1ST_ALIAS_NAME}
+    Should Be Equal  ${interfacestate}  ${False}
+
+Delete second alias
+    Del Interface  ${2ND_ALIAS_NAME}
+    ${interfacestate}=  check interface  ${2ND_ALIAS_NAME}
     Should Be Equal  ${interfacestate}  ${False}
