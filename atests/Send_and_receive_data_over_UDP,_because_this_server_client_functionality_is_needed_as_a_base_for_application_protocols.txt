@@ -20,11 +20,12 @@ Send and Receive string over UDP using physical interface
     [Teardown]  Close Connections
 
 Send and Receive string over UDP using virtual interface
+    [Tags] 
     [Setup]
     GIVEN UDP Client and Server are initialized to virtual interface
     WHEN Client Sends String
     THEN Server Receives String
-    [Teardown]  Close Connections and remove virtual interface
+    #[Teardown]  Close Connections and remove virtual interface
 
 Send data over UDP and modify it and return it back
     [Setup]
@@ -47,8 +48,8 @@ Server Receives String
     Should Be Equal  ${RECEIVED_STRING}  ${EXPECTED_STRING}
 
 Connect to Server
-    [Arguments]  ${host}
-    rammbock.Rammbock.connect to server  ${host}  ${PORT}
+    [Arguments]  ${host}  ${interface}
+    rammbock.Rammbock.connect to server  ${host}  ${PORT}   ${interface} 
 
 Client Sends String
     client send packet over udp  ${EXPECTED_STRING}
@@ -56,7 +57,7 @@ Client Sends String
 UDP Server and Client are initialized to physical interface
     use interface  PHYSICAL  ${PHYSICAL_INTERFACE}
     Server is Started  PHYSICAL
-    Connect to Server  ${HOST}
+    Connect to Server  ${HOST}  PHYSICAL
 
 Close Connections
     Close Client
@@ -65,7 +66,7 @@ Close Connections
 UDP Client and Server are initialized to virtual interface
     create virtual interface  VIRTUAL_INTERFACE  ${PHYSICAL_INTERFACE}  1.1.1.1  255.255.255.255
     Server is Started  VIRTUAL_INTERFACE
-    connect to server  ${VIRTUAL_HOST}
+    connect to server  ${VIRTUAL_HOST}  VIRTUAL_INTERFACE
 
 Close Connections and remove virtual interface
     Close Client

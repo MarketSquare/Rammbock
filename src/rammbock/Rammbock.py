@@ -7,7 +7,7 @@ class Rammbock(object):
     def __init__(self):
         self.interfaces = {}
         self._virtual_interfaces = set()
-        self._client = Client()
+        self._client = Client(self.interfaces)
         self._server = Server(self.interfaces)
 
     def create_virtual_interface(self, if_alias, ifname, ip_address, netmask):
@@ -41,8 +41,8 @@ class Rammbock(object):
     def start_server(self, if_alias, port):
         self._server.server_startup(if_alias, port)
 
-    def connect_to_server(self, host, port):
-        self._client.establish_connection_to_server(host, port)
+    def connect_to_server(self, host, port, ifname = 'None'):
+        self._client.establish_connection_to_server(host, port, ifname)
 
     def close_server(self):
         self._server.close()
