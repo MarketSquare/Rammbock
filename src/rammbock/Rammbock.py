@@ -1,6 +1,5 @@
 from Client import Client
 from Server import Server
-#from rammbock.Interface import VirtualInterface, PhysicalInterface
 
 class Rammbock(object):
 
