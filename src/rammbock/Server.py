@@ -13,7 +13,6 @@ class Server(object):
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def server_startup(self, interface, port):
-        print interface
         try:
             host = str(self.__get_ip_address(interface))
         except IOError:
@@ -38,4 +37,3 @@ class Server(object):
             0x8915,  # SIOCGIFADDR
             struct.pack('256s', ifname[:15])
         )[20:24])
-        
