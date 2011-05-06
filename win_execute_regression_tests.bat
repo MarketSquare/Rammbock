@@ -1,1 +1,2 @@
-pybot -c regression -L debug --pythonpath src\ atest
+@ECHO OFF
+pybot -c regression -L debug --pythonpath src\ atests\
