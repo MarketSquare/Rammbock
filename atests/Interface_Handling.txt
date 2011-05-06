@@ -1,5 +1,5 @@
 *** Settings ***
-Library interface
+Library  Interface
 
 *** Test Cases ***
 Create and delete alias to interface
