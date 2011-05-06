@@ -34,6 +34,10 @@ Initialize server and client
 Create first alias to interface '${interface}'
     ${ifname}=  create_interface_alias  ${interface}  ${1ST_ALIAS_IP}  ${1ST_ALIAS_NETMASK}
     Set Test Variable  ${1ST_ALIAS_NAME}  ${ifname}
-    ${interfacestate}=  check interface  ${interface}
+    ${interfacestate}=  check interface  ${ifname}
     Should Be Equal  ${interfacestate}  ${True}
-    
+
+Delete first alias
+    Del Interface  ${1ST_ALIAS_NAME}
+    ${interfacestate}=  check interface  ${1ST_ALIAS_NAME}
+    Should Be Equal  ${interfacestate}  ${False}

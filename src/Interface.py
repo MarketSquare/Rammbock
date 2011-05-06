@@ -34,9 +34,7 @@ def check_interface(ifname):
     print "ipaddress=" + ipaddress 
     return ipaddress != ""
 
-def del_interface(self):
+def del_interface(ifname):
     """Deletes this interface"""
-    process = subprocess.Popen(["ifconfig", self.ifname, "down"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    self.ifUp = process.wait() != 0
-    if self.ifUp:
-        raise Exception('Could not delete interface '+self.ifname)
+    process = subprocess.Popen(["ifconfig", ifname, "down"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process.wait()
