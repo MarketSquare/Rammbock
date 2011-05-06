@@ -33,3 +33,7 @@ Initialize server and client
 
 Create first alias to interface '${interface}'
     ${ifname}=  create_interface_alias  ${interface}  ${1ST_ALIAS_IP}  ${1ST_ALIAS_NETMASK}
+    Set Test Variable  ${1ST_ALIAS_NAME}  ${ifname}
+    ${interfacestate}=  check interface  ${interface}
+    Should Be Equal  ${interfacestate}  ${True}
+    
