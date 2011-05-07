@@ -1,4 +1,13 @@
-*** Keywords ***
+*** Variables ***
+${EXPECTED_STRING}  ismo_rulettaa
+${HOST}  localhost
+${PORT}  3011
+${PHYSICAL_INTERFACE}  lo
+${VIRTUAL_HOST}  1.1.1.1
+${RECEIVED_STRING}  ${EMPTY}
+${EXPECTED_MODIFIED_STRING}  ismo_rulettaa_koviten
+ 
+* *** Keywords ***
 
 Server Receives String
     ${RECEIVED_STRING}=  server receive packet over udp

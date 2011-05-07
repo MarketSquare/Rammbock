@@ -5,13 +5,6 @@ Resource        resources/data_transfer.txt
 Resource        resources/server_client.txt
 
 *** Variables ***
-${EXPECTED_STRING}  ismo_rulettaa
-${HOST}  localhost
-${PORT}  3011
-${PHYSICAL_INTERFACE}  lo
-${VIRTUAL_HOST}  1.1.1.1
-${RECEIVED_STRING}  ${EMPTY}
-${EXPECTED_MODIFIED_STRING}  ismo_rulettaa_koviten
 
 *** Test Cases ***
 Send and Receive string over UDP using physical interface
