@@ -2,8 +2,7 @@
 #-*- coding: iso-8859-15 -*-
 #     
 import socket
-import fcntl
-import struct
+import rammbocksocket
 
 UDP_PACKET_MAX_SIZE = 1024
 
@@ -14,7 +13,7 @@ class Server(object):
 
     def server_startup(self, interface, port):
         try:
-            host = str(self.__get_ip_address(interface))
+            host = str(rammbocksocket._get_ip_address(self._server_socket, interface))
         except IOError:
             raise IOError('cannot bind server to interface: '+interface)
         print "used host address is: "+host+":"+port
@@ -30,10 +29,3 @@ class Server(object):
     def close(self):
         self._server_socket.close()
 
-    def __get_ip_address(self, ifname):
-        ifname=str(ifname)
-        return socket.inet_ntoa(fcntl.ioctl(
-            self._server_socket.fileno(),
-            0x8915,  # SIOCGIFADDR
-            struct.pack('256s', ifname[:15])
-        )[20:24])

@@ -10,7 +10,7 @@ class Rammbock(object):
     def start_server(self, nwinterface, port):
         self._server.server_startup(nwinterface, port)
 
-    def connect_to_server(self, host, port, ifname = 'None'):
+    def connect_to_server(self, host, port, ifname = False):
         self._client.establish_connection_to_server(host, port, ifname)
 
     def close_server(self):
