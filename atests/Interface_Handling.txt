@@ -28,14 +28,14 @@ Transfer data trough interface aliases
     Server Modifies String
     Server Sends Modified String
     Client Receives String Over
-    [Teardown]  Close Connections
+    [Teardown]  Close Connections and delete interfaces
 
 *** Keywords ***
 Initialize server and client
-    #Create first alias to interface 'lo'
-    #Create second alias to interface 'lo'
-    Start Server  ${PHYSICAL_INTERFACE}  ${PORT}
-    rammbock.Rammbock.connect to server  ${HOST}  ${PORT}
+    Create first alias to interface 'lo'
+    Create second alias to interface 'lo'
+    Start Server  ${1ST_ALIAS_NAME}  ${PORT}
+    rammbock.Rammbock.connect to server  ${1ST_ALIAS_IP}  ${PORT}  
 
 Create first alias to interface '${interface}'
     ${ifname}=  create_interface_alias  ${interface}  ${1ST_ALIAS_IP}  ${1ST_ALIAS_NETMASK}
@@ -58,3 +58,8 @@ Delete second alias
     Del Interface  ${2ND_ALIAS_NAME}
     ${interfacestate}=  check interface  ${2ND_ALIAS_NAME}
     Should Be Equal  ${interfacestate}  ${False}
+    
+Close Connections and delete interfaces
+    Close Connections
+    Delete first alias
+    Delete second alias
