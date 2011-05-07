@@ -17,8 +17,6 @@ class Client(object):
         if interface:
             ownhost = str(rammbocksocket._get_ip_address(self._client_socket, interface))
             self._client_socket.bind((ownhost, int(port)))
-        else:
-            print "jee"
         self._client_socket.connect((host, int(port)))
 
     def send_packet_over_udp(self, packet): 
