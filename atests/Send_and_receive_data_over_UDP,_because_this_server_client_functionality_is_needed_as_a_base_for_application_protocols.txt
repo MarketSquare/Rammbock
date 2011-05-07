@@ -2,6 +2,7 @@
 Default Tags    regression
 Library         rammbock.Rammbock
 Resource        resources/data_transfer.txt
+Resource        resources/server_client.txt
 
 *** Variables ***
 ${EXPECTED_STRING}  ismo_rulettaa
@@ -35,15 +36,6 @@ Try to bind server to network interface which does not exict
     Exeception "IOError: cannot bind server to interface: 'foo'" should raise
 
 **** Keywords ***
-
-UDP Server and Client are initialized
-    Start Server  ${PHYSICAL_INTERFACE}  ${PORT}
-    rammbock.Rammbock.connect to server  ${HOST}  ${PORT}
-
-Close Connections
-    Close Client
-    Close Server
-
 Try to bind server to ${interface} interface
     ${error}=  Run Keyword And Expect Error  *  Start Server  ${interface}  ${PORT}
     Set Test Variable  ${EXCEPTION}  ${error}

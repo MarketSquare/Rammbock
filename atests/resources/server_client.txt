@@ -1,0 +1,10 @@
+*** Keywords ***
+
+UDP Server and Client are initialized
+    Start Server  ${PHYSICAL_INTERFACE}  ${PORT}
+    rammbock.Rammbock.connect to server  ${HOST}  ${PORT}
+
+Close Connections
+    Close Client
+    Close Server
+
