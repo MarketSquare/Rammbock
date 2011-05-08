@@ -34,8 +34,8 @@ Transfer data trough interface aliases
 Initialize server and client
     Create first alias to interface 'lo'
     Create second alias to interface 'lo'
-    Start Server  ${1ST_ALIAS_NAME}  ${PORT}
-    rammbock.Rammbock.connect to server  ${1ST_ALIAS_IP}  ${PORT}  ${2ND_ALIAS_NAME}
+    Start UDP Server  ${1ST_ALIAS_NAME}  ${PORT}
+    connect to UDP server  ${1ST_ALIAS_IP}  ${PORT}  ${2ND_ALIAS_NAME}
 
 Create first alias to interface '${interface}'
     ${ifname}=  create_interface_alias  ${interface}  ${1ST_ALIAS_IP}  ${1ST_ALIAS_NETMASK}

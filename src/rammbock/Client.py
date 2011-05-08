@@ -11,7 +11,7 @@ class Client(object):
     def __init__(self):
         self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                      
-    def establish_connection_to_server(self, host, port, interface):
+    def establish_connection_to_server(self, host, port, transprt, interface):
         print 'Connecting to host and port: '+host+':'+port
         print interface
         if interface:

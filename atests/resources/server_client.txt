@@ -1,8 +1,8 @@
 *** Keywords ***
 
 UDP Server and Client are initialized
-    Start Server  ${PHYSICAL_INTERFACE}  ${PORT}
-    rammbock.Rammbock.connect to server  ${HOST}  ${PORT}
+    Start UDP Server  ${PHYSICAL_INTERFACE}  ${PORT}
+    Connect to UDP server  ${HOST}  ${PORT}
 
 Close Connections
     Close Client

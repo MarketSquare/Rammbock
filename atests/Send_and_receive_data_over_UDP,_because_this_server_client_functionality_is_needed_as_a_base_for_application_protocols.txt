@@ -30,7 +30,7 @@ Try to bind server to network interface which does not exict
 
 **** Keywords ***
 Try to bind server to ${interface} interface
-    ${error}=  Run Keyword And Expect Error  *  Start Server  ${interface}  ${PORT}
+    ${error}=  Run Keyword And Expect Error  *  Start UDP Server  ${interface}  ${PORT}
     Set Test Variable  ${EXCEPTION}  ${error}
 
 Exeception "${except}" should raise
