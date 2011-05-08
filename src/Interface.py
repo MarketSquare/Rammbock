@@ -15,6 +15,8 @@ def get_ip_address(ifname):
 def create_interface_alias(ifname, ip_address, netmask):
     """ Creates interface """
     virtual_if_name = ifname + ":" + str(randint(1, 10000))
+    while check_interface(virtual_if_name): 
+        virtual_if_name = ifname + ":" + str(randint(1, 10000))
     print "ifconfig", virtual_if_name, ip_address, "netmask", netmask
     process = subprocess.Popen(["ifconfig", virtual_if_name, ip_address, "netmask", netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process.wait()
