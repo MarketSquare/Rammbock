@@ -1,6 +1,22 @@
+*** Settings ***
+Library         rammbock.Rammbock
+Resource        resources/data_transfer.txt
+Resource        resources/server_client.txt
+Test Setup      TCP Server and Client are Initialized
+Test Teardown   Close Connections
+ 
 *** Test Cases ***
-Send and Receive packet over TCP
-    TCP Server and Client are Initialized
+Send packet from Client to Server
+    Client Sends packet
+    Server Receives packet
+
+Send packet from Client to Server and return it back
+    Client Sends packet
+    Server Receives packet
+    Server send packet
+    Client receives packet
 
 Send and receive stream over TCP
-
+    Send packet stream from Client to Server
+    Modify packet data inside the stream
+    Send modified data over packet stream from Server to Client
