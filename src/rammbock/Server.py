@@ -5,6 +5,7 @@ import socket
 import rammbocksocket
 
 UDP_PACKET_MAX_SIZE = 1024
+NUMBER_OF_TCP_CONNECTIONS = 1
 
 class Server(object):
 
@@ -16,6 +17,8 @@ class Server(object):
             raise IOError('cannot bind server to interface: '+interface)
         print "used host address is: "+host+":"+port
         self._server_socket.bind((host, int(port)))
+        if trsprot == 'TCP':
+            self._server_socket.listen(NUMBER_OF_TCP_CONNECTIONS)
 
     def receive_packet_over_udp(self):
         data, self._address = self._server_socket.recvfrom(UDP_PACKET_MAX_SIZE)
