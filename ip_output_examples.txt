@@ -9,4 +9,10 @@ eth0      Link encap:Ethernet  HWaddr 00:26:2d:fa:d6:c2
           RX bytes:229201597 (229.2 MB)  TX bytes:6137271 (6.1 MB)
           Memory:f2600000-f2620000
 
+Winukka:
+Ethernet adapter Local Area Connection:
 
+        Connection-specific DNS Suffix  . : emea.nsn-net.net
+        IP Address. . . . . . . . . . . . : 10.144.27.102
+        Subnet Mask . . . . . . . . . . . : 255.255.255.0
+        Default Gateway . . . . . . . . . : 10.144.27.1
