@@ -34,8 +34,8 @@ def del_interface(ifname):
     
 def __return_ip_address_from_ifconfig_output(output):
     for line in output.split('\n'):
-        if 'inet addr:' in line:
-            ipAddress = re.compile('addr\:([^\s]+)\s').search(line).group(1)
+        if 'inet ' in line or 'IP Address' in line:
+            ipAddress = re.match(r'.*?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', line).group(1) 
             print "ip address is:" + ipAddress
             return ipAddress
     return ''
