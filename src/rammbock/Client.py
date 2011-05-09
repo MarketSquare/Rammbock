@@ -8,10 +8,8 @@ UDP_PACKET_MAX_SIZE = 1024
 
 class Client(object):
 
-    def __init__(self):
-        self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
     def establish_connection_to_server(self, host, port, transprt, interface):
+        self.__setup_transport_protocol(transprt)
         print 'Connecting to host and port: '+host+':'+port
         print interface
         if interface:
@@ -27,3 +25,11 @@ class Client(object):
 
     def close(self):
         self._client_socket.close()
+        
+    def __setup_transport_protocol(self, trsprot):
+        if trsprot == 'UDP':
+            self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        elif trsprot == 'TCP':
+            self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        else:
+            raise Exception('wrong transport protocol:'+trsprot )

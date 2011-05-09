@@ -16,6 +16,9 @@ class Rammbock(object):
     def connect_to_udp_server(self, host, port, ifname = False):
         self._client.establish_connection_to_server(host, port, 'UDP', ifname)
 
+    def connect_to_tcp_server(self, host, port, ifname = False):
+        self._client.establish_connection_to_server(host, port, 'TCP', ifname)
+
     def close_server(self):
         self._server.close()
 
