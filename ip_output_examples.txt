@@ -17,8 +17,6 @@ Ethernet adapter Local Area Connection:
         Subnet Mask . . . . . . . . . . . : 255.255.255.0
         Default Gateway . . . . . . . . . : 10.144.27.1
 
-
-
 OSX:
 lo0: flags=8049<UP,LOOPBACK,RUNNING,MULTICAST> mtu 16384
 	inet6 ::1 prefixlen 128 
