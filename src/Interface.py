@@ -14,9 +14,7 @@ def get_ip_address(ifname):
 
 def create_interface_alias(ifname, ip_address, netmask):
     """ Creates interface """
-    virtual_if_name = ifname + ":" + str(randint(1, 10000))
-    while check_interface(virtual_if_name): 
-        virtual_if_name = ifname + ":" + str(randint(1, 10000))
+    virtual_if_name = __get_free_interface_alias(ifname)
     print "ifconfig", virtual_if_name, ip_address, "netmask", netmask
     process = subprocess.Popen(["ifconfig", virtual_if_name, ip_address, "netmask", netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process.wait()
@@ -26,8 +24,8 @@ def check_interface(ifname):
     """Checks if interface have ip address. Returns False or True"""
     ipaddress= get_ip_address(ifname)
     print "ipaddress=" + ipaddress 
-    return ipaddress != ""
 
+    return ipaddress != ""
 def del_interface(ifname):
     """Deletes this interface"""
     print "ifconfig", ifname, "down"
@@ -41,3 +39,11 @@ def __return_ip_address_from_ifconfig_output(output):
             print "ip address is:" + ipAddress
             return ipAddress
     return ''
+
+def __get_free_interface_alias(ifname):
+    while True:
+        virtual_if_name = ifname + ":" + str(randint(1, 10000))
+        if not check_interface(virtual_if_name):
+            return virtual_if_name
+
+
