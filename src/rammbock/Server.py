@@ -11,7 +11,7 @@ class Server(object):
     def __init__(self): 
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    def server_startup(self, interface, port):
+    def server_startup(self, interface, port, trsprot):
         try:
             host = str(rammbocksocket._get_ip_address(self._server_socket, interface))
         except IOError:
