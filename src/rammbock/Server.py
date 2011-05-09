@@ -8,10 +8,8 @@ UDP_PACKET_MAX_SIZE = 1024
 
 class Server(object):
 
-    def __init__(self): 
-        self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
     def server_startup(self, interface, port, trsprot):
+        self.__setup_transport_protocol(trsprot)
         try:
             host = str(rammbocksocket._get_ip_address(self._server_socket, interface))
         except IOError:
@@ -29,3 +27,10 @@ class Server(object):
     def close(self):
         self._server_socket.close()
 
+    def __setup_transport_protocol(self, trsprot):
+        if trsprot == 'UDP':
+            self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        elif trsprot == 'TCP':
+            self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        else:
+            raise Exception('wrong transport protocol:'+trsprot )
