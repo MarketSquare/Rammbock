@@ -13,7 +13,7 @@ class Rammbock(object):
     def start_tcp_server(self, nwinterface, port):
         self._server.server_startup(nwinterface, port, 'TCP')
     
-    def accpet_tcp_connection(self):
+    def accept_tcp_connection(self):
         self._server.establish_tcp_connection()
 
     def connect_to_udp_server(self, host, port, ifname = False):
