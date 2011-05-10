@@ -18,7 +18,7 @@ class Server(object):
 
     def server_startup(self, interface, port, trsprot):
         self.transport_protocol = trsprot
-        self.__setup_transport_protocol(trsprot)
+        self._setup_transport_protocol(trsprot)
         host = str(Interface.get_ip_address(interface))
         if host == '':
             raise IOError('cannot bind server to interface: '+interface)
@@ -51,7 +51,7 @@ class Server(object):
     def close(self):
         self._server_socket.close()
 
-    def __setup_transport_protocol(self, trsprot):
+    def _setup_transport_protocol(self, trsprot):
         if trsprot == 'UDP':
             self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         elif trsprot == 'TCP':
