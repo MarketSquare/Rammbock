@@ -12,7 +12,6 @@ Send packet from Client to Server
     Server Receives packet
 
 Send packet from Client to Server and return it back
-    [Tags] 
     Client Sends packet
     Server Receives packet
     Server send packet
