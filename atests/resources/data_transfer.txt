@@ -47,3 +47,9 @@ Send packet stream from Client to Server
     client send packet over tcp  ${data}
     ${rcv_data}=  server receive packet over tcp
     Should be equal  ${data}  ${rcv_data}
+    
+Send packet stream from Server to Client
+    ${data}=   Evaluate   'robot rules, ok? '* 3000
+    Server send packet over tcp  ${data}
+    ${rcv_data}=  client receive packet over tcp
+    Should be equal  ${data}  ${rcv_data}
