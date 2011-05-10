@@ -18,6 +18,5 @@ Send packet from Client to Server and return it back
     Client receives packet
 
 Send and receive stream over TCP
-    [Tags] 
     Send packet stream from Client to Server
     Send packet stream from Server to Client
