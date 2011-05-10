@@ -47,6 +47,9 @@ class Server(object):
             self._server_socket.sendto(packet, self._address)
         elif self.transport_protocol == 'TCP':
             self.connection.send(packet)
+        else:
+            raise Exception('wrong transport protocol:'+self.transport_protocol )
+
             
     def close(self):
         self._server_socket.close()
