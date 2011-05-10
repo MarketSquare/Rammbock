@@ -39,6 +39,3 @@ class Rammbock(object):
 
     def server_sends_data(self, packet): 
         self._server.send_data(packet)
-
-    def server_send_packet_over_tcp(self, packet): 
-        self._server.send_packet_over_tcp(packet)

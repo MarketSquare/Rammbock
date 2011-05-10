@@ -47,11 +47,7 @@ class Server(object):
             self._server_socket.sendto(packet, self._address)
         elif self.transport_protocol == 'TCP':
             self.connection.send(packet)
-
-
-    def send_packet_over_tcp(self, packet):
-        self.connection.send(packet)
-
+            
     def close(self):
         self._server_socket.close()
 
