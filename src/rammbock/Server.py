@@ -2,8 +2,8 @@
 #-*- coding: iso-8859-15 -*-
 #     
 import socket
-import rammbocksocket
 CONNECTION = None
+import Interface
 
 UDP_PACKET_MAX_SIZE = 1024
 TCP_PACKET_MAX_SIZE = 100000
@@ -12,11 +12,13 @@ NUMBER_OF_TCP_CONNECTIONS = 1
 class Server(object):
     connection = None
 
+    def __init__(self): 
+        self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
     def server_startup(self, interface, port, trsprot):
         self.__setup_transport_protocol(trsprot)
-        try:
-            host = str(rammbocksocket._get_ip_address(self._server_socket, interface))
-        except IOError:
+        host = str(Interface.get_ip_address(interface))
+	if host == '':
             raise IOError('cannot bind server to interface: '+interface)
         print "used host address is: "+host+":"+port
         self._server_socket.bind((host, int(port)))
