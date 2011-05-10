@@ -8,11 +8,11 @@ Default Tags    regression
  
 *** Test Cases ***
 Send packet from Client to Server
-    Client Sends packet
+    Client Tranfers Data
     Server Receives packet
 
 Send packet from Client to Server and return it back
-    Client Sends packet
+    Client Tranfers Data
     Server Receives packet
     Server send packet
     Client receives packet
