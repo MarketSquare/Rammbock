@@ -36,7 +36,7 @@ class Server(object):
             return data
         elif self.transport_protocol == 'TCP':
             while 1:
-                data = self.connection.recv(100000)
+                data = self.connection.recv(TCP_PACKET_MAX_SIZE)
                 if not data: break
                 return data
         else:
