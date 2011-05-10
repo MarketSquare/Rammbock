@@ -11,14 +11,14 @@ Send and Receive string over UDP using physical interface
     [Setup]
     UDP Server and Client are initialized
     Client Tranfers Data
-    Server Receives Data
+    Server Gets Data
     [Teardown]  Close Connections
 
 Send data over UDP and modify it and return it back
     [Setup]
     UDP Server and Client are initialized
     Client Tranfers Data
-    Server Receives Data
+    Server Gets Data
     Server Modifies Data
     Server Sends Modified Data
     Client Receives Data
