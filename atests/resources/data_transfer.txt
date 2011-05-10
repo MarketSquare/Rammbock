@@ -42,7 +42,7 @@ Send packet stream from Client to Server
     ${data}=   Evaluate   'ismo_rulettaa '* 3000
     log  ${data}
     client sends data  ${data}
-    ${rcv_data}=  server receive packet over tcp
+    ${rcv_data}=  server receives data
     Should be equal  ${data}  ${rcv_data}
     
 Send packet stream from Server to Client

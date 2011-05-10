@@ -42,13 +42,6 @@ class Server(object):
         else:
             raise Exception('Unknown Transport Protocol: '+self.transport_protocol)
 
-
-    def receive_packet_over_tcp(self):
-        while 1:
-            data = self.connection.recv(100000)
-            if not data: break
-            return data
-        
     def send_packet_over_udp(self, packet):
         self._server_socket.sendto(packet, self._address)
 
