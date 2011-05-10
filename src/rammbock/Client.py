@@ -30,12 +30,8 @@ class Client(object):
                 data = self._client_socket.recv(TCP_PACKET_MAX_SIZE)
                 if not data: break
                 return data
-
-    def receive_packet_over_tcp(self):
-            while 1:
-                data = self._client_socket.recv(TCP_PACKET_MAX_SIZE)
-                if not data: break
-                return data
+        else:
+            raise Exception('Unknown Transport Protocol: '+self.transport_protocol)
 
     def close(self):
         self._client_socket.close()
