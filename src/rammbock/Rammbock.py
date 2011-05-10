@@ -28,7 +28,7 @@ class Rammbock(object):
     def close_client(self):
         self._client.close()
 
-    def client_send_packet_over_udp(self, packet): 
+    def client_sends_data(self, packet): 
         self._client.send_packet(packet)
 
     def server_receive_packet_over_udp(self):

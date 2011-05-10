@@ -23,7 +23,7 @@ Create and delete multiple aliases
 
 Transfer data trough interface aliases
     [Setup]  Initialize server and client
-    Client Sends Data
+    Client Tranfers Data
     Server Receives Data
     Server Modifies Data
     Server Sends Modified Data
