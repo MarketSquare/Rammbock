@@ -27,9 +27,6 @@ Server Sends Modified Data
 Client Receives Data
     ${RECEIVED_STRING}=  client receive packet over udp
     Should Be Equal  ${RECEIVED_STRING}  ${EXPECTED_MODIFIED_STRING}
-    
-Client Sends packet
-    client sends data  ${EXPECTED_STRING}
 
 Server Receives packet
     ${data} =  server receive packet over tcp
