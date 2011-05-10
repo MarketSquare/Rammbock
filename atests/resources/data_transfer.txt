@@ -7,13 +7,13 @@ ${VIRTUAL_HOST}  1.1.1.1
 ${RECEIVED_STRING}  ${EMPTY}
 ${EXPECTED_MODIFIED_STRING}  ismo_rulettaa_koviten
  
-* *** Keywords ***
+*** Keywords ***
 
 Client Tranfers Data
     client sends data  ${EXPECTED_STRING}
 
 Server Gets Data
-    ${RECEIVED_STRING}=  server receive packet over udp
+    ${RECEIVED_STRING}=  server receives data
     Set Test Variable  \${RECEIVED_STRING}  ${RECEIVED_STRING}
     Should Be Equal  ${RECEIVED_STRING}  ${EXPECTED_STRING}
 
