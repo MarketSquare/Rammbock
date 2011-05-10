@@ -23,8 +23,8 @@ Server Modifies Data
 Server Sends Modified Data
     server send packet over udp  ${RECEIVED_STRING}
 
-Client Receives Data
-    ${RECEIVED_STRING}=  client receive packet over udp
+Client Gets Data
+    ${RECEIVED_STRING}=  client receives data
     Should Be Equal  ${RECEIVED_STRING}  ${EXPECTED_MODIFIED_STRING}
 
 Server Receives packet

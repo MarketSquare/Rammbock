@@ -27,7 +27,7 @@ Transfer data trough interface aliases
     Server Gets Data
     Server Modifies Data
     Server Sends Modified Data
-    Client Receives Data
+    Client Gets Data
     [Teardown]  Close Connections and delete interfaces
 
 *** Keywords ***

@@ -21,7 +21,7 @@ Send data over UDP and modify it and return it back
     Server Gets Data
     Server Modifies Data
     Server Sends Modified Data
-    Client Receives Data
+    Client Gets Data
     [Teardown]  Close Connections
 
 Try to bind server to network interface which does not exict
