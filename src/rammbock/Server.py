@@ -50,7 +50,6 @@ class Server(object):
         else:
             raise Exception('wrong transport protocol:'+self.transport_protocol )
 
-            
     def close(self):
         self._server_socket.close()
 

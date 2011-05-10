@@ -7,6 +7,7 @@ import Interface
 UDP_PACKET_MAX_SIZE = 1024
 TCP_PACKET_MAX_SIZE = 100000
 
+
 class Client(object):
     transport_protocol = None
     
