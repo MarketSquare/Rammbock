@@ -26,3 +26,11 @@ Server Sends Modified String
 Client Receives String Over
     ${RECEIVED_STRING}=  client receive packet over udp
     Should Be Equal  ${RECEIVED_STRING}  ${EXPECTED_MODIFIED_STRING}
+    
+Client Sends packet
+    client send packet over tcp  ${EXPECTED_STRING}
+
+Server Receives packet
+    ${data} =  server receive packet over tcp
+    Should be equal  ${data}  ${EXPECTED_STRING}
+
