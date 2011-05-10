@@ -34,3 +34,9 @@ Server Receives packet
     ${data} =  server receive packet over tcp
     Should be equal  ${data}  ${EXPECTED_STRING}
 
+Server send packet
+    server send packet over tcp  ${EXPECTED_MODIFIED_STRING}
+
+Client receives packet
+    ${data}=  client receive packet over tcp
+    Should be equal  ${data}  ${EXPECTED_MODIFIED_STRING}

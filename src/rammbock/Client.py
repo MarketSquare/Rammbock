@@ -5,6 +5,7 @@ import socket
 import Interface
 
 UDP_PACKET_MAX_SIZE = 1024
+TCP_PACKET_MAX_SIZE = 100000
 
 class Client(object):
 
@@ -22,6 +23,9 @@ class Client(object):
 
     def receive_packet_over_udp(self):
         return self._client_socket.recv(UDP_PACKET_MAX_SIZE)     
+
+    def receive_packet_over_tcp(self):
+        return self._client_socket.recv(TCP_PACKET_MAX_SIZE)     
 
     def close(self):
         self._client_socket.close()

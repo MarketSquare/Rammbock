@@ -46,3 +46,8 @@ class Rammbock(object):
     def server_receive_packet_over_tcp(self):
         return self._server.receive_packet_over_tcp()
 
+    def server_send_packet_over_tcp(self, packet): 
+        self._server.send_packet_over_tcp(packet)
+
+    def client_receive_packet_over_tcp(self):
+        return self._client.receive_packet_over_tcp()

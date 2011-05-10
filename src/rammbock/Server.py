@@ -18,7 +18,7 @@ class Server(object):
     def server_startup(self, interface, port, trsprot):
         self.__setup_transport_protocol(trsprot)
         host = str(Interface.get_ip_address(interface))
-	if host == '':
+        if host == '':
             raise IOError('cannot bind server to interface: '+interface)
         print "used host address is: "+host+":"+port
         self._server_socket.bind((host, int(port)))
@@ -36,9 +36,11 @@ class Server(object):
         data = self.connection.recv(TCP_PACKET_MAX_SIZE)
         return data
 
-
     def send_packet_over_udp(self, packet):
         self._server_socket.sendto(packet, self._address)
+
+    def send_packet_over_tcp(self, packet):
+        self.connection.send(packet)
 
     def close(self):
         self._server_socket.close()
