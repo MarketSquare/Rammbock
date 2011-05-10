@@ -17,8 +17,8 @@ class Client(object):
             self._client_socket.bind((ownhost, int(port)))
         self._client_socket.connect((host, int(port)))
 
-    def send_packet_over_udp(self, packet): 
-        self._client_socket.send(packet) # send test string
+    def send_packet(self, packet): 
+        self._client_socket.send(packet)
 
     def receive_packet_over_udp(self):
         return self._client_socket.recv(UDP_PACKET_MAX_SIZE)     

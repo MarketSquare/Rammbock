@@ -3,6 +3,7 @@
 #     
 import socket
 import rammbocksocket
+CONNECTION = None
 
 UDP_PACKET_MAX_SIZE = 1024
 NUMBER_OF_TCP_CONNECTIONS = 1
@@ -20,9 +21,18 @@ class Server(object):
         if trsprot == 'TCP':
             self._server_socket.listen(NUMBER_OF_TCP_CONNECTIONS)
 
+    def establish_tcp_connection(self):
+            connection, address = self._server_socket.accept()
+
+
     def receive_packet_over_udp(self):
         data, self._address = self._server_socket.recvfrom(UDP_PACKET_MAX_SIZE)
         return data
+
+    def receive_packet_over_tcp(self):
+        data, self._address = self._server_socket.recv
+        return data
+
 
     def send_packet_over_udp(self, packet):
         self._server_socket.sendto(packet, self._address)

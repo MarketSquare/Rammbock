@@ -12,6 +12,9 @@ class Rammbock(object):
 
     def start_tcp_server(self, nwinterface, port):
         self._server.server_startup(nwinterface, port, 'TCP')
+    
+    def accpet_tcp_connection(self):
+        self._server.establish_tcp_connection()
 
     def connect_to_udp_server(self, host, port, ifname = False):
         self._client.establish_connection_to_server(host, port, 'UDP', ifname)
@@ -26,7 +29,7 @@ class Rammbock(object):
         self._client.close()
 
     def client_send_packet_over_udp(self, packet): 
-        self._client.send_packet_over_udp(packet)
+        self._client.send_packet(packet)
 
     def server_receive_packet_over_udp(self):
         return self._server.receive_packet_over_udp()
@@ -36,3 +39,10 @@ class Rammbock(object):
 
     def client_receive_packet_over_udp(self):
         return self._client.receive_packet_over_udp()
+
+    def client_send_packet_over_tcp(self, packet): 
+        self._client.send_packet(packet)
+
+    def server_receive_packet_over_tcp(self):
+        return self._server.receive_packet_over_tcp()
+
