@@ -23,11 +23,3 @@ Send and receive stream over TCP
     Send packet stream from Client to Server
     Modify packet data inside the stream
     Send modified data over packet stream from Server to Client
-    
-*** Keywords ***
-Client Sends packet
-    client send packet over tcp  jee
-
-Server Receives packet
-    ${data} =  server receive packet over tcp
-    Should be equal  ${data}  jee
