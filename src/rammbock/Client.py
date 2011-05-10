@@ -14,7 +14,7 @@ class Client(object):
         print 'Connecting to host and port: '+host+':'+port
         print interface
         if interface:
-            ownhost = str(Interface.get_ip_address('interface'))
+            ownhost = str(Interface.get_ip_address(interface))
             self._client_socket.bind((ownhost, int(port)))
         self._client_socket.connect((host, int(port)))
 
