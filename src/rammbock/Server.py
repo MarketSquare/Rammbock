@@ -3,6 +3,7 @@
 #     
 import socket
 import rammbocksocket
+import Interface
 
 UDP_PACKET_MAX_SIZE = 1024
 
@@ -12,9 +13,8 @@ class Server(object):
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def server_startup(self, interface, port):
-        try:
-            host = str(rammbocksocket._get_ip_address(self._server_socket, interface))
-        except IOError:
+        host = str(Interface.get_ip_address(interface))
+	if host == '':
             raise IOError('cannot bind server to interface: '+interface)
         print "used host address is: "+host+":"+port
         self._server_socket.bind((host, int(port)))

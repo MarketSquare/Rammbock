@@ -26,6 +26,7 @@ def check_interface(ifname):
     print "ipaddress=" + ipaddress 
 
     return ipaddress != ""
+
 def del_interface(ifname):
     """Deletes this interface"""
     print "ifconfig", ifname, "down"
