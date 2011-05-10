@@ -21,7 +21,7 @@ Server Modifies Data
     Set Test Variable  \${RECEIVED_STRING}  ${RECEIVED_STRING}_koviten
 
 Server Sends Modified Data
-    server send packet over udp  ${RECEIVED_STRING}
+    server sends data  ${RECEIVED_STRING}
 
 Client Gets Data
     ${RECEIVED_STRING}=  client receives data
