@@ -35,7 +35,7 @@ Server send packet
     server send packet over tcp  ${EXPECTED_MODIFIED_STRING}
 
 Client receives packet
-    ${data}=  client receive packet over tcp
+    ${data}=  client receives data
     Should be equal  ${data}  ${EXPECTED_MODIFIED_STRING}
     
 Send packet stream from Client to Server
@@ -48,5 +48,5 @@ Send packet stream from Client to Server
 Send packet stream from Server to Client
     ${data}=   Evaluate   'robot rules, ok? '* 3000
     Server send packet over tcp  ${data}
-    ${rcv_data}=  client receive packet over tcp
+    ${rcv_data}=  client receives data
     Should be equal  ${data}  ${rcv_data}
