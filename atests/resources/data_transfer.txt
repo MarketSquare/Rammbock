@@ -29,7 +29,7 @@ Client Receives Data
     Should Be Equal  ${RECEIVED_STRING}  ${EXPECTED_MODIFIED_STRING}
     
 Client Sends packet
-    client send packet over tcp  ${EXPECTED_STRING}
+    client sends data  ${EXPECTED_STRING}
 
 Server Receives packet
     ${data} =  server receive packet over tcp
