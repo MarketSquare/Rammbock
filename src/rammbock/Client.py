@@ -2,7 +2,7 @@
 #-*- coding: iso-8859-15 -*-
 
 import socket
-import rammbocksocket
+import Interface
 
 UDP_PACKET_MAX_SIZE = 1024
 
@@ -13,7 +13,7 @@ class Client(object):
         print 'Connecting to host and port: '+host+':'+port
         print interface
         if interface:
-            ownhost = str(rammbocksocket._get_ip_address(self._client_socket, interface))
+            ownhost = str(Interface.get_ip_address('interface'))
             self._client_socket.bind((ownhost, int(port)))
         self._client_socket.connect((host, int(port)))
 
