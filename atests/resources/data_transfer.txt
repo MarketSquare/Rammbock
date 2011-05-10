@@ -9,21 +9,21 @@ ${EXPECTED_MODIFIED_STRING}  ismo_rulettaa_koviten
  
 * *** Keywords ***
 
-Server Receives String
+Server Receives Data
     ${RECEIVED_STRING}=  server receive packet over udp
     Set Test Variable  \${RECEIVED_STRING}  ${RECEIVED_STRING}
     Should Be Equal  ${RECEIVED_STRING}  ${EXPECTED_STRING}
 
-Client Sends String
+Client Sends Data
     client send packet over udp  ${EXPECTED_STRING}
 
-Server Modifies String
+Server Modifies Data
     Set Test Variable  \${RECEIVED_STRING}  ${RECEIVED_STRING}_koviten
 
-Server Sends Modified String
+Server Sends Modified Data
     server send packet over udp  ${RECEIVED_STRING}
 
-Client Receives String Over
+Client Receives Data
     ${RECEIVED_STRING}=  client receive packet over udp
     Should Be Equal  ${RECEIVED_STRING}  ${EXPECTED_MODIFIED_STRING}
     

@@ -9,19 +9,19 @@ Resource        resources/server_client.txt
 *** Test Cases ***
 Send and Receive string over UDP using physical interface
     [Setup]
-    GIVEN UDP Server and Client are initialized
-    WHEN Client Sends String
-    THEN Server Receives String
+    UDP Server and Client are initialized
+    Client Sends Data
+    Server Receives Data
     [Teardown]  Close Connections
 
 Send data over UDP and modify it and return it back
     [Setup]
-    GIVEN UDP Server and Client are initialized
-    WHEN Client Sends String
-    THEN Server Receives String
-    AND Server Modifies String
-    AND Server Sends Modified String
-    AND Client Receives String Over
+    UDP Server and Client are initialized
+    Client Sends Data
+    Server Receives Data
+    Server Modifies Data
+    Server Sends Modified Data
+    Client Receives Data
     [Teardown]  Close Connections
 
 Try to bind server to network interface which does not exict
