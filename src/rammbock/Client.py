@@ -25,7 +25,15 @@ class Client(object):
         return self._client_socket.recv(UDP_PACKET_MAX_SIZE)     
 
     def receive_packet_over_tcp(self):
-        return self._client_socket.recv(TCP_PACKET_MAX_SIZE)     
+        i = 0
+        while(1):
+            data = self._client_socket.recv(TCP_PACKET_MAX_SIZE) # read up to 1000000 bytes
+            i += 1
+            if (i < 5): # look only at the first part of the message
+                print data
+            if not data: # if end of data, leave loop
+                break
+            return data
 
     def close(self):
         self._client_socket.close()
@@ -37,3 +45,5 @@ class Client(object):
             self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         else:
             raise Exception('wrong transport protocol:'+trsprot )
+
+    

@@ -40,3 +40,10 @@ Server send packet
 Client receives packet
     ${data}=  client receive packet over tcp
     Should be equal  ${data}  ${EXPECTED_MODIFIED_STRING}
+    
+Send packet stream from Client to Server
+    ${data}=   Evaluate   'ismo_rulettaa '* 3000
+    log  ${data}
+    client send packet over tcp  ${data}
+    ${rcv_data}=  server receive packet over tcp
+    Should be equal  ${data}  ${rcv_data}

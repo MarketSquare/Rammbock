@@ -33,8 +33,21 @@ class Server(object):
         return data
 
     def receive_packet_over_tcp(self):
-        data = self.connection.recv(TCP_PACKET_MAX_SIZE)
-        return data
+        while 1:
+            data = self.connection.recv(100000)
+            if not data: break
+            return data
+        
+#        i = 0
+#        while(1):
+#            print "jeejee"
+#            data = self.connection.recv(TCP_PACKET_MAX_SIZE) # read up to 1000000 bytes
+#            i += 1
+#            if (i < 5): # look only at the first part of the message
+#                print data
+#            if not data: # if end of data, leave loop
+#                break
+#            return data
 
     def send_packet_over_udp(self, packet):
         self._server_socket.sendto(packet, self._address)
