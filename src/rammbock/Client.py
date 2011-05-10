@@ -26,7 +26,7 @@ class Client(object):
 
     def receive_packet_over_tcp(self):
         while 1:
-            data = self._client_socket.recv(100000)
+            data = self._client_socket.recv(TCP_PACKET_MAX_SIZE)
             if not data: break
             return data
 
@@ -40,5 +40,3 @@ class Client(object):
             self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         else:
             raise Exception('wrong transport protocol:'+trsprot )
-
-    
