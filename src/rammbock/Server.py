@@ -28,7 +28,7 @@ class Server(object):
     def establish_tcp_connection(self):
         self.connection, address = self._server_socket.accept()
 
-    def receive_packet_over_udp(self):
+    def server_receives_data(self):
         data, self._address = self._server_socket.recvfrom(UDP_PACKET_MAX_SIZE)
         return data
 
