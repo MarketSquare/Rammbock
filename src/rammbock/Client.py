@@ -2,7 +2,6 @@
 #-*- coding: iso-8859-15 -*-
 
 import socket
-import rammbocksocket
 
 UDP_PACKET_MAX_SIZE = 1024
 
