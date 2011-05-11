@@ -9,46 +9,29 @@ TCP_PACKET_MAX_SIZE = 100000
 NUMBER_OF_TCP_CONNECTIONS = 1
 
 
-class Server(object):
+class _Server(object):
     connection = None
     transport_protocol = None
     
     def __init__(self): 
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    def server_startup(self, interface, port, trsprot):
-        self.transport_protocol = trsprot
-        self._setup_transport_protocol(trsprot)
+    def server_startup(self, interface, port):
+        self._setup_transport_protocol(self.transport_protocol)
         host = str(Interface.get_ip_address(interface))
         if host == '':
             raise IOError('cannot bind server to interface: '+interface)
         print "used host address is: "+host+":"+port
         self._server_socket.bind((host, int(port)))
-        if trsprot == 'TCP':
-            self._server_socket.listen(NUMBER_OF_TCP_CONNECTIONS)
 
     def establish_tcp_connection(self):
-        self.connection, address = self._server_socket.accept()
+        self.connection, _ = self._server_socket.accept()
 
     def server_receives_data(self):
-        if self.transport_protocol =='UDP':
-            data, self._address = self._server_socket.recvfrom(UDP_PACKET_MAX_SIZE)
-            return data
-        elif self.transport_protocol == 'TCP':
-            while 1:
-                data = self.connection.recv(TCP_PACKET_MAX_SIZE)
-                if not data: break
-                return data
-        else:
-            raise Exception('Unknown Transport Protocol: '+self.transport_protocol)
+        raise Exception('Unknown Transport Protocol: '+self.transport_protocol)
 
     def send_data(self, packet):
-        if self.transport_protocol == 'UDP':
-            self._server_socket.sendto(packet, self._address)
-        elif self.transport_protocol == 'TCP':
-            self.connection.send(packet)
-        else:
-            raise Exception('wrong transport protocol:'+self.transport_protocol )
+        raise Exception('wrong transport protocol:'+self.transport_protocol )
 
     def close(self):
         self._server_socket.close()
@@ -60,3 +43,29 @@ class Server(object):
             self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         else:
             raise Exception('wrong transport protocol:'+trsprot )
+
+class UDPServer(_Server):
+    transport_protocol = 'UDP'
+
+    def server_receives_data(self):
+        data, self._address = self._server_socket.recvfrom(UDP_PACKET_MAX_SIZE)
+        return data
+    
+    def send_data(self, packet):
+        self._server_socket.sendto(packet, self._address)
+
+class TCPServer(_Server):
+    transport_protocol = 'TCP'
+
+    def server_startup(self, interface, port):
+        _Server.server_startup(self, interface, port)
+        self._server_socket.listen(NUMBER_OF_TCP_CONNECTIONS)
+
+    def server_receives_data(self):
+        while 1:
+            data = self.connection.recv(TCP_PACKET_MAX_SIZE)
+            if not data: break
+            return data
+    
+    def send_data(self, packet):
+        self.connection.send(packet)

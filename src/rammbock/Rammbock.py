@@ -1,17 +1,18 @@
 from Client import Client
-from Server import Server
+from Server import UDPServer, TCPServer
 
 class Rammbock(object):
 
     def __init__(self):
         self._client = Client()
-        self._server = Server()
 
     def start_udp_server(self, nwinterface, port):
-        self._server.server_startup(nwinterface, port, 'UDP')
+        self._server = UDPServer()
+        self._server.server_startup(nwinterface, port)
 
     def start_tcp_server(self, nwinterface, port):
-        self._server.server_startup(nwinterface, port, 'TCP')
+        self._server = TCPServer()
+        self._server.server_startup(nwinterface, port)
     
     def accept_tcp_connection(self):
         self._server.establish_tcp_connection()
