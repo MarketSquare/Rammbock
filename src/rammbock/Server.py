@@ -17,7 +17,6 @@ class _Server(object):
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def server_startup(self, interface, port):
-        self._setup_transport_protocol(self.transport_protocol)
         host = str(Interface.get_ip_address(interface))
         if host == '':
             raise IOError('cannot bind server to interface: '+interface)
@@ -27,25 +26,14 @@ class _Server(object):
     def establish_tcp_connection(self):
         self.connection, _ = self._server_socket.accept()
 
-    def server_receives_data(self):
-        raise Exception('Unknown Transport Protocol: '+self.transport_protocol)
-
-    def send_data(self, packet):
-        raise Exception('wrong transport protocol:'+self.transport_protocol )
-
     def close(self):
         self._server_socket.close()
 
-    def _setup_transport_protocol(self, trsprot):
-        if trsprot == 'UDP':
-            self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        elif trsprot == 'TCP':
-            self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        else:
-            raise Exception('wrong transport protocol:'+trsprot )
 
 class UDPServer(_Server):
-    transport_protocol = 'UDP'
+
+    def __init__(self):
+        self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def server_receives_data(self):
         data, self._address = self._server_socket.recvfrom(UDP_PACKET_MAX_SIZE)
@@ -55,7 +43,8 @@ class UDPServer(_Server):
         self._server_socket.sendto(packet, self._address)
 
 class TCPServer(_Server):
-    transport_protocol = 'TCP'
+    def __init__(self):
+        self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def server_startup(self, interface, port):
         _Server.server_startup(self, interface, port)
