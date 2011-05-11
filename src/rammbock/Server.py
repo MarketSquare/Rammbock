@@ -42,6 +42,7 @@ class UDPServer(_Server):
     def send_data(self, packet):
         self._server_socket.sendto(packet, self._address)
 
+
 class TCPServer(_Server):
     def __init__(self):
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
