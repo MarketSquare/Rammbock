@@ -9,7 +9,7 @@ TCP_PACKET_MAX_SIZE = 100000
 
 
 class _Client(object):
-    transport_protocol = None
+
     def establish_connection_to_server(self, host, port, interface):
         print 'Connecting to host and port: '+host+':'+port
         print interface
@@ -21,15 +21,11 @@ class _Client(object):
     def send_packet(self, packet): 
         self._client_socket.send(packet)
 
-    def receive_data(self):
-        raise Exception('Unknown Transport Protocol: '+self.transport_protocol)
-
     def close(self):
         self._client_socket.close()
 
 
 class UDPClient(_Client):
-    transport_protocol = 'UDP'
     def __init__(self):
         self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -37,7 +33,6 @@ class UDPClient(_Client):
         return self._client_socket.recv(UDP_PACKET_MAX_SIZE)
 
 class TCPClient(_Client):
-    transport_protocol = 'TCP'
     def __init__(self):
         self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
