@@ -1,10 +1,7 @@
-from Client import Client
+from Client import UDPClient, TCPClient
 from Server import UDPServer, TCPServer
 
 class Rammbock(object):
-
-    def __init__(self):
-        self._client = Client()
 
     def start_udp_server(self, nwinterface, port):
         self._server = UDPServer()
@@ -18,10 +15,12 @@ class Rammbock(object):
         self._server.establish_tcp_connection()
 
     def connect_to_udp_server(self, host, port, ifname = False):
-        self._client.establish_connection_to_server(host, port, 'UDP', ifname)
+        self._client = UDPClient()
+        self._client.establish_connection_to_server(host, port, ifname)
 
     def connect_to_tcp_server(self, host, port, ifname = False):
-        self._client.establish_connection_to_server(host, port, 'TCP', ifname)
+        self._client = TCPClient()
+        self._client.establish_connection_to_server(host, port, ifname)
 
     def close_server(self):
         self._server.close()
