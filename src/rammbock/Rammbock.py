@@ -19,6 +19,9 @@ class Rammbock(object):
         self._client = TCPClient()
         self._client.establish_connection_to_server(host, port, ifname)
 
+    def accept_tcp_connection(self):
+        self._server.accept_connection()
+    
     def close_server(self):
         self._server.close()
 

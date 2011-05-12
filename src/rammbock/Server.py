@@ -51,8 +51,10 @@ class TCPServer(_Server):
         _Server.server_startup(self, interface, port)
         self._server_socket.listen(NUMBER_OF_TCP_CONNECTIONS)
 
-    def server_receives_data(self):
+    def accept_connection(self):
         self.connection, _ = self._server_socket.accept()
+
+    def server_receives_data(self):
         while 1:
             data = self.connection.recv(TCP_PACKET_MAX_SIZE)
             if not data: break

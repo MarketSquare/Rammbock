@@ -20,3 +20,10 @@ Send packet from Client to Server and return it back
 Send and receive stream over TCP
     Send packet stream from Client to Server
     Send packet stream from Server to Client
+
+Send and receive multiple streams over TCP
+    [Tags] 
+    Send packet stream from Client to Server
+    Send packet stream from Server to Client
+    Send packet stream from Client to Server
+    Send packet stream from Server to Client
