@@ -3,42 +3,26 @@ Default Tags    regression
 Library         rammbock.Rammbock
 Resource        resources/data_transfer.txt
 Resource        resources/server_client.txt
+Test Setup      UDP Server and Client are initialized
+Test Teardown   Close Connections
 
 *** Variables ***
 
 *** Test Cases ***
 Send and Receive string over UDP using physical interface
-    [Setup]
-    UDP Server and Client are initialized
     Client Tranfers Data
     Server Gets Data
-    [Teardown]  Close Connections
+
 
 Send data over UDP and modify it and return it back
-    [Setup]
-    UDP Server and Client are initialized
-    Client Tranfers Data
-    Server Gets Data
-    Server Modifies Data
-    Server Sends Modified Data
-    Client Gets Data
-    [Teardown]  Close Connections
+    Client send data to server
+    Server send Modified data pack to client
 
 Send multiple packets over UDP to both ways
-    [Setup]
-    UDP Server and Client are initialized
-    Client Tranfers Data
-    Server Gets Data
-    Server Modifies Data
-    Server Sends Modified Data
-    Client Gets Data
-    Client Tranfers Data
-    Server Gets Data
-    Server Modifies Data
-    Server Sends Modified Data
-    Client Gets Data
-    [Teardown]  Close Connections
-
+    Client send data to server
+    Server send Modified data pack to client
+    Client send data to server
+    Server send Modified data pack to client
 
 Try to bind server to network interface which does not exict
     Try to bind server to 'foo' interface
@@ -51,3 +35,12 @@ Try to bind server to ${interface} interface
 
 Exeception "${except}" should raise
     Should Be Equal  ${EXCEPTION}  ${except}
+    
+Client send data to server
+    Client Tranfers Data
+    Server Gets Data
+
+Server send Modified data pack to client
+    Server Modifies Data
+    Server Sends Modified Data
+    Client Gets Data
