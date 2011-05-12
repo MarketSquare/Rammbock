@@ -11,4 +11,3 @@ Close Connections
 TCP Server and Client are initialized
     Start TCP Server  ${PHYSICAL_INTERFACE}  ${PORT}
     Connect to TCP server  ${HOST}  ${PORT}
-    Accept TCP Connection

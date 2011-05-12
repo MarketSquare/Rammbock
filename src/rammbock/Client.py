@@ -32,6 +32,7 @@ class UDPClient(_Client):
     def receive_data(self):
         return self._client_socket.recv(UDP_PACKET_MAX_SIZE)
 
+
 class TCPClient(_Client):
     def __init__(self):
         self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

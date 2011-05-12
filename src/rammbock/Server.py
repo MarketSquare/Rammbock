@@ -23,8 +23,8 @@ class _Server(object):
         print "used host address is: "+host+":"+port
         self._server_socket.bind((host, int(port)))
 
-    def establish_tcp_connection(self):
-        self.connection, _ = self._server_socket.accept()
+    #def establish_tcp_connection(self):
+    #    
 
     def close(self):
         self._server_socket.close()
@@ -52,6 +52,7 @@ class TCPServer(_Server):
         self._server_socket.listen(NUMBER_OF_TCP_CONNECTIONS)
 
     def server_receives_data(self):
+        self.connection, _ = self._server_socket.accept()
         while 1:
             data = self.connection.recv(TCP_PACKET_MAX_SIZE)
             if not data: break
