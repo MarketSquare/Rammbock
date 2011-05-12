@@ -46,7 +46,7 @@ Send packet stream from Client to Server
     Should be equal  ${data}  ${rcv_data}
     
 Send packet stream from Server to Client
-    ${data}=   Evaluate   'robot rules, ok? '* 3000
+    ${data}=   Evaluate   'robot rules, ok? '* 2500
     Server sends data  ${data}
     ${rcv_data}=  client receives data
     Should be equal  ${data}  ${rcv_data}

@@ -5,7 +5,7 @@ import socket
 import Interface
 
 UDP_PACKET_MAX_SIZE = 1024
-TCP_PACKET_MAX_SIZE = 100000
+TCP_PACKET_MAX_SIZE = 1000000
 
 
 class _Client(object):

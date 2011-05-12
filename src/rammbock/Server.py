@@ -5,7 +5,7 @@ import socket
 import Interface
 
 UDP_PACKET_MAX_SIZE = 1024
-TCP_PACKET_MAX_SIZE = 100000
+TCP_PACKET_MAX_SIZE = 1000000
 NUMBER_OF_TCP_CONNECTIONS = 1
 
 
@@ -23,8 +23,6 @@ class _Server(object):
         print "used host address is: "+host+":"+port
         self._server_socket.bind((host, int(port)))
 
-    #def establish_tcp_connection(self):
-    #    
 
     def close(self):
         self._server_socket.close()
