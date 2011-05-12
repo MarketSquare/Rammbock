@@ -24,6 +24,22 @@ Send data over UDP and modify it and return it back
     Client Gets Data
     [Teardown]  Close Connections
 
+Send multiple packets over UDP to both ways
+    [Setup]
+    UDP Server and Client are initialized
+    Client Tranfers Data
+    Server Gets Data
+    Server Modifies Data
+    Server Sends Modified Data
+    Client Gets Data
+    Client Tranfers Data
+    Server Gets Data
+    Server Modifies Data
+    Server Sends Modified Data
+    Client Gets Data
+    [Teardown]  Close Connections
+
+
 Try to bind server to network interface which does not exict
     Try to bind server to 'foo' interface
     Exeception "IOError: cannot bind server to interface: 'foo'" should raise
