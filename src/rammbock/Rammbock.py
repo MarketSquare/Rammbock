@@ -20,13 +20,16 @@ class Rammbock(object):
     def check_server_status(self, name=Server.DEFAULT_SERVER_NAME):
         return name in self._servers
 
-    def connect_to_udp_server(self, host, port, ifname = False):
-        self._client = UDPClient()
-        self._client.establish_connection_to_server(host, port, ifname)
+    def check_client_status(self, name=Client.DEFAULT_CLIENT_NAME):
+        return name in self._clients
 
-    def connect_to_tcp_server(self, host, port, ifname = False):
-        self._client = TCPClient()
-        self._client.establish_connection_to_server(host, port, ifname)
+    def connect_to_udp_server(self, host, port, ifname = False, name=Client.DEFAULT_CLIENT_NAME):
+        self._clients[name] = UDPClient()
+        self._clients[name].establish_connection_to_server(host, port, ifname)
+
+    def connect_to_tcp_server(self, host, port, ifname = False, name=Client.DEFAULT_CLIENT_NAME):
+        self._clients[name] = TCPClient()
+        self._clients[name].establish_connection_to_server(host, port, ifname)
 
     def accept_tcp_connection(self, name=Server.DEFAULT_SERVER_NAME):
         self._servers[name].accept_connection()
@@ -41,17 +44,18 @@ class Rammbock(object):
     def create_tcp_client(self, name=Client.DEFAULT_CLIENT_NAME):
         self._clients[name] = TCPClient(name)
 
-    def close_client(self):
-        self._client.close()
+    def close_client(self, name=Client.DEFAULT_CLIENT_NAME):
+        self._clients[name].close()
+        del self._clients[name] 
 
-    def client_sends_data(self, packet): 
-        self._client.send_packet(packet)
+    def client_sends_data(self, packet, name=Client.DEFAULT_CLIENT_NAME): 
+        self._clients[name].send_packet(packet)
 
     def server_receives_data(self, name=Server.DEFAULT_SERVER_NAME):
         return self._servers[name].server_receives_data()
 
-    def client_receives_data(self):
-        return self._client.receive_data()
+    def client_receives_data(self, name=Client.DEFAULT_CLIENT_NAME):
+        return self._clients[name].receive_data()
 
     def server_sends_data(self, packet, name=Server.DEFAULT_SERVER_NAME): 
         self._servers[name].send_data(packet)
