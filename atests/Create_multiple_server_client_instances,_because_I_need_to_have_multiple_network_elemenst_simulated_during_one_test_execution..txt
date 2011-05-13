@@ -1,6 +1,8 @@
 *** Settings ***
-Library       rammbock.Rammbock
-Default Tags  regression
+Library        rammbock.Rammbock
+Default Tags   regression
+Test Setup     Create Two TCP Servers And Clients
+Test Teardown  Delete Two Servers And Clients And Verify Deletion
 
 *** Variables ***
 ${SERVER_NAME1}  testiserveri1
@@ -14,34 +16,15 @@ ${CLIENT_NAME2}  testiclient2
 
 *** Test Cases ***
 Create and delete two intances of Servers
-    Start TCP Server  ${LOOPBACK_DEVICE}  ${DEFAULT_PORT1}  ${SERVER_NAME1}
     Check Server Existence  ${SERVER_NAME1}  ${True}
-
-    Start TCP Server  ${LOOPBACK_DEVICE}  ${DEFAULT_PORT2}  ${SERVER_NAME2}
     Check Server Existence  ${SERVER_NAME2}  ${True}
 
-    Close Server  ${SERVER_NAME1}
-    Check Server Existence  ${SERVER_NAME1}  ${False}
-
-    Close Server  ${SERVER_NAME2}
-    Check Server Existence  ${SERVER_NAME2}  ${False}
-
 Create and delete two instances of Clients
-    Create Tcp Client  ${CLIENT_NAME1}
     Check Client Existence  ${CLIENT_NAME1}  ${True}
-
-    Create Tcp Client  ${CLIENT_NAME2}
     Check Client Existence  ${CLIENT_NAME2}  ${True}
-
-    Close Client  ${CLIENT_NAME1}
-    Check Client Existence  ${CLIENT_NAME1}  ${False}
-
-    Close Client  ${CLIENT_NAME2}
-    Check Client Existence  ${CLIENT_NAME2}  ${False}
 
 Send data between multiple Client and Server instances
     [Tags]  
-
 
 *** Keywords ***
 Check Server Existence
@@ -54,3 +37,22 @@ Check Client Existence
     ${status}=  Check Client Status  ${clientname}
     Should Be Equal  ${status}  ${boolean} 
 
+Create Two TCP Servers And Clients
+    Start TCP Server  ${LOOPBACK_DEVICE}  ${DEFAULT_PORT1}  ${SERVER_NAME1}
+    Start TCP Server  ${LOOPBACK_DEVICE}  ${DEFAULT_PORT2}  ${SERVER_NAME2}
+
+    Create Tcp Client  ${CLIENT_NAME1}
+    Create Tcp Client  ${CLIENT_NAME2}
+
+Delete Two Servers And Clients And Verify Deletion
+    Close Server  ${SERVER_NAME1}
+    Check Server Existence  ${SERVER_NAME1}  ${False}
+
+    Close Server  ${SERVER_NAME2}
+    Check Server Existence  ${SERVER_NAME2}  ${False}
+
+    Close Client  ${CLIENT_NAME1}
+    Check Client Existence  ${CLIENT_NAME1}  ${False}
+
+    Close Client  ${CLIENT_NAME2}
+    Check Client Existence  ${CLIENT_NAME2}  ${False}
