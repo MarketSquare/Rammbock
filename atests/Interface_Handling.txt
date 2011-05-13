@@ -4,6 +4,7 @@ Library         rammbock.Rammbock
 Resource        resources/data_transfer.txt
 Resource        resources/server_client.txt
 
+
 *** Variables ***
 ${1ST_ALIAS_IP}  10.0.0.1
 ${1ST_ALIAS_NETMASK}  255.255.255.252
@@ -35,6 +36,7 @@ Initialize server and client
     Create first alias to interface '${LOOPBACK_DEVICE}'
     Create second alias to interface '${LOOPBACK_DEVICE}'
     Start UDP Server  ${1ST_ALIAS_NAME}  ${PORT}
+    Create UDP Client
     connect to UDP server  ${1ST_ALIAS_IP}  ${PORT}  ${2ND_ALIAS_NAME}
 
 Create first alias to interface '${interface}'
@@ -58,7 +60,7 @@ Delete second alias
     Del Interface  ${2ND_ALIAS_NAME}
     ${interfacestate}=  check interface  ${2ND_ALIAS_NAME}
     Should Be Equal  ${interfacestate}  ${False}
-    
+
 Close Connections and delete interfaces
     Close Connections
     Delete first alias

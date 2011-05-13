@@ -1,5 +1,6 @@
 *** Settings ***
 Library        rammbock.Rammbock
+Resource       resources/server_client.txt
 Default Tags   regression
 Test Setup     Create Two TCP Servers And Clients
 Test Teardown  Delete Two Servers And Clients And Verify Deletion
@@ -27,22 +28,13 @@ Send data between multiple Client and Server instances
     [Tags]  
 
 *** Keywords ***
-Check Server Existence
-    [Arguments]  ${servername}  ${boolean}
-    ${status}=  Check Server Status  ${servername}
-    Should Be Equal  ${status}  ${boolean}
-
-Check Client Existence
-    [Arguments]  ${clientname}  ${boolean}
-    ${status}=  Check Client Status  ${clientname}
-    Should Be Equal  ${status}  ${boolean} 
 
 Create Two TCP Servers And Clients
     Start TCP Server  ${LOOPBACK_DEVICE}  ${DEFAULT_PORT1}  ${SERVER_NAME1}
     Start TCP Server  ${LOOPBACK_DEVICE}  ${DEFAULT_PORT2}  ${SERVER_NAME2}
 
-    Create Tcp Client  ${CLIENT_NAME1}
-    Create Tcp Client  ${CLIENT_NAME2}
+    Create TCP Client  ${CLIENT_NAME1}
+    Create TCP Client  ${CLIENT_NAME2}
 
 Delete Two Servers And Clients And Verify Deletion
     Close Server  ${SERVER_NAME1}

@@ -23,16 +23,14 @@ class Rammbock(object):
     def check_client_status(self, name=Client.DEFAULT_CLIENT_NAME):
         return name in self._clients
 
-    def connect_to_udp_server(self, host, port, ifname = False, name=Client.DEFAULT_CLIENT_NAME):
-        self._clients[name] = UDPClient()
-        self._clients[name].establish_connection_to_server(host, port, ifname)
+    def connect_to_udp_server(self, host, port, ifname = False, client=Client.DEFAULT_CLIENT_NAME):
+        self._clients[client].establish_connection_to_server(host, port, ifname)
 
-    def connect_to_tcp_server(self, host, port, ifname = False, name=Client.DEFAULT_CLIENT_NAME):
-        self._clients[name] = TCPClient()
-        self._clients[name].establish_connection_to_server(host, port, ifname)
+    def connect_to_tcp_server(self, host, port, ifname = False, client=Client.DEFAULT_CLIENT_NAME):
+        self._clients[client].establish_connection_to_server(host, port, ifname)
 
-    def accept_tcp_connection(self, name=Server.DEFAULT_SERVER_NAME):
-        self._servers[name].accept_connection()
+    def accept_tcp_connection(self, server=Server.DEFAULT_SERVER_NAME):
+        self._servers[server].accept_connection()
 
     def close_server(self, name=Server.DEFAULT_SERVER_NAME):
         self._servers[name].close()

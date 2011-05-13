@@ -14,3 +14,13 @@ TCP Server and Client are initialized
     Create TCP Client
     Connect to TCP server  ${HOST}  ${PORT}
     accept tcp connection
+
+Check Server Existence
+    [Arguments]  ${servername}  ${boolean}
+    ${status}=  Check Server Status  ${servername}
+    Should Be Equal  ${status}  ${boolean}
+
+Check Client Existence
+    [Arguments]  ${clientname}  ${boolean}
+    ${status}=  Check Client Status  ${clientname}
+    Should Be Equal  ${status}  ${boolean} 
