@@ -13,7 +13,6 @@ Send and Receive string over UDP using physical interface
     Client Tranfers Data
     Server Gets Data
 
-
 Send data over UDP and modify it and return it back
     Client send data to server
     Server send Modified data pack to client

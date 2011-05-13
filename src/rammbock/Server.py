@@ -7,13 +7,14 @@ import Interface
 UDP_PACKET_MAX_SIZE = 1024
 TCP_PACKET_MAX_SIZE = 1000000
 NUMBER_OF_TCP_CONNECTIONS = 1
-
+DEFAULT_SERVER_NAME = 'server1' 
 
 class _Server(object):
     connection = None
     transport_protocol = None
     
-    def __init__(self): 
+    def __init__(self, servername=DEFAULT_SERVER_NAME): 
+        self._servername = servername
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def server_startup(self, interface, port):
@@ -30,7 +31,8 @@ class _Server(object):
 
 class UDPServer(_Server):
 
-    def __init__(self):
+    def __init__(self, servername=DEFAULT_SERVER_NAME):
+        _Server.__init__(self, servername)
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def server_receives_data(self):
@@ -42,7 +44,9 @@ class UDPServer(_Server):
 
 
 class TCPServer(_Server):
-    def __init__(self):
+
+    def __init__(self, servername=DEFAULT_SERVER_NAME):
+        _Server.__init__(self, servername)
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def server_startup(self, interface, port):
