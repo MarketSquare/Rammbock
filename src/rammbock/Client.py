@@ -6,9 +6,13 @@ import Interface
 
 UDP_PACKET_MAX_SIZE = 1024
 TCP_PACKET_MAX_SIZE = 1000000
-
+DEFAULT_CLIENT_NAME = 'client1'
 
 class _Client(object):
+
+    def __init__(self, clientname=DEFAULT_CLIENT_NAME):
+        self._name = clientname
+
 
     def establish_connection_to_server(self, host, port, interface):
         print 'Connecting to host and port: '+host+':'+port
@@ -26,7 +30,8 @@ class _Client(object):
 
 
 class UDPClient(_Client):
-    def __init__(self):
+    def __init__(self, name=DEFAULT_CLIENT_NAME):
+        _Client.__init__(self, name)
         self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def receive_data(self):
@@ -34,7 +39,8 @@ class UDPClient(_Client):
 
 
 class TCPClient(_Client):
-    def __init__(self):
+    def __init__(self, name=DEFAULT_CLIENT_NAME):
+        _Client.__init__(self, name)
         self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def receive_data(self):

@@ -1,4 +1,34 @@
+*** Settings ***
+Library       rammbock.Rammbock
+Default Tags  regression
+
+*** Variables ***
+${SERVER_NAME1}  testiserveri1
+${SERVER_NAME2}  testiserveri2
+${DEFAULT_PORT1}  77321 
+${DEFAULT_PORT2}  32132
+
+
 *** Test Cases ***
-Create and delete two set intances of Clients and Servers
+Create and delete two set intances of Servers
+    Start TCP Server  ${LOOPBACK_DEVICE}  ${DEFAULT_PORT1}  ${SERVER_NAME1}
+    Check Server Existence  ${SERVER_NAME1}  ${True}
+
+    Start TCP Server  ${LOOPBACK_DEVICE}  ${DEFAULT_PORT2}  ${SERVER_NAME2}
+    Check Server Existence  ${SERVER_NAME2}  ${True}
+
+    Close Server  ${SERVER_NAME1}
+    Check Server Existence  ${SERVER_NAME1}  ${False}
+
+    Close Server  ${SERVER_NAME2}
+    Check Server Existence  ${SERVER_NAME2}  ${False}
+
 
 Send data between multiple Client and Server instances
+    [Tags]  
+
+
+*** Keywords ***
+Check Server Existence  [Arguments]  ${servername}  ${boolean}
+    ${status}=  Check Server Status  ${servername}
+    Should Be Equal As Strings  ${status}  ${boolean}

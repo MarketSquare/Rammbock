@@ -2,6 +2,7 @@
 
 UDP Server and Client are initialized
     Start UDP Server  ${PHYSICAL_INTERFACE}  ${PORT}
+    Create UDP Client
     Connect to UDP server  ${HOST}  ${PORT}
 
 Close Connections
@@ -10,5 +11,6 @@ Close Connections
 
 TCP Server and Client are initialized
     Start TCP Server  ${PHYSICAL_INTERFACE}  ${PORT}
+    Create TCP Client
     Connect to TCP server  ${HOST}  ${PORT}
     accept tcp connection

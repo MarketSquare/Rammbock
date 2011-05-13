@@ -34,7 +34,7 @@ Try to bind server to ${interface} interface
 
 Exeception "${except}" should raise
     Should Be Equal  ${EXCEPTION}  ${except}
-    
+
 Client send data to server
     Client Tranfers Data
     Server Gets Data
