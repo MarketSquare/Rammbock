@@ -42,6 +42,7 @@ class TCPClient(_Client):
     def __init__(self, name=DEFAULT_CLIENT_NAME):
         _Client.__init__(self, name)
         self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
     def receive_data(self):
         while 1:

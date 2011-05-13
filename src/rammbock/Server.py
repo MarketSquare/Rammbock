@@ -48,6 +48,8 @@ class TCPServer(_Server):
     def __init__(self, servername=DEFAULT_SERVER_NAME):
         _Server.__init__(self, servername)
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
 
     def server_startup(self, interface, port):
         _Server.server_startup(self, interface, port)

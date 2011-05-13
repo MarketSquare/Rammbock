@@ -8,21 +8,21 @@ Default Tags    regression
  
 *** Test Cases ***
 Send packet from Client to Server
-    Client Tranfers Data
-    Server Receives packet
+    Single Client Transfers Data
+    Single Server Receives packet
 
 Send packet from Client to Server and return it back
-    Client Tranfers Data
-    Server Receives packet
-    Server send packet
-    Client receives packet
+    Single Client Transfers Data
+    Single Server Receives Packet
+    Single Server Sends Packet
+    Single Client receives Packet
 
 Send and receive stream over TCP
-    Send packet stream from Client to Server
-    Send packet stream from Server to Client
+    Send Packet Stream From Single Client To Single Server
+    Send Packet Stream From Single Server To Single Client
 
 Send and receive multiple streams over TCP
-    Send packet stream from Client to Server
-    Send packet stream from Server to Client
-    Send packet stream from Client to Server
-    Send packet stream from Server to Client
+    Send Packet Stream From Single Client To Single Server
+    Send Packet Stream From Single Server To Single Client
+    Send Packet Stream From Single Client To Single Server
+    Send Packet Stream From Single Server To Single Client

@@ -24,11 +24,11 @@ Create and delete multiple aliases
 
 Transfer data trough interface aliases
     [Setup]  Initialize server and client
-    Client Tranfers Data
-    Server Gets Data
+    Single Client Transfers Data
+    Single Server Gets Data
     Server Modifies Data
-    Server Sends Modified Data
-    Client Gets Data
+    Single Server Sends Modified Data
+    Single Client Gets Data
     [Teardown]  Close Connections and delete interfaces
 
 *** Keywords ***

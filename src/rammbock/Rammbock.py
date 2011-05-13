@@ -10,11 +10,11 @@ class Rammbock(object):
         self._clients = {}
 
     def start_udp_server(self, nwinterface, port, name=Server.DEFAULT_SERVER_NAME):
-        self._servers[name] = UDPServer()
+        self._servers[name] = UDPServer(name)
         self._servers[name].server_startup(nwinterface, port)
 
     def start_tcp_server(self, nwinterface, port, name=Server.DEFAULT_SERVER_NAME):
-        self._servers[name] = TCPServer()
+        self._servers[name] = TCPServer(name)
         self._servers[name].server_startup(nwinterface, port)
 
     def check_server_status(self, name=Server.DEFAULT_SERVER_NAME):

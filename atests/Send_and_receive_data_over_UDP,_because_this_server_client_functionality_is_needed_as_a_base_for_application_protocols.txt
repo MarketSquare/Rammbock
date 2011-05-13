@@ -10,36 +10,36 @@ Test Teardown   Close Connections
 
 *** Test Cases ***
 Send and Receive string over UDP using physical interface
-    Client Tranfers Data
-    Server Gets Data
+    Single Client Transfers Data
+    Single Server Gets Data
 
 Send data over UDP and modify it and return it back
-    Client send data to server
-    Server send Modified data pack to client
+    Client Sends Data To Server
+    Server Sends Modified Data Pack To Client
 
 Send multiple packets over UDP to both ways
-    Client send data to server
-    Server send Modified data pack to client
-    Client send data to server
-    Server send Modified data pack to client
+    Client Sends Data to Server
+    Server Sends Modified Data Pack To Client
+    Client Sends data to server
+    Server Sends Modified Data Pack To Client
 
-Try to bind server to network interface which does not exict
+Try To Bind Server To network interface which does not exist
     Try to bind server to 'foo' interface
     Exeception "IOError: cannot bind server to interface: 'foo'" should raise
 
 **** Keywords ***
-Try to bind server to ${interface} interface
+Try To Bind Server To ${interface} interface
     ${error}=  Run Keyword And Expect Error  *  Start UDP Server  ${interface}  ${PORT}
     Set Test Variable  ${EXCEPTION}  ${error}
 
 Exeception "${except}" should raise
     Should Be Equal  ${EXCEPTION}  ${except}
 
-Client send data to server
-    Client Tranfers Data
-    Server Gets Data
+Client Sends Data To Server
+    Single Client Transfers Data
+    Single Server Gets Data
 
-Server send Modified data pack to client
+Server Sends Modified Data Pack To Client
     Server Modifies Data
-    Server Sends Modified Data
-    Client Gets Data
+    Single Server Sends Modified Data
+    Single Client Gets Data
