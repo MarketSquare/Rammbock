@@ -24,7 +24,6 @@ class _Server(object):
         print "used host address is: "+host+":"+port
         self._server_socket.bind((host, int(port)))
 
-
     def close(self):
         self._server_socket.close()
 
@@ -38,7 +37,7 @@ class UDPServer(_Server):
     def server_receives_data(self):
         data, self._address = self._server_socket.recvfrom(UDP_PACKET_MAX_SIZE)
         return data
-    
+
     def send_data(self, packet):
         self._server_socket.sendto(packet, self._address)
 
@@ -61,6 +60,6 @@ class TCPServer(_Server):
             data = self.connection.recv(TCP_PACKET_MAX_SIZE)
             if not data: break
             return data
-    
+
     def send_data(self, packet):
         self.connection.send(packet)
