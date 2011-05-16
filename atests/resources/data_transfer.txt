@@ -6,47 +6,94 @@ ${PHYSICAL_INTERFACE}  ${LOOPBACK_DEVICE}
 ${VIRTUAL_HOST}  1.1.1.1
 ${RECEIVED_STRING}  ${EMPTY}
 ${EXPECTED_MODIFIED_STRING}  ismo_rulettaa_koviten
-
+ 
 *** Keywords ***
 
-Client Tranfers Data
-    client sends data  ${EXPECTED_STRING}
+Single Client Transfers Data
+	client sends data  ${EXPECTED_STRING}
+	
+Client Transfers Data 
+	[Arguments]  ${clientname}
+    client sends data  ${EXPECTED_STRING}  ${clientname}
 
-Server Gets Data
-    ${RECEIVED_STRING}=  server receives data
+Single Server Gets Data
+	${RECEIVED_STRING}=  server receives data
+    Set Test Variable  \${RECEIVED_STRING}  ${RECEIVED_STRING}
+    Should Be Equal  ${RECEIVED_STRING}  ${EXPECTED_STRING}
+    
+Server Gets Data 
+	[Arguments]  ${servername}
+    ${RECEIVED_STRING}=  server receives data  ${servername}
     Set Test Variable  \${RECEIVED_STRING}  ${RECEIVED_STRING}
     Should Be Equal  ${RECEIVED_STRING}  ${EXPECTED_STRING}
 
 Server Modifies Data
     Set Test Variable  \${RECEIVED_STRING}  ${RECEIVED_STRING}_koviten
 
+Single Server Sends Modified Data
+	server sends data  ${RECEIVED_STRING}
+	
 Server Sends Modified Data
-    server sends data  ${RECEIVED_STRING}
+	[Arguments]  ${servername}
+    server sends data  ${RECEIVED_STRING}  ${servername}
 
+Single Client Gets Data
+	${RECEIVED_STRING}=  client receives data
+    Should Be Equal  ${RECEIVED_STRING}  ${EXPECTED_MODIFIED_STRING}
+    
 Client Gets Data
-    ${RECEIVED_STRING}=  client receives data
+    ${RECEIVED_STRING}=  client receives data  ${clientname}
     Should Be Equal  ${RECEIVED_STRING}  ${EXPECTED_MODIFIED_STRING}
 
+Single Server Receives Packet
+	${data} =  server receives data
+    Should be equal  ${data}  ${EXPECTED_STRING}
+    
 Server Receives packet
-    ${data} =  server receives data
+	[Arguments]  ${servername}
+    ${data} =  server receives data  ${servername}
     Should be equal  ${data}  ${EXPECTED_STRING}
 
-Server send packet
-    server sends data  ${EXPECTED_MODIFIED_STRING}
+Single Server Sends Packet
+	server sends data  ${EXPECTED_MODIFIED_STRING}
+	
+Server Sends Packet
+	[Arguments]  ${servername}
+    server sends data  ${EXPECTED_MODIFIED_STRING}  ${servername}
 
-Client receives packet
-    ${data}=  client receives data
+Single Client Receives Packet
+	${data}=  client receives data
     Should be equal  ${data}  ${EXPECTED_MODIFIED_STRING}
-
-Send packet stream from Client to Server
-    ${data}=   Evaluate   'ismo_rulettaa '* 3000
+    
+Client Receives Packet
+	[Arguments]  ${clientname}
+    ${data}=  client receives data  ${clientname}
+    Should be equal  ${data}  ${EXPECTED_MODIFIED_STRING}
+    
+Send Packet Stream From Single Client To Single Server
+	${data}=   Evaluate   'ismo_rulettaa '* 3000
     log  ${data}
     client sends data  ${data}
     ${rcv_data}=  server receives data
     Should be equal  ${data}  ${rcv_data}
-
-Send packet stream from Server to Client
-    ${data}=   Evaluate   'robot rules, ok? '* 2500
+    
+Send packet stream from Client to Server 
+	[Arguments]  ${clientname}  ${servername}
+    ${data}=   Evaluate   'ismo_rulettaa '* 3000
+    log  ${data}
+    client sends data  ${data}  ${clientname}
+    ${rcv_data}=  server receives data  ${servername}
+    Should be equal  ${data}  ${rcv_data}
+    
+Send Packet Stream From Single Server To Single Client
+	${data}=   Evaluate   'robot rules, ok? '* 2500
     Server sends data  ${data}
     ${rcv_data}=  client receives data
+    Should be equal  ${data}  ${rcv_data}
+    
+Send packet stream from Server to Client
+	[Arguments]  ${servername}  ${clientname}
+    ${data}=   Evaluate   'robot rules, ok? '* 2500
+    Server sends data  ${data} ${servername}
+    ${rcv_data}=  client receives data ${clientname}
     Should be equal  ${data}  ${rcv_data}

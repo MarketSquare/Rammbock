@@ -1,5 +1,6 @@
 *** Settings ***
 Library        rammbock.Rammbock
+Resource	   resources/data_transfer.txt
 Resource       resources/server_client.txt
 Default Tags   regression
 Test Setup     Create Two TCP Servers And Clients
@@ -8,15 +9,15 @@ Test Teardown  Delete Two Servers And Clients And Verify Deletion
 *** Variables ***
 ${SERVER_NAME1}  testiserveri1
 ${SERVER_NAME2}  testiserveri2
-${DEFAULT_PORT1}  77321 
-${DEFAULT_PORT2}  32132
+${DEFAULT_PORT1}  3011
+${DEFAULT_PORT2}  23205
 
 ${CLIENT_NAME1}  testiclient1
 ${CLIENT_NAME2}  testiclient2
 
 
 *** Test Cases ***
-Create and delete two intances of Servers
+Create and delete two instances of Servers
     Check Server Existence  ${SERVER_NAME1}  ${True}
     Check Server Existence  ${SERVER_NAME2}  ${True}
 
@@ -25,7 +26,18 @@ Create and delete two instances of Clients
     Check Client Existence  ${CLIENT_NAME2}  ${True}
 
 Send data between multiple Client and Server instances
-    [Tags]  
+	Connect to TCP server  ${HOST}  ${DEFAULT_PORT1}  ${False}  ${CLIENT_NAME1}
+	accept tcp connection  ${SERVER_NAME1}	
+	Connect to TCP server  ${HOST}  ${DEFAULT_PORT2}  ${False}  ${CLIENT_NAME2}
+	accept tcp connection  ${SERVER_NAME2}	
+    Client Transfers Data  ${CLIENT_NAME1}
+    Server Receives packet  ${SERVER_NAME1}
+    Client Transfers Data  ${CLIENT_NAME2}
+    Server Receives packet  ${SERVER_NAME2}
+    Server Sends packet  ${SERVER_NAME1}
+    Client Receives Packet  ${CLIENT_NAME1}
+    Server Sends packet  ${SERVER_NAME2}
+    Client Receives Packet  ${CLIENT_NAME2}
 
 *** Keywords ***
 
