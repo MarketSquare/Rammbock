@@ -7,22 +7,25 @@ import Interface
 UDP_PACKET_MAX_SIZE = 1024
 TCP_PACKET_MAX_SIZE = 1000000
 NUMBER_OF_TCP_CONNECTIONS = 1
-DEFAULT_SERVER_NAME = 'server1' 
+DEFAULT_NAME = 'server1' 
+DEFAULT_IP = '127.0.0.1'
+
+
 
 class _Server(object):
     connection = None
     transport_protocol = None
     
-    def __init__(self, servername=DEFAULT_SERVER_NAME): 
+    def __init__(self, servername=DEFAULT_NAME): 
         self._servername = servername
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    def server_startup(self, interface, port):
-        host = str(Interface.get_ip_address(interface))
-        if host == '':
-            raise IOError('cannot bind server to interface: '+interface)
-        print "used host address is: "+host+":"+port
-        self._server_socket.bind((host, int(port)))
+    def server_startup(self, interface, ip, port):
+        if Interface.check_interface_for_ip(interface, ip):
+            print "used host address is: " + ip + ":" + port
+            self._server_socket.bind((ip, int(port)))
+        else:
+            raise IOError('cannot bind server to interface: ' + interface)
 
     def close(self):
         self._server_socket.close()
@@ -30,7 +33,7 @@ class _Server(object):
 
 class UDPServer(_Server):
 
-    def __init__(self, servername=DEFAULT_SERVER_NAME):
+    def __init__(self, servername=DEFAULT_NAME):
         _Server.__init__(self, servername)
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -44,14 +47,13 @@ class UDPServer(_Server):
 
 class TCPServer(_Server):
 
-    def __init__(self, servername=DEFAULT_SERVER_NAME):
+    def __init__(self, servername=DEFAULT_NAME):
         _Server.__init__(self, servername)
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-
-    def server_startup(self, interface, port):
-        _Server.server_startup(self, interface, port)
+    def server_startup(self, interface, ip, port):
+        _Server.server_startup(self, interface, ip, port)
         self._server_socket.listen(NUMBER_OF_TCP_CONNECTIONS)
 
     def accept_connection(self):

@@ -7,13 +7,14 @@ Test Setup     Create Two TCP Servers And Clients
 Test Teardown  Delete Two Servers And Clients And Verify Deletion
 
 *** Variables ***
-${SERVER_NAME1}  testiserveri1
-${SERVER_NAME2}  testiserveri2
+${LOCALHOST_IP}   127.0.0.1
+${SERVER_NAME1}   testiserveri1
+${SERVER_NAME2}   testiserveri2
 ${DEFAULT_PORT1}  3011
 ${DEFAULT_PORT2}  23205
 
-${CLIENT_NAME1}  testiclient1
-${CLIENT_NAME2}  testiclient2
+${CLIENT_NAME1}   testiclient1
+${CLIENT_NAME2}   testiclient2
 
 
 *** Test Cases ***
@@ -42,8 +43,8 @@ Send data between multiple Client and Server instances
 *** Keywords ***
 
 Create Two TCP Servers And Clients
-    Start TCP Server  ${LOOPBACK_DEVICE}  ${DEFAULT_PORT1}  ${SERVER_NAME1}
-    Start TCP Server  ${LOOPBACK_DEVICE}  ${DEFAULT_PORT2}  ${SERVER_NAME2}
+    Start TCP Server  ${LOOPBACK_DEVICE}  ${DEFAULT_PORT1}  ${LOCALHOST_IP}  ${SERVER_NAME1}
+    Start TCP Server  ${LOOPBACK_DEVICE}  ${DEFAULT_PORT2}  ${LOCALHOST_IP}  ${SERVER_NAME2}
 
     Create TCP Client  ${CLIENT_NAME1}
     Create TCP Client  ${CLIENT_NAME2}
