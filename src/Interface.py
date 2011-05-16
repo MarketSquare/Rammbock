@@ -1,6 +1,7 @@
 import subprocess
 import re
 from random import randint
+from sys import platform
 
 def get_ip_address(ifname):
     """
@@ -42,9 +43,10 @@ def __return_ip_address_from_ifconfig_output(output):
     return ''
 
 def __get_free_interface_alias(ifname):
-    while True:
-        virtual_if_name = ifname + ":" + str(randint(1, 10000))
-        if not check_interface(virtual_if_name):
-            return virtual_if_name
-
-
+    if platform == 'darwin':
+        return ifname
+    else:
+        while True:
+            virtual_if_name = ifname + ":" + str(randint(1, 10000))
+            if not check_interface(virtual_if_name):
+                return virtual_if_name
