@@ -40,25 +40,25 @@ Initialize server and client
     connect to UDP server  ${1ST_ALIAS_IP}  ${PORT}  ${2ND_ALIAS_NAME}
 
 Create first alias to interface '${interface}'
-    ${ifname}=  create_interface_alias  ${interface}  ${1ST_ALIAS_IP}  ${1ST_ALIAS_NETMASK}
+    ${ifname}=  create interface alias  ${interface}  ${1ST_ALIAS_IP}  ${1ST_ALIAS_NETMASK}
     Set Test Variable  ${1ST_ALIAS_NAME}  ${ifname}
-    ${interfacestate}=  check interface  ${ifname}
+    ${interfacestate}=  check interface for ip  ${ifname}  ${1ST_ALIAS_IP}
     Should Be Equal  ${interfacestate}  ${True}
 
 Create second alias to interface '${interface}'
     ${ifname}=  create_interface_alias  ${interface}  ${2ND_ALIAS_IP}  ${2ND_ALIAS_NETMASK}
     Set Test Variable  ${2ND_ALIAS_NAME}  ${ifname}
-    ${interfacestate}=  check interface  ${ifname}
+    ${interfacestate}=  check interface for ip  ${ifname}  ${2ND_ALIAS_IP}
     Should Be Equal  ${interfacestate}  ${True}
 
 Delete first alias
-    Del Interface  ${1ST_ALIAS_NAME}
-    ${interfacestate}=  check interface  ${1ST_ALIAS_NAME}
+    Del Alias  ${1ST_ALIAS_NAME}  ${1ST_ALIAS_IP}
+    ${interfacestate}=  check interface for ip  ${1ST_ALIAS_NAME}  ${1ST_ALIAS_IP}
     Should Be Equal  ${interfacestate}  ${False}
 
 Delete second alias
-    Del Interface  ${2ND_ALIAS_NAME}
-    ${interfacestate}=  check interface  ${2ND_ALIAS_NAME}
+    Del Alias  ${2ND_ALIAS_NAME}  ${2ND_ALIAS_IP}
+    ${interfacestate}=  check interface for ip  ${2ND_ALIAS_NAME}  ${2ND_ALIAS_IP}
     Should Be Equal  ${interfacestate}  ${False}
 
 Close Connections and delete interfaces
