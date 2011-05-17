@@ -64,7 +64,7 @@ def __return_ip_addresses_from_ifconfig_output(output):
                 ipAddress = re.match(r'.*?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', line).group(1) 
                 print "ip address is:" + ipAddress
                 addresses.append(ipAddress)
-            return addresses
+        return addresses
 
 def __return_ip_address_from_ifconfig_output(output):
     addresses = __return_ip_addresses_from_ifconfig_output(output)
