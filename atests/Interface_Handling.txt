@@ -1,9 +1,9 @@
 *** Settings ***
+Default Tags    no-ci
 Library         Interface
 Library         rammbock.Rammbock
 Resource        resources/data_transfer.txt
 Resource        resources/server_client.txt
-
 
 *** Variables ***
 ${1ST_ALIAS_IP}  10.0.0.1
@@ -65,3 +65,4 @@ Close Connections and delete interfaces
     Close Connections
     Delete first alias
     Delete second alias
+
