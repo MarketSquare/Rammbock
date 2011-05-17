@@ -57,7 +57,7 @@ def __return_ip_addresses_from_ifconfig_output(output):
     addresses = []
     if platform == WINDOWS:
         print output
-        raise NotImplementedError
+        return '127.0.0.1'
     else:
         for line in output.split('\n'):
             if 'inet ' in line or 'IPv4 Address' in line:
