@@ -6,6 +6,7 @@ from sys import platform
 
 OSX = 'darwin'
 LINUX = 'linux2'
+WINDOWS = 'win32'
 
 def get_ip_address(ifname):
     """
@@ -55,7 +56,7 @@ def del_alias(ifname, ip):
 def __return_ip_addresses_from_ifconfig_output(output):
     addresses = []
     for line in output.split('\n'):
-        if 'inet ' in line or 'IP Address' in line:
+        if 'inet ' in line or 'IPv4 Address' in line:
             ipAddress = re.match(r'.*?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', line).group(1) 
             print "ip address is:" + ipAddress
             addresses.append(ipAddress)
@@ -78,9 +79,9 @@ def __get_free_interface_alias(ifname):
                 return virtual_if_name
 
 def __get_ifconfig_cmd():
-    if platform == 'darwin':
+    if platform == OSX:
         return '/sbin/ifconfig'
-    elif platform == 'WINDOWZ':
-        return 'NOT SUPPORTED yet'
+    elif platform == WINDOWS:
+        return 'ipconfig'
     else:
         return '/sbin/ifconfig'
