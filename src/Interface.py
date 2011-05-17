@@ -55,12 +55,16 @@ def del_alias(ifname, ip):
 
 def __return_ip_addresses_from_ifconfig_output(output):
     addresses = []
-    for line in output.split('\n'):
-        if 'inet ' in line or 'IPv4 Address' in line:
-            ipAddress = re.match(r'.*?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', line).group(1) 
-            print "ip address is:" + ipAddress
-            addresses.append(ipAddress)
-    return addresses
+    if platform == WINDOWS:
+        print output
+        raise NotImplementedError
+    else:
+        for line in output.split('\n'):
+            if 'inet ' in line or 'IPv4 Address' in line:
+                ipAddress = re.match(r'.*?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', line).group(1) 
+                print "ip address is:" + ipAddress
+                addresses.append(ipAddress)
+            return addresses
 
 def __return_ip_address_from_ifconfig_output(output):
     addresses = __return_ip_addresses_from_ifconfig_output(output)
