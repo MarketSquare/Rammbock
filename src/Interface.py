@@ -4,9 +4,9 @@ from random import randint
 from sys import platform
 
 
-OSX = 'darwin'
-LINUX = 'linux2'
-WINDOWS = 'win32'
+OSX = ['darwin']
+LINUX = ['linux2', 'linux']
+WINDOWS = ['win32']
 
 def get_ip_address(ifname):
     """
@@ -22,7 +22,7 @@ def create_interface_alias(ifname, ip_address, netmask):
     """ Creates interface """
     virtual_if_name = __get_free_interface_alias(ifname)
     print "ifconfig", virtual_if_name, ip_address, "netmask", netmask
-    if platform == OSX:
+    if platform in OSX:
         process = subprocess.Popen([__get_ifconfig_cmd(), virtual_if_name, 'alias', ip_address, "netmask", netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     else:
         process = subprocess.Popen([__get_ifconfig_cmd(), virtual_if_name, ip_address, "netmask", netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -46,7 +46,7 @@ def check_interface_for_ip(ifname, ip):
 def del_alias(ifname, ip):
     """Deletes this interface"""
     print "ifconfig", ifname, "down"
-    if platform == OSX:
+    if platform in OSX:
         process = subprocess.Popen([__get_ifconfig_cmd(), ifname, '-alias', ip], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     else:
         process = subprocess.Popen([__get_ifconfig_cmd(), ifname, "down"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -55,7 +55,7 @@ def del_alias(ifname, ip):
 
 def __return_ip_addresses_from_ifconfig_output(output):
     addresses = []
-    if platform == WINDOWS:
+    if platform in WINDOWS:
         print output
         return '127.0.0.1'
     else:
@@ -74,7 +74,7 @@ def __return_ip_address_from_ifconfig_output(output):
         return addresses[0]
 
 def __get_free_interface_alias(ifname):
-    if platform == 'darwin':
+    if platform in OSX: 
         return ifname
     else:
         while True:
@@ -83,9 +83,9 @@ def __get_free_interface_alias(ifname):
                 return virtual_if_name
 
 def __get_ifconfig_cmd():
-    if platform == OSX:
+    if platform in OSX:
         return '/sbin/ifconfig'
-    elif platform == WINDOWS:
+    elif platform in WINDOWS:
         return 'ipconfig'
     else:
         return '/sbin/ifconfig'
