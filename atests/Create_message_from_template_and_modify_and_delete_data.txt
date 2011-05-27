@@ -1,0 +1,54 @@
+*** Settings ***
+
+Test Setup    Use Application Protocol And Create Message
+
+
+*** Test Cases ***
+
+Check Header
+    ${header}=  Get Header Field  ${message}  version
+    Should Be Equal  ${header}  1
+
+Check Information Element
+    ${ie}=  Get Information Element  ${message}  timezone
+    Should Be Equal  ${ie}  UTC+2
+
+Add Information Element
+    Add Information Element  ${message}  foobar  zig
+    ${ie}=  Get Information Element  ${message}  foobar
+    Should Be Equal  ${ie}  foobar
+
+Add Sub Information Element
+    Add Information Element  ${message}  foo.bar  zig
+    ${ie}=  Get Information Element  ${message}  foo.bar
+    Should Be Equal  ${ie}  zig
+
+Modify Header
+    Modify Header  ${message}  version  2
+    ${header}=  Get Header Field  ${message}  version
+    Should Be Equal  ${header}  2
+
+Modify Information Element
+    Modify Information Element  ${message}  timezone  UTC+3
+    ${ie}=  Get Information Element  ${message}  timezone
+    Should Be Equal  ${ie}  UTC+3
+
+Modify Sub Information Element
+    Modify Information Element  ${message}  timezone.length  1
+    ${ie}=  Get Information Element  ${message}  timezone.length
+    Should Be Equal  ${ie}  UTC+3
+
+Delete Information Element
+    Delete Information Element  ${message}  timezone
+    Run Keyword And Expect Failure  Get Information Element  ${message}  timezone
+
+Delete Sub Information Element
+    Delete Information Element  ${message}  timezone.length
+    Run Keyword And Expect Failure  Get Information Element  ${message}  timezone.length
+
+
+
+*** Keywords ***
+Use Application Protocol And Create Message
+    Use Application Protocol  FOO  BAR 
+    ${message}=  Create Message  ZIG_fdssa

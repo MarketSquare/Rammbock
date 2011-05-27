@@ -1,0 +1,7 @@
+*** Settings ***
+Test Setup    Use Application Protocol And Create Message
+
+*** Test Cases ***
+    Send Message  FOO  BAR  ${message}
+    ${message2}=  Receive Message  BAR  FOO  ${message}
+    Should Be True  ${message2}
