@@ -51,4 +51,4 @@ Delete Sub Information Element
 *** Keywords ***
 Use Application Protocol And Create Message
     Use Application Protocol  FOO  BAR 
-    ${message}=  Create Message  ZIG_fdssa
+    Create Message  ZIG_fdssa

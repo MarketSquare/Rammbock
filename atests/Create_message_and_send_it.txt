@@ -2,6 +2,6 @@
 Test Setup    Use Application Protocol And Create Message
 
 *** Test Cases ***
-    Send Message  FOO  BAR  ${message}
-    ${message2}=  Receive Message  BAR  FOO  ${message}
+    Client Sends Message ${message}
+    ${message2}=  Server Receives data  ${message}
     Should Be True  ${message2}
