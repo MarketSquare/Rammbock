@@ -1,11 +1,11 @@
 *** Settings ***
-Library         rammbock.Rammbock
-Resource        resources/data_transfer.txt
-Resource        resources/server_client.txt
 Test Setup      TCP Server and Client are Initialized
 Test Teardown   Close Connections
 Default Tags    regression
- 
+Library         rammbock.Rammbock
+Resource        resources/data_transfer.txt
+Resource        resources/server_client.txt
+
 *** Test Cases ***
 Send packet from Client to Server
     Single Client Transfers Data
@@ -26,3 +26,6 @@ Send and receive multiple streams over TCP
     Send Packet Stream From Single Server To Single Client
     Send Packet Stream From Single Client To Single Server
     Send Packet Stream From Single Server To Single Client
+
+One server communicate with multiple clients.
+
