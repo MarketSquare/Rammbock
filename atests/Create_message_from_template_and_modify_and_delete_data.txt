@@ -1,17 +1,20 @@
 *** Settings ***
-
+Library       rammbock.Rammbock
+Resource      resources/Messaging.txt 
 Test Setup    Use Application Protocol And Create Message
 
 
 *** Test Cases ***
 
 Check Header
-    ${header}=  Get Header Field  ${message}  version
-    Should Be Equal  ${header}  1
+    ${header}=  Get Header Field  protocol
+    Should Be Equal  ${header}  testApplicationProtocol
 
 Check Information Element
-    ${ie}=  Get Information Element  ${message}  timezone
-    Should Be Equal  ${ie}  UTC+2
+    ${ie}=  Get Information Element  message
+    Should Be Equal  ${ie}  Hello world!
+    ${ie2}=  Get Information Element  nested.test
+    Should Be Equal  ${ie2}  test
 
 Add Information Element
     Add Information Element  ${message}  foobar  zig
@@ -48,7 +51,4 @@ Delete Sub Information Element
 
 
 
-*** Keywords ***
-Use Application Protocol And Create Message
-    Use Application Protocol  FOO  BAR 
-    Create Message  ZIG_fdssa
+

@@ -1,7 +1,11 @@
 *** Settings ***
+Library       rammbock.Rammbock
+Resource      resources/Messaging.txt 
 Test Setup    Use Application Protocol And Create Message
 
+
 *** Test Cases ***
-    Client Sends Message ${message}
-    ${message2}=  Server Receives data  ${message}
+Send Message
+    Client Sends Message
+    ${message2}=  Server Receives data
     Should Be True  ${message2}

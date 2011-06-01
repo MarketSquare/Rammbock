@@ -1,0 +1,8 @@
+<message>
+    <header name="protocol" length="22">testApplicationProtocol</header>
+    <ie name="message" length="11">Hello world!</ie>
+    <ie name="nested">
+        <ie name="test" length="4">test</ie>
+    </ie>
+</message>
+
