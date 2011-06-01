@@ -3,7 +3,7 @@ from Server import UDPServer, TCPServer
 import Server
 import Client
 import Encode
-from XmlParser import xml2obj
+import XmlParser
 from os import getcwd
 
 class Rammbock(object):
@@ -73,7 +73,7 @@ class Rammbock(object):
     def create_message(self, name):
         print getcwd()
         file = open(getcwd() + '/xml/' + name + '.xml')
-        self.message = xml2obj(file)
+        self.message = XmlParser.xml2obj(file)
 
     def get_header_field(self, name):
         for hdr in self.message.header:
@@ -88,3 +88,23 @@ class Rammbock(object):
             if fetchable.name == name:
                 break
         return fetchable.data
+
+    def add_information_element(self, name, value=None):
+        splitted = name.rsplit('.')
+        self._add_ie_to_node(self.message.ie, splitted, value) 
+
+    def _add_ie_to_node(self, node, name, value):
+        if len(name) > 0:
+            try:
+                fetchable = next(x for x in node if x.name == name[0])
+            except StopIteration:
+                class Object:
+                    pass
+                add = XmlParser.DataNode()
+                add.name = name[0]
+                add.ie = []
+                node.append(add)
+                fetchable = next(x for x in node if x.name == name[0])
+            if len(name) is 1:
+                fetchable.data = value
+            self._add_ie_to_node(fetchable.ie, name[1:], value)

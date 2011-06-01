@@ -13,18 +13,23 @@ Check Header
 Check Information Element
     ${ie}=  Get Information Element  message
     Should Be Equal  ${ie}  Hello world!
-    ${ie2}=  Get Information Element  nested.test
-    Should Be Equal  ${ie2}  test
+
+Check Sub Information Element
+    ${ie}=  Get Information Element  nested.test
+    Should Be Equal  ${ie}  test
 
 Add Information Element
-    Add Information Element  ${message}  foobar  zig
-    ${ie}=  Get Information Element  ${message}  foobar
-    Should Be Equal  ${ie}  foobar
+    Add Information Element  foobar  zig
+    ${ie}=  Get Information Element  foobar
+    Should Be Equal  ${ie}  zig
 
 Add Sub Information Element
-    Add Information Element  ${message}  foo.bar  zig
-    ${ie}=  Get Information Element  ${message}  foo.bar
+    Add Information Element  foo.bar  zig
+    ${ie}=  Get Information Element  foo.bar
     Should Be Equal  ${ie}  zig
+
+Add Header Element
+    Fail
 
 Modify Header
     Modify Header  ${message}  version  2
@@ -49,6 +54,5 @@ Delete Sub Information Element
     Delete Information Element  ${message}  timezone.length
     Run Keyword And Expect Failure  Get Information Element  ${message}  timezone.length
 
-
-
-
+Delete Header
+    Fail
