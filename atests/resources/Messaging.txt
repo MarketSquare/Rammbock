@@ -1,8 +1,13 @@
 *** Settings ***
-Library    rammbock.Rammbock
-
+Library         rammbock.Rammbock
+Resource        server_client.txt
 
 *** Keywords ***
 Use Application Protocol And Create Message
     Use Application Protocol  FOO  1
     Create Message  test
+
+Initialize UDP Client and Server and Use Application Protocol and Create Message
+    Use Application Protocol And Create Message
+    UDP Server and Client are initialized
+

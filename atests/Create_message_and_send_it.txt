@@ -1,11 +1,11 @@
 *** Settings ***
-Library       rammbock.Rammbock
-Resource      resources/Messaging.txt 
-Test Setup    Use Application Protocol And Create Message
-
+Test Setup      Initialize UDP Client and Server and Use Application Protocol and Create Message
+Library         rammbock.Rammbock
+Resource        resources/Messaging.txt
 
 *** Test Cases ***
 Send Message
     Client Sends Message
     ${message2}=  Server Receives data
     Should Be True  ${message2}
+

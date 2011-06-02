@@ -1,5 +1,8 @@
-*** Keywords ***
+*** Variables ***
+${PHYSICAL_INTERFACE}  ${LOOPBACK_DEVICE}
+${PORT}  3011
 
+*** Keywords ***
 UDP Server and Client are initialized
     Start UDP Server  ${PHYSICAL_INTERFACE}  ${PORT}
     Create UDP Client
@@ -23,4 +26,5 @@ Check Server Existence
 Check Client Existence
     [Arguments]  ${clientname}  ${boolean}
     ${status}=  Check Client Status  ${clientname}
-    Should Be Equal  ${status}  ${boolean} 
+    Should Be Equal  ${status}  ${boolean}
+
