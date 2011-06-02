@@ -1,13 +1,23 @@
 
 def encode_to_bin(message):
     whole_message = ""
+    whole_message += _get_headers_from_msg_object(message)
+    whole_message += _get_ie_from_msg_object(message)
+    return whole_message
+
+def _get_headers_from_msg_object(message):
+    headers = ""
     for header in message.header:
-        whole_message += header.name + " "
-        whole_message += header.data + " "
-    whole_message += " "
+        headers += header.name + " "
+        headers += header.data + " "
+        print headers
+        return headers
+        
+def _get_ie_from_msg_object(message):
+    ies = ""
     for ie in message.ie:
         print ie.name
-        whole_message += ie.name + " "
-        whole_message += ie.data + " "
-        print whole_message
-    return whole_message
+        ies += ie.name + " "
+        ies += ie.data + " "
+        print ies
+        return ies
