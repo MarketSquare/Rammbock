@@ -1,6 +1,5 @@
 *** Variables ***
 ${EXPECTED_STRING}  ismo_rulettaa
-${HOST}  localhost
 ${VIRTUAL_HOST}  1.1.1.1
 ${RECEIVED_STRING}  ${EMPTY}
 ${EXPECTED_MODIFIED_STRING}  ismo_rulettaa_koviten
