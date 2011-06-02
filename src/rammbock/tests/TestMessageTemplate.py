@@ -20,10 +20,9 @@ class Test(unittest.TestCase):
         assert_equal (expected.ie[0].name, actual.ie[0].name)
 
     def test_encode_object_to_bin(self):
-        print self.message
         bin_message = encode_to_bin(self.message)
         #TODO: check the size of actual content
-        assert_equal(bin_message, 'protocol testApplicationProtocol message Hello world! ')
+        assert_equal(bin_message, 'protocol testApplicationProtocol message Hello world! test test ')
 
     def _create_example_message(self):
         class Object:
@@ -35,17 +34,17 @@ class Test(unittest.TestCase):
             header[0].length = u'22'
             header[0].name = u'protocol'
             header[0].data = u'testApplicationProtocol'
-            ie = [None]
+            ie = [None, None]
             ie[0] = Object()
             ie[0].length= u'11'
             ie[0].name= u'message'
             ie[0].data= u'Hello world!'
-#            ie[1] = Object()
-#            ie[1].ie = [None]
-#            ie[1].ie[0] = Object()
-#            ie[1].ie[0].length = u'4'
-#            ie[1].ie[0].name= u'test'
-#            ie[1].ie[0].data= u'test'
+            ie[1] = Object()
+            ie[1].ie = [None]
+            ie[1].ie[0] = Object()
+            ie[1].ie[0].length = u'4'
+            ie[1].ie[0].name= u'test'
+            ie[1].ie[0].data= u'test'
         return Message()
 
 
