@@ -16,6 +16,11 @@ class DataNode(object):
             return self._attrs.get(key,None)
         else:
             return [self][key]
+    def __delattr__(self, key):
+        if isinstance(key, basestring):
+            del self._attrs[key]
+        else:
+            del [self][key]
     def __contains__(self, name):
         return self._attrs.has_key(name)
     def __nonzero__(self):
@@ -83,4 +88,3 @@ def xml2obj(src):
     else:
         xml.sax.parse(src, builder)
     return builder.root._attrs.values()[0]
-

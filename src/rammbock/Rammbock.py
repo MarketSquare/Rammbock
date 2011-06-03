@@ -6,6 +6,11 @@ import Encode
 import XmlParser
 from os import getcwd
 
+
+import sys
+import traceback
+
+
 class Rammbock(object):
 
     def __init__(self):
@@ -71,7 +76,6 @@ class Rammbock(object):
         self.version = version
 
     def create_message(self, name):
-        print getcwd()
         file = open(getcwd() + '/xml/' + name + '.xml')
         self.message = XmlParser.xml2obj(file)
 
@@ -81,21 +85,25 @@ class Rammbock(object):
                 return hdr.data
 
     def get_information_element(self, name):
-        splitted = name.rsplit('.')
         fetchable = self.message
-        for f_name in splitted:
-            fetchable = next(x for x in fetchable.ie if x.name == f_name)
+        for f_name in name.rsplit('.'):
+            try:
+                fetchable = next(x for x in fetchable.ie if x.name == f_name)
+            except StopIteration:
+                raise "Information element not found!" 
         return fetchable.data
 
     def add_information_element(self, name, value=None):
-        splitted = name.rsplit('.')
-        self._add_ie_to_node(self.message.ie, splitted, value) 
+        self._add_ie_to_node(self.message.ie, name.rsplit('.'), value) 
+
+    def modify_information_element(self, name, value):
+        self.add_information_element(name, value)
 
     def _add_ie_to_node(self, node, name, value):
         if len(name) > 0:
             try:
                 fetchable = next(x for x in node if x.name == name[0])
-            except StopIteration:
+            except StopIteration: #not found -> add
                 add = XmlParser.DataNode()
                 add.name = name[0]
                 add.ie = []
@@ -105,6 +113,14 @@ class Rammbock(object):
                 fetchable.data = value
             self._add_ie_to_node(fetchable.ie, name[1:], value)
 
-    #def delete_information_element(self, name):
-        #splitted = name.rsplit('.')
-
+    def delete_information_element(self, name):
+        splitted = name.rsplit('.')
+        fetchable = self.message
+        for f_name in splitted:
+            a_fetchable = next((i,x) for i,x in enumerate(fetchable.ie) if x.name == f_name)
+            if f_name is splitted[-1]:
+                try:
+                    del fetchable.ie[a_fetchable[0]]
+                except AttributeError:
+                    del fetchable.ie
+            fetchable = a_fetchable[1]

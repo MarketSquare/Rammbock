@@ -37,22 +37,22 @@ Modify Header
     Should Be Equal  ${header}  2
 
 Modify Information Element
-    Modify Information Element  ${message}  timezone  UTC+3
-    ${ie}=  Get Information Element  ${message}  timezone
-    Should Be Equal  ${ie}  UTC+3
+    Modify Information Element  message  Hello Ilmari!
+    ${ie}=  Get Information Element  message
+    Should Be Equal  ${ie}  Hello Ilmari!
 
 Modify Sub Information Element
-    Modify Information Element  ${message}  timezone.length  1
-    ${ie}=  Get Information Element  ${message}  timezone.length
-    Should Be Equal  ${ie}  UTC+3
+    Modify Information Element  nested.test  testing this out
+    ${ie}=  Get Information Element  nested.test
+    Should Be Equal  ${ie}  testing this out
 
 Delete Information Element
-    Delete Information Element  ${message}  timezone
-    Run Keyword And Expect Failure  Get Information Element  ${message}  timezone
+    Delete Information Element  message
+    Run Keyword And Expect Error  *  Get Information Element  message
 
 Delete Sub Information Element
-    Delete Information Element  ${message}  timezone.length
-    Run Keyword And Expect Failure  Get Information Element  ${message}  timezone.length
+    Delete Information Element  nested.test
+    Run Keyword And Expect Error  *  Get Information Element  nested.test
 
 Delete Header
     Fail
