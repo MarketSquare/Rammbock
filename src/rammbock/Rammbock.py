@@ -82,11 +82,9 @@ class Rammbock(object):
 
     def get_information_element(self, name):
         splitted = name.rsplit('.')
-        fetchable = next(x for x in self.message.ie if x.name == splitted[0])
-        for name in splitted[1:]:
-            fetchable = next(x for x in fetchable.ie if x.name == name)
-            if fetchable.name == name:
-                break
+        fetchable = self.message
+        for f_name in splitted:
+            fetchable = next(x for x in fetchable.ie if x.name == f_name)
         return fetchable.data
 
     def add_information_element(self, name, value=None):
@@ -98,13 +96,15 @@ class Rammbock(object):
             try:
                 fetchable = next(x for x in node if x.name == name[0])
             except StopIteration:
-                class Object:
-                    pass
                 add = XmlParser.DataNode()
                 add.name = name[0]
                 add.ie = []
                 node.append(add)
-                fetchable = next(x for x in node if x.name == name[0])
+                fetchable = add
             if len(name) is 1:
                 fetchable.data = value
             self._add_ie_to_node(fetchable.ie, name[1:], value)
+
+    #def delete_information_element(self, name):
+        #splitted = name.rsplit('.')
+
