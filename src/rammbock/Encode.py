@@ -10,14 +10,20 @@ def _get_headers_from_msg_object(message):
     for header in message.header:
         headers += header.name + " "
         headers += header.data + " "
-        print headers
-        return headers
+    return headers
         
 def _get_ie_from_msg_object(message):
-    ies = ""
-    for ie in message.ie:
-        print ie.name
-        ies += ie.name + " "
-        ies += ie.data + " "
-        print ies
-        return ies
+    return _get_data_from_ie("", message.ie)
+ 
+def _get_data_from_ie(ies, list):
+    for ie in list:
+        if ie is None:
+            continue
+        if hasattr(ie, "ie"): 
+            ies = _get_data_from_ie(ies, ie.ie)
+        else:
+            ies += _format_ie(ie)
+    return ies
+
+def _format_ie(ie):
+    return ie.name + " " + ie.data + " "
