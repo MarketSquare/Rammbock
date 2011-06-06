@@ -100,7 +100,7 @@ class Rammbock(object):
         self.add_information_element(name, value)
 
     def _add_ie_to_node(self, node, name, value):
-        if len(name) > 0:
+        if name:
             try:
                 fetchable = next(x for x in node if x.name == name[0])
             except StopIteration: #not found -> add
@@ -124,3 +124,11 @@ class Rammbock(object):
                 except AttributeError:
                     del fetchable.ie
             fetchable = a_fetchable[1]
+
+    def delete_header_field(self, name):
+        if next(x for x in self.message.header if x.name == name):
+            try:
+                del self.message.header[name]
+            except AttributeError:
+                del self.message.header
+
