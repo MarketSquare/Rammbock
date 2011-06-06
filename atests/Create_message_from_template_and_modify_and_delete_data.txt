@@ -32,6 +32,8 @@ Add Header Field
     Add Header Field  host  localhost
     ${header}=  Get Header Field  host
     Should Be Equal  ${header}  localhost
+    ${header}=  Get Header Field  protocol
+    Should Be Equal  ${header}  testApplicationProtocol
 
 Modify Header
     Modify Header  version  2
@@ -60,7 +62,7 @@ Delete Header Field Which Exists
     Delete Header Field  protocol
     Run Keyword And Expect Error  *  Get Header Field  protocol
 
-Delete header field which does not exist
+Try To Delete header field which does not exist
     Run Keyword And Expect Error  *  Delete Header Field  protocal
     ${header}=  Get Header Field  protocol
     Should Be Equal  ${header}  testApplicationProtocol

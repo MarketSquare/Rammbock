@@ -99,6 +99,15 @@ class Rammbock(object):
     def modify_information_element(self, name, value):
         self.add_information_element(name, value)
 
+    def add_header_field(self, name, value):
+        add = XmlParser.DataNode()
+        add.name = name
+        add.data = value
+        if len(self.message.header) is 1:
+            self.message.header = [self.message.header]
+        self.message.header.append(add)
+
+
     def _add_ie_to_node(self, node, name, value):
         if name:
             try:
