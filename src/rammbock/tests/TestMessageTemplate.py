@@ -40,6 +40,7 @@ class Test(unittest.TestCase):
             ie[0].name= u'message'
             ie[0].data= u'Hello world!'
             ie[1] = Object()
+            # tal ei oo name, data, length
             ie[1].ie = [None]
             ie[1].ie[0] = Object()
             ie[1].ie[0].length = u'4'
