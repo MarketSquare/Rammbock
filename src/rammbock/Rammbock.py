@@ -7,10 +7,6 @@ import XmlParser
 from os import getcwd
 
 
-import sys
-import traceback
-
-
 class Rammbock(object):
 
     def __init__(self):
@@ -88,9 +84,9 @@ class Rammbock(object):
         fetchable = self.message
         for f_name in name.rsplit('.'):
             try:
-                fetchable = next(x for x in fetchable.ie if x.name == f_name)
+                fetchable = (x for x in fetchable.ie if x.name == f_name).next()
             except StopIteration:
-                raise "Information element not found!" 
+                raise Exception('Information element not found!')
         return fetchable.data
 
     def add_information_element(self, name, value=None):
@@ -109,7 +105,7 @@ class Rammbock(object):
 
     def modify_header_field(self, name, value):
         try:
-            a = next((i,x) for i,x in enumerate(self.message.header) if x.name == name)
+            a = ((i,x) for i,x in enumerate(self.message.header) if x.name == name).next()
             self.message.header[a[0]].data = value
         except StopIteration:
             self.add_header_field(name, value)
@@ -117,7 +113,7 @@ class Rammbock(object):
     def _add_ie_to_node(self, node, name, value):
         if name:
             try:
-                fetchable = next(x for x in node if x.name == name[0])
+                fetchable = (x for x in node if x.name == name[0]).next()
             except StopIteration: #not found -> add
                 add = XmlParser.DataNode()
                 add.name = name[0]
@@ -132,7 +128,7 @@ class Rammbock(object):
         splitted = name.rsplit('.')
         fetchable = self.message
         for f_name in splitted:
-            a_fetchable = next((i,x) for i,x in enumerate(fetchable.ie) if x.name == f_name)
+            a_fetchable = ((i,x) for i,x in enumerate(fetchable.ie) if x.name == f_name).next()
             if f_name is splitted[-1]:
                 try:
                     del fetchable.ie[a_fetchable[0]]
@@ -141,7 +137,7 @@ class Rammbock(object):
             fetchable = a_fetchable[1]
 
     def delete_header_field(self, name):
-        a =  next((i,x) for i,x in enumerate(self.message.header) if x.name == name)
+        a = ((i,x) for i,x in enumerate(self.message.header) if x.name == name).next()
         try:
             del self.message.header[a[0]]
         except AttributeError:
