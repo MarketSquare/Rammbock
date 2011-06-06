@@ -107,6 +107,12 @@ class Rammbock(object):
             self.message.header = [self.message.header]
         self.message.header.append(add)
 
+    def modify_header_field(self, name, value):
+        try:
+            a = next((i,x) for i,x in enumerate(self.message.header) if x.name == name)
+            self.message.header[a[0]].data = value
+        except StopIteration:
+            self.add_header_field(name, value)
 
     def _add_ie_to_node(self, node, name, value):
         if name:
@@ -135,9 +141,9 @@ class Rammbock(object):
             fetchable = a_fetchable[1]
 
     def delete_header_field(self, name):
-        if next(x for x in self.message.header if x.name == name):
-            try:
-                del self.message.header[name]
-            except AttributeError:
-                del self.message.header
+        a =  next((i,x) for i,x in enumerate(self.message.header) if x.name == name)
+        try:
+            del self.message.header[a[0]]
+        except AttributeError:
+            del self.message.header
 

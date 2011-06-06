@@ -2,6 +2,7 @@
 Library       rammbock.Rammbock
 Resource      resources/Messaging.txt 
 Test Setup    Use Application Protocol And Create Message
+Default Tags  Regression
 
 
 *** Test Cases ***
@@ -36,14 +37,17 @@ Add Header Field
     Should Be Equal  ${header}  testApplicationProtocol
 
 Modify Header
-    Modify Header  version  2
-    ${header}=  Get Header Field  version
-    Should Be Equal  ${header}  2
+    Modify Header Field  protocol  tcp
+    ${header}=  Get Header Field  protocol
+    Should Be Equal  ${header}  tcp
 
 Modify Information Element
     Modify Information Element  message  Hello Ilmari!
     ${ie}=  Get Information Element  message
     Should Be Equal  ${ie}  Hello Ilmari!
+    Modify Information Element  nested.test  taste
+    ${ie}=  Get Information Element  nested.test
+    Should Be Equal  ${ie}  taste
 
 Modify Sub Information Element
     Modify Information Element  nested.test  testing this out
