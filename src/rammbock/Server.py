@@ -15,7 +15,7 @@ DEFAULT_IP = '127.0.0.1'
 class _Server(object):
     connection = None
     transport_protocol = None
-    
+
     def __init__(self, servername=DEFAULT_NAME): 
         self._servername = servername
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

@@ -26,7 +26,3 @@ Send and receive multiple streams over TCP
     Send Packet Stream From Single Server To Single Client
     Send Packet Stream From Single Client To Single Server
     Send Packet Stream From Single Server To Single Client
-
-One server communicate with multiple clients.
-    [Tags]  ${EMPTY}
-
