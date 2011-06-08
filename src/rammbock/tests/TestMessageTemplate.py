@@ -21,7 +21,6 @@ class Test(unittest.TestCase):
 
     def test_encode_object_to_bin(self):
         bin_message = encode_to_bin(self.message)
-        #TODO: check the size of actual content
         assert_equal(bin_message, 'protocol testApplicationProtocol message Hello world! test test ')
 
     def _create_example_message(self):
