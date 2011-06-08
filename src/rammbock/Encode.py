@@ -1,8 +1,8 @@
-
 def encode_to_bin(message):
     whole_message = ""
     whole_message += _get_headers_from_msg_object(message)
     whole_message += _get_ie_from_msg_object(message)
+    print whole_message
     return whole_message
 
 def _get_headers_from_msg_object(message):
@@ -19,7 +19,9 @@ def _get_data_from_ie(ies, list):
     for ie in list:
         if ie is None:
             continue
-        if hasattr(ie, "ie"): 
+        if hasattr(ie, "ie"):
+            if ie.ie == None:
+                continue
             ies = _get_data_from_ie(ies, ie.ie)
         else:
             ies += _format_ie(ie)
