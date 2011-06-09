@@ -3,9 +3,7 @@ from Server import UDPServer, TCPServer
 import Server
 import Client
 import Encode
-import XmlParser
 import imp
-from os import getcwd
 
 
 class Rammbock(object):
