@@ -40,14 +40,10 @@ class DataNode(object):
 
     def _add_xml_attr(self, name, value):
         if name in self._attrs:
-            # multiple attribute of the same name are represented by a list
             children = self._attrs[name]
-            if not isinstance(children, list):
-                children = [children]
-                self._attrs[name] = children
             children.append(value)
         else:
-            self._attrs[name] = value
+            self._attrs[name] = [value]
  
     def __str__(self):
         return self.data or ''

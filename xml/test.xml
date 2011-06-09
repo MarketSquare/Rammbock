@@ -1,8 +1,10 @@
 <message>
     <header name="protocol" length="22">testApplicationProtocol</header>
+    <header name="protocol2" length="22">testApplicationProtocol2</header>
     <ie name="message" length="11">Hello world!</ie>
     <ie name="nested">
         <ie name="test" length="4">test</ie>
+        <ie name="test2" length="4">test2</ie>
     </ie>
 </message>
 

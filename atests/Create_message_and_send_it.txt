@@ -7,5 +7,5 @@ Resource        resources/Messaging.txt
 Send Message
     Client Sends Message
     ${message2}=  Server Receives data
-    Should Be True  ${message2}
+    Should Not Be Empty  ${message2}
 

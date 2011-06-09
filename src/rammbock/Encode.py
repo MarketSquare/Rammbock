@@ -6,26 +6,7 @@ def encode_to_bin(message):
     return whole_message
 
 def _get_headers_from_msg_object(message):
-    headers = ""
-    for header in message.header:
-        headers += header.name + " "
-        headers += header.data + " "
-    return headers
-        
-def _get_ie_from_msg_object(message):
-    return _get_data_from_ie("", message.ie)
- 
-def _get_data_from_ie(ies, list):
-    for ie in list:
-        if ie is None:
-            continue
-        if hasattr(ie, "ie"):
-            if ie.ie == None:
-                continue
-            ies = _get_data_from_ie(ies, ie.ie)
-        else:
-            ies += _format_ie(ie)
-    return ies
+    return " ".join(x for _ , x in message.header)
 
-def _format_ie(ie):
-    return ie.name + " " + ie.data + " "
+def _get_ie_from_msg_object(message):
+    return " ".join(x for _ , x in message.ie)

@@ -4,6 +4,7 @@ import Server
 import Client
 import Encode
 import XmlParser
+import imp
 from os import getcwd
 
 
@@ -72,8 +73,8 @@ class Rammbock(object):
         self.version = version
 
     def create_message(self, name):
-        file = open(getcwd() + '/xml/' + name + '.xml')
-        self.message = XmlParser.xml2obj(file)
+        msg = imp.load_source("Message", "src/rammbock/protocols/"+self.application_protocol+"/"+self.version+".py")
+        self.message = msg.Message(name)
 
     def get_header_field(self, name):
         for hdr in self.message.header:
