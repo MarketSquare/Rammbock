@@ -75,70 +75,28 @@ class Rammbock(object):
         self.message = msg.Message(name)
 
     def get_header_field(self, name):
-        for hdr in self.message.header:
-            if hdr.name == name:
-                return hdr.data
+        return (x for _, x in self.message.header if _ == name).next()
 
     def get_information_element(self, name):
-        fetchable = self.message
-        for f_name in name.rsplit('.'):
-            try:
-                fetchable = (x for x in fetchable.ie if x.name == f_name).next()
-            except StopIteration:
-                raise Exception('Information element not found!')
-        return fetchable.data
+        return (x for _, x in self.message.ie if _ == name).next()
 
     def add_information_element(self, name, value=None):
-        self._add_ie_to_node(self.message.ie, name.rsplit('.'), value) 
+        self.message.ie.append((name, value))
 
     def modify_information_element(self, name, value):
-        self.add_information_element(name, value)
+        self.message.ie[self._id_to_name(self.message.ie, name)] = (name,value)
 
     def add_header_field(self, name, value):
-        add = XmlParser.DataNode()
-        add.name = name
-        add.data = value
-        if len(self.message.header) is 1:
-            self.message.header = [self.message.header]
-        self.message.header.append(add)
+        self.message.header.append((name, value))
 
     def modify_header_field(self, name, value):
-        try:
-            a = ((i,x) for i,x in enumerate(self.message.header) if x.name == name).next()
-            self.message.header[a[0]].data = value
-        except StopIteration:
-            self.add_header_field(name, value)
-
-    def _add_ie_to_node(self, node, name, value):
-        if name:
-            try:
-                fetchable = (x for x in node if x.name == name[0]).next()
-            except StopIteration: #not found -> add
-                add = XmlParser.DataNode()
-                add.name = name[0]
-                add.ie = []
-                node.append(add)
-                fetchable = add
-            if len(name) is 1:
-                fetchable.data = value
-            self._add_ie_to_node(fetchable.ie, name[1:], value)
+        self.message.header[self._id_to_name(self.message.header, name)] = (name,value)
 
     def delete_information_element(self, name):
-        splitted = name.rsplit('.')
-        fetchable = self.message
-        for f_name in splitted:
-            a_fetchable = ((i,x) for i,x in enumerate(fetchable.ie) if x.name == f_name).next()
-            if f_name is splitted[-1]:
-                try:
-                    del fetchable.ie[a_fetchable[0]]
-                except AttributeError:
-                    del fetchable.ie
-            fetchable = a_fetchable[1]
+        del self.message.ie[self._id_to_name(self.message.ie, name)]
 
     def delete_header_field(self, name):
-        a = ((i,x) for i,x in enumerate(self.message.header) if x.name == name).next()
-        try:
-            del self.message.header[a[0]]
-        except AttributeError:
-            del self.message.header
+        del self.message.header[self._id_to_name(self.message.header, name)]
 
+    def _id_to_name(self, which, name):
+        return (x for x, i in enumerate(which) if i[0] == name).next()

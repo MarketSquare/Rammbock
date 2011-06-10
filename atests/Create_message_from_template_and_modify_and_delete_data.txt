@@ -2,17 +2,19 @@
 Test Setup      Use Application Protocol And Create Message
 Library         rammbock.Rammbock
 Resource        resources/Messaging.txt
+Default Tags    regression
 
 *** Test Cases ***
 Check Header
-    ${header}=  Get Header Field  protocol
-    Should Be Equal  ${header}  testApplicationProtocol
+    ${header}=  Get Header Field  Request Method
+    Should Be Equal  ${header}  GET
 
 Check Information Element
-    ${ie}=  Get Information Element  message
-    Should Be Equal  ${ie}  Hello world!
+    ${ie}=  Get Information Element  HOST
+    Should Be Equal  ${ie}  www.iltalehti.fi
 
 Check Sub Information Element
+    [Tags]  \
     ${ie}=  Get Information Element  nested.test
     Should Be Equal  ${ie}  test
 
@@ -22,6 +24,7 @@ Add Information Element
     Should Be Equal  ${ie}  zig
 
 Add Sub Information Element
+    [Tags]  \
     Add Information Element  foo.bar  zig
     ${ie}=  Get Information Element  foo.bar
     Should Be Equal  ${ie}  zig
@@ -30,41 +33,35 @@ Add Header Field
     Add Header Field  host  localhost
     ${header}=  Get Header Field  host
     Should Be Equal  ${header}  localhost
-    ${header}=  Get Header Field  protocol
-    Should Be Equal  ${header}  testApplicationProtocol
 
 Modify Header
-    Modify Header Field  protocol  tcp
-    ${header}=  Get Header Field  protocol
-    Should Be Equal  ${header}  tcp
+    Modify Header Field  Request Version  HTTP/1.0
+    ${header}=  Get Header Field  Request Version
+    Should Be Equal  ${header}  HTTP/1.0
 
 Modify Information Element
-    Modify Information Element  message  Hello Ilmari!
-    ${ie}=  Get Information Element  message
-    Should Be Equal  ${ie}  Hello Ilmari!
-    Modify Information Element  nested.test  taste
-    ${ie}=  Get Information Element  nested.test
-    Should Be Equal  ${ie}  taste
+    Modify Information Element  HOST  www.google.com
+    ${ie}=  Get Information Element  HOST
+    Should Be Equal  ${ie}  www.google.com
 
 Modify Sub Information Element
+    [Tags]  \
     Modify Information Element  nested.test  testing this out
     ${ie}=  Get Information Element  nested.test
     Should Be Equal  ${ie}  testing this out
 
 Delete Information Element
-    Delete Information Element  message
+    Delete Information Element  HOST
     Run Keyword And Expect Error  *  Get Information Element  message
 
 Delete Sub Information Element
+    [Tags]  \
     Delete Information Element  nested.test
     Run Keyword And Expect Error  *  Get Information Element  nested.test
 
 Delete Header Field Which Exists
-    Delete Header Field  protocol
-    Run Keyword And Expect Error  *  Get Header Field  protocol
+    Delete Header Field  Request Method
+    Run Keyword And Expect Error  *  Get Header Field  Request Method
 
-Try To Delete header field which does not exist
+Try To Delete header field Which does not exist
     Run Keyword And Expect Error  *  Delete Header Field  protocal
-    ${header}=  Get Header Field  protocol
-    Should Be Equal  ${header}  testApplicationProtocol
-
