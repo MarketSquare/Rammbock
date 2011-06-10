@@ -1,14 +1,24 @@
 *** Settings ***
-Test Setup      Connect To TCP server  google.com  80
+Test Setup      TCP Server and Client are Initialized
 Default Tags    regression
 Library         rammbock.Rammbock
 Resource        resources/Messaging.txt
 Resource        ../protocols/http/v1_1.txt
 
 *** Test Cases ***
-Send Message
-    [Setup]  Create TCP Client And Connect To server  inside.nokiasiemensnetworks.com  80
+Send HTTP Get Message And Acquire Response
+    [Tags]  no-ci  regression  system verification
+    [Setup]  Create TCP Client And Connect To server  google.com  80
     Send HTTP GET
     ${message}  Client Receives Data
     Log  ${message}=
+
+Send message
+    Send HTTP GET
+    Receive and verify data
+
+*** Keywords ***
+Receive and verify data
+    ${message}=  Server Receives Data
+    Should Contain  ${message}  Cache-control: max-age=0
 

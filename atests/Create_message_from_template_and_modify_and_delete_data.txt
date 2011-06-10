@@ -3,6 +3,7 @@ Test Setup      Use Application Protocol And Create Message
 Default Tags    regression
 Library         rammbock.Rammbock
 Resource        resources/Messaging.txt
+Resource        ../protocols/http/v1_1.txt
 
 *** Test Cases ***
 Check Header

@@ -64,7 +64,6 @@ class Rammbock(object):
 
     def client_sends_message(self, client_name=Client.DEFAULT_NAME, server_name=Server.DEFAULT_NAME):
         data_bin = Encode.encode_to_bin(self.message)
-        print data_bin
         self.client_sends_data(data_bin)
 
     def use_application_protocol(self, name, version=1):

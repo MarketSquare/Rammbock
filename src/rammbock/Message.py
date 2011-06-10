@@ -1,3 +1,4 @@
 class Message():
-    header = []
-    ie = []
+    def __init__(self):
+        self.header = []
+        self.ie = []
