@@ -1,0 +1,16 @@
+*** Keywords ***
+Send HTTP GET
+    Create HTTP GET message
+    Client Sends Message
+
+Create HTTP GET message
+    Create Message
+    Add Header  Request Method  GET
+    Add Header  Request URI  /
+    Add Header  Request Version  HTTP/1.1
+    Add Information Element  Host  google.com
+    Add Information Element  Connection  keep-alive
+    Add Information Element  Cache-control  max-age=0
+    Add Information Element  User-agent  rammbock
+    Add Information Element  Accept  text/html
+
