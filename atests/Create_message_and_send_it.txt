@@ -1,12 +1,14 @@
 *** Settings ***
-Test Setup      Initialize UDP Client and Server and Use Application Protocol and Create Message
+Test Setup      Connect To TCP server  google.com  80
 Default Tags    regression
 Library         rammbock.Rammbock
 Resource        resources/Messaging.txt
+Resource        ../protocols/http/v1_1.txt
 
 *** Test Cases ***
 Send Message
-    Client Sends Message
-    ${message2}=  Server Receives data
-    Should Not Be Empty  ${message2}
+    [Setup]  Create TCP Client And Connect To server  inside.nokiasiemensnetworks.com  80
+    Send HTTP GET
+    ${message}  Client Receives Data
+    Log  ${message}=
 

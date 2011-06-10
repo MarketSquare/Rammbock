@@ -3,7 +3,7 @@ from Server import UDPServer, TCPServer
 import Server
 import Client
 import Encode
-import imp
+from rammbock.Message import Message
 
 
 class Rammbock(object):
@@ -64,15 +64,15 @@ class Rammbock(object):
 
     def client_sends_message(self, client_name=Client.DEFAULT_NAME, server_name=Server.DEFAULT_NAME):
         data_bin = Encode.encode_to_bin(self.message)
+        print data_bin
         self.client_sends_data(data_bin)
 
     def use_application_protocol(self, name, version=1):
         self.application_protocol = name
         self.version = version
 
-    def create_message(self, name):
-        msg = imp.load_source("Message", "src/rammbock/protocols/"+self.application_protocol+"/"+self.version+".py")
-        self.message = msg.Message(name)
+    def create_message(self):
+        self.message = Message()
 
     def get_header_field(self, name):
         return (x for _, x in self.message.header if _ == name).next()
@@ -86,7 +86,7 @@ class Rammbock(object):
     def modify_information_element(self, name, value):
         self.message.ie[self._id_to_name(self.message.ie, name)] = (name,value)
 
-    def add_header_field(self, name, value):
+    def add_header(self, name, value):
         self.message.header.append((name, value))
 
     def modify_header_field(self, name, value):

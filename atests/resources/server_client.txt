@@ -13,10 +13,9 @@ Close Connections
     Close Client
     Close Server
 
-TCP Server and Client are initialized
+TCP Server and Client are Initialized
     Start TCP Server  ${PHYSICAL_INTERFACE}  ${PORT}
-    Create TCP Client
-    Connect to TCP server  ${HOST}  ${PORT}
+    Create TCP Client And Connect To Server  ${HOST}  ${PORT}
     accept tcp connection
 
 Check Server Existence
@@ -28,4 +27,9 @@ Check Client Existence
     [Arguments]  ${clientname}  ${boolean}
     ${status}=  Check Client Status  ${clientname}
     Should Be Equal  ${status}  ${boolean}
+
+Create TCP Client And Connect To Server
+    [Arguments]  ${host}  ${port}
+    Create TCP Client
+    Connect to TCP server  ${host}  ${port}
 

@@ -1,0 +1,3 @@
+class Message():
+    header = []
+    ie = []

@@ -1,8 +1,8 @@
 *** Settings ***
 Test Setup      Use Application Protocol And Create Message
+Default Tags    regression
 Library         rammbock.Rammbock
 Resource        resources/Messaging.txt
-Default Tags    regression
 
 *** Test Cases ***
 Check Header
@@ -10,11 +10,11 @@ Check Header
     Should Be Equal  ${header}  GET
 
 Check Information Element
-    ${ie}=  Get Information Element  HOST
-    Should Be Equal  ${ie}  www.iltalehti.fi
+    ${ie}=  Get Information Element  Host
+    Should Be Equal  ${ie}  google.com
 
 Check Sub Information Element
-    [Tags]  \
+    [Tags]  ${EMPTY}
     ${ie}=  Get Information Element  nested.test
     Should Be Equal  ${ie}  test
 
@@ -24,13 +24,13 @@ Add Information Element
     Should Be Equal  ${ie}  zig
 
 Add Sub Information Element
-    [Tags]  \
+    [Tags]  ${EMPTY}
     Add Information Element  foo.bar  zig
     ${ie}=  Get Information Element  foo.bar
     Should Be Equal  ${ie}  zig
 
 Add Header Field
-    Add Header Field  host  localhost
+    Add Header  host  localhost
     ${header}=  Get Header Field  host
     Should Be Equal  ${header}  localhost
 
@@ -40,22 +40,22 @@ Modify Header
     Should Be Equal  ${header}  HTTP/1.0
 
 Modify Information Element
-    Modify Information Element  HOST  www.google.com
-    ${ie}=  Get Information Element  HOST
+    Modify Information Element  Host  www.google.com
+    ${ie}=  Get Information Element  Host
     Should Be Equal  ${ie}  www.google.com
 
 Modify Sub Information Element
-    [Tags]  \
+    [Tags]  ${EMPTY}
     Modify Information Element  nested.test  testing this out
     ${ie}=  Get Information Element  nested.test
     Should Be Equal  ${ie}  testing this out
 
 Delete Information Element
-    Delete Information Element  HOST
+    Delete Information Element  Host
     Run Keyword And Expect Error  *  Get Information Element  message
 
 Delete Sub Information Element
-    [Tags]  \
+    [Tags]  ${EMPTY}
     Delete Information Element  nested.test
     Run Keyword And Expect Error  *  Get Information Element  nested.test
 
@@ -65,3 +65,4 @@ Delete Header Field Which Exists
 
 Try To Delete header field Which does not exist
     Run Keyword And Expect Error  *  Delete Header Field  protocal
+
