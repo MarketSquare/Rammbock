@@ -9,11 +9,11 @@ Resource        ../protocols/http/v1_1.txt
 Send HTTP Get Message And Acquire Response
     [Tags]  no-ci  regression  system verification
     [Setup]  Create TCP Client And Connect To server  google.com  80
-    Send HTTP GET
-    Receive Responce
+    Client Sends HTTP GET
+    Client Receives Responce
 
-Send message
-    Send HTTP GET
+Send and receive message
+    Client Sends HTTP GET
     Receive and verify data
 
 *** Keywords ***
@@ -21,11 +21,11 @@ Receive and verify data
     ${message}=  Server Receives Data
     Should Be Equal  ${message}  GET / HTTP/1.1\r\nHost: google.com\r\nConnection: keep-alive\r\nCache-control: max-age=0\r\nUser-agent: rammbock\r\nAccept: text/html\r\n\r\n
 
-Receive Responce
+Client Receives Responce
     ${message}  Client Receives Data
     Should not Be Empty  ${message}
 
-Send HTTP GET
+Client Sends HTTP GET
     Create Message
     Set HTTP GET
     Client Sends Message
