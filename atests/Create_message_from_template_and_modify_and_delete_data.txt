@@ -1,5 +1,5 @@
 *** Settings ***
-Test Setup      Use Application Protocol And Create Message
+Test Setup      Create HTTP Get Message
 Default Tags    regression
 Library         rammbock.Rammbock
 Resource        resources/Messaging.txt

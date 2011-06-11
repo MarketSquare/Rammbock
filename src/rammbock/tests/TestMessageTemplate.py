@@ -10,8 +10,7 @@ class Test(unittest.TestCase):
     def setUp(self):
         self.rammbock = Rammbock()
         self.message = self._create_example_message()
-        self.rammbock.use_application_protocol(TEST_APPLICATION_PROTOCOL)
-
+        
     def test_create_message(self):
         self.rammbock.create_message('test')
         actual = self.rammbock.message

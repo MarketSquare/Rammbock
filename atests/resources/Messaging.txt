@@ -4,10 +4,6 @@ Resource        server_client.txt
 Resource        ../protocols/http/v1_1.txt
 
 *** Keywords ***
-Use Application Protocol And Create Message
-    Use Application Protocol  test  v1
-    Create HTTP GET message
-
 Initialize UDP Client and Server and Use Application Protocol and Create Message
     Use Application Protocol And Create Message
     UDP Server and Client are initialized
