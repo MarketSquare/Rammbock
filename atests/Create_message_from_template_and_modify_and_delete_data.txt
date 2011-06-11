@@ -1,5 +1,5 @@
 *** Settings ***
-Test Setup      Create HTTP Get Message
+Test Setup      Create HTTP Get and Set it
 Default Tags    regression
 Library         rammbock.Rammbock
 Resource        resources/Messaging.txt
@@ -66,4 +66,9 @@ Delete Header Field Which Exists
 
 Try To Delete header field Which does not exist
     Run Keyword And Expect Error  *  Delete Header Field  protocal
+
+*** Keywords ***
+Create HTTP Get and Set it
+    Create Message
+    Set HTTP Get
 

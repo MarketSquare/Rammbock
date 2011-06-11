@@ -1,10 +1,5 @@
 *** Keywords ***
-Send HTTP GET
-    Create HTTP GET message
-    Client Sends Message
-
-Create HTTP GET message
-    Create Message
+Set HTTP GET
     Add Header  Request Method  GET
     Add Header  Request URI  /
     Add Header  Request Version  HTTP/1.1

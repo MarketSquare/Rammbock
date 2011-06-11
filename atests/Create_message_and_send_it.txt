@@ -23,5 +23,10 @@ Receive and verify data
 
 Receive Responce
     ${message}  Client Receives Data
-    Log  ${message}=
+    Should not Be Empty  ${message}
+
+Send HTTP GET
+    Create Message
+    Set HTTP GET
+    Client Sends Message
 
