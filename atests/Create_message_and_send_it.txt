@@ -20,5 +20,5 @@ Send message
 *** Keywords ***
 Receive and verify data
     ${message}=  Server Receives Data
-    Should Contain  ${message}  Cache-control: max-age=0
+    Should Be Equal  ${message}  GET / HTTP/1.1\r\nHost: google.com\r\nConnection: keep-alive\r\nCache-control: max-age=0\r\nUser-agent: rammbock\r\nAccept: text/html\r\n\r\n
 
