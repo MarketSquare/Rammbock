@@ -12,12 +12,21 @@ Send HTTP Get Message And Acquire Response
     Client Sends HTTP GET
     Client Receives Responce
 
-Send and receive message
+Send and receive GET message
     Client Sends HTTP GET
-    Receive and verify data
+    Servers Receive and verify data
+
+Send and receive GET message and capture headers
+    [Tags]  ${EMPTY}
+
+Send and receive GET message and capture Informaton Elements
+    [Tags]  ${EMPTY}
+
+Send and receive GET message and capture headers and information elements
+    [Tags]  ${EMPTY}
 
 *** Keywords ***
-Receive and verify data
+Servers Receive and verify data
     ${message}=  Server Receives Data
     Should Be Equal  ${message}  GET / HTTP/1.1\r\nHost: google.com\r\nConnection: keep-alive\r\nCache-control: max-age=0\r\nUser-agent: rammbock\r\nAccept: text/html\r\n\r\n
 
