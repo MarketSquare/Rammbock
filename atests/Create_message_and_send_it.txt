@@ -10,8 +10,7 @@ Send HTTP Get Message And Acquire Response
     [Tags]  no-ci  regression  system verification
     [Setup]  Create TCP Client And Connect To server  google.com  80
     Send HTTP GET
-    ${message}  Client Receives Data
-    Log  ${message}=
+    Receive Responce
 
 Send message
     Send HTTP GET
@@ -21,4 +20,8 @@ Send message
 Receive and verify data
     ${message}=  Server Receives Data
     Should Be Equal  ${message}  GET / HTTP/1.1\r\nHost: google.com\r\nConnection: keep-alive\r\nCache-control: max-age=0\r\nUser-agent: rammbock\r\nAccept: text/html\r\n\r\n
+
+Receive Responce
+    ${message}  Client Receives Data
+    Log  ${message}=
 
