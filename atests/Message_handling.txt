@@ -18,6 +18,9 @@ Send and receive GET message
 
 Send and receive GET message and capture headers
     [Tags]  ${EMPTY}
+    Client Sends HTTP GET
+    Server Receives HTTP GET
+    Server Checks that there are correct headers
 
 Send and receive GET message and capture Informaton Elements
     [Tags]  ${EMPTY}

@@ -56,6 +56,10 @@ class Rammbock(object):
     def server_receives_data(self, name=Server.DEFAULT_NAME):
         return self._servers[name].server_receives_data()
 
+    def server_receives_message(self):
+        message = self.server_receives_data(self)
+        Decoder.decode_data_to_object(message)
+
     def client_receives_data(self, name=Client.DEFAULT_NAME):
         return self._clients[name].receive_data()
 
