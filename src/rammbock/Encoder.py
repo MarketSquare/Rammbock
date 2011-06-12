@@ -1,4 +1,4 @@
-def encode_to_bin(message):
+def object2string(message):
     whole_message = ""
     whole_message += _get_headers_from_msg_object(message)
     whole_message += "\r\n"

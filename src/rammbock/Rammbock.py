@@ -58,9 +58,10 @@ class Rammbock(object):
     def server_receives_data(self, name=Server.DEFAULT_NAME):
         return self._servers[name].server_receives_data()
 
-    def server_receives_message(self):
-        msg = self.server_receives_data(self)
-        self.message = Decoder.string2objectt(self.message, msg)
+    def server_receives_message(self, name=Server.DEFAULT_NAME):
+        msg = self.server_receives_data(name)
+        print self.message
+        Decoder.string2object(self.message, msg)
 
     def client_receives_data(self, name=Client.DEFAULT_NAME):
         return self._clients[name].receive_data()
@@ -76,6 +77,7 @@ class Rammbock(object):
         self.message = Message()
 
     def get_header(self, name):
+        print self.message
         return (x for _, x in self.message.header if _ == name).next()
 
     def get_information_element(self, name):

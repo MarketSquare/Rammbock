@@ -17,7 +17,6 @@ Send and receive GET message
     Servers Receive and verify data
 
 Send and receive GET message and capture headers
-    [Tags]  ${EMPTY}
     Client Sends HTTP GET
     Server Receives HTTP GET
     Server Checks that there are correct headers
@@ -52,5 +51,5 @@ Server Checks that there are correct headers
     ${request version}=   get header  Request Version
     Should Be Equal  ${request method}  GET
     Should Be Equal  ${request uri}  /
-    Should Be Equal  ${request version}  1.1
+    Should Be Equal  ${request version}  HTTP/1.1
 
