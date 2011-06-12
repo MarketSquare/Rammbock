@@ -1,9 +1,7 @@
 def string2object(message, data):
     splitted = data.split()
     _get_headers_from_string(message, splitted[:3])
-    #_get_ies_from_string(message,splitted[3:])
-
-
+    _get_ies_from_string(message,splitted[3:])
 
 def _get_headers_from_string(message, all_headers):
     message.header.append(['Request Method', all_headers[0]])
@@ -12,6 +10,12 @@ def _get_headers_from_string(message, all_headers):
 
 def _get_ies_from_string(message, splitted):
     for i in range(len(splitted)):
-        print [":".strip(splitted[i]), splitted[i+1]]
-        message.ie.append[":".strip(splitted[i]), splitted[i+1]]
-        i + 1
+        try:
+            ie = splitted[i]
+            ie = ie[:-1]
+            message.ie.append([ie, splitted[i+1]])
+        except IndexError:
+            return
+        else:
+            i + 1
+            continue
