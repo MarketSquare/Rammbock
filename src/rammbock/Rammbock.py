@@ -66,7 +66,7 @@ class Rammbock(object):
     def server_sends_data(self, packet, name=Server.DEFAULT_NAME): 
         self._servers[name].send_data(packet)
 
-    def client_sends_message(self, client_name=Client.DEFAULT_NAME, server_name=Server.DEFAULT_NAME):
+    def client_sends_message(self):
         data_bin = Encode.encode_to_bin(self.message)
         self.client_sends_data(data_bin)
 
