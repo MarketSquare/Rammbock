@@ -42,3 +42,15 @@ Client Sends HTTP GET
     Set HTTP GET
     Client Sends Message
 
+Server Receives HTTP GET
+    Create Message
+    Server Receives Message
+
+Server Checks that there are correct headers
+    ${request method}=   get header  Request Method
+    ${request uri}=   get header  Request URI
+    ${request version}=   get header  Request Version
+    Should Be Equal  ${request method}  GET
+    Should Be Equal  ${request uri}  /
+    Should Be Equal  ${request version}  1.1
+

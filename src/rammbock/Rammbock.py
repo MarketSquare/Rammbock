@@ -3,6 +3,7 @@ from Server import UDPServer, TCPServer
 import Server
 import Client
 import Encoder
+import Decoder
 
 from rammbock.Message import Message
 
@@ -58,8 +59,8 @@ class Rammbock(object):
         return self._servers[name].server_receives_data()
 
     def server_receives_message(self):
-        message = self.server_receives_data(self)
-        Decoder.decode_data_to_object(message)
+        msg = self.server_receives_data(self)
+        self.message = Decoder.string2objectt(self.message, msg)
 
     def client_receives_data(self, name=Client.DEFAULT_NAME):
         return self._clients[name].receive_data()
@@ -74,7 +75,7 @@ class Rammbock(object):
     def create_message(self):
         self.message = Message()
 
-    def get_header_field(self, name):
+    def get_header(self, name):
         return (x for _, x in self.message.header if _ == name).next()
 
     def get_information_element(self, name):

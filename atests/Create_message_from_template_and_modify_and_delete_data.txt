@@ -7,7 +7,7 @@ Resource        ../protocols/http/v1_1.txt
 
 *** Test Cases ***
 Check Header
-    ${header}=  Get Header Field  Request Method
+    ${header}=  Get Header  Request Method
     Should Be Equal  ${header}  GET
 
 Check Information Element
@@ -32,12 +32,12 @@ Add Sub Information Element
 
 Add Header Field
     Add Header  host  localhost
-    ${header}=  Get Header Field  host
+    ${header}=  Get Header  host
     Should Be Equal  ${header}  localhost
 
 Modify Header
     Modify Header Field  Request Version  HTTP/1.0
-    ${header}=  Get Header Field  Request Version
+    ${header}=  Get Header  Request Version
     Should Be Equal  ${header}  HTTP/1.0
 
 Modify Information Element
@@ -62,7 +62,7 @@ Delete Sub Information Element
 
 Delete Header Field Which Exists
     Delete Header Field  Request Method
-    Run Keyword And Expect Error  *  Get Header Field  Request Method
+    Run Keyword And Expect Error  *  Get Header  Request Method
 
 Try To Delete header field Which does not exist
     Run Keyword And Expect Error  *  Delete Header Field  protocal
