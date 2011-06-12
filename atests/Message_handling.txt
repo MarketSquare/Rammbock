@@ -23,6 +23,9 @@ Send and receive GET message and capture headers
 
 Send and receive GET message and capture Informaton Elements
     [Tags]  ${EMPTY}
+    Client Sends HTTP GET
+    Server Receives HTTP GET
+    Check that there are correct Information Elements
 
 Send and receive GET message and capture headers and information elements
     [Tags]  ${EMPTY}
@@ -52,4 +55,16 @@ Check that there are correct headers
     Should Be Equal  ${request method}  GET
     Should Be Equal  ${request uri}  /
     Should Be Equal  ${request version}  HTTP/1.1
+
+Check that there are correct Information Elements
+    ${host}=  Get Information Element  Host
+    ${connection}=  Get Information Element  Connection
+    ${cache control}=  Get Information Element  Cache-control
+    ${user agent}=  Get Information Element  User-agent
+    ${accept}=  Get Information Element  Accept
+    Should be equal  ${host}  google.com
+    Should be equal  ${connection}  keep-alive
+    Should be equal  ${cache control}  max-age=0
+    Should be equal  ${user agent}  rammbock
+    Should be equal  ${accept}  text/html
 
