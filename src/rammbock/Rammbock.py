@@ -2,7 +2,8 @@ from Client import UDPClient, TCPClient
 from Server import UDPServer, TCPServer
 import Server
 import Client
-import Encode
+import Encoder
+
 from rammbock.Message import Message
 
 
@@ -67,7 +68,7 @@ class Rammbock(object):
         self._servers[name].send_data(packet)
 
     def client_sends_message(self):
-        data_bin = Encode.encode_to_bin(self.message)
+        data_bin = Encoder.object2string(self.message)
         self.client_sends_data(data_bin)
 
     def create_message(self):
