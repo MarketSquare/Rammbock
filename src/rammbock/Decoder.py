@@ -11,11 +11,8 @@ def _get_headers_from_string(message, all_headers):
 def _get_ies_from_string(message, splitted):
     for i in range(len(splitted)):
         try:
-            ie = splitted[i]
-            ie = ie[:-1]
-            message.ie.append([ie, splitted[i+1]])
+            message.ie.append([splitted[i][:-1], splitted[i+1]])
         except IndexError:
             return
-        else:
-            i + 1
-            continue
+        i + 1
+        
