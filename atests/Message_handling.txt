@@ -22,13 +22,15 @@ Send and receive GET message and capture headers
     Check that there are correct headers
 
 Send and receive GET message and capture Informaton Elements
-    [Tags]  ${EMPTY}
     Client Sends HTTP GET
     Server Receives HTTP GET
     Check that there are correct Information Elements
 
 Send and receive GET message and capture headers and information elements
-    [Tags]  ${EMPTY}
+    Client Sends HTTP GET
+    Server Receives HTTP GET
+    Check that there are correct headers
+    Check that there are correct Information Elements
 
 *** Keywords ***
 Servers Receive and verify data
