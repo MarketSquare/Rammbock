@@ -1,5 +1,5 @@
 def string2object(message, data):
-    return _get_headers(message, data)
+    _get_headers(message, data)
 
 def _get_headers(message, data):
     splitted = data.split()

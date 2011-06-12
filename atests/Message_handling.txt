@@ -19,7 +19,7 @@ Send and receive GET message
 Send and receive GET message and capture headers
     Client Sends HTTP GET
     Server Receives HTTP GET
-    Server Checks that there are correct headers
+    Check that there are correct headers
 
 Send and receive GET message and capture Informaton Elements
     [Tags]  ${EMPTY}
@@ -45,7 +45,7 @@ Server Receives HTTP GET
     Create Message
     Server Receives Message
 
-Server Checks that there are correct headers
+Check that there are correct headers
     ${request method}=   get header  Request Method
     ${request uri}=   get header  Request URI
     ${request version}=   get header  Request Version
