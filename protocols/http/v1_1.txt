@@ -9,3 +9,13 @@ Set HTTP GET
     Add Information Element  User-agent  rammbock
     Add Information Element  Accept  text/html
 
+Set HTTP Responce
+    Add Header
+    Add Header
+    Add Header
+    Add Information Element
+    Add Information Element
+    Add Information Element
+    Add Information Element
+    Add Information Element
+
