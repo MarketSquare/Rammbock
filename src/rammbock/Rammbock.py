@@ -78,10 +78,13 @@ class Rammbock(object):
 
     def get_header(self, name):
         print self.message
-        return (x for _, x in self.message.header if _ == name).next()
+        return self._first_by_name(name, self.message.header)
+
+    def _first_by_name(self, name, collection):
+        return (item for item_name, item in collection if item_name == name).next()
 
     def get_information_element(self, name):
-        return (x for _, x in self.message.ie if _ == name).next()
+        return self._first_by_name(name, self.message.ie)
 
     def add_information_element(self, name, value=None):
         self.message.ie.append((name, value))
