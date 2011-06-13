@@ -9,11 +9,4 @@ def _get_headers_from_list(message, all_headers):
     message.header.append(['Request Version', all_headers[2]])
 
 def _get_ies_from_list(message, splitted):
-    for i in range(len(splitted)):
-        #TODO do something about this. it's ugly!
-        try:
-            message.ie.append([splitted[i][:-1], splitted[i+1]])
-        except IndexError:
-            return
-        i + 1
-        
+    message.ie += [[splitted[i][:-1], splitted[i+1]] for i in range(0,len(splitted),2)]
