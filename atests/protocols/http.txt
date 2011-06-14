@@ -2,7 +2,7 @@
 Test Setup      TCP Server and Client are Initialized
 Default Tags    regression
 Library         rammbock.Rammbock
-Resource        resources/Messaging.txt
+Resource        ../resources/Messaging.txt
 Resource        ../protocols/http/v1_1.txt
 
 *** Test Cases ***
@@ -10,7 +10,7 @@ Send HTTP Get Message And Acquire Response
     [Tags]  no-ci  regression  system verification
     [Setup]  Create TCP Client And Connect To server  google.com  80
     Client Sends HTTP GET
-    Client Receives Responce
+    Client Receives Data
 
 Send and receive GET message
     Client Sends HTTP GET
@@ -32,12 +32,17 @@ Send and receive GET message and capture headers and information elements
     Check that there are correct headers
     Check that there are correct Information Elements
 
+Send and Receive Get and Return Responce
+    [Tags]  ${EMPTY}
+    Clients Sends Get to Server
+    Server Sends Responce so Client
+
 *** Keywords ***
 Servers Receive and verify data
     ${message}=  Server Receives Data
     Should Be Equal  ${message}  GET / HTTP/1.1\r\nHost: google.com\r\nConnection: keep-alive\r\nCache-control: max-age=0\r\nUser-agent: rammbock\r\nAccept: text/html\r\n\r\n
 
-Client Receives Responce
+Client Receives Data
     ${message}  Client Receives Data
     Should not Be Empty  ${message}
 
@@ -51,9 +56,9 @@ Server Receives HTTP GET
     Server Receives Message
 
 Check that there are correct headers
-    ${request method}=   get header  Request Method
-    ${request uri}=   get header  Request URI
-    ${request version}=   get header  Request Version
+    ${request method}=  get header  Request Method
+    ${request uri}=  get header  Request URI
+    ${request version}=  get header  Request Version
     Should Be Equal  ${request method}  GET
     Should Be Equal  ${request uri}  /
     Should Be Equal  ${request version}  HTTP/1.1
@@ -69,4 +74,24 @@ Check that there are correct Information Elements
     Should be equal  ${cache control}  max-age=0
     Should be equal  ${user agent}  rammbock
     Should be equal  ${accept}  text/html
+
+Clients Sends Get to Server
+    Client Sends HTTP GET
+    Server Receives HTTP GET
+    Check that there are correct headers
+    Check that there are correct Information Elements
+
+Server Sends Responce so Client
+    Server Creates Responce and sends it To Client
+    Client Receives Responce
+
+Server Creates Responce and sends it To Client
+    Create Message
+    Set HTTP Responce
+    Client Sends Message
+
+Client Receives Responce
+    Create Message
+    Client Receives HTTP Responce
+    Verify That Responce is Correct
 
