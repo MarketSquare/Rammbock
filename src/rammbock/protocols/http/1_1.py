@@ -1,6 +1,6 @@
-class HeaderSchema(object):
-    headers = []
-
-    def __init__(self, name):
-        if name == 'http_get':
-            self.headers = ['Request Method', 'Request URI', 'Request Version']
+message_headers = {'http_get':
+               ['Request Method', 'Request URI', 'Request Version'],
+            'http_response':
+               ['daa1','daa2']}
+def daadaa():
+    print 'daadaa'

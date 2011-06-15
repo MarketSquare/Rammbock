@@ -52,7 +52,7 @@ Client Sends HTTP GET
     Client Sends Message
 
 Server Receives HTTP GET
-    Create Message
+    Create Message  http  1_1  http_get
     Server Receives Message
 
 Check that there are correct headers

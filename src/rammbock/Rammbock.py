@@ -73,8 +73,8 @@ class Rammbock(object):
         data_bin = Encoder.object2string(self.message)
         self.client_sends_data(data_bin)
 
-    def create_message(self):
-        self.message = Message()
+    def create_message(self, protocol = None, version = None, message = None):
+        self.message = Message(protocol, version, message)
 
     def get_header(self, name):
         print self.message
