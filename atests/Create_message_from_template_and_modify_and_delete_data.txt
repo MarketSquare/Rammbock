@@ -73,11 +73,13 @@ Delete Header Field Which Exists
 Try To Delete header field Which does not exist
     Run Keyword And Expect Error  *  Delete Header Field  protocal
 
-Try to use uknown application protocol
+Try to use unknown application protocol
     [Tags]  ${EMPTY}
+    Run Keyword And Expect Error  Unknown apllication protocol: 'foo' or version 'bar'  Create Message  foo  bar  http_get
 
-Try to use uknown message type
+Try to use unknown message type
     [Tags]  ${EMPTY}
+    Run Keyword And Expect Error  Unkown message type : 'foobar'  Create Message  http  1_1  foobar
 
 *** Keywords ***
 Create HTTP Get and Set it
