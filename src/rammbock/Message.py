@@ -10,5 +10,9 @@ class Message():
             self._add_header_schema()
 
     def _add_header_schema(self):
-        headers = __import__("rammbock.protocols."+self.protocol+"."+self.version, fromlist= ['kekkonen'])
-        self.header = headers.message_headers[self.message_name]
+        try:
+            headers = __import__("rammbock.protocols."+self.protocol+"."+self.version, fromlist= ['kekkonen'])
+        except ImportError:
+            raise Exception (ImportError, "Unknown apllication protocol: '%s' or version: '%s'" % (self.protocol, self.version))
+        else:
+            self.header = headers.message_headers[self.message_name]
