@@ -77,8 +77,7 @@ Try to use unknown application protocol
     Run Keyword And Expect Error  (<type 'exceptions.ImportError'>, u"Unknown apllication protocol: 'foo' or version: 'bar'")  Create Message  foo  bar  http_get
 
 Try to use unknown message type
-    [Tags]  ${EMPTY}
-    Run Keyword And Expect Error  Unkown message type : 'foobar'  Create Message  http  1_1  foobar
+    Run Keyword And Expect Error  (<type 'exceptions.KeyError'>, u"Unknown message type: 'foobar'")  Create Message  http  1_1  foobar
 
 *** Keywords ***
 Create HTTP Get and Set it

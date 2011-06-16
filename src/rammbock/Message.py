@@ -14,5 +14,7 @@ class Message():
             headers = __import__("rammbock.protocols."+self.protocol+"."+self.version, fromlist= ['kekkonen'])
         except ImportError:
             raise Exception (ImportError, "Unknown apllication protocol: '%s' or version: '%s'" % (self.protocol, self.version))
-        else:
+        try:
             self.header = headers.message_headers[self.message_name]
+        except KeyError:
+            raise Exception (KeyError, "Unknown message type: '%s'" % self.message_name)
