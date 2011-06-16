@@ -1,5 +1,3 @@
-import imp
-
 class Message():
     def __init__(self, proto, vrs, msg_name):
         self.header = []
