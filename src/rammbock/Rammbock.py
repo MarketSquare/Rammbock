@@ -99,8 +99,11 @@ class Rammbock(object):
     def modify_information_element(self, name, value):
         self.message.ie[self._id_to_name(self.message.ie, name)] = (name,value)
 
-    def add_header(self, name, value):
-        self.message.header.append((name, value))
+    def add_header(self, name, value = None):
+        if value == None:
+            self.message.header.append((name))
+        else:
+            self.message.header.append((name, value))
 
     def modify_header_field(self, name, value):
         self.message.header[self._id_to_name(self.message.header, name)] = (name,value)
