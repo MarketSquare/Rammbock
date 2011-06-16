@@ -12,7 +12,7 @@ Check Header
 
 Check Information Element
     ${ie}=  Get Information Element  Host
-    Should Be Equal  ${ie}  google.com
+    Should Be Equal  ${ie}  nsn.com
 
 Check Sub Information Element
     [Tags]  ${EMPTY}
