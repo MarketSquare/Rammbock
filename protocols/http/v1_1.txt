@@ -1,10 +1,14 @@
+*** Variables ***
+${REQUEST VERSION}  HTTP/1.1
+${CONNECTION}  keep-alive
+
 *** Keywords ***
 Set HTTP GET
     Add Header  Request Method  GET
     Add Header  Request URI  /
-    Add Header  Request Version  HTTP/1.1
+    Add Header  Request Version  ${REQUEST VERSION}
     Add Information Element  Host  google.com
-    Add Information Element  Connection  keep-alive
+    Add Information Element  Connection  ${CONNECTION}
     Add Information Element  Cache-control  max-age=0
     Add Information Element  User-agent  rammbock
     Add Information Element  Accept  text/html
@@ -12,6 +16,6 @@ Set HTTP GET
 Set HTTP Response
     Add Header  Request Version  HTTP/1.1
     Add Header  Response Code  200
-    Add Information Element  Connection  Keep-Alive
+    Add Information Element  Connection  ${CONNECTION}
     Add Information Element  Content-Lenght  218
 
