@@ -8,7 +8,7 @@ Resource        ../protocols/http/v1_1.txt
 *** Test Cases ***
 Send HTTP Get Message And Acquire Response
     [Tags]  no-ci  regression  system verification
-    [Setup]  Create TCP Client And Connect To server  www.nsn.com  80
+    [Setup]  Create TCP Client And Connect To server  www.nokiasiemensnetworks.com  80
     Client Sends HTTP GET
     Client gets Resp
 
@@ -39,7 +39,7 @@ Send and Receive Get and Return Response
 *** Keywords ***
 Servers Receive and verify data
     ${message}=  Server Receives Data
-    Should Be Equal  ${message}  GET / HTTP/1.1\r\nHost: nsn.com\r\nConnection: keep-alive\r\nCache-control: max-age=0\r\nUser-agent: rammbock\r\nAccept: text/html\r\n\r\n
+    Should Be Equal  ${message}  GET / HTTP/1.1\r\nHost: www.nokiasiemensnetworks.com\r\nConnection: keep-alive\r\nCache-control: max-age=0\r\nUser-agent: rammbock\r\nAccept: text/html\r\n\r\n
 
 Client gets Resp
     Create Message
@@ -74,7 +74,7 @@ Check that there are correct Information Elements
     ${cache control}=  Get Information Element  Cache-control
     ${user agent}=  Get Information Element  User-agent
     ${accept}=  Get Information Element  Accept
-    Should be equal  ${host}  nsn.com
+    Should be equal  ${host}  www.nokiasiemensnetworks.com
     Should be equal  ${connection}  keep-alive
     Should be equal  ${cache control}  max-age=0
     Should be equal  ${user agent}  rammbock

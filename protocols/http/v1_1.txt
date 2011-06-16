@@ -7,7 +7,7 @@ Set HTTP GET
     Add Header  Request Method  GET
     Add Header  Request URI  /
     Add Header  Request Version  ${REQUEST VERSION}
-    Add Information Element  Host  nsn.com
+    Add Information Element  Host  www.nokiasiemensnetworks.com
     Add Information Element  Connection  ${CONNECTION}
     Add Information Element  Cache-control  max-age=0
     Add Information Element  User-agent  rammbock
