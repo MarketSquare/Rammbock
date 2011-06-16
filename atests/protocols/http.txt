@@ -87,7 +87,7 @@ Server Sends Response so Client
 Server Creates Response and sends it To Client
     Create Message
     Set HTTP Response
-    Client Sends Message
+    Server Sends Message
 
 Client Receives Response
     Create Message
@@ -96,7 +96,7 @@ Client Receives Response
 
 Client Receives HTTP Response
     Create Message  http  1_1  http_response
-    Server Receives Message
+    Client Receives Message
 
 Verify That Response is Correct
     ${request version}=  get header  Request Version

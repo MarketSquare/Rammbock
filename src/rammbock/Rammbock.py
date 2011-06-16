@@ -55,23 +55,30 @@ class Rammbock(object):
     def client_sends_data(self, packet, name=Client.DEFAULT_NAME): 
         self._clients[name].send_packet(packet)
 
+    def client_sends_message(self):
+        data_bin = Encoder.object2string(self.message)
+        self.client_sends_data(data_bin)
+
     def server_receives_data(self, name=Server.DEFAULT_NAME):
         return self._servers[name].server_receives_data()
 
     def server_receives_message(self, name=Server.DEFAULT_NAME):
         msg = self.server_receives_data(name)
-        print self.message
         Decoder.string2object(self.message, msg)
 
     def client_receives_data(self, name=Client.DEFAULT_NAME):
         return self._clients[name].receive_data()
 
+    def client_receives_message(self, name=Client.DEFAULT_NAME):
+        msg = self.client_receives_data(name)
+        Decoder.string2object(self.message, msg)
+
     def server_sends_data(self, packet, name=Server.DEFAULT_NAME): 
         self._servers[name].send_data(packet)
 
-    def client_sends_message(self):
+    def server_sends_message(self):
         data_bin = Encoder.object2string(self.message)
-        self.client_sends_data(data_bin)
+        self.server_sends_data(data_bin)
 
     def create_message(self, protocol = None, version = None, message = None):
         self.message = Message(protocol, version, message)
