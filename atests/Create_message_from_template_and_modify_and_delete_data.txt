@@ -40,10 +40,16 @@ Modify Header
     ${header}=  Get Header  Request Version
     Should Be Equal  ${header}  HTTP/1.0
 
+Try to Modify header Which does not exist
+    [Tags]  ${EMPTY}
+
 Modify Information Element
     Modify Information Element  Host  www.google.com
     ${ie}=  Get Information Element  Host
     Should Be Equal  ${ie}  www.google.com
+
+Try to Modify Information Element Which Does not Exist.
+    [Tags]  ${EMPTY}
 
 Modify Sub Information Element
     [Tags]  ${EMPTY}
@@ -66,6 +72,12 @@ Delete Header Field Which Exists
 
 Try To Delete header field Which does not exist
     Run Keyword And Expect Error  *  Delete Header Field  protocal
+
+Try to use uknown application protocol
+    [Tags]  ${EMPTY}
+
+Try to use uknown message type
+    [Tags]  ${EMPTY}
 
 *** Keywords ***
 Create HTTP Get and Set it
