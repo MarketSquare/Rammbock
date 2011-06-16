@@ -32,10 +32,9 @@ Send and receive GET message and capture headers and information elements
     Check that there are correct headers
     Check that there are correct Information Elements
 
-Send and Receive Get and Return Responce
-    [Tags]  ${EMPTY}
+Send and Receive Get and Return Response
     Clients Sends Get to Server
-    Server Sends Responce so Client
+    Server Sends Response so Client
 
 *** Keywords ***
 Servers Receive and verify data
@@ -81,17 +80,31 @@ Clients Sends Get to Server
     Check that there are correct headers
     Check that there are correct Information Elements
 
-Server Sends Responce so Client
-    Server Creates Responce and sends it To Client
-    Client Receives Responce
+Server Sends Response so Client
+    Server Creates Response and sends it To Client
+    Client Receives Response
 
-Server Creates Responce and sends it To Client
+Server Creates Response and sends it To Client
     Create Message
-    Set HTTP Responce
+    Set HTTP Response
     Client Sends Message
 
-Client Receives Responce
+Client Receives Response
     Create Message
-    Client Receives HTTP Responce
-    Verify That Responce is Correct
+    Client Receives HTTP Response
+    Verify That Response is Correct
+
+Client Receives HTTP Response
+    Create Message  http  1_1  http_response
+    Server Receives Message
+
+Verify That Response is Correct
+    ${request version}=  get header  Request Version
+    ${response code}=  get header  Response Code
+    Should Be Equal  ${request version}  HTTP/1.1
+    Should Be Equal  ${response code}  200
+    ${connection}=  Get Information Element  Connection
+    ${content-lenght}=  Get Information Element  Content-Lenght
+    Should be equal  ${connection}  keep-alive
+    Should be equal  ${content-lenght}  218
 

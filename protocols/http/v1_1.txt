@@ -14,7 +14,7 @@ Set HTTP GET
     Add Information Element  Accept  text/html
 
 Set HTTP Response
-    Add Header  Request Version  HTTP/1.1
+    Add Header  Request Version  ${REQUEST VERSION}
     Add Header  Response Code  200
     Add Information Element  Connection  ${CONNECTION}
     Add Information Element  Content-Lenght  218
