@@ -93,7 +93,7 @@ Server Sends Response so Client
 
 Server Creates Response and sends it To Client
     Create Message
-    Set HTTP Response
+    Set HTTP Response send
     Server Sends Message
 
 Client Receives Response
@@ -102,7 +102,8 @@ Client Receives Response
     Verify That Response is Correct
 
 Client Receives HTTP Response
-    Create Message  http  1_1  http_response
+    Create Message
+    Set HTTP Response rcv
     Client Receives Message
 
 Verify That Response is Correct

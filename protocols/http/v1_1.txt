@@ -23,9 +23,15 @@ Set HTTP GET rcv
     Add Information Element Schema  User-agent
     Add Information Element Schema  Accept
 
-Set HTTP Response
+Set HTTP Response send
     Add Header  Request Version  ${REQUEST VERSION}
     Add Header  Response Code  200
     Add Information Element  Connection  ${CONNECTION}
     Add Information Element  Content-Lenght  218
+
+Set HTTP Response rcv
+    Add Header Schema  Request Version
+    Add Header Schema  Response Code
+    Add Information Element Schema  Connection
+    Add Information Element Schema  Content-Lenght
 
