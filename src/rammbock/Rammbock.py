@@ -84,7 +84,6 @@ class Rammbock(object):
         self.message = Message(protocol, version, message)
 
     def get_header(self, name):
-        print self.message
         return self._first_by_name(name, self.message.header)
 
     def _first_by_name(self, name, collection):
@@ -96,6 +95,11 @@ class Rammbock(object):
     def add_information_element(self, name, value=None):
         self.message.ie.append((name, value))
 
+    def add_information_element_schema(self, name):
+        self.message.ie += name
+        self.message.message += 'IE'
+
+
     def modify_information_element(self, name, value):
         self.message.ie[self._id_to_name(self.message.ie, name)] = (name,value)
 
@@ -104,6 +108,10 @@ class Rammbock(object):
             self.message.header.append((name))
         else:
             self.message.header.append((name, value))
+
+    def add_header_schema(self, name):
+        self.message.header += [name]
+        self.message.message += 'Header'
 
     def modify_header_field(self, name, value):
         self.message.header[self._id_to_name(self.message.header, name)] = (name,value)

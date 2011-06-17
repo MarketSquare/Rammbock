@@ -53,11 +53,12 @@ Client gets Resp
 
 Client Sends HTTP GET
     Create Message
-    Set HTTP GET
+    Set HTTP GET send
     Client Sends Message
 
 Server Receives HTTP GET
-    Create Message  http  1_1  http_get
+    Create Message
+    Set HTTP GET rcv
     Server Receives Message
 
 Check that there are correct headers

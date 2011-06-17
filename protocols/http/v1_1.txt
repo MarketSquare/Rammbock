@@ -3,7 +3,7 @@ ${REQUEST VERSION}  HTTP/1.1
 ${CONNECTION}  keep-alive
 
 *** Keywords ***
-Set HTTP GET
+Set HTTP GET send
     Add Header  Request Method  GET
     Add Header  Request URI  /
     Add Header  Request Version  ${REQUEST VERSION}
@@ -12,6 +12,16 @@ Set HTTP GET
     Add Information Element  Cache-control  max-age=0
     Add Information Element  User-agent  rammbock
     Add Information Element  Accept  text/html
+
+Set HTTP GET rcv
+    Add Header Schema  Request Method
+    Add Header Schema  Request URI
+    Add Header Schema  Request Version
+    Add Information Element Schema  Host
+    Add Information Element Schema  Connection
+    Add Information Element Schema  Cache-control
+    Add Information Element Schema  User-agent
+    Add Information Element Schema  Accept
 
 Set HTTP Response
     Add Header  Request Version  ${REQUEST VERSION}

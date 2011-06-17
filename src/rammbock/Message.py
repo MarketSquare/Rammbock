@@ -1,5 +1,6 @@
 class Message():
     def __init__(self, proto, vrs, msg_name):
+        self.message = []
         self.header = []
         self.ie = []
         self.protocol = proto

@@ -82,5 +82,5 @@ Try to use unknown message type
 *** Keywords ***
 Create HTTP Get and Set it
     Create Message
-    Set HTTP Get
+    Set HTTP GET send
 
