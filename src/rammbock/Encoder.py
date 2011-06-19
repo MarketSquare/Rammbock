@@ -2,7 +2,6 @@ from itertools import izip_longest
 
 def object2string(message):
     whole_message =  _generate_message_from_object(message)
-    print whole_message
     return whole_message
 
 def _generate_message_from_object(message):
@@ -18,7 +17,6 @@ def _generate_message_from_object(message):
                 whole_message += '\r\n'
         elif i == 'IE':
             tmp = message.ie.pop()
-            print tmp
             tmp = ": ".join(tmp)
             print "tmp =" +tmp
             whole_message += tmp + "\r\n"
