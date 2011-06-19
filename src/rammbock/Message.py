@@ -1,5 +1,5 @@
 class Message():
     def __init__(self):
-        self.message = []
+        self.items = []
         self.header = []
         self.ie = []

@@ -93,20 +93,23 @@ class Rammbock(object):
         return self._first_by_name(name, self.message.ie)
 
     def add_information_element(self, name, value=None):
+        self.message.items += ['IE']
         if value == None:
             self.message.ie.append((name))
         else:
             self.message.ie.append((name, value))
 
+
     def add_information_element_schema(self, name):
         self.message.ie += [name]
-        self.message.message += 'IE'
+        self.message.items += ['IE']
 
 
     def modify_information_element(self, name, value):
         self.message.ie[self._id_to_name(self.message.ie, name)] = (name,value)
 
     def add_header(self, name, value = None):
+        self.message.items += ['Header']
         if value == None:
             self.message.header.append((name))
         else:
@@ -114,7 +117,7 @@ class Rammbock(object):
 
     def add_header_schema(self, name):
         self.message.header += [name]
-        self.message.message += 'Header'
+        self.message.items += ['Header']
 
     def modify_header_field(self, name, value):
         self.message.header[self._id_to_name(self.message.header, name)] = (name,value)

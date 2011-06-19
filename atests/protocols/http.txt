@@ -36,6 +36,10 @@ Send and Receive Get and Return Response
     Clients Sends Get to Server
     Server Sends Response so Client
 
+Send and Receive HTTP message with mixed headers IEs
+    Client Sends Message with IE is middle of Headers
+    Server Receives Message with IE is middle of Headers
+
 *** Keywords ***
 Servers Receive and verify data
     ${message}=  Server Receives Data
@@ -115,4 +119,24 @@ Verify That Response is Correct
     ${content-lenght}=  Get Information Element  Content-Lenght
     Should be equal  ${connection}  keep-alive
     Should be equal  ${content-lenght}  218
+
+Client Sends Message with IE is middle of Headers
+    Create Message
+    Add Header  Request URI  /
+    Add Information Element  Host  www.nokiasiemensnetworks.com
+    Add Header  Request Version  ${REQUEST VERSION}
+    Client Sends Message
+
+Server Receives Message with IE is middle of Headers
+    Create Message
+    Add Header Schema  Request URI
+    Add Information Element Schema  Host
+    Add Header Schema  Request Version
+    Server Receives Message
+    ${request uri}=  get header  Request URI
+    ${request version}=  get header  Request Version
+    ${host}=  Get Information Element  Host
+    Should Be Equal  ${request uri}  /
+    Should Be Equal  ${request version}  HTTP/1.1
+    Should be equal  ${host}  www.nokiasiemensnetworks.com
 
