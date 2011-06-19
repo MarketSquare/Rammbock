@@ -11,6 +11,7 @@ def string2object(message, data):
 
 def _get_object_from_data(message, data):
     header_value = []
+    data.reverse()
     for item in message.items:
         if item == 'Header':
             header_value +=  [data.pop()]
