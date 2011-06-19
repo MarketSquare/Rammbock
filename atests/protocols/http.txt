@@ -43,8 +43,8 @@ Send and Receive HTTP message with mixed headers IEs
 *** Keywords ***
 Servers Receive and verify data
     ${message}=  Server Receives Data
-    log  message
-    Should Be Equal  ${message}  GET / HTTP/1.1\r\nHost: www.nokiasiemensnetworks.com\r\nConnection: keep-alive\r\nCache-control: max-age=0\r\nUser-agent: rammbock\r\nAccept: text/html\r\n\r\n
+    log  ${message}
+    Should Be Equal  ${message}  GET / HTTP/1.1 \r\nHost: www.nokiasiemensnetworks.com\r\nConnection: keep-alive\r\nCache-control: max-age=0\r\nUser-agent: rammbock\r\nAccept: text/html\r\n\r\n
 
 Client gets Resp
     Create Message
