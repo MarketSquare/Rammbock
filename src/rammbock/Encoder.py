@@ -9,6 +9,7 @@ def _generate_message_from_object(message):
     message.header.reverse()
     message.ie.reverse()
     for i,j in izip_longest(message.items, message.items[1:]):
+        #TODO: this is looking bad. try to do something about it
         if i == 'Header':
             tmp = message.header.pop()
             _, x = tmp
