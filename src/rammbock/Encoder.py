@@ -20,8 +20,7 @@ def _generate_message_from_object(message):
         else:
             raise Exception(NameError, 'Unwknown type %s' %i)
 
-    whole_message += '\r\n'
-    return whole_message
+    return whole_message + '\r\n'
 
 def izip_l(x,y):
     pad = lambda l1,l2: l1 + [None for _ in range(max(len(l2) -
