@@ -29,11 +29,11 @@ def izip_l(x,y):
     return zip(pad(x,y), pad(y,x))
 
 def _return_header_from_obj(message):
-    _, tmp = message.header.pop()
-    return tmp + " "
+    _, header = message.header.pop()
+    return header + " "
 
 
 
 def _return_ie_from_obj(message):
-    tmp = message.ie.pop()
-    return ": ".join(tmp) + "\r\n"
+    ie = message.ie.pop()
+    return ": ".join(ie) + "\r\n"
