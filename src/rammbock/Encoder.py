@@ -36,5 +36,4 @@ def _return_header_from_obj(message):
 
 def _return_ie_from_obj(message):
     tmp = message.ie.pop()
-    tmp = ": ".join(tmp)
-    return  tmp + "\r\n"
+    return ": ".join(tmp) + "\r\n"
