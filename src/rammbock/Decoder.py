@@ -5,6 +5,7 @@ def string2object(message, data):
 def _get_object_from_data(message, data):
     header_value = []
     tmp_ie_values = []
+    #TODO: try to get rid of this reverse
     data.reverse()
     for item in message.items:
         if item == 'Header':

@@ -99,7 +99,6 @@ class Rammbock(object):
         else:
             self.message.ie.append((name, value))
 
-
     def add_information_element_schema(self, name):
         self.message.ie += [name]
         self.message.items += ['IE']

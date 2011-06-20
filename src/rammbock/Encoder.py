@@ -2,15 +2,12 @@ def object2string(message):
     whole_message =  _generate_message_from_object(message)
     return whole_message
 
-
-
-
 def _generate_message_from_object(message):
     whole_message = ""
+    #TODO: Try to get rid of these reverses.
     message.header.reverse()
     message.ie.reverse()
     for i,j in izip_l(message.items, message.items[1:]):
-    #TODO: this is looking bad. try to do something about it
         if i == 'Header':
             whole_message += _return_header_from_obj(message)
             if j != 'Header':
@@ -19,7 +16,6 @@ def _generate_message_from_object(message):
             whole_message += _return_ie_from_obj(message)
         else:
             raise Exception(NameError, 'Unwknown type %s' %i)
-
     return whole_message + '\r\n'
 
 def izip_l(x,y):
