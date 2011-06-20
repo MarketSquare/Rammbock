@@ -19,8 +19,8 @@ def _generate_message_from_object(message):
             whole_message += _return_ie_from_obj(message)
         else:
             raise Exception(NameError, 'Unwknown type %s' %i)
-        if j == None:
-            whole_message += '\r\n'
+
+    whole_message += '\r\n'
     return whole_message
 
 def izip_l(x,y):
@@ -31,8 +31,6 @@ def izip_l(x,y):
 def _return_header_from_obj(message):
     _, header = message.header.pop()
     return header + " "
-
-
 
 def _return_ie_from_obj(message):
     ie = message.ie.pop()
