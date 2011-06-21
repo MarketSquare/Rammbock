@@ -44,6 +44,11 @@ Send HTTP message and Receive data with mixed Headers IEs.
     Client Sends Message with IE is middle of Headers
     Server Receives Message and validates the data
 
+Send and receive GET message and try to capture wrong headers
+    [Tags]
+    Client Sends HTTP GET
+    Server Receives HTTP GET with wrong headers
+
 *** Keywords ***
 Servers Receive and verify data
     ${message}=  Server Receives Data
@@ -152,4 +157,19 @@ Create message and add schema with mixed headers and IEs
     Add Header Schema  Request URI
     Add Information Element Schema  Host
     Add Header Schema  Request Version
+
+Server Receives HTTP GET with wrong headers
+    create message
+    Set HTTP GET rcv with wrong order of IEs
+    Run Keyword And Expect Error  Wrong information element: 'Cache-Control' Expected: 'Host'  Server Receives Message
+
+Set HTTP GET rcv with wrong order of IEs
+    Add Header Schema  Request Method
+    Add Header Schema  Request URI
+    Add Header Schema  Request Version
+    Add Information Element Schema  Host
+    Add Information Element Schema  Cache-control
+    Add Information Element Schema  Connection
+    Add Information Element Schema  User-agent
+    Add Information Element Schema  Accept
 
