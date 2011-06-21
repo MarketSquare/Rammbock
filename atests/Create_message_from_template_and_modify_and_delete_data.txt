@@ -28,18 +28,18 @@ Add Sub Information Element
     ${ie}=  Get Information Element  foo.bar
     Should Be Equal  ${ie}  zig
 
-Add Header Field
+Add Header
     Add Header  host  localhost
     ${header}=  Get Header  host
     Should Be Equal  ${header}  localhost
 
 Modify Header
-    Modify Header Field  Request Version  HTTP/1.0
+    Modify Header  Request Version  HTTP/1.0
     ${header}=  Get Header  Request Version
     Should Be Equal  ${header}  HTTP/1.0
 
 Try to Modify header Which does not exist
-    Run Keyword And Expect Error  *  Modify Header Field  foobarzig  fdsafdsa
+    Run Keyword And Expect Error  *  Modify Header  foobarzig  fdsafdsa
 
 Modify Information Element
     Modify Information Element  Host  www.google.com
@@ -61,12 +61,12 @@ Delete Sub Information Element
     Delete Information Element  nested.test
     Run Keyword And Expect Error  *  Get Information Element  nested.test
 
-Delete Header Field Which Exists
-    Delete Header Field  Request Method
+Delete Header Which Exists
+    Delete Header  Request Method
     Run Keyword And Expect Error  *  Get Header  Request Method
 
 Try To Delete header field Which does not exist
-    Run Keyword And Expect Error  *  Delete Header Field  protocal
+    Run Keyword And Expect Error  *  Delete Header  protocal
 
 *** Keywords ***
 Create HTTP Get and Set it
