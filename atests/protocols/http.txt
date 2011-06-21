@@ -40,6 +40,10 @@ Send and Receive HTTP message with mixed headers IEs
     Client Sends Message with IE is middle of Headers
     Server Receives Message with IE is middle of Headers
 
+Send and Receive HTTP GET with mixed Headers IE's.
+    Client Sends Message with IE is middle of Headers
+    Server Receives Message and validates the data
+
 *** Keywords ***
 Servers Receive and verify data
     ${message}=  Server Receives Data
@@ -129,10 +133,7 @@ Client Sends Message with IE is middle of Headers
     Client Sends Message
 
 Server Receives Message with IE is middle of Headers
-    Create Message
-    Add Header Schema  Request URI
-    Add Information Element Schema  Host
-    Add Header Schema  Request Version
+    Create message and add schema with mixed headers and IEs
     Server Receives Message
     ${request uri}=  get header  Request URI
     ${request version}=  get header  Request Version
@@ -140,4 +141,15 @@ Server Receives Message with IE is middle of Headers
     Should Be Equal  ${request uri}  /
     Should Be Equal  ${request version}  HTTP/1.1
     Should be equal  ${host}  www.nokiasiemensnetworks.com
+
+Server Receives Message and validates the data
+    Create message and add schema with mixed headers and IEs
+    ${data}=  Server Receives Data
+    Should be equal  ${data}  / \r\nHost: www.nokiasiemensnetworks.com\r\n HTTP/1.1 \r\n\r\n
+
+Create message and add schema with mixed headers and IEs
+    Create Message
+    Add Header Schema  Request URI
+    Add Information Element Schema  Host
+    Add Header Schema  Request Version
 
