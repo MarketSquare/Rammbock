@@ -16,8 +16,6 @@ Check Information Element
 
 Check Sub Information Element
     [Tags]  ${EMPTY}
-    ${ie}=  Get Information Element  nested.test
-    Should Be Equal  ${ie}  test
 
 Add Information Element
     Add Information Element  foobar  zig
@@ -53,9 +51,6 @@ Try to Modify Information Element Which Does not Exist.
 
 Modify Sub Information Element
     [Tags]  ${EMPTY}
-    Modify Information Element  nested.test  testing this out
-    ${ie}=  Get Information Element  nested.test
-    Should Be Equal  ${ie}  testing this out
 
 Delete Information Element
     Delete Information Element  Host

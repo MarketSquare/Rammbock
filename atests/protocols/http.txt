@@ -7,7 +7,6 @@ Resource        ../protocols/http/v1_1.txt
 
 *** Test Cases ***
 Send HTTP Get Message And Acquire Response
-    [Tags]  no-ci  regression  system verification
     [Setup]  Create TCP Client And Connect To server  www.nokiasiemensnetworks.com  80
     Client Sends HTTP GET
     Client gets Resp
@@ -58,7 +57,7 @@ Client gets Resp
     ${request version}=  get header  Request Version
     ${response code}=  get header  Response Code
     Should Be Equal  ${request version}  HTTP/1.1
-    Should Be Equal  ${response code}  301
+    Should Be True  100 <= ${response code} < 600
 
 Client Sends HTTP GET
     Create Message
