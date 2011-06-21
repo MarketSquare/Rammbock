@@ -40,7 +40,7 @@ Send and Receive HTTP message with mixed headers IEs
     Client Sends Message with IE is middle of Headers
     Server Receives Message with IE is middle of Headers
 
-Send and Receive HTTP GET with mixed Headers IE's.
+Send HTTP message and Receive data with mixed Headers IEs.
     Client Sends Message with IE is middle of Headers
     Server Receives Message and validates the data
 
