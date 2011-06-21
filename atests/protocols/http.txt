@@ -1,5 +1,6 @@
 *** Settings ***
 Test Setup      TCP Server and Client are Initialized
+Test Teardown   Close Connections
 Default Tags    regression
 Library         rammbock.Rammbock
 Resource        ../resources/Messaging.txt
@@ -7,9 +8,11 @@ Resource        ../protocols/http/v1_1.txt
 
 *** Test Cases ***
 Send HTTP Get Message And Acquire Response
+    [Tags]  no-ci  system-verification
     [Setup]  Create TCP Client And Connect To server  www.nokiasiemensnetworks.com  80
     Client Sends HTTP GET
     Client gets Resp
+    [Teardown]  Close Client
 
 Send and receive GET message
     Client Sends HTTP GET
