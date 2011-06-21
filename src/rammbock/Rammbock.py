@@ -1,11 +1,10 @@
 from Client import UDPClient, TCPClient
 from Server import UDPServer, TCPServer
+from Message import Message
 import Server
 import Client
 import Encoder
 import Decoder
-
-from rammbock.Message import Message
 
 
 class Rammbock(object):
@@ -103,7 +102,6 @@ class Rammbock(object):
         self.message.ie += [name]
         self.message.items += ['IE']
 
-
     def modify_information_element(self, name, value):
         self.message.ie[self._id_to_name(self.message.ie, name)] = (name,value)
 
@@ -118,13 +116,13 @@ class Rammbock(object):
         self.message.header += [name]
         self.message.items += ['Header']
 
-    def modify_header_field(self, name, value):
+    def modify_header(self, name, value):
         self.message.header[self._id_to_name(self.message.header, name)] = (name,value)
 
     def delete_information_element(self, name):
         del self.message.ie[self._id_to_name(self.message.ie, name)]
 
-    def delete_header_field(self, name):
+    def delete_header(self, name):
         del self.message.header[self._id_to_name(self.message.header, name)]
 
     def _id_to_name(self, which, name):
