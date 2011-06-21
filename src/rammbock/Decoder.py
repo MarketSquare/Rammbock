@@ -16,6 +16,12 @@ def _get_object_from_data(message, data):
             tmp_ie_names += [data.pop()]
             tmp_ie = [data.pop()]
             tmp_ie_values += tmp_ie
-    _check_ies_vs_ies_in_schema
+    _check_ies_vs_ies_in_schema(message.ie, tmp_ie_names)
     message.ie = zip(message.ie, tmp_ie_values)
     message.header = zip(message.header, header_value)
+
+def _check_ies_vs_ies_in_schema(ies, tmp_ie_names):
+    for i in range(len(ies)):
+        tmp_ie = tmp_ie_names[i][:-1]
+        if ies[i] != tmp_ie:
+            raise Exception("Wrong information element: '"+tmp_ie+"' Expected: '"+ies[i]+"'")

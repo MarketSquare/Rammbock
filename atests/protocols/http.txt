@@ -161,7 +161,7 @@ Create message and add schema with mixed headers and IEs
 Server Receives HTTP GET with wrong headers
     create message
     Set HTTP GET rcv with wrong order of IEs
-    Run Keyword And Expect Error  Wrong information element: 'Cache-Control' Expected: 'Host'  Server Receives Message
+    Run Keyword And Expect Error  Wrong information element: 'Connection' Expected: 'Cache-control'  Server Receives Message
 
 Set HTTP GET rcv with wrong order of IEs
     Add Header Schema  Request Method
