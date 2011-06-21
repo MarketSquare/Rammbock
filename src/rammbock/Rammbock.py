@@ -103,7 +103,6 @@ class Rammbock(object):
         self.message.ie += [name]
         self.message.items += ['IE']
 
-
     def modify_information_element(self, name, value):
         self.message.ie[self._id_to_name(self.message.ie, name)] = (name,value)
 

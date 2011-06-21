@@ -41,7 +41,7 @@ Modify Header
     Should Be Equal  ${header}  HTTP/1.0
 
 Try to Modify header Which does not exist
-    [Tags]  ${EMPTY}
+    Run Keyword And Expect Error  *  Modify Header Field  foobarzig  fdsafdsa
 
 Modify Information Element
     Modify Information Element  Host  www.google.com
@@ -49,7 +49,7 @@ Modify Information Element
     Should Be Equal  ${ie}  www.google.com
 
 Try to Modify Information Element Which Does not Exist.
-    [Tags]  ${EMPTY}
+    Run Keyword And Expect Error  *  Modify Information Element  fdsa  fdsafdsa
 
 Modify Sub Information Element
     [Tags]  ${EMPTY}
