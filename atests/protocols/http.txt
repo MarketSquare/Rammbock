@@ -133,7 +133,7 @@ Verify That Response is Correct
     Should be equal  ${content-lenght}  218
 
 Client Sends Message with IE is middle of Headers
-    Create Message
+    create message
     Add Header  Request URI  /
     Add Information Element  Host  www.nokiasiemensnetworks.com
     Add Header  Request Version  ${REQUEST VERSION}

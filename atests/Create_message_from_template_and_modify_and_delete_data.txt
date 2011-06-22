@@ -22,12 +22,6 @@ Add Information Element
     ${ie}=  Get Information Element  foobar
     Should Be Equal  ${ie}  zig
 
-Add Sub Information Element
-    [Tags]  ${EMPTY}
-    Add Information Element  foo.bar  zig
-    ${ie}=  Get Information Element  foo.bar
-    Should Be Equal  ${ie}  zig
-
 Add Header
     Add Header  host  localhost
     ${header}=  Get Header  host
@@ -49,17 +43,9 @@ Modify Information Element
 Try to Modify Information Element Which Does not Exist.
     Run Keyword And Expect Error  *  Modify Information Element  fdsa  fdsafdsa
 
-Modify Sub Information Element
-    [Tags]  ${EMPTY}
-
 Delete Information Element
     Delete Information Element  Host
     Run Keyword And Expect Error  *  Get Information Element  message
-
-Delete Sub Information Element
-    [Tags]  ${EMPTY}
-    Delete Information Element  nested.test
-    Run Keyword And Expect Error  *  Get Information Element  nested.test
 
 Delete Header Which Exists
     Delete Header  Request Method
