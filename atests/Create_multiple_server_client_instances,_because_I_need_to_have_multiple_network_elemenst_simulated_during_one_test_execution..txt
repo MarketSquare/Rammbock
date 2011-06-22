@@ -1,21 +1,19 @@
 *** Settings ***
-Library        rammbock.Rammbock
-Resource	   resources/data_transfer.txt
-Resource       resources/server_client.txt
-Default Tags   regression
-Test Setup     Create Two TCP Servers And Clients
-Test Teardown  Delete Two Servers And Clients And Verify Deletion
+Test Setup      Create Two TCP Servers And Clients
+Test Teardown   Delete Two Servers And Clients And Verify Deletion
+Default Tags    regression
+Library         rammbock.Rammbock
+Resource        resources/data_transfer.txt
+Resource        resources/server_client.txt
 
 *** Variables ***
-${LOCALHOST_IP}   127.0.0.1
-${SERVER_NAME1}   testiserveri1
-${SERVER_NAME2}   testiserveri2
+${LOCALHOST_IP}  127.0.0.1
+${SERVER_NAME1}  testiserveri1
+${SERVER_NAME2}  testiserveri2
 ${DEFAULT_PORT1}  3011
 ${DEFAULT_PORT2}  23205
-
-${CLIENT_NAME1}   testiclient1
-${CLIENT_NAME2}   testiclient2
-
+${CLIENT_NAME1}  testiclient1
+${CLIENT_NAME2}  testiclient2
 
 *** Test Cases ***
 Create and delete two instances of Servers
@@ -25,12 +23,6 @@ Create and delete two instances of Servers
 Create and delete two instances of Clients
     Check Client Existence  ${CLIENT_NAME1}  ${True}
     Check Client Existence  ${CLIENT_NAME2}  ${True}
-
-One server communicate with multiple clients.
-    [Tags]  ${EMPTY}
-
-One client communicates with multiple servers.
-    [Tags]  ${EMPTY}
 
 Send data between multiple Client and Server instances
     Connect to TCP server  ${HOST}  ${DEFAULT_PORT1}  ${False}  ${CLIENT_NAME1}
@@ -46,25 +38,20 @@ Send data between multiple Client and Server instances
     Server Sends packet  ${SERVER_NAME2}
     Client Receives Packet  ${CLIENT_NAME2}
 
-
 *** Keywords ***
-
 Create Two TCP Servers And Clients
     Start TCP Server  ${LOOPBACK_DEVICE}  ${DEFAULT_PORT1}  ${LOCALHOST_IP}  ${SERVER_NAME1}
     Start TCP Server  ${LOOPBACK_DEVICE}  ${DEFAULT_PORT2}  ${LOCALHOST_IP}  ${SERVER_NAME2}
-
     Create TCP Client  ${CLIENT_NAME1}
     Create TCP Client  ${CLIENT_NAME2}
 
 Delete Two Servers And Clients And Verify Deletion
     Close Server  ${SERVER_NAME1}
     Check Server Existence  ${SERVER_NAME1}  ${False}
-
     Close Server  ${SERVER_NAME2}
     Check Server Existence  ${SERVER_NAME2}  ${False}
-
     Close Client  ${CLIENT_NAME1}
     Check Client Existence  ${CLIENT_NAME1}  ${False}
-
     Close Client  ${CLIENT_NAME2}
     Check Client Existence  ${CLIENT_NAME2}  ${False}
+
