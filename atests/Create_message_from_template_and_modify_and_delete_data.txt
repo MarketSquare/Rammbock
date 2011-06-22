@@ -33,7 +33,8 @@ Modify Header
     Should Be Equal  ${header}  HTTP/1.0
 
 Try to Modify header Which does not exist
-    Run Keyword And Expect Error  *  Modify Header  foobarzig  fdsafdsa
+    [Tags]  ${EMPTY}
+    Run Keyword And Expect Error  Header does not exist: 'foobarzig'  Modify Header  foobarzig  fdsafdsa
 
 Modify Information Element
     Modify Information Element  Host  www.google.com
@@ -41,7 +42,8 @@ Modify Information Element
     Should Be Equal  ${ie}  www.google.com
 
 Try to Modify Information Element Which Does not Exist.
-    Run Keyword And Expect Error  *  Modify Information Element  fdsa  fdsafdsa
+    [Tags]
+    Run Keyword And Expect Error  Information does not exist: 'fdsa'  Modify Information Element  fdsa  fdsafdsa
 
 Delete Information Element
     Delete Information Element  Host
