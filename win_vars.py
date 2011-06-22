@@ -1,1 +1,1 @@
-LOOPBACK_DEVICE = 'Ethernet adapter Local Area Connection'
+LOOPBACK_DEVICE = 'Local Area Connection'
