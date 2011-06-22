@@ -9,6 +9,10 @@ import Decoder
 
 class Rammbock(object):
 
+    IE_NOT_FOUND = "Information Element does not exist: '%s'"
+    HEADER_NOT_FOUND = "Header does not exist: '%s'"
+    
+
     def __init__(self):
         self.message = None
         self._servers = {}
@@ -83,13 +87,20 @@ class Rammbock(object):
         self.message = Message()
 
     def get_header(self, name):
-        return self._first_by_name(name, self.message.header)
-
+        try:
+            return self._first_by_name(name, self.message.header)
+        except StopIteration:
+            raise Exception(self.HEADER_NOT_FOUND % name)
+            
     def _first_by_name(self, name, collection):
         return (item for item_name, item in collection if item_name == name).next()
 
     def get_information_element(self, name):
-        return self._first_by_name(name, self.message.ie)
+        try:
+            return self._first_by_name(name, self.message.ie)
+        except StopIteration:
+            raise Exception(self.IE_NOT_FOUND % name)
+
 
     def add_information_element(self, name, value=None):
         self.message.items += ['IE']
@@ -103,8 +114,10 @@ class Rammbock(object):
         self.message.items += ['IE']
 
     def modify_information_element(self, name, value):
-        self.message.ie[self._id_to_name(self.message.ie, name)] = (name,value)
-
+        try:
+            self.message.ie[self._id_to_name(self.message.ie, name)] = (name,value)
+        except StopIteration:
+            raise Exception(self.IE_NOT_FOUND % name)
     def add_header(self, name, value = None):
         self.message.items += ['Header']
         if value == None:
@@ -117,7 +130,10 @@ class Rammbock(object):
         self.message.items += ['Header']
 
     def modify_header(self, name, value):
-        self.message.header[self._id_to_name(self.message.header, name)] = (name,value)
+        try:
+            self.message.header[self._id_to_name(self.message.header, name)] = (name,value)
+        except StopIteration:
+            raise Exception(self.HEADER_NOT_FOUND % name)
 
     def delete_information_element(self, name):
         del self.message.ie[self._id_to_name(self.message.ie, name)]

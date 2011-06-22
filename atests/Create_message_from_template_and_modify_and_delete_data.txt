@@ -14,9 +14,6 @@ Check Information Element
     ${ie}=  Get Information Element  Host
     Should Be Equal  ${ie}  www.nokiasiemensnetworks.com
 
-Check Sub Information Element
-    [Tags]  ${EMPTY}
-
 Add Information Element
     Add Information Element  foobar  zig
     ${ie}=  Get Information Element  foobar
@@ -33,7 +30,6 @@ Modify Header
     Should Be Equal  ${header}  HTTP/1.0
 
 Try to Modify header Which does not exist
-    [Tags]  ${EMPTY}
     Run Keyword And Expect Error  Header does not exist: 'foobarzig'  Modify Header  foobarzig  fdsafdsa
 
 Modify Information Element
@@ -42,16 +38,15 @@ Modify Information Element
     Should Be Equal  ${ie}  www.google.com
 
 Try to Modify Information Element Which Does not Exist.
-    [Tags]
-    Run Keyword And Expect Error  Information does not exist: 'fdsa'  Modify Information Element  fdsa  fdsafdsa
+    Run Keyword And Expect Error  Information Element does not exist: 'fdsa'  Modify Information Element  fdsa  fdsafdsa
 
 Delete Information Element
     Delete Information Element  Host
-    Run Keyword And Expect Error  *  Get Information Element  message
+    Run Keyword And Expect Error  Information Element does not exist: 'Host'  Get Information Element  Host
 
 Delete Header Which Exists
     Delete Header  Request Method
-    Run Keyword And Expect Error  *  Get Header  Request Method
+    Run Keyword And Expect Error  Header does not exist: 'Request Method'  Get Header  Request Method
 
 Try To Delete header field Which does not exist
     Run Keyword And Expect Error  *  Delete Header  protocal
