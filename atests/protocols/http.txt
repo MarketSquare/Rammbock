@@ -47,8 +47,7 @@ Send HTTP message and Receive data with mixed Headers IEs.
     Server Receives Message and validates the data
 
 Send and receive GET message and try to capture wrong headers
-    [Tags]
-    Client Sends HTTP GET
+     Client Sends HTTP GET
     Server Receives HTTP GET with wrong headers
 
 *** Keywords ***
