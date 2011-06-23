@@ -16,18 +16,18 @@ def get_ip_address(ifname):
     """
     if platform in WINDOWS:
         return _get_windows_ip(ifname)
-    process = subprocess.Popen([__get_ifconfig_cmd(), ifname], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = subprocess.Popen([_get_ifconfig_cmd(), ifname], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = process.communicate()[0]
-    return __return_ip_address_from_ifconfig_output(output)
+    return _return_ip_address_from_ifconfig_output(output)
 
 def create_interface_alias(ifname, ip_address, netmask):
     """ Creates interface """
-    virtual_if_name = __get_free_interface_alias(ifname)
+    virtual_if_name = _get_free_interface_alias(ifname)
     print "ifconfig", virtual_if_name, ip_address, "netmask", netmask
     if platform in OSX:
-        process = subprocess.Popen([__get_ifconfig_cmd(), virtual_if_name, 'alias', ip_address, "netmask", netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen([_get_ifconfig_cmd(), virtual_if_name, 'alias', ip_address, "netmask", netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     else:
-        process = subprocess.Popen([__get_ifconfig_cmd(), virtual_if_name, ip_address, "netmask", netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen([_get_ifconfig_cmd(), virtual_if_name, ip_address, "netmask", netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process.wait()
     return virtual_if_name
 
@@ -39,12 +39,12 @@ def check_interface(ifname):
 
 def check_interface_for_ip(ifname, ip):
     """checks given network interface for given ip address"""
-    cmd = [__get_ifconfig_cmd()]
+    cmd = [_get_ifconfig_cmd()]
     if platform not in WINDOWS:
         cmd.append(ifname)
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = process.communicate()[0]
-    ips=__return_ip_addresses_from_ifconfig_output(output)
+    ips=_return_ip_addresses_from_ifconfig_output(output)
     print ips
     return ip in ips
 
@@ -52,12 +52,12 @@ def del_alias(ifname, ip):
     """Deletes this interface"""
     print "ifconfig", ifname, "down"
     if platform in OSX:
-        process = subprocess.Popen([__get_ifconfig_cmd(), ifname, '-alias', ip], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen([_get_ifconfig_cmd(), ifname, '-alias', ip], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     else:
-        process = subprocess.Popen([__get_ifconfig_cmd(), ifname, "down"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen([_get_ifconfig_cmd(), ifname, "down"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process.wait()
 
-def __return_ip_addresses_from_ifconfig_output(output):
+def _return_ip_addresses_from_ifconfig_output(output):
     addresses = []
     if platform in WINDOWS:
         return ['127.0.0.1']
@@ -69,14 +69,14 @@ def __return_ip_addresses_from_ifconfig_output(output):
                 addresses.append(ipAddress)
         return addresses
 
-def __return_ip_address_from_ifconfig_output(output):
-    addresses = __return_ip_addresses_from_ifconfig_output(output)
+def _return_ip_address_from_ifconfig_output(output):
+    addresses = _return_ip_addresses_from_ifconfig_output(output)
     if addresses == []:
         return ''
     else:
         return addresses[0]
 
-def __get_free_interface_alias(ifname):
+def _get_free_interface_alias(ifname):
     if platform in OSX: 
         return ifname
     else:
@@ -85,11 +85,11 @@ def __get_free_interface_alias(ifname):
             if not check_interface(virtual_if_name):
                 return virtual_if_name
 
-def __get_ifconfig_cmd():
+def _get_ifconfig_cmd():
     if platform in OSX:
         return '/sbin/ifconfig'
     elif platform in WINDOWS:
-        return 'ipconfig'
+        return 'netsh'
     else:
         return '/sbin/ifconfig'
 

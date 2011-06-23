@@ -1,1 +1,1 @@
-LOOPBACK_DEVICE = 'Local Area Connection'
+LOOPBACK_DEVICE = 'Loopback Pseudo-Interface 1'
