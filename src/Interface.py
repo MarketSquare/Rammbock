@@ -14,9 +14,12 @@ def get_ip_address(ifname):
     get_ip_address | <interface>
     e.g. get_ip_address | eth0
     """
+    cmd = [_get_ifconfig_cmd()]
     if platform in WINDOWS:
-        return _get_windows_ip(ifname)
-    process = subprocess.Popen([_get_ifconfig_cmd(), ifname], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        cmd.extend(["interface", "ipv4", "show", "config"])
+    cmd.append(ifname)
+
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = process.communicate()[0]
     return _return_ip_address_from_ifconfig_output(output)
 
@@ -40,8 +43,9 @@ def check_interface(ifname):
 def check_interface_for_ip(ifname, ip):
     """checks given network interface for given ip address"""
     cmd = [_get_ifconfig_cmd()]
-    if platform not in WINDOWS:
-        cmd.append(ifname)
+    if platform in WINDOWS:
+        cmd.extend(["interface", "ipv4", "show", "config"])
+    cmd.append(ifname)
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = process.communicate()[0]
     ips=_return_ip_addresses_from_ifconfig_output(output)
@@ -77,7 +81,7 @@ def _return_ip_address_from_ifconfig_output(output):
         return addresses[0]
 
 def _get_free_interface_alias(ifname):
-    if platform in OSX: 
+    if platform in OSX or platform in WINDOWS:
         return ifname
     else:
         while True:
@@ -92,17 +96,3 @@ def _get_ifconfig_cmd():
         return 'netsh'
     else:
         return '/sbin/ifconfig'
-
-def _get_windows_ip(ifname):
-    process = subprocess.Popen(["ipconfig"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output = process.communicate()[0]
-    lines = output.split('\n')
-    for number, line in enumerate(lines):
-        if "Ethernet adapter" in line and ifname in line:
-            for i_line in lines[number+2:]:
-                if i_line is '\n':
-                    break
-                if "IPv4 Address" in i_line:
-                    ip = find_ip_regexp.match(i_line).group(1)
-                    return ip
-
