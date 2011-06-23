@@ -45,13 +45,9 @@ def check_interface_for_ip(ifname, ip):
     if platform in WINDOWS:
         cmd.extend(["interface", "ipv4", "show", "config"])
     cmd.append(ifname)
-
-    print cmd
-
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = process.communicate()[0]
     ips=_return_ip_addresses_from_ifconfig_output(output)
-    print ips
     return ip in ips
 
 def del_alias(ifname, ip):
