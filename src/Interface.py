@@ -18,7 +18,6 @@ def get_ip_address(ifname):
     if platform in WINDOWS:
         cmd.extend(["interface", "ipv4", "show", "config"])
     cmd.append(ifname)
-
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = process.communicate()[0]
     return _return_ip_address_from_ifconfig_output(output)
@@ -46,6 +45,9 @@ def check_interface_for_ip(ifname, ip):
     if platform in WINDOWS:
         cmd.extend(["interface", "ipv4", "show", "config"])
     cmd.append(ifname)
+
+    print cmd
+
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = process.communicate()[0]
     ips=_return_ip_addresses_from_ifconfig_output(output)
@@ -63,15 +65,12 @@ def del_alias(ifname, ip):
 
 def _return_ip_addresses_from_ifconfig_output(output):
     addresses = []
-    if platform in WINDOWS:
-        return ['127.0.0.1']
-    else:
-        for line in output.split('\n'):
-            if 'inet ' in line or 'IPv4 Address' in line:
-                ipAddress = find_ip_regexp.match(line).group(1)
-                print "ip address is:" + ipAddress
-                addresses.append(ipAddress)
-        return addresses
+    for line in output.split('\n'):
+        if 'inet ' in line or 'IPv4 Address' in line or 'IP Address' in line:
+            ipAddress = find_ip_regexp.match(line).group(1)
+            print "ip address is:" + ipAddress
+            addresses.append(ipAddress)
+    return addresses
 
 def _return_ip_address_from_ifconfig_output(output):
     addresses = _return_ip_addresses_from_ifconfig_output(output)
