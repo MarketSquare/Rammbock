@@ -28,6 +28,8 @@ def create_interface_alias(ifname, ip_address, netmask):
     print "ifconfig", virtual_if_name, ip_address, "netmask", netmask
     if platform in OSX:
         process = subprocess.Popen([_get_ifconfig_cmd(), virtual_if_name, 'alias', ip_address, "netmask", netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    elif platform in WINDOWS:
+        process = subprocess.Popen([_get_ifconfig_cmd(), "interface", "ipv4", "add", "address", ifname, ip_address, netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
     else:
         process = subprocess.Popen([_get_ifconfig_cmd(), virtual_if_name, ip_address, "netmask", netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process.wait()
