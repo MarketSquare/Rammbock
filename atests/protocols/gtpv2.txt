@@ -1,0 +1,35 @@
+*** Settings ***
+Test Setup      UDP Server and Client are initialized
+Test Teardown   Close Connections
+
+*** Test Cases ***
+Create gtpv2 message with headers
+    Create Message
+    add gtpv2 headers
+    Client sends message
+    Server receives data and validates header
+
+Create gtpv2 message with information elements
+
+Create gtpv2 session request/response
+
+Create gtpv2 message with flags
+    Create Message
+    Add flag  72  #010. .... = Version: 2, ...1 .... = P: 0, .... 1... = T: 1
+    Server receives data and validates flags
+
+*** Keywords ***
+add gtpv2 headers
+    Add Header  Message Length  55  2
+
+Server receives data and validates header
+    Receive data and validate against string  \ 7
+
+Receive data and validate against string
+    [Arguments]  ${content}
+    ${data}=  Server Receives Data
+    Should Be Equal  ${data}  ${content}
+
+Server receives data and validates flags
+    Receive data and validate against string  H
+
