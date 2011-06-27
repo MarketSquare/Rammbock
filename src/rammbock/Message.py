@@ -3,3 +3,5 @@ class Message():
         self.items = []
         self.header = []
         self.ie = []
+        self.flags = None
+        self.delimiters = []

@@ -1,2 +1,3 @@
 @ECHO OFF
 pybot -c regression -L DEBUG --variablefile win_vars.py --pythonpath src\ %1 %2 atests\
+pause

@@ -105,6 +105,14 @@ class Rammbock(object):
         else:
             self.message.ie.append((name, value))
 
+    def add_flags(self, value):
+        self.message.items += ['FLAGS']
+        self.message.flags = value
+
+    def add_delimiter(self, value):
+        self.message.items += ['DELIMITER']
+        self.message.delimiters += [value]
+
     def add_information_element_schema(self, name):
         self.message.ie += [name]
         self.message.items += ['IE']
@@ -112,7 +120,7 @@ class Rammbock(object):
     def modify_information_element(self, name, value):
         self.message.ie[self._id_to_name(self.message.ie, name, self.IE_NOT_FOUND % name)] = (name,value)
 
-    def add_header(self, name, value = None, length=None):
+    def add_header(self, name, value=None, length=None):
         self.message.items += ['Header']
         if value == None:
             self.message.header.append((name))

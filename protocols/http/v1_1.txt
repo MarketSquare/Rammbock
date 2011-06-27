@@ -12,6 +12,7 @@ Set HTTP GET send
     Add Information Element  Cache-control  max-age=0
     Add Information Element  User-agent  rammbock
     Add Information Element  Accept  text/html
+    Add Delimiter  \r\n
 
 Set HTTP GET rcv
     Add Header Schema  Request Method
@@ -28,6 +29,7 @@ Set HTTP Response send
     Add Header  Response Code  200
     Add Information Element  Connection  ${CONNECTION}
     Add Information Element  Content-Lenght  218
+    Add Delimiter  \r\n
 
 Set HTTP Response rcv
     Add Header Schema  Request Version

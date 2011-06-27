@@ -1,21 +1,28 @@
 *** Settings ***
 Test Setup      UDP Server and Client are initialized
 Test Teardown   Close Connections
+Library         rammbock.Rammbock
+Resource        ../resources/Messaging.txt
+Default Tags    regression
 
 *** Test Cases ***
 Create gtpv2 message with headers
+    [Tags]       
     Create Message
     add gtpv2 headers
     Client sends message
     Server receives data and validates header
 
 Create gtpv2 message with information elements
+    [Tags]       
 
 Create gtpv2 session request/response
+    [Tags]       
 
 Create gtpv2 message with flags
     Create Message
-    Add flag  72  #010. .... = Version: 2, ...1 .... = P: 0, .... 1... = T: 1
+    Add Flags  72  #010. .... = Version: 2, ...1 .... = P: 0, .... 1... = T: 1
+    Client sends message
     Server receives data and validates flags
 
 *** Keywords ***
