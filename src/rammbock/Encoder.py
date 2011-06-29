@@ -21,21 +21,3 @@ def _next_item_is_not(message, index, name):
         return message.items[index + 1]['type'] is not name
     except IndexError:
         return False
-
-def izip_l(x,y):
-    pad = lambda l1,l2: l1 + [None for _ in range(max(len(l2) -
-                                                      len(l1), 0))]
-    return zip(pad(x,y), pad(y,x))
-
-def _return_header_from_obj(message):
-    _, header = message.header.pop()
-    return header + " "
-
-def _return_dec_header_from_obj(message):
-    _, header = message.dec_headers.pop()
-    return header
-
-def _return_ie_from_obj(message):
-    ie = message.ie.pop()
-    return ": ".join(ie) + "\r\n"
-
