@@ -2,7 +2,6 @@
 #-*- coding: iso-8859-15 -*-
 
 import socket
-import Interface
 
 UDP_PACKET_MAX_SIZE = 1024
 TCP_PACKET_MAX_SIZE = 1000000
@@ -17,10 +16,6 @@ class _Client(object):
 
     def establish_connection_to_server(self, host, port, interface):
         print 'Connecting to host and port: '+host+':'+port
-        print interface
-        if interface:
-            ownhost = str(Interface.get_ip_address(interface))
-            self._client_socket.bind((ownhost, int(port)))
         self._client_socket.connect((host, int(port)))
 
     def send_packet(self, packet): 

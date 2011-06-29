@@ -57,6 +57,8 @@ def del_alias(ifname, ip):
     print "ifconfig", ifname, "down"
     if platform in OSX:
         process = subprocess.Popen([_get_ifconfig_cmd(), ifname, '-alias', ip], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    elif platform in WINDOWS:
+        process = subprocess.Popen([_get_ifconfig_cmd(), "interface", "ipv4", "delete", "address", ifname, ip], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     else:
         process = subprocess.Popen([_get_ifconfig_cmd(), ifname, "down"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process.wait()
