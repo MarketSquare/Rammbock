@@ -4,4 +4,4 @@ class Message():
         self.header = []
         self.ie = []
         self.flags = None
-        self.delimiters = []
+        self.dec_headers = []

@@ -3,26 +3,24 @@ def object2string(message):
     return whole_message
 
 def _generate_message_from_object(message):
-
     whole_message = ""
-    #TODO: Try to get rid of these reverses.
-    message.header.reverse()
-    message.ie.reverse()
-    for i,j in izip_l(message.items, message.items[1:]):
-        if i == 'Header':
-            whole_message += _return_header_from_obj(message)
-            if j != 'Header':
+    for index, item in enumerate(message.items):
+        if item['type'] is 'HEADER':
+            whole_message += item['value'] + " "
+            if _next_item_is_not(message, index, 'HEADER'):
                 whole_message += '\r\n'
-        elif i == 'IE':
-            whole_message += _return_ie_from_obj(message)
-        elif i == 'FLAGS':
-            whole_message += chr(int(message.flags))
-        elif i == 'DELIMITER':
-            print(repr(message.delimiters))
-            whole_message += message.delimiters.pop()
-        else:
-            raise Exception(NameError, 'Unwknown type %s' %i)
+        elif item['type'] is 'IE':
+            whole_message += item['name'] + ": " + item['value'] + '\r\n'
+        elif item['type'] is 'DELIMITER':
+            whole_message += item['value']
+    print repr(whole_message)
     return whole_message
+
+def _next_item_is_not(message, index, name):
+    try:
+        return message.items[index + 1]['type'] is not name
+    except IndexError:
+        return False
 
 def izip_l(x,y):
     pad = lambda l1,l2: l1 + [None for _ in range(max(len(l2) -
@@ -33,7 +31,11 @@ def _return_header_from_obj(message):
     _, header = message.header.pop()
     return header + " "
 
+def _return_dec_header_from_obj(message):
+    _, header = message.dec_headers.pop()
+    return header
 
 def _return_ie_from_obj(message):
     ie = message.ie.pop()
     return ": ".join(ie) + "\r\n"
+

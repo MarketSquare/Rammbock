@@ -12,7 +12,6 @@ class Rammbock(object):
     IE_NOT_FOUND = "Information Element does not exist: '%s'"
     HEADER_NOT_FOUND = "Header does not exist: '%s'"
 
-
     def __init__(self):
         self.message = None
         self._servers = {}
@@ -87,61 +86,58 @@ class Rammbock(object):
         self.message = Message()
 
     def get_header(self, name):
-        return self._first_by_name(name, self.message.header, self.HEADER_NOT_FOUND % name)
+        return self._first_by_name(name, 'HEADER', self.HEADER_NOT_FOUND % name)['value']
 
-    def _first_by_name(self, name, collection, error_m=None):
+    def get_information_element(self, name):
+        return self._first_by_name(name, 'IE', self.IE_NOT_FOUND % name)['value']
+
+    def _first_by_name(self, name, i_type, error_m=None):
         try:
-            return (item for item_name, item in collection if item_name == name).next()
+            return (item for item in self.message.items if item['name'] == name and item['type'] == i_type).next()
         except StopIteration:
             raise Exception(error_m)
 
-    def get_information_element(self, name):
-        return self._first_by_name(name, self.message.ie, self.IE_NOT_FOUND % name)
-
     def add_information_element(self, name, value=None):
-        self.message.items += ['IE']
-        if value == None:
-            self.message.ie.append((name))
-        else:
-            self.message.ie.append((name, value))
+        self.message.items.append({'type': 'IE', 'name': name, 'value': value})
 
     def add_flags(self, value):
-        self.message.items += ['FLAGS']
-        self.message.flags = value
+        self.message.items.append({'type': 'FLAGS', 'value': value})
 
     def add_delimiter(self, value):
-        self.message.items += ['DELIMITER']
-        self.message.delimiters += [value]
+        self.message.items.append({'type': 'DELIMITER', 'name': None, 'value': value})
 
     def add_information_element_schema(self, name):
-        self.message.ie += [name]
-        self.message.items += ['IE']
+        self.message.items.append({'type': 'IE', 'name': name, 'value': None})
+
+    def add_header_schema(self, name):
+        self.message.items.append({'type': 'HEADER', 'name': name})
 
     def modify_information_element(self, name, value):
-        self.message.ie[self._id_to_name(self.message.ie, name, self.IE_NOT_FOUND % name)] = (name,value)
+        print self.message.items
+        self.message.items[self._id_to_name('IE', name, self.IE_NOT_FOUND % name)] = {'type': 'IE', 'name': name, 'value': value}
 
-    def add_header(self, name, value=None, length=None):
+    def add_string_header(self, name, value=None, length=None):
         self.message.items += ['Header']
         if value == None:
             self.message.header.append((name))
         else:
             self.message.header.append((name, value))
 
-    def add_header_schema(self, name):
-        self.message.header += [name]
-        self.message.items += ['Header']
+    def add_header(self, name, value=None):
+        self.message.items.append({'type': 'HEADER','name': name,'value': value})
+
 
     def modify_header(self, name, value):
-        self.message.header[self._id_to_name(self.message.header, name, self.HEADER_NOT_FOUND % name)] = (name,value)
+        self.message.items[self._id_to_name('HEADER', name, self.HEADER_NOT_FOUND % name)] = {'type': 'HEADER', 'name': name, 'value': value}
 
     def delete_information_element(self, name):
-        del self.message.ie[self._id_to_name(self.message.ie, name)]
+        del self.message.items[self._id_to_name('IE', name)]
 
     def delete_header(self, name):
-        del self.message.header[self._id_to_name(self.message.header, name)]
+        del self.message.items[self._id_to_name('HEADER', name)]
 
-    def _id_to_name(self, which, name, error_m=None):
+    def _id_to_name(self, i_type, name, error_m=None):
         try:
-            return (x for x, i in enumerate(which) if i[0] == name).next()
+            return (x for x, i in enumerate(self.message.items) if i['name'] == name and i['type'] == i_type).next()
         except StopIteration:
             raise Exception(error_m)
