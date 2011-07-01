@@ -14,24 +14,15 @@ def get_ip_address(ifname):
     get_ip_address | <interface>
     e.g. get_ip_address | eth0
     """
-    cmd = [_get_ifconfig_cmd()]
-    if platform in WINDOWS:
-        cmd.extend(["interface", "ipv4", "show", "config"])
-    cmd.append(ifname)
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = subprocess.Popen(_get_ifconfig_cmd("show", ifname), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = process.communicate()[0]
     return _return_ip_address_from_ifconfig_output(output)
 
-def create_interface_alias(ifname, ip_address, netmask):
+def create_interface_alias(ifname, ip, netmask):
     """ Creates interface """
     virtual_if_name = _get_free_interface_alias(ifname)
-    print "ifconfig", virtual_if_name, ip_address, "netmask", netmask
-    if platform in OSX:
-        process = subprocess.Popen([_get_ifconfig_cmd(), virtual_if_name, 'alias', ip_address, "netmask", netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    elif platform in WINDOWS:
-        process = subprocess.Popen([_get_ifconfig_cmd(), "interface", "ipv4", "add", "address", ifname, ip_address, netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
-    else:
-        process = subprocess.Popen([_get_ifconfig_cmd(), virtual_if_name, ip_address, "netmask", netmask], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    print "ifconfig", virtual_if_name, ip, "netmask", netmask
+    process = subprocess.Popen(_get_ifconfig_cmd("add", virtual_if_name, ip, netmask), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process.wait()
     return virtual_if_name
 
@@ -43,11 +34,7 @@ def check_interface(ifname):
 
 def check_interface_for_ip(ifname, ip):
     """checks given network interface for given ip address"""
-    cmd = [_get_ifconfig_cmd()]
-    if platform in WINDOWS:
-        cmd.extend(["interface", "ipv4", "show", "config"])
-    cmd.append(ifname)
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = subprocess.Popen(_get_ifconfig_cmd("show", ifname), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = process.communicate()[0]
     ips=_return_ip_addresses_from_ifconfig_output(output)
     return ip in ips
@@ -55,12 +42,7 @@ def check_interface_for_ip(ifname, ip):
 def del_alias(ifname, ip):
     """Deletes this interface"""
     print "ifconfig", ifname, "down"
-    if platform in OSX:
-        process = subprocess.Popen([_get_ifconfig_cmd(), ifname, '-alias', ip], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    elif platform in WINDOWS:
-        process = subprocess.Popen([_get_ifconfig_cmd(), "interface", "ipv4", "delete", "address", ifname, ip], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    else:
-        process = subprocess.Popen([_get_ifconfig_cmd(), ifname, "down"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = subprocess.Popen(_get_ifconfig_cmd("del", ifname, ip), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process.wait()
 
 def _return_ip_addresses_from_ifconfig_output(output):
@@ -88,10 +70,43 @@ def _get_free_interface_alias(ifname):
             if not check_interface(virtual_if_name):
                 return virtual_if_name
 
-def _get_ifconfig_cmd():
+def _get_ifconfig_cmd(cmd, ifname, ip=None, netmask=None):
+    returnable = _get_base_ifcmd()
+    if cmd == "add":
+        re = returnable + _get_add_cmd(ifname, ip, netmask)
+    elif cmd == "del":
+        re = returnable + _get_del_cmd(ifname, ip)
+    elif cmd == "show":
+        re = returnable + _get_show_cmd(ifname)
+    print re
+    return re
+
+def _get_base_ifcmd():
     if platform in OSX:
-        return '/sbin/ifconfig'
+        return ['/sbin/ifconfig']
     elif platform in WINDOWS:
-        return 'netsh'
+        return ['netsh', 'interface', 'ipv4']
     else:
-        return '/sbin/ifconfig'
+        return ['/sbin/ifconfig']
+
+def _get_add_cmd(ifname, ip, netmask):
+    if platform in OSX:
+        return [ifname, 'alias', ip, "netmask", netmask]
+    elif platform in WINDOWS:
+        return ["add", "address", ifname, ip, netmask]
+    elif platform in LINUX:
+        return [ifname, ip, "netmask", netmask]
+
+def _get_del_cmd(ifname, ip):
+    if platform in OSX:
+        return [ifname, '-alias', ip]
+    elif platform in WINDOWS:
+        return ["delete", "address", ifname, ip]
+    elif platform in LINUX:
+        return [ifname, "down"]
+
+def _get_show_cmd(ifname):
+    if platform in WINDOWS:
+        return ["show", "config", ifname]
+    else:
+        return [ifname]
