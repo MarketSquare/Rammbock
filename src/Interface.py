@@ -14,9 +14,7 @@ def get_ip_address(ifname):
     get_ip_address | <interface>
     e.g. get_ip_address | eth0
     """
-    process = subprocess.Popen(_get_ifconfig_cmd("show", ifname), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output = process.communicate()[0]
-    return _return_ip_address_from_ifconfig_output(output)
+    return _get_ip_addresses_for_ifname(ifname)[0]
 
 def create_interface_alias(ifname, ip, netmask):
     """ Creates interface """
@@ -34,10 +32,7 @@ def check_interface(ifname):
 
 def check_interface_for_ip(ifname, ip):
     """checks given network interface for given ip address"""
-    process = subprocess.Popen(_get_ifconfig_cmd("show", ifname), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output = process.communicate()[0]
-    ips=_return_ip_addresses_from_ifconfig_output(output)
-    return ip in ips
+    return ip in _get_ip_addresses_for_ifname(ifname)
 
 def del_alias(ifname, ip):
     """Deletes this interface"""
@@ -45,7 +40,9 @@ def del_alias(ifname, ip):
     process = subprocess.Popen(_get_ifconfig_cmd("del", ifname, ip), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process.wait()
 
-def _return_ip_addresses_from_ifconfig_output(output):
+def _get_ip_addresses_for_ifname(ifname):
+    process = subprocess.Popen(_get_ifconfig_cmd("show", ifname), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output = process.communicate()[0]
     addresses = []
     for line in output.split('\n'):
         if 'inet ' in line or 'IPv4 Address' in line or 'IP Address' in line:
@@ -53,13 +50,6 @@ def _return_ip_addresses_from_ifconfig_output(output):
             print "ip address is:" + ipAddress
             addresses.append(ipAddress)
     return addresses
-
-def _return_ip_address_from_ifconfig_output(output):
-    addresses = _return_ip_addresses_from_ifconfig_output(output)
-    if addresses == []:
-        return ''
-    else:
-        return addresses[0]
 
 def _get_free_interface_alias(ifname):
     if platform in OSX or platform in WINDOWS:
