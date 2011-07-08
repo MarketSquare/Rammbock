@@ -6,28 +6,31 @@ Library         rammbock.Rammbock
 Resource        ../resources/Messaging.txt
 
 *** Test Cases ***
-Create gtpv2 message with headers
+Encode gtpv2 message with multiple binary data elements
     [Tags]  ${EMPTY}
     Create Message and add gtpv2 headers
     Client sends message
     Server receives data and validates header
 
-Create gtpv2 message with information elements
+Create gtpv2 message with real content
     [Tags]
 
 Create gtpv2 session request/response
     [Tags]
 
-Create gtpv2 message with flags
+Encode gtpv2 message with binary data
     [Tags]  regression
     Create Message and Add Flags
     Client sends message
     Server receives and validates data
 
-Create gtpv2 message with flags and decode it
+Decode gtpv2 message with binary data and
     Create Message and Add Flags
     Client sends message
     Server receives and validates message
+
+Decode gtpv2 message with multiple binary data elements
+    [Tags]  ${EMPTY}
 
 *** Keywords ***
 Create Message and add gtpv2 headers
