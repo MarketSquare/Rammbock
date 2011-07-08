@@ -20,11 +20,12 @@ def _get_object_from_data(message, data):
             temp.reverse()
             for d in range(0, int(item['length'])):
                 message_temp += str(struct.unpack('B', temp.pop())[0])
-
+            print temp
             print "debug: " + message_temp, repr(message_temp)
             temp.reverse()
-            data[i] = str(temp)
-            message.items[a]['value'] = message_temp
+            data[i] = temp
+            print temp
+            message.items[a]['value'] = str(int(message_temp))
 
 def _get_value_to_item(item, name, value):
     if name != item['name']:
