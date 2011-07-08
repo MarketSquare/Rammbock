@@ -30,7 +30,7 @@ def _convert_to_string(data, length):
     print "'" + data + "'", "'" + repr(data) + "'"
     a = ""
     for b in data:
-        a += struct.pack('b', ord(b))
+        a += struct.pack('B', ord(b))
     print "fdsafdsa: " + a + "len: " + str(len(a))
     return a
 

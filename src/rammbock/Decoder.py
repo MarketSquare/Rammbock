@@ -10,20 +10,21 @@ def _get_object_from_data(message, data):
     for a, item in enumerate(message.items):
         if item['type'] == 'HEADER':
             message.items[a] = {'type': 'HEADER', 'name': item['name'], 'value': data[i]}
+            i += 1
         elif item['type'] == 'IE':
             message.items[a] = _get_value_to_item(item, data[i][:-1], data[i+1])
-            i += 1
+            i += 2
         elif item['type'] == 'BINARY':
             message_temp = ""
             temp = list(data[i])
             temp.reverse()
             for d in range(0, int(item['length'])):
-                message_temp += str(struct.unpack('b', temp.pop())[0])
+                message_temp += str(struct.unpack('B', temp.pop())[0])
+
+            print "debug: " + message_temp, repr(message_temp)
             temp.reverse()
             data[i] = str(temp)
             message.items[a]['value'] = message_temp
-            #message.items[a] = _get_binary_data(item, data[i])
-        i += 1
 
 def _get_value_to_item(item, name, value):
     if name != item['name']:

@@ -10,7 +10,7 @@ Encode gtpv2 message with multiple binary data elements
     [Tags]  ${EMPTY}
     Create Message and add gtpv2 headers
     Client sends message
-    Server receives data and validates header
+    Server receives and validates multipart data
 
 Create gtpv2 message with real content
     [Tags]
@@ -31,11 +31,15 @@ Decode gtpv2 message with binary data and
 
 Decode gtpv2 message with multiple binary data elements
     [Tags]  ${EMPTY}
+    Create Message and add gtpv2 headers
+    Client sends message
+    Server Receives And Validates message with multipart binary data 
 
 *** Keywords ***
 Create Message and add gtpv2 headers
     Create Message
-    Add Binary  Flags  216  1
+    Add Binary  Flags  72  1
+    Add Binary  Message Length  216  2
 
 Server receives data and validates header
     Receive data and validate against string  \ 7
@@ -59,4 +63,18 @@ Create Message and Add Flags
 Server receives and validates data
     ${message}=  Server Receives Data
     Should Be Equal As Strings  ${message}  H
+
+Server receives and validates multipart data
+    ${message}=  Server Receives Data
+    Should Not Be Empty  ${message}
+
+Server Receives And Validates message with multipart binary data
+    Create Message
+    Add Binary Schema  Flags  1
+    Add Binary Schema  Message Length  2
+    Server Receives Message
+    ${flags}=  Get Binary Data  Flags
+    ${message_length}  Get Binary Data  Message Length
+    Should Be Equal  ${flags}  72
+    Should Be Equal  ${message_length}  216
 
