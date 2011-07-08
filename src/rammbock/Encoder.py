@@ -16,8 +16,7 @@ def _generate_message_from_object(message):
         elif item['type'] is 'DELIMITER':
             whole_message += item['value']
         elif item['type'] is 'BINARY':
-            whole_message += _convert_to_string(item['value'], item['b_format'])
-    print repr(whole_message)
+            whole_message += _convert_to_string(item['value'], item['length'])
     return whole_message
 
 def _next_item_is_not(message, index, name):
@@ -26,6 +25,14 @@ def _next_item_is_not(message, index, name):
     except IndexError:
         return False
 
-def _convert_to_string(data, b_format):
-    return struct.pack(b_format, int(data))
+def _convert_to_string(data, length):
+    data = _add_padding_to_string(data, int(length))
+    print "'" + data + "'", "'" + repr(data) + "'"
+    a = ""
+    for b in data:
+        a += struct.pack('b', ord(b))
+    print "fdsafdsa: " + a + "len: " + str(len(a))
+    return a
 
+def _add_padding_to_string(data, length):
+    return chr(int(data)).rjust(length,'\0')

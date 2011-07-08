@@ -19,10 +19,15 @@ Create gtpv2 session request/response
     [Tags]
 
 Create gtpv2 message with flags
-    [Tags]  ${EMPTY}
+    [Tags]  regression
     Create Message and Add Flags
     Client sends message
     Server receives and validates data
+
+Create gtpv2 message with flags and decode it
+    Create Message and Add Flags
+    Client sends message
+    Server receives and validates message
 
 *** Keywords ***
 Create Message and add gtpv2 headers
@@ -39,14 +44,14 @@ Receive data and validate against string
 
 Server receives and validates message
     Create Message
-    Add Binary Schema  Flags  h
+    Add Binary Schema  Flags  1
     Server Receives Message
     ${flags}=  Get Binary Data  Flags
     Should Be Equal  ${flags}  72
 
 Create Message and Add Flags
     Create Message
-    Add Binary  Flags  72  b  # 010. .... = Version: 2, ...1 .... = P: 0, .... 1... = T: 1
+    Add Binary  Flags  72  1  # 010. .... = Version: 2, ...1 .... = P: 0, .... 1... = T: 1
 
 Server receives and validates data
     ${message}=  Server Receives Data

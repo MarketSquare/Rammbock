@@ -11,6 +11,7 @@ class Rammbock(object):
 
     IE_NOT_FOUND = "Information Element does not exist: '%s'"
     HEADER_NOT_FOUND = "Header does not exist: '%s'"
+    BINARY_NOT_FOUND = "Header does not exist: '%s'"
 
     def __init__(self):
         self.message = None
@@ -91,6 +92,9 @@ class Rammbock(object):
     def get_information_element(self, name):
         return self._first_by_name(name, 'IE', self.IE_NOT_FOUND % name)['value']
 
+    def get_binary_data(self, name):
+        return self._first_by_name(name, 'BINARY', self.BINARY_NOT_FOUND % name)['value']
+
     def _first_by_name(self, name, i_type, error_m=None):
         try:
             return (item for item in self.message.items if item['name'] == name and item['type'] == i_type).next()
@@ -100,8 +104,11 @@ class Rammbock(object):
     def add_information_element(self, name, value=None):
         self.message.items.append({'type': 'IE', 'name': name, 'value': value})
 
-    def add_binary(self, name, value, b_format):
-        self.message.items.append({'type': 'BINARY', 'name': name, 'value': value, 'b_format': b_format})
+    def add_binary(self, name, value, length):
+        self.message.items.append({'type': 'BINARY', 'name': name, 'value': value, 'length': length})
+
+    def add_binary_schema(self, name, length):
+        self.message.items.append({'type': 'BINARY', 'name': name, 'length': length})
 
     def add_delimiter(self, value):
         self.message.items.append({'type': 'DELIMITER', 'name': None, 'value': value})
