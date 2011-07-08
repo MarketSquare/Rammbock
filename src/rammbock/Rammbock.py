@@ -100,8 +100,8 @@ class Rammbock(object):
     def add_information_element(self, name, value=None):
         self.message.items.append({'type': 'IE', 'name': name, 'value': value})
 
-    def add_flags(self, value):
-        self.message.items.append({'type': 'FLAGS', 'value': value})
+    def add_binary(self, name, value, b_format):
+        self.message.items.append({'type': 'BINARY', 'name': name, 'value': value, 'b_format': b_format})
 
     def add_delimiter(self, value):
         self.message.items.append({'type': 'DELIMITER', 'name': None, 'value': value})

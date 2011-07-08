@@ -27,7 +27,7 @@ Create gtpv2 message with flags
 *** Keywords ***
 Create Message and add gtpv2 headers
     Create Message
-    Add Header  Message Length  216
+    Add Binary  Flags  216  1
 
 Server receives data and validates header
     Receive data and validate against string  \ 7
@@ -37,9 +37,18 @@ Receive data and validate against string
     ${data}=  Server Receives Data
     Should Be Equal  ${data}  ${content}
 
-Server receives and validates data
+Server receives and validates message
+    Create Message
+    Add Binary Schema  Flags  h
+    Server Receives Message
+    ${flags}=  Get Binary Data  Flags
+    Should Be Equal  ${flags}  72
 
 Create Message and Add Flags
     Create Message
-    Add Flags  72  # 010. .... = Version: 2, ...1 .... = P: 0, .... 1... = T: 1
+    Add Binary  Flags  72  b  # 010. .... = Version: 2, ...1 .... = P: 0, .... 1... = T: 1
+
+Server receives and validates data
+    ${message}=  Server Receives Data
+    Should Be Equal As Strings  ${message}  H
 
