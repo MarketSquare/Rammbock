@@ -47,7 +47,7 @@ Server receives and validates message
     Create Message
     Add Decimal as Binary Schema  Flags  1
     Server Receives Message
-    ${flags}=  Get Binary Data  Flags
+    ${flags}=  Get Binary data as Decimal  Flags
     Should Be Equal  ${flags}  72
 
 Create Message and Add Flags
@@ -67,8 +67,8 @@ Server Receives And Validates message with multipart binary data
     Add Decimal as Binary Schema  Flags  1
     Add Decimal as Binary Schema  Message Length  2
     Server Receives Message
-    ${flags}=  Get Binary Data  Flags
-    ${message_length}  Get Binary Data  Message Length
+    ${flags}=  Get Binary data as Decimal  Flags
+    ${message_length}  Get Binary data as Decimal  Message Length
     Should Be Equal  ${flags}  72
     Should Be Equal  ${message_length}  216
 

@@ -92,7 +92,7 @@ class Rammbock(object):
     def get_information_element(self, name):
         return self._first_by_name(name, 'IE', self.IE_NOT_FOUND % name)['value']
 
-    def get_binary_data(self, name):
+    def get_binary_data_as_decimal(self, name):
         return self._first_by_name(name, 'BINARY', self.BINARY_NOT_FOUND % name)['value']
 
     def _first_by_name(self, name, i_type, error_m=None):
