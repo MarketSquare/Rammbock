@@ -18,7 +18,7 @@ Encode message with binary data
     Client sends message
     Server receives and validates data
 
-Decode message with binary data and
+Decode message with binary data
     Create Message and Add Flags
     Client sends message
     Server receives and validates message
@@ -32,8 +32,8 @@ Decode message with multiple binary data elements
 *** Keywords ***
 Create Message and add headers
     Create Message
-    Add Binary  Flags  72  1
-    Add Binary  Message Length  216  2
+    Add Decimal as Binary  Flags  72  1
+    Add Decimal as Binary  Message Length  216  2
 
 Server receives data and validates header
     Receive data and validate against string  \ 7
@@ -52,7 +52,7 @@ Server receives and validates message
 
 Create Message and Add Flags
     Create Message
-    Add Binary  Flags  72  1  # 010. .... = Version: 2, ...1 .... = P: 0, .... 1... = T: 1
+    Add Decimal as Binary  Flags  72  1  # 010. .... = Version: 2, ...1 .... = P: 0, .... 1... = T: 1
 
 Server receives and validates data
     ${message}=  Server Receives Data

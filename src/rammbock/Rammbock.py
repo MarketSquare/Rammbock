@@ -104,7 +104,7 @@ class Rammbock(object):
     def add_information_element(self, name, value=None):
         self.message.items.append({'type': 'IE', 'name': name, 'value': value})
 
-    def add_binary(self, name, value, length):
+    def add_decimal_as_binary(self, name, value, length):
         self.message.items.append({'type': 'BINARY', 'name': name, 'value': value, 'length': length})
 
     def add_binary_schema(self, name, length):
