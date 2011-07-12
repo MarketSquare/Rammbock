@@ -11,7 +11,7 @@ def _generate_message_from_object(message):
             whole_message += item['value'] + " "
             if _next_item_is_not(message, index, 'HEADER'):
                 whole_message += '\r\n'
-        elif item['type'] is 'IE':
+        elif item['type'] is "IE":
             whole_message += item['name'] + ": " + item['value'] + '\r\n'
         elif item['type'] is 'DELIMITER':
             whole_message += item['value']
