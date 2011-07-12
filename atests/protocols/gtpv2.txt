@@ -6,9 +6,12 @@ Library         rammbock.Rammbock
 Resource        ../resources/Messaging.txt
 
 *** Test Cases ***
-Create gtpv2 message with real content
+Send and Receive session request and validate the message.
     [Tags]
 
-Create gtpv2 session request/response
+Make GTPv2 Attach
     [Tags]
+
+Send and Receive session request and validate the message
+    [Tags]  ${EMPTY}
 
