@@ -107,7 +107,7 @@ class Rammbock(object):
     def add_decimal_as_binary(self, name, value, length):
         self.message.items.append({'type': 'BINARY', 'name': name, 'value': value, 'length': length})
 
-    def add_binary_schema(self, name, length):
+    def add_decimal_as_binary_schema(self, name, length):
         self.message.items.append({'type': 'BINARY', 'name': name, 'length': length})
 
     def add_delimiter(self, value):

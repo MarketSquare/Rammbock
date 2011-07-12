@@ -45,7 +45,7 @@ Receive data and validate against string
 
 Server receives and validates message
     Create Message
-    Add Binary Schema  Flags  1
+    Add Decimal as Binary Schema  Flags  1
     Server Receives Message
     ${flags}=  Get Binary Data  Flags
     Should Be Equal  ${flags}  72
@@ -64,8 +64,8 @@ Server receives and validates multipart data
 
 Server Receives And Validates message with multipart binary data
     Create Message
-    Add Binary Schema  Flags  1
-    Add Binary Schema  Message Length  2
+    Add Decimal as Binary Schema  Flags  1
+    Add Decimal as Binary Schema  Message Length  2
     Server Receives Message
     ${flags}=  Get Binary Data  Flags
     ${message_length}  Get Binary Data  Message Length
