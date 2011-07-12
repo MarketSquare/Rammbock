@@ -1,0 +1,74 @@
+*** Settings ***
+Test Setup      UDP Server and Client are initialized
+Test Teardown   Close Connections
+Default Tags    regression
+Library         rammbock.Rammbock
+Resource        resources/Messaging.txt
+
+*** Test Cases ***
+Encode message with multiple binary data elements
+    [Tags]  ${EMPTY}
+    Create Message and add headers
+    Client sends message
+    Server receives and validates multipart data
+
+Encode message with binary data
+    [Tags]  regression
+    Create Message and Add Flags
+    Client sends message
+    Server receives and validates data
+
+Decode message with binary data and
+    Create Message and Add Flags
+    Client sends message
+    Server receives and validates message
+
+Decode message with multiple binary data elements
+    [Tags]  ${EMPTY}
+    Create Message and add headers
+    Client sends message
+    Server Receives And Validates message with multipart binary data
+
+*** Keywords ***
+Create Message and add headers
+    Create Message
+    Add Binary  Flags  72  1
+    Add Binary  Message Length  216  2
+
+Server receives data and validates header
+    Receive data and validate against string  \ 7
+
+Receive data and validate against string
+    [Arguments]  ${content}
+    ${data}=  Server Receives Data
+    Should Be Equal  ${data}  ${content}
+
+Server receives and validates message
+    Create Message
+    Add Binary Schema  Flags  1
+    Server Receives Message
+    ${flags}=  Get Binary Data  Flags
+    Should Be Equal  ${flags}  72
+
+Create Message and Add Flags
+    Create Message
+    Add Binary  Flags  72  1  # 010. .... = Version: 2, ...1 .... = P: 0, .... 1... = T: 1
+
+Server receives and validates data
+    ${message}=  Server Receives Data
+    Should Be Equal As Strings  ${message}  H
+
+Server receives and validates multipart data
+    ${message}=  Server Receives Data
+    Should Not Be Empty  ${message}
+
+Server Receives And Validates message with multipart binary data
+    Create Message
+    Add Binary Schema  Flags  1
+    Add Binary Schema  Message Length  2
+    Server Receives Message
+    ${flags}=  Get Binary Data  Flags
+    ${message_length}  Get Binary Data  Message Length
+    Should Be Equal  ${flags}  72
+    Should Be Equal  ${message_length}  216
+
