@@ -4,14 +4,27 @@ Test Teardown   Close Connections
 Default Tags    regression
 Library         rammbock.Rammbock
 Resource        ../resources/Messaging.txt
+Resource        ../protocols/gtp/v2.txt
 
 *** Test Cases ***
-Send and Receive session request and validate the message.
+Send and Receive Create Session Request and validate the message.
     [Tags]
+    Create and send Create Session Request
+    Receive Create Session Request and Validate Data
 
 Make GTPv2 Attach
     [Tags]
 
-Send and Receive session request and validate the message
+Send and Receive Create Session Request and validate the message
     [Tags]  ${EMPTY}
+
+*** Keywords ***
+Create and send Create Session Request
+    Create Message
+    Set Create Session Request send
+    Client Sends Message
+
+Receive Create Session Request and Validate Data
+    ${message}=  Server Receives Data
+    Should not be empty  ${message}
 
