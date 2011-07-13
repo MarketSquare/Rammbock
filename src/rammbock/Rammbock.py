@@ -16,7 +16,6 @@ class Rammbock(object):
 
     def __init__(self):
         self.data = ""
-        self.message = None
         self._servers = {}
         self._clients = {}
 
@@ -78,17 +77,7 @@ class Rammbock(object):
             self._servers[name].send_data(self.data)
 
     def create_message(self):
-        self.message = Message()
         self.data = ""
-
-    def get_binary_data_as_decimal(self, name):
-        return self._first_by_name(name, 'BINARY', self.BINARY_NOT_FOUND % name)['value']
-
-    def _first_by_name(self, name, i_type, error_m=None):
-        try:
-            return (item for item in self.message.items if item['name'] == name and item['type'] == i_type).next()
-        except StopIteration:
-            raise Exception(error_m)
 
     def add_string(self, value):
         self.data += value
@@ -111,9 +100,3 @@ class Rammbock(object):
         temp.reverse()
         self.data = temp
         return str(int(message_temp))
-
-    def _id_to_name(self, i_type, name, error_m=None):
-        try:
-            return (x for x, i in enumerate(self.message.items) if i['name'] == name and i['type'] == i_type).next()
-        except StopIteration:
-            raise Exception(error_m)
