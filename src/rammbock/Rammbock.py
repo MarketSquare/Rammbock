@@ -88,12 +88,6 @@ class Rammbock(object):
     def create_message(self):
         self.message = Message()
 
-    def get_header(self, name):
-        return self._first_by_name(name, 'HEADER', self.HEADER_NOT_FOUND % name)['value']
-
-    def get_information_element(self, name):
-        return self._first_by_name(name, 'IE', self.IE_NOT_FOUND % name)['value']
-
     def get_binary_data_as_decimal(self, name):
         return self._first_by_name(name, 'BINARY', self.BINARY_NOT_FOUND % name)['value']
 
@@ -111,12 +105,6 @@ class Rammbock(object):
 
     def add_decimal_as_binary_schema(self, name, length):
         self.message.items.append({'type': 'BINARY', 'name': name, 'length': length})
-
-    def add_information_element_schema(self, name):
-        self.message.items.append({'type': 'IE', 'name': name, 'value': None})
-
-    def add_header_schema(self, name):
-        self.message.items.append({'type': 'HEADER', 'name': name})
 
     def read_until(self, delimiter=None):
         if delimiter:
