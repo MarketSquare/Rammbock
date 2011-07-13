@@ -33,9 +33,13 @@ Encode Message with String Data
     Send Message with String
     Receive Message with String
 
-Send And Receive Message with one field
+Send And Receive Message with one string field
     Send Message with String
     Receive Message with String and validate field
+
+Send and Receive message with multiple string fields
+    Send Message With Multiple String Fields
+    Receive Message With Multiple String fields and validate them
 
 *** Keywords ***
 Create Message and add headers
@@ -93,4 +97,18 @@ Receive Message with String and validate field
     Server Receives Data
     ${test field}=  Read Until
     Should Be Equal  ${test field}  Test
+
+Send Message With Multiple String Fields
+    Create Message
+    Add String  field1
+    Add String  ${SPACE}
+    Add String  field2
+    Add String  \r\n
+
+Receive Message With Multiple String fields and validate them
+    Server Receives Data
+    ${field1}=  Read Until  ${SPACE}
+    ${field2}=  Read Until  \r\n
+    Should Be Equal  ${field1}  field1
+    Should Be Equal  ${field2}  field2
 
