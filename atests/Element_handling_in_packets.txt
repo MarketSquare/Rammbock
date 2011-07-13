@@ -33,6 +33,10 @@ Encode Message with String Data
     Send Message with String
     Receive Message with String
 
+Send And Receive Message with one field
+    Send Message with String
+    Receive Message with String and validate field
+
 *** Keywords ***
 Create Message and add headers
     Create Message
@@ -84,4 +88,9 @@ Send Message with String
 Receive Message with String
     ${message}=  Server Receives Data
     Should Be Equal  ${message}  Test
+
+Receive Message with String and validate field
+    Server Receives Data
+    ${test field}=  Read Until
+    Should Be Equal  ${test field}  Test
 

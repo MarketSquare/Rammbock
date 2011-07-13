@@ -63,7 +63,8 @@ class Rammbock(object):
         self.client_sends_data(data_bin)
 
     def server_receives_data(self, name=Server.DEFAULT_NAME):
-        return self._servers[name].server_receives_data()
+        self.data = self._servers[name].server_receives_data()
+        return self.data
 
     def server_receives_message(self, name=Server.DEFAULT_NAME):
         msg = self.server_receives_data(name)
@@ -115,6 +116,12 @@ class Rammbock(object):
 
     def add_header_schema(self, name):
         self.message.items.append({'type': 'HEADER', 'name': name})
+
+    def read_until(self, delimiter=None):
+        if delimiter:
+            i,_,self.data = self.data.partition(delimiter)
+            return i
+        return self.data
 
     def _id_to_name(self, i_type, name, error_m=None):
         try:
