@@ -5,6 +5,7 @@ import Server
 import Client
 import Encoder
 import Decoder
+import struct
 
 
 class Rammbock(object):
@@ -56,36 +57,25 @@ class Rammbock(object):
         self._clients[name].close()
         del self._clients[name] 
 
-    def client_sends_data(self, packet, name=Client.DEFAULT_NAME): 
-        self._clients[name].send_packet(packet)
-        self.data = ""
-
-    def client_sends_message(self):
-        self.client_sends_data(self.data)
+    def client_sends_data(self, packet=None, name=Client.DEFAULT_NAME):
+        if packet:
+            self._clients[name].send_packet(packet)
+        else:
+            self._clients[name].send_packet(self.data)
 
     def server_receives_data(self, name=Server.DEFAULT_NAME):
         self.data = self._servers[name].server_receives_data()
         return self.data
 
-    def server_receives_message(self, name=Server.DEFAULT_NAME):
-        msg = self.server_receives_data(name)
-        self.data = msg
-        Decoder.string2object(self.message, msg)
-
     def client_receives_data(self, name=Client.DEFAULT_NAME):
         self.data = self._clients[name].receive_data()
         return self.data
-
-    def client_receives_message(self, name=Client.DEFAULT_NAME):
-        msg = self.client_receives_data(name)
-        Decoder.string2object(self.message, msg)
 
     def server_sends_data(self, packet=None, name=Server.DEFAULT_NAME): 
         if packet:
             self._servers[name].send_data(packet)
         else:
             self._servers[name].send_data(self.data)
-        self.data = ""
 
     def create_message(self):
         self.message = Message()
@@ -106,14 +96,21 @@ class Rammbock(object):
     def add_decimal_as_binary(self, name, value, length):
         self.data += Encoder.dec2bin(value, length)
 
-    def add_decimal_as_binary_schema(self, name, length):
-        self.message.items.append({'type': 'BINARY', 'name': name, 'length': length})
-
     def read_until(self, delimiter=None):
         if delimiter:
             i,_,self.data = self.data.partition(delimiter)
             return i
         return self.data
+
+    def read_from_data(self, length):
+        message_temp = ""
+        temp = list(self.data)
+        temp.reverse()
+        for d in range(0, int(length)):
+            message_temp += str(struct.unpack('B', temp.pop())[0])
+        temp.reverse()
+        self.data = temp
+        return str(int(message_temp))
 
     def _id_to_name(self, i_type, name, error_m=None):
         try:

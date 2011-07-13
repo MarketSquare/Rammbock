@@ -22,7 +22,7 @@ Send and Receive Create Session Request and validate the message
 Create and send Create Session Request
     Create Message
     Set Create Session Request send
-    Client Sends Message
+    Client Sends Data
 
 Receive Create Session Request and Validate Data
     ${message}=  Server Receives Data

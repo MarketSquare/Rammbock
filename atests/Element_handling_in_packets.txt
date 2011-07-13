@@ -7,26 +7,23 @@ Resource        resources/Messaging.txt
 
 *** Test Cases ***
 Encode message with multiple binary data elements
-    [Tags]  ${EMPTY}
     Create Message and add headers
-    Client sends message
+    Client Sends Data
     Server receives and validates multipart data
 
 Encode message with binary data
-    [Tags]  regression
     Create Message and Add Flags
-    Client sends message
+    Client sends Data
     Server receives and validates data
 
 Decode message with binary data
     Create Message and Add Flags
-    Client sends message
+    Client sends Data
     Server receives and validates message
 
 Decode message with multiple binary data elements
-    [Tags]  ${EMPTY}
     Create Message and add headers
-    Client sends message
+    Client sends Data
     Server Receives And Validates message with multipart binary data
 
 Encode Message with String Data
@@ -57,9 +54,8 @@ Receive data and validate against string
 
 Server receives and validates message
     Create Message
-    Add Decimal as Binary Schema  Flags  1
-    Server Receives Message
-    ${flags}=  Get Binary data as Decimal  Flags
+    Server Receives Data
+    ${flags}=  Read From Data  1
     Should Be Equal  ${flags}  72
 
 Create Message and Add Flags
@@ -76,18 +72,16 @@ Server receives and validates multipart data
 
 Server Receives And Validates message with multipart binary data
     Create Message
-    Add Decimal as Binary Schema  Flags  1
-    Add Decimal as Binary Schema  Message Length  2
-    Server Receives Message
-    ${flags}=  Get Binary data as Decimal  Flags
-    ${message_length}  Get Binary data as Decimal  Message Length
+    Server Receives Data
+    ${flags}=  Read From Data  1
+    ${message_length}=  Read From Data  2
     Should Be Equal  ${flags}  72
     Should Be Equal  ${message_length}  216
 
 Send Message with String
     Create Message
     Add String  Test
-    Client Sends Message
+    Client Sends Data
 
 Receive Message with String
     ${message}=  Server Receives Data
@@ -104,7 +98,7 @@ Send Message With Multiple String Fields
     Add String  ${SPACE}
     Add String  field2
     Add String  \r\n
-    Client Sends Message
+    Client Sends Data
 
 Receive Message With Multiple String fields and validate them
     Server Receives Data
