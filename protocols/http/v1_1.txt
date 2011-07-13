@@ -26,23 +26,38 @@ Set HTTP GET send
     Add String  \r\n
 
 Set HTTP GET rcv
-    Add Header Schema  Request Method
-    Add Header Schema  Request URI
-    Add Header Schema  Request Version
-    Add Information Element Schema  Host
-    Add Information Element Schema  Connection
-    Add Information Element Schema  Cache-control
-    Add Information Element Schema  User-agent
-    Add Information Element Schema  Accept
+    #Headers
+    ${request method}  Read until  ${SPACE}
+    Set Test Variable  ${request method}
+    ${request uri}  Read until  ${SPACE}
+    Set Test Variable  ${request uri}
+    ${request version}  Read Until  ${SPACE}
+    Set Test Variable  ${request version}
+    #Information Elements
+    Read Until  ${SPACE}
+    ${host}  Read Until  \r\n
+    Set Test Variable  ${host}
+    Read Until  ${SPACE}
+    ${connection}  Read Until  \r\n
+    Set Test Variable  ${connection}
+    Read Until  ${SPACE}
+    ${cache control}  Read Until  \r\n
+    Set Test Variable  ${cache control}
+    Read Until  ${SPACE}
+    ${user agent}  Read Until  \r\n
+    Set Test Variable  ${user agent}
+    Read Until  ${SPACE}
+    ${accept}  Read Until  \r\n
+    Set Test Variable  ${accept}
 
 Set HTTP Response send
-    #Headers
-    Add String  ${REQUEST VERSION}  #Request Version
+    # Headers
+    Add String  ${REQUEST VERSION}  # Request Version
     Add String  ${SPACE}
-    Add String  200  #Response Code
+    Add String  200  # Response Code
     Add String  ${SPACE}
     Add String  \r\n
-    #Information Elements
+    # Information Elements
     Add String  Connection: ${CONNECTION}
     Add String  \r\n
     Add String  Content-Lenght: 218
