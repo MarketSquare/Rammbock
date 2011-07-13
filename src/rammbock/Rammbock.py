@@ -104,36 +104,17 @@ class Rammbock(object):
     def add_string(self, value):
         self.message.items.append({'type': 'STRING', 'value': value})
 
-    def add_information_element(self, name, value=None):
-        self.message.items.append({'type': 'IE', 'name': name, 'value': value})
-
     def add_decimal_as_binary(self, name, value, length):
         self.message.items.append({'type': 'BINARY', 'name': name, 'value': value, 'length': length})
 
     def add_decimal_as_binary_schema(self, name, length):
         self.message.items.append({'type': 'BINARY', 'name': name, 'length': length})
 
-    def add_delimiter(self, value):
-        self.message.items.append({'type': 'DELIMITER', 'name': None, 'value': value})
-
     def add_information_element_schema(self, name):
         self.message.items.append({'type': 'IE', 'name': name, 'value': None})
 
     def add_header_schema(self, name):
         self.message.items.append({'type': 'HEADER', 'name': name})
-
-    def modify_information_element(self, name, value):
-        print self.message.items
-        self.message.items[self._id_to_name('IE', name, self.IE_NOT_FOUND % name)] = {'type': 'IE', 'name': name, 'value': value}
-
-    def modify_header(self, name, value):
-        self.message.items[self._id_to_name('HEADER', name, self.HEADER_NOT_FOUND % name)] = {'type': 'HEADER', 'name': name, 'value': value}
-
-    def delete_information_element(self, name):
-        del self.message.items[self._id_to_name('IE', name)]
-
-    def delete_header(self, name):
-        del self.message.items[self._id_to_name('HEADER', name)]
 
     def _id_to_name(self, i_type, name, error_m=None):
         try:
