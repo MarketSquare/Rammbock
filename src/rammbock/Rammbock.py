@@ -71,7 +71,8 @@ class Rammbock(object):
         Decoder.string2object(self.message, msg)
 
     def client_receives_data(self, name=Client.DEFAULT_NAME):
-        return self._clients[name].receive_data()
+        self.data = self._clients[name].receive_data()
+        return self.data
 
     def client_receives_message(self, name=Client.DEFAULT_NAME):
         msg = self.client_receives_data(name)

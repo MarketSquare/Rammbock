@@ -92,16 +92,12 @@ Client Receives Response
 
 Client Receives HTTP Response
     Create Message
+    Client Receives data
     Set HTTP Response rcv
-    Client Receives Message
 
 Verify That Response is Correct
-    ${request version}=  get header  Request Version
-    ${response code}=  get header  Response Code
     Should Be Equal  ${request version}  HTTP/1.1
     Should Be Equal  ${response code}  200
-    ${connection}=  Get Information Element  Connection
-    ${content-lenght}=  Get Information Element  Content-Lenght
     Should be equal  ${connection}  keep-alive
     Should be equal  ${content-lenght}  218
 

@@ -65,8 +65,16 @@ Set HTTP Response send
     Add String  \r\n
 
 Set HTTP Response rcv
-    Add Header Schema  Request Version
-    Add Header Schema  Response Code
-    Add Information Element Schema  Connection
-    Add Information Element Schema  Content-Lenght
+    #Headers
+    ${request version}=  Read until  ${SPACE}
+    Set Test Variable  ${request version}
+    ${response code}=  Read until  ${SPACE}
+    Set Test Variable  ${response code}
+    #Information Elements
+    Read Until  ${SPACE}
+    ${connection}=  Read Until  \r\n
+    Set Test Variable  ${connection}
+    Read Until  ${SPACE}
+    ${content-lenght}=  Read Until  \r\n
+    Set Test Variable  ${content-lenght}
 
