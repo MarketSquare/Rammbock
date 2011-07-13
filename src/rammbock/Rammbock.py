@@ -14,6 +14,7 @@ class Rammbock(object):
     BINARY_NOT_FOUND = "Header does not exist: '%s'"
 
     def __init__(self):
+        self.data = ""
         self.message = None
         self._servers = {}
         self._clients = {}
@@ -59,8 +60,7 @@ class Rammbock(object):
         self._clients[name].send_packet(packet)
 
     def client_sends_message(self):
-        data_bin = Encoder.object2string(self.message)
-        self.client_sends_data(data_bin)
+        self.client_sends_data(self.data)
 
     def server_receives_data(self, name=Server.DEFAULT_NAME):
         self.data = self._servers[name].server_receives_data()
@@ -78,12 +78,15 @@ class Rammbock(object):
         msg = self.client_receives_data(name)
         Decoder.string2object(self.message, msg)
 
-    def server_sends_data(self, packet, name=Server.DEFAULT_NAME): 
-        self._servers[name].send_data(packet)
+    def server_sends_data(self, packet=None, name=Server.DEFAULT_NAME): 
+        if packet:
+            self._servers[name].send_data(packet)
+        else:
+            self._servers[name].send_data(self.data)
 
-    def server_sends_message(self):
-        data_bin = Encoder.object2string(self.message)
-        self.server_sends_data(data_bin)
+    #def server_sends_message(self):
+        #data_bin = Encoder.object2string(self.message)
+        #self.server_sends_data(data_bin)
 
     def create_message(self):
         self.message = Message()
@@ -98,10 +101,10 @@ class Rammbock(object):
             raise Exception(error_m)
 
     def add_string(self, value):
-        self.message.items.append({'type': 'STRING', 'value': value})
+        self.data += value
 
     def add_decimal_as_binary(self, name, value, length):
-        self.message.items.append({'type': 'BINARY', 'name': name, 'value': value, 'length': length})
+        self.data += Encoder.dec2bin(value, length)
 
     def add_decimal_as_binary_schema(self, name, length):
         self.message.items.append({'type': 'BINARY', 'name': name, 'length': length})

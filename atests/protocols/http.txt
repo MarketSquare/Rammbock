@@ -25,6 +25,7 @@ Send and receive GET message and validate it
     Check that there are correct Information Elements
 
 Send and Receive Get and Return Response
+    [Timeout]  5 seconds
     Clients Sends Get to Server
     Server Sends Response so Client
 
@@ -79,7 +80,7 @@ Server Sends Response so Client
 Server Creates Response and sends it To Client
     Create Message
     Set HTTP Response send
-    Server Sends Message
+    Server Sends Data
 
 Client Receives Response
     Create Message
