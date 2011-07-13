@@ -26,14 +26,14 @@ Set HTTP GET send
     Add String  \r\n
 
 Set HTTP GET rcv
-    #Headers
+    # Headers
     ${request method}  Read until  ${SPACE}
     Set Test Variable  ${request method}
     ${request uri}  Read until  ${SPACE}
     Set Test Variable  ${request uri}
     ${request version}  Read Until  ${SPACE}
     Set Test Variable  ${request version}
-    #Information Elements
+    # Information Elements
     Read Until  ${SPACE}
     ${host}  Read Until  \r\n
     Set Test Variable  ${host}
@@ -65,12 +65,12 @@ Set HTTP Response send
     Add String  \r\n
 
 Set HTTP Response rcv
-    #Headers
+    # Headers
     ${request version}=  Read until  ${SPACE}
     Set Test Variable  ${request version}
     ${response code}=  Read until  ${SPACE}
     Set Test Variable  ${response code}
-    #Information Elements
+    # Information Elements
     Read Until  ${SPACE}
     ${connection}=  Read Until  \r\n
     Set Test Variable  ${connection}

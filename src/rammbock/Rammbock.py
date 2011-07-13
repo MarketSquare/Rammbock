@@ -58,6 +58,7 @@ class Rammbock(object):
 
     def client_sends_data(self, packet, name=Client.DEFAULT_NAME): 
         self._clients[name].send_packet(packet)
+        self.data = ""
 
     def client_sends_message(self):
         self.client_sends_data(self.data)
@@ -68,6 +69,7 @@ class Rammbock(object):
 
     def server_receives_message(self, name=Server.DEFAULT_NAME):
         msg = self.server_receives_data(name)
+        self.data = msg
         Decoder.string2object(self.message, msg)
 
     def client_receives_data(self, name=Client.DEFAULT_NAME):
@@ -83,13 +85,11 @@ class Rammbock(object):
             self._servers[name].send_data(packet)
         else:
             self._servers[name].send_data(self.data)
-
-    #def server_sends_message(self):
-        #data_bin = Encoder.object2string(self.message)
-        #self.server_sends_data(data_bin)
+        self.data = ""
 
     def create_message(self):
         self.message = Message()
+        self.data = ""
 
     def get_binary_data_as_decimal(self, name):
         return self._first_by_name(name, 'BINARY', self.BINARY_NOT_FOUND % name)['value']
