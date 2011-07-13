@@ -113,14 +113,6 @@ Verify That Response is Correct
     Should be equal  ${connection}  keep-alive
     Should be equal  ${content-lenght}  218
 
-Client Sends Message with IE is middle of Headers
-    create message
-    Add String  Request URI  /
-    Add Information Element  Host  www.nokiasiemensnetworks.com
-    Add Header  Request Version  ${REQUEST VERSION}
-    Add Delimiter  \r\n
-    Client Sends Message
-
 Server Receives Message with IE is middle of Headers
     Create message and add schema with mixed headers and IEs
     Server Receives Message

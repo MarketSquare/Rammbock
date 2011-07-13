@@ -126,13 +126,6 @@ class Rammbock(object):
         print self.message.items
         self.message.items[self._id_to_name('IE', name, self.IE_NOT_FOUND % name)] = {'type': 'IE', 'name': name, 'value': value}
 
-    def add_string_header(self, name, value=None, length=None):
-        self.message.items += ['Header']
-        if value == None:
-            self.message.header.append((name))
-        else:
-            self.message.header.append((name, value))
-
     def modify_header(self, name, value):
         self.message.items[self._id_to_name('HEADER', name, self.HEADER_NOT_FOUND % name)] = {'type': 'HEADER', 'name': name, 'value': value}
 
