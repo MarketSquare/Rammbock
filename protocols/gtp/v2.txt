@@ -1,0 +1,5 @@
+*** Keywords ***
+Set Create Session Request send
+
+Set Create Session Request rcv
+

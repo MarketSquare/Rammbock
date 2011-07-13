@@ -29,6 +29,10 @@ Decode message with multiple binary data elements
     Client sends message
     Server Receives And Validates message with multipart binary data
 
+Encode Message with String Data
+    Send Message with String
+    Receive Message with String
+
 *** Keywords ***
 Create Message and add headers
     Create Message
@@ -71,4 +75,13 @@ Server Receives And Validates message with multipart binary data
     ${message_length}  Get Binary data as Decimal  Message Length
     Should Be Equal  ${flags}  72
     Should Be Equal  ${message_length}  216
+
+Send Message with String
+    Create Message
+    Add String  Test
+    Client Sends Message
+
+Receive Message with String
+    ${message}=  Server Receives Data
+    Should Be Equal  ${message}  Test
 

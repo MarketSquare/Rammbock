@@ -17,6 +17,9 @@ def _generate_message_from_object(message):
             whole_message += item['value']
         elif item['type'] is 'BINARY':
             whole_message += _convert_to_string(item['value'], item['length'])
+        elif item['type'] is 'STRING':
+            whole_message += item['value']
+
     return whole_message
 
 def _next_item_is_not(message, index, name):

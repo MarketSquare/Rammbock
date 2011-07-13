@@ -4,15 +4,26 @@ ${CONNECTION}  keep-alive
 
 *** Keywords ***
 Set HTTP GET send
-    Add Header  Request Method  GET
-    Add Header  Request URI  /
-    Add Header  Request Version  ${REQUEST VERSION}
-    Add Information Element  Host  www.nokiasiemensnetworks.com
-    Add Information Element  Connection  ${CONNECTION}
-    Add Information Element  Cache-control  max-age=0
-    Add Information Element  User-agent  rammbock
-    Add Information Element  Accept  text/html
-    Add Delimiter  \r\n
+    #Headers
+    Add String  GET  #Request Method
+    Add String  ${SPACE}
+    Add String  /  #Request URI
+    Add String  ${SPACE}
+    Add String  ${REQUEST VERSION}  #Request Version
+    Add String  ${SPACE}
+    Add String  \r\n
+    #Information Elements
+    Add String  Host: www.nokiasiemensnetworks.com
+    Add String  \r\n
+    Add String  Connection: ${CONNECTION}
+    Add String  \r\n
+    Add String  Cache-control: max-age=0
+    Add String  \r\n
+    Add String  User-agent: rammbock
+    Add String  \r\n
+    Add String  Accept: text/html
+    Add String  \r\n
+    Add String  \r\n
 
 Set HTTP GET rcv
     Add Header Schema  Request Method

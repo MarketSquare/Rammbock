@@ -101,6 +101,9 @@ class Rammbock(object):
         except StopIteration:
             raise Exception(error_m)
 
+    def add_string(self, value):
+        self.message.items.append({'type': 'STRING', 'value': value})
+
     def add_information_element(self, name, value=None):
         self.message.items.append({'type': 'IE', 'name': name, 'value': value})
 
