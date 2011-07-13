@@ -104,6 +104,7 @@ Send Message With Multiple String Fields
     Add String  ${SPACE}
     Add String  field2
     Add String  \r\n
+    Client Sends Message
 
 Receive Message With Multiple String fields and validate them
     Server Receives Data
