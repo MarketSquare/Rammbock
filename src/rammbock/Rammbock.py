@@ -133,10 +133,6 @@ class Rammbock(object):
         else:
             self.message.header.append((name, value))
 
-    def add_header(self, name, value=None):
-        self.message.items.append({'type': 'HEADER','name': name,'value': value})
-
-
     def modify_header(self, name, value):
         self.message.items[self._id_to_name('HEADER', name, self.HEADER_NOT_FOUND % name)] = {'type': 'HEADER', 'name': name, 'value': value}
 

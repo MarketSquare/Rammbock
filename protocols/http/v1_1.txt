@@ -4,15 +4,15 @@ ${CONNECTION}  keep-alive
 
 *** Keywords ***
 Set HTTP GET send
-    #Headers
-    Add String  GET  #Request Method
+    # Headers
+    Add String  GET  # Request Method
     Add String  ${SPACE}
-    Add String  /  #Request URI
+    Add String  /  # Request URI
     Add String  ${SPACE}
-    Add String  ${REQUEST VERSION}  #Request Version
+    Add String  ${REQUEST VERSION}  # Request Version
     Add String  ${SPACE}
     Add String  \r\n
-    #Information Elements
+    # Information Elements
     Add String  Host: www.nokiasiemensnetworks.com
     Add String  \r\n
     Add String  Connection: ${CONNECTION}
@@ -36,11 +36,18 @@ Set HTTP GET rcv
     Add Information Element Schema  Accept
 
 Set HTTP Response send
-    Add Header  Request Version  ${REQUEST VERSION}
-    Add Header  Response Code  200
-    Add Information Element  Connection  ${CONNECTION}
-    Add Information Element  Content-Lenght  218
-    Add Delimiter  \r\n
+    #Headers
+    Add String  ${REQUEST VERSION}  #Request Version
+    Add String  ${SPACE}
+    Add String  200  #Response Code
+    Add String  ${SPACE}
+    Add String  \r\n
+    #Information Elements
+    Add String  Connection: ${CONNECTION}
+    Add String  \r\n
+    Add String  Content-Lenght: 218
+    Add String  \r\n
+    Add String  \r\n
 
 Set HTTP Response rcv
     Add Header Schema  Request Version
