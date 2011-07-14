@@ -37,11 +37,9 @@ Servers Receive and verify data
 
 Client gets Resp
     Create Message
-    add header  Request Version
-    add header  Response Code
-    Client Receives Message
-    ${request version}=  get header  Request Version
-    ${response code}=  get header  Response Code
+    Client Receives Data
+    ${request version}=  Read Until  ${SPACE}
+    ${response code}=  Read Until  ${SPACE}
     Should Be Equal  ${request version}  HTTP/1.1
     Should Be True  100 <= ${response code} < 600
 
