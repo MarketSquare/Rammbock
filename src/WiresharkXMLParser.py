@@ -34,7 +34,6 @@ def _handle_node(node, of):
     if not node.toxml().startswith('\n'):
         length = _length(node)
         if length is 1 or len(node.childNodes) is 0:
-            print _name(node)
             if _name(node) == "":
                 to_add = "    Add Decimal As Binary    " + _value(node) + "    " + str(_length(node)) + "    #" + _show(node) +"\n"
             else:
@@ -60,4 +59,4 @@ if __name__ == "__main__":
     if len(argv) is 4:
         parse_file(argv[1], argv[2], argv[3])
     else:
-        print "Usage: python wiresharkXMLParser.py infile.xml outfile.txt tcname"
+        print "Usage: python wiresharkXMLParser.py infile.xml outfile.txt test\\ case\\ name"
