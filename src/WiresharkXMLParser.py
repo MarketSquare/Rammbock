@@ -11,6 +11,15 @@ NAME_FROM_OBJ = re.compile(r'<field.*name="(.*?)"')
 
 def parse_file(infile, outfile, tcname):
     of = open(outfile, 'w')
+    _append_meta_information(of, tcname)
+    xmldoc = minidom.parse(infile)
+    root = xmldoc.childNodes[0]
+    for node in root.childNodes:
+        _handle_node(node, of)
+    of.write("    Client Sends Data\n")
+    of.close()
+
+def _append_meta_information(of, tcname):
     of.write("*** Settings ***\n")
     of.write("[Documentation]    This test file has been generated automatically with PDML to Robot framework test case converter (WiresharkXMLParser.py) at " + asctime() + ".\n")
     of.write("Test Setup      UDP Server and Client are initialized\n")
@@ -23,12 +32,6 @@ def parse_file(infile, outfile, tcname):
     of.write("*** Test Cases ***\n")
     of.write(tcname + '\n')
     of.write("    Create Message\n")
-    xmldoc = minidom.parse(infile)
-    root = xmldoc.childNodes[0]
-    for node in root.childNodes:
-        _handle_node(node, of)
-    of.write("    Client Sends Data\n")
-    of.close()
 
 def _handle_node(node, of):
     if not node.toxml().startswith('\n'):
