@@ -1,10 +1,7 @@
 from Client import UDPClient, TCPClient
 from Server import UDPServer, TCPServer
-from Message import Message
 import Server
 import Client
-import Encoder
-import Decoder
 import struct
 
 
@@ -80,10 +77,14 @@ class Rammbock(object):
         self.data = ""
 
     def add_string(self, value):
-        self.data += value
+        self.data += str(value)
 
-    def add_decimal_as_binary(self, name, value, length):
-        self.data += Encoder.dec2bin(value, length)
+    def add_decimal_as_binary(self, value, length):
+        data = hex(int(value))[2:]
+        data = data.rjust(int(length)*2, '0')
+        while(len(data) > 0):
+                self.data += struct.pack('B', int(data[0:2],16))
+                data = data[2:]
 
     def read_until(self, delimiter=None):
         if delimiter:
