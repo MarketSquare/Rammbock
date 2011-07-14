@@ -80,14 +80,11 @@ class Rammbock(object):
         self.data += str(value)
 
     def add_decimal_as_binary(self, value, length):
-        print repr(value)
         data = hex(int(value))[2:]
         data = data.rjust(int(length)*2, '0')
         while(len(data) > 0):
                 self.data += struct.pack('B', int(data[0:2],16))
                 data = data[2:]
-        print "REPR OF self.data: " + repr(self.data)
-
 
     def read_until(self, delimiter=None):
         if delimiter:
@@ -103,5 +100,4 @@ class Rammbock(object):
             message_temp += str(struct.unpack('B', temp.pop())[0])
         temp.reverse()
         self.data = temp
-        print "REPR OF self.data: " + repr(self.data)
         return str(int(message_temp))
