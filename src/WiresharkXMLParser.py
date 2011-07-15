@@ -17,7 +17,7 @@ class Parser(object):
         self.temp_name = ""
         self.of = [] 
 
-    def parse_file(self, infile, outfile, tcname):
+    def parse_file(self, infile, outfile, resfile, tcname):
         self._append_meta_information(tcname)
         xmldoc = minidom.parse(infile)
         root = xmldoc.childNodes[0]
@@ -31,7 +31,7 @@ class Parser(object):
 
     def _append_meta_information(self, tcname):
         self.of.append("*** Settings ***\n")
-        self.of.append("[Documentation]    This test file has been generated automatically with PDML to Robot framework test case converter (WiresharkXMLParser.py) at " + asctime() + ".\n")
+        self.of.append("Documentation    This test file has been generated automatically with PDML to Robot framework test case converter (WiresharkXMLParser.py) at " + asctime() + ".\n")
         self.of.append("Test Setup      UDP Server and Client are initialized\n")
         self.of.append("Test Teardown   Close Connections\n")
         self.of.append("Default Tags    regression\n")
@@ -95,7 +95,7 @@ class Parser(object):
             return POS_FROM_OBJ.match(node.toxml()).group(1)
 
 if __name__ == "__main__":
-    if len(argv) is 4:
-        Parser().parse_file(argv[1], argv[2], argv[3])
+    if len(argv) is 5:
+        Parser().parse_file(argv[1], argv[2], argv[3], argv[4])
     else:
-        print "Usage: python wiresharkXMLParser.py infile.xml outfile.txt test\\ case\\ name"
+        print "Usage: python wiresharkXMLParser.py infile.xml outfile.txt resfile.txt test\\ case\\ name"
