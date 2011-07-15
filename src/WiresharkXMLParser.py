@@ -11,25 +11,46 @@ NAME_FROM_OBJ = re.compile(r'<field.*name="(.*?)"')
 POS_FROM_OBJ = re.compile(r'<field.*pos="(.*?)"')
 
 class Parser(object):
-    def __init__(self):
+    def __init__(self, infile, outfile, tcname):
         self.prevnode = None
         self.temp_binary = ""
         self.temp_name = ""
-        self.of = [] 
+        self.of = []
+        self.infile = infile
+        self.outfile = outfile
+        self.tcname = tcname
+        self.xmldoc = None
 
-    def parse_file(self, infile, outfile, resfile, tcname):
-        self._append_meta_information(tcname)
-        xmldoc = minidom.parse(infile)
-        root = xmldoc.childNodes[0]
-        for node in root.childNodes:
+    def make_file(self):
+        self._append_meta_information()
+        self.xmldoc = minidom.parse(self.infile)
+        self._add_test_case()
+        self._add_keywords()
+        self._write_file()
+
+    def _add_keywords(self):
+        self.of.append("*** Keywords ***\n")
+        for node in self.xmldoc.childNodes:
+            self.of.append(self._show(node) + "\n")
             self._handle_node(node)
-        self.of.append("    Client Sends Data\n")
-        output_file = open(outfile, 'w')
+            self.of.append("\n")
+
+    def _write_file(self):
+        output_file = open(self.outfile, 'w')
         for line in self.of:
             output_file.write(line)
         output_file.close()
 
-    def _append_meta_information(self, tcname):
+    def _add_test_case(self):
+        self.of.append("*** Test Cases ***\n")
+        self.of.append(self.tcname + '\n')
+        self.of.append("    Create Message\n")
+        for node in  self.xmldoc.childNodes:
+            self.of.append("    " + self._show(node) + "\n")
+        self.of.append("    Client Sends Data\n")
+        self.of.append("\n")
+
+    def _append_meta_information(self):
         self.of.append("*** Settings ***\n")
         self.of.append("Documentation    This test file has been generated automatically with PDML to Robot framework test case converter (WiresharkXMLParser.py) at " + asctime() + ".\n")
         self.of.append("Test Setup      UDP Server and Client are initialized\n")
@@ -39,9 +60,6 @@ class Parser(object):
         self.of.append("Resource        ../resources/Messaging.txt\n")
         self.of.append("Resource        ../protocols/gtp/v2.txt\n")
         self.of.append("\n")
-        self.of.append("*** Test Cases ***\n")
-        self.of.append(tcname + '\n')
-        self.of.append("    Create Message\n")
 
     def _handle_node(self, node) :
         if not node.toxml().startswith('\n'):
@@ -95,7 +113,7 @@ class Parser(object):
             return POS_FROM_OBJ.match(node.toxml()).group(1)
 
 if __name__ == "__main__":
-    if len(argv) is 5:
-        Parser().parse_file(argv[1], argv[2], argv[3], argv[4])
+    if len(argv) is 4:
+        Parser(argv[1], argv[2], argv[3]).make_file()
     else:
-        print "Usage: python wiresharkXMLParser.py infile.xml outfile.txt resfile.txt test\\ case\\ name"
+        print "Usage: python wiresharkXMLParser.py infile.xml outfile.txt test\\ case\\ name"
