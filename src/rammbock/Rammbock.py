@@ -76,8 +76,10 @@ class Rammbock(object):
     def create_message(self):
         self.data = ""
 
-    def add_string(self, value):
-        self.data += str(value)
+    def add_string(self, value, length=None):
+        if not length:
+            length = len(value)
+        self.data += str(value).rjust(int(length), '\0')
 
     def add_decimal_as_binary(self, value, length):
         data = hex(int(value))[2:]
