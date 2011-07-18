@@ -28,8 +28,7 @@ Create Session Request
     Add Decimal As Binary    76    1    #IE Type: MSISDN (76)
     Add Decimal As Binary    8    2    #IE Length: 8
     Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal As Binary    5368    2    #Country Code: 358 Finland length 3
-    Add Decimal As Binary    86100000000001    7    #Address digits: 86100000000001
+    Add Decimal As Binary    3586100000000001  8    #Country Code: 358 Finland length 3, #Address digits: 86100000000001
     Add Decimal As Binary    24    1    #...1 .... = ECGI Present Flag): True, .... 1... = TAI Present Flag): True, .... .0.. = RAI Present Flag): False, .... ..0. = SAI Present Flag): False, .... ...0 = CGI Present Flag): False
     Add Decimal As Binary    262    2    #Mobile Country Code (MCC): Germany (Federal Republic of) (262)
     Add Decimal As Binary    12    2    #Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)

@@ -21,7 +21,7 @@ class Parser(object):
         self.tcname = tcname
         self.xmldoc = None
 
-    def make_file(self):
+    def handle_file(self):
         self._append_meta_information()
         self.xmldoc = minidom.parse(self.infile)
         self._add_test_case()
@@ -53,12 +53,15 @@ class Parser(object):
     def _append_meta_information(self):
         self.of.append("*** Settings ***\n")
         self.of.append("Documentation    This test file has been generated automatically with PDML to Robot framework test case converter (WiresharkXMLParser.py) at " + asctime() + ".\n")
-        self.of.append("Test Setup      UDP Server and Client are initialized\n")
+        self.of.append("Test Setup      UDP Server and Client are initialized in port ${GTP_CONTROL_PORT}\n")
         self.of.append("Test Teardown   Close Connections\n")
         self.of.append("Default Tags    regression\n")
         self.of.append("Library         rammbock.Rammbock\n")
         self.of.append("Resource        ../resources/Messaging.txt\n")
         self.of.append("Resource        ../protocols/gtp/v2.txt\n")
+        self.of.append("\n")
+        self.of.append("*** Variables ***\n")
+        self.of.append("${GTP_CONTROL_PORT}=    2123\n")
         self.of.append("\n")
 
     def _handle_node(self, node) :
@@ -68,11 +71,10 @@ class Parser(object):
                 if self._pos(node) == self._pos(self.prevnode) and self._name(self.prevnode) != "":
                     self.of = self.of[:-1]
                     if self.temp_name == "":
-                        self.temp_name = self._name(self.prevnode) + ', ' + self._name(node)
-                        self.temp_binary = self._value(self.prevnode)+self._value(node)
-                    else:
-                        self.temp_name = self.temp_name + ', ' + self._name(node)
-                        self.temp_binary = self.temp_binary+self._value(node)
+                        self.temp_name = self._name(self.prevnode)
+                        self.temp_binary = self._value(self.prevnode)
+                    self.temp_name += ', ' + self._name(node)
+                    self.temp_binary +=self._value(node)
                 else:
                     if len(self.temp_binary) > 0:
                         try:
@@ -82,11 +84,11 @@ class Parser(object):
                         self.temp_name = ""
                         self.temp_binary = ""
                     if self._name(node) == "":
-                        to_add = "    Add Decimal As Binary    " + self._value(node) + "    " + str(self._length(node)) + "    #" + self._show(node) + "\n"
+                        to_add = "    Add Decimal As Binary    " + self._value(node) + "    " + str(length) + "    #" + self._show(node) + "\n"
                     else:
-                        to_add = "    Add Decimal As Binary    " + self._show(node) + "    " + str(self._length(node)) + "    #" + self._name(node) + "\n"
+                        to_add = "    Add Decimal As Binary    " + self._show(node) + "    " + str(length) + "    #" + self._name(node) + "\n"
                     self.of.append(to_add)
-            elif len(node.childNodes) > 0:
+            else:
                 for subnode in node.childNodes:
                     self._handle_node(subnode)
             self.prevnode = node
@@ -114,6 +116,6 @@ class Parser(object):
 
 if __name__ == "__main__":
     if len(argv) is 4:
-        Parser(argv[1], argv[2], argv[3]).make_file()
+        Parser(argv[1], argv[2], argv[3]).handle_file()
     else:
         print "Usage: python wiresharkXMLParser.py infile.xml outfile.txt test\\ case\\ name"
