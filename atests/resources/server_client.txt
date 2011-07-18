@@ -1,13 +1,18 @@
 *** Variables ***
 ${PHYSICAL_INTERFACE}  ${LOOPBACK_DEVICE}
-${PORT}  3011
-${HOST}  localhost
+${PORT}=  3011
+${HOST}=  localhost
 
 *** Keywords ***
 UDP Server and Client are initialized
     Start UDP Server  ${PHYSICAL_INTERFACE}  ${PORT}
     Create UDP Client
     Connect to UDP server  ${HOST}  ${PORT}
+
+UDP Server and Client are initialized in port ${desired_port}
+    Start UDP Server  ${PHYSICAL_INTERFACE}  ${desired_port}
+    Create UDP Client
+    Connect to UDP server  ${HOST}  ${desired_port}
 
 Close Connections
     Close Client
