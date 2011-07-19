@@ -1,14 +1,17 @@
 *** Settings ***
-Documentation    This test file has been generated automatically with PDML to Robot framework test case converter (WiresharkXMLParser.py) at Fri Jul 15 13:56:25 2011.
-Test Setup      UDP Server and Client are initialized in port 2123
+Documentation    This test file has been generated automatically with PDML to Robot framework test case converter (WiresharkXMLParser.py) at Tue Jul 19 06:35:05 2011.
+Test Setup      UDP Server and Client are initialized in port ${GTP_CONTROL_PORT}
 Test Teardown   Close Connections
 Default Tags    regression
 Library         rammbock.Rammbock
 Resource        ../resources/Messaging.txt
 Resource        ../protocols/gtp/v2.txt
 
+*** Variables ***
+${GTP_CONTROL_PORT}=    2123
+
 *** Test Cases ***
-GTPV2 Create Session Request
+GTPV2 create session request
     Create Message
     Create Session Request
     Client Sends Data
@@ -28,38 +31,55 @@ Create Session Request
     Add Decimal As Binary    76    1    #IE Type: MSISDN (76)
     Add Decimal As Binary    8    2    #IE Length: 8
     Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal As Binary    3586100000000001  8    #Country Code: 358 Finland length 3, #Address digits: 86100000000001
+    Add Decimal As Binary    21352   2    #Country Code: 358 Finland length 3
+    Add Decimal As Binary    1099511627792  6    #Address digits: 86100000000001
+
+    Add Decimal As Binary    86    1    #IE Type: User Location Info (ULI) (86)
+    Add Decimal As Binary    13    2    #IE Length: 13
+    Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal As Binary    24    1    #...1 .... = ECGI Present Flag): True, .... 1... = TAI Present Flag): True, .... .0.. = RAI Present Flag): False, .... ..0. = SAI Present Flag): False, .... ...0 = CGI Present Flag): False
-    Add Decimal As Binary    262    2    #Mobile Country Code (MCC): Germany (Federal Republic of) (262)
-    Add Decimal As Binary    12    2    #Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
+    Add Decimal As Binary    25330  2    #Mobile Country Code (MCC): Germany (Federal Republic of) (262)
+    Add Decimal As Binary    33    1    #Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
     Add Decimal As Binary    1    2    #Tracking Area Code: 1
-    Add Decimal As Binary    262    2    #Mobile Country Code (MCC): Germany (Federal Republic of) (262)
-    Add Decimal As Binary    12    2    #Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
-    Add Decimal As Binary    234    17    #Spare: 0, ECI (E-UTRAN Cell Identifier): 234
+
+    Add Decimal As Binary    25330  2    #Mobile Country Code (MCC): Germany (Federal Republic of) (262)
+    Add Decimal As Binary    33    1    #Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
+    Add Decimal As Binary    234    4    #Spare: 0, ECI (E-UTRAN Cell Identifier): 234
+
     Add Decimal As Binary    83    1    #IE Type: Serving Network (83)
     Add Decimal As Binary    3    2    #IE Length: 3
     Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal As Binary    262    2    #Mobile Country Code (MCC): Germany (Federal Republic of) (262)
-    Add Decimal As Binary    12    2    #Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
-    Add Decimal As Binary    0    6    #.... 0... = PT (Protocol Type): False, .... .0.. = TDI (Teardown Indication): False, .... ..0. = SI (Scope Indication): False, .... ...0 = MSV (MS Validated): False
+    Add Decimal As Binary    25330  2    #Mobile Country Code (MCC): Germany (Federal Republic of) (262)
+    Add Decimal As Binary    33    1    #Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
+    Add Decimal As Binary    82    1    #IE Type: RAT Type (82)
+    Add Decimal As Binary    1    2    #IE Length: 1
+    Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal As Binary    6    1    #RAT Type: EUTRAN (6)
+    Add Decimal As Binary    77    1    #IE Type: Indication (77)
+    Add Decimal As Binary    2    2    #IE Length: 2
+    Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal As Binary    0    1    #0... .... = DAF (Dual Address Bearer Flag): False, .0.. .... = DTF (Direct Tunnel Flag): False, ..0. .... = HI (Handover Indication): False, ...0 .... = DFI (Direct Forwarding Indication): False, .... 0... = OI (Operation Indication): False, .... .0.. = ISRSI (Idle mode Signalling Reduction Supported Indication): False, .... ..0. = ISRAI (Idle mode Signalling Reduction Activation Indication): False, .... ...0 = SGWCI (SGW Change Indication): False
+    Add Decimal As Binary    0    1    #.... 0... = PT (Protocol Type): False, .... .0.. = TDI (Teardown Indication): False, .... ..0. = SI (Scope Indication): False, .... ...0 = MSV (MS Validated): False
     Add Decimal As Binary    87    1    #IE Type: Fully Qualified Tunnel Endpoint Identifier (F-TEID) (87)
     Add Decimal As Binary    9    2    #IE Length: 9
-    Add Decimal As Binary    266    1    #1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
+    Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal As Binary    138    1    #1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
     Add Decimal As Binary    50331665    4    #TEID/GRE Key: 50331665
     Add Ip Address 192.168.112.10        #F-TEID IPv4: 192.168.112.10 (192.168.112.10)
     Add Decimal As Binary    87    1    #IE Type: Fully Qualified Tunnel Endpoint Identifier (F-TEID) (87)
     Add Decimal As Binary    9    2    #IE Length: 9
-    Add Decimal As Binary    263    1    #1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 0111 = Interface Type: S5/S8 PGW GTP-C interface (7)
+    Add Decimal As Binary    1    1    #000. .... = CR flag: 0, .... 0001 = Instance: 1
+    Add Decimal As Binary    135    1    #1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 0111 = Interface Type: S5/S8 PGW GTP-C interface (7)
     Add Decimal As Binary    0    4    #TEID/GRE Key: 0
-    Add Ip Address 10.102.182.184         #F-TEID IPv4: 10.102.182.184 (10.102.182.184)
+    Add Ip Address 10.102.182.184        #F-TEID IPv4: 10.102.182.184 (10.102.182.184)
     Add Decimal As Binary    71    1    #IE Type: Access Point Name (APN) (71)
     Add Decimal As Binary    31    2    #IE Length: 31
     Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add String               sgw.nsn.com.mnc012.mcc262.gprs  31     #APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
+    Add String              sgw.nsn.com.mnc012.mcc262.gprs    31    #APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
     Add Decimal As Binary    128    1    #IE Type: Selection Mode (128)
     Add Decimal As Binary    1    2    #IE Length: 1
     Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal As Binary    0    1    #.... ..00 = Selection Mode: MS or network provided APN, subscribed verified (0)
+    Add Decimal As Binary    252    1    #.... ..00 = Selection Mode: MS or network provided APN, subscribed verified (0)
     Add Decimal As Binary    99    1    #IE Type: PDN Type (99)
     Add Decimal As Binary    1    2    #IE Length: 1
     Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
@@ -87,7 +107,8 @@ Create Session Request
     Add Decimal As Binary    5    1    #.... 0101 = EPS Bearer ID (EBI): 5
     Add Decimal As Binary    80    1    #IE Type: Bearer Level Quality of Service (Bearer QoS) (80)
     Add Decimal As Binary    22    2    #IE Length: 22
-    Add Decimal As Binary    2    1    #.... ...0 = PVI (Pre-emption Vulnerability): False, ..00 01.. = PL (Priority Level): 1, .0.. .... = PCI (Pre-emption Capability): False
+    Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal As Binary    4    1    #.... ...0 = PVI (Pre-emption Vulnerability): False, ..00 01.. = PL (Priority Level): 1, .0.. .... = PCI (Pre-emption Capability): False
     Add Decimal As Binary    9    1    #Label (QCI): 9
     Add Decimal As Binary    0    5    #Maximum Bit Rate For Uplink: 0
     Add Decimal As Binary    0    5    #Maximum Bit Rate For Downlink: 0

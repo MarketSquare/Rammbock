@@ -64,23 +64,20 @@ class Parser(object):
         self.of.append("${GTP_CONTROL_PORT}=    2123\n")
         self.of.append("\n")
 
-    def _handle_node(self, node) :
+    def _handle_node(self, node):
         if not node.toxml().startswith('\n'):
             length = self._length(node)
             if length is 1 or len(node.childNodes) is 0:
                 if self._pos(node) == self._pos(self.prevnode) and self._name(self.prevnode) != "":
-                    self.of = self.of[:-1]
                     if self.temp_name == "":
+                        self.of = self.of[:-1]
                         self.temp_name = self._name(self.prevnode)
                         self.temp_binary = self._value(self.prevnode)
                     self.temp_name += ', ' + self._name(node)
-                    self.temp_binary +=self._value(node)
+                    self.temp_binary += bin(int(self._show(node)))[2:]
                 else:
                     if len(self.temp_binary) > 0:
-                        try:
-                            self.of.append("    Add Decimal As Binary    " + str(int(self.temp_binary, 2)) + "    " + str(self._length(self.prevnode)) + "    #" + self.temp_name + "\n")
-                        except ValueError:
-                            self.of.append("    Add Decimal As Binary    " + str(int(self.temp_binary, 16)) + "    " + str(self._length(self.prevnode)) + "    #" + self.temp_name + "\n")
+                        self.of.append("    Add Decimal As Binary    " + str(int(self.temp_binary, 2)) + "    " + str(self._length(self.prevnode)) + "    #" + self.temp_name + "\n")
                         self.temp_name = ""
                         self.temp_binary = ""
                     if self._name(node) == "":
@@ -94,6 +91,8 @@ class Parser(object):
             self.prevnode = node
 
     def _length(self, node):
+        if not node:
+            return -1
         return int(LENGTH_FROM_OBJ.match(node.toxml()).group(1))
 
     def _show(self, node):
@@ -103,16 +102,14 @@ class Parser(object):
         return VALUE_FROM_OBJ.match(node.toxml()).group(1)
 
     def _name(self, node):
-        if node is None:
+        if not node:
             return ""
-        else:
-            return NAME_FROM_OBJ.match(node.toxml()).group(1)
+        return NAME_FROM_OBJ.match(node.toxml()).group(1)
 
     def _pos(self, node):
-        if node is None:
+        if not node: 
             return "-1"
-        else:
-            return POS_FROM_OBJ.match(node.toxml()).group(1)
+        return POS_FROM_OBJ.match(node.toxml()).group(1)
 
 if __name__ == "__main__":
     if len(argv) is 4:
