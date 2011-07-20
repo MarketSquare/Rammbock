@@ -33,7 +33,6 @@ Create Session Request
     Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal As Binary    21352   2    #Country Code: 358 Finland length 3
     Add Decimal As Binary    1099511627792  6    #Address digits: 86100000000001
-
     Add Decimal As Binary    86    1    #IE Type: User Location Info (ULI) (86)
     Add Decimal As Binary    13    2    #IE Length: 13
     Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
@@ -41,11 +40,9 @@ Create Session Request
     Add Decimal As Binary    25330  2    #Mobile Country Code (MCC): Germany (Federal Republic of) (262)
     Add Decimal As Binary    33    1    #Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
     Add Decimal As Binary    1    2    #Tracking Area Code: 1
-
     Add Decimal As Binary    25330  2    #Mobile Country Code (MCC): Germany (Federal Republic of) (262)
     Add Decimal As Binary    33    1    #Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
     Add Decimal As Binary    234    4    #Spare: 0, ECI (E-UTRAN Cell Identifier): 234
-
     Add Decimal As Binary    83    1    #IE Type: Serving Network (83)
     Add Decimal As Binary    3    2    #IE Length: 3
     Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
@@ -65,17 +62,17 @@ Create Session Request
     Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal As Binary    138    1    #1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
     Add Decimal As Binary    50331665    4    #TEID/GRE Key: 50331665
-    Add Ip Address 192.168.112.10        #F-TEID IPv4: 192.168.112.10 (192.168.112.10)
+    Add Ip Address 192.168.112.10    #F-TEID IPv4: 192.168.112.10 (192.168.112.10)
     Add Decimal As Binary    87    1    #IE Type: Fully Qualified Tunnel Endpoint Identifier (F-TEID) (87)
     Add Decimal As Binary    9    2    #IE Length: 9
     Add Decimal As Binary    1    1    #000. .... = CR flag: 0, .... 0001 = Instance: 1
     Add Decimal As Binary    135    1    #1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 0111 = Interface Type: S5/S8 PGW GTP-C interface (7)
     Add Decimal As Binary    0    4    #TEID/GRE Key: 0
-    Add Ip Address 10.102.182.184        #F-TEID IPv4: 10.102.182.184 (10.102.182.184)
+    Add Ip Address 10.102.182.184    #F-TEID IPv4: 10.102.182.184 (10.102.182.184)
     Add Decimal As Binary    71    1    #IE Type: Access Point Name (APN) (71)
     Add Decimal As Binary    31    2    #IE Length: 31
     Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add String              sgw.nsn.com.mnc012.mcc262.gprs    31    #APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
+    Add String               sgw.nsn.com.mnc012.mcc262.gprs    31    #APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
     Add Decimal As Binary    128    1    #IE Type: Selection Mode (128)
     Add Decimal As Binary    1    2    #IE Length: 1
     Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
@@ -88,7 +85,7 @@ Create Session Request
     Add Decimal As Binary    5    2    #IE Length: 5
     Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal As Binary    1    1    #.... .001 = PDN Type: IPv4 (1)
-    Add Ip Address 0.0.0.0        #PDN IPv4: 0.0.0.0 (0.0.0.0)
+    Add Ip Address 0.0.0.0    #PDN IPv4: 0.0.0.0 (0.0.0.0)
     Add Decimal As Binary    127    1    #IE Type: APN Restriction (127)
     Add Decimal As Binary    1    2    #IE Length: 1
     Add Decimal As Binary    0    1    #000. .... = CR flag: 0, .... 0000 = Instance: 0
