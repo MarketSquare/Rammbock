@@ -69,12 +69,7 @@ class Parser(object):
             length = self._length(node)
             if length is 1 or len(node.childNodes) is 0:
                 if self._pos(node) == self._pos(self.prevnode) and self._name(self.prevnode) != "":
-                    if self.temp_name == "":
-                        self.of = self.of[:-1]
-                        self.temp_name = self._name(self.prevnode)
-                        self.temp_binary = self._value(self.prevnode)
-                    self.temp_name += ', ' + self._name(node)
-                    self.temp_binary += bin(int(self._show(node)))[2:]
+                    self._add_binary(node)
                 else:
                     if len(self.temp_binary) > 0:
                         self.of.append("    Add Decimal As Binary    " + str(int(self.temp_binary, 2)) + "    " + str(self._length(self.prevnode)) + "    #" + self.temp_name + "\n")
@@ -89,6 +84,14 @@ class Parser(object):
                 for subnode in node.childNodes:
                     self._handle_node(subnode)
             self.prevnode = node
+
+    def _add_binary(self, node):
+        if self.temp_name == "":
+            self.of = self.of[:-1]
+            self.temp_name = self._name(self.prevnode)
+            self.temp_binary = self._value(self.prevnode)
+        self.temp_name += ', ' + self._name(node)
+        self.temp_binary += bin(int(self._show(node)))[2:]
 
     def _length(self, node):
         if not node:
