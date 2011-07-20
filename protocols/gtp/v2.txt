@@ -6,7 +6,7 @@ Set Create Session Request send
 Set Create Session Request rcv
 
 Add Ip Address ${part1}.${part2}.${part3}.${part4}
-    Add Decimal As Binary    ${part1}    1
-    Add Decimal As Binary    ${part2}    1
-    Add Decimal As Binary    ${part3}    1
-    Add Decimal As Binary    ${part4}    1
+    Add Decimal as Octets    ${part1}    1
+    Add Decimal as Octets    ${part2}    1
+    Add Decimal as Octets    ${part3}    1
+    Add Decimal as Octets    ${part4}    1

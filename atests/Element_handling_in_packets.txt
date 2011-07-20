@@ -6,22 +6,22 @@ Library         rammbock.Rammbock
 Resource        resources/Messaging.txt
 
 *** Test Cases ***
-Encode message with multiple binary data elements
+Encode message with multiple decimal data elements as binary
     Create Message and add headers
     Client Sends Data
     Server receives and validates multipart data
 
-Encode message with binary data
+Encode message with decimal data as binary
     Create Message and Add Flags
     Client sends Data
     Server receives and validates data
 
-Decode message with binary data
+Decode message with decimal data as binary
     Create Message and Add Flags
     Client sends Data
     Server receives and validates message
 
-Decode message with multiple binary data elements
+Decode message with multiple decimal data elements as binary
     Create Message and add headers
     Client sends Data
     Server Receives And Validates message with multipart binary data
@@ -41,8 +41,8 @@ Send and Receive message with multiple string fields
 *** Keywords ***
 Create Message and add headers
     Create Message
-    Add Decimal as Binary  72  1
-    Add Decimal as Binary  216  2
+    Add Decimal as Octets  72  1
+    Add Decimal as Octets  216  2
 
 Server receives data and validates header
     Receive data and validate against string  \ 7
@@ -60,7 +60,7 @@ Server receives and validates message
 
 Create Message and Add Flags
     Create Message
-    Add Decimal as Binary  72  1  # 010. .... = Version: 2, ...1 .... = P: 0, .... 1... = T: 1
+    Add Decimal as Octets  72  1  # 010. .... = Version: 2, ...1 .... = P: 0, .... 1... = T: 1
 
 Server receives and validates data
     ${message}=  Server Receives Data

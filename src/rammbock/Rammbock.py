@@ -81,12 +81,18 @@ class Rammbock(object):
             length = len(value)
         self.data += str(value).rjust(int(length), '\0')
 
-    def add_decimal_as_binary(self, value, length):
-        data = hex(int(value))[2:]
-        data = data.rjust(int(length)*2, '0')
+    def add_decimal_as_octets(self, value, length):
+        data = self._convert_to_hex_and_add_padding(value, length)
         while(len(data) > 0):
                 self.data += struct.pack('B', int(data[0:2],16))
                 data = data[2:]
+
+    def _convert_to_hex_and_add_padding(self, value, length):
+        data = hex(int(value))[2:]
+        if data[-1] == 'L':
+            data = data[:-1]
+        data = data.rjust(int(length)*2, '0')
+        return data
 
     def read_until(self, delimiter=None):
         if delimiter:
