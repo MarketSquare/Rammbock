@@ -15,6 +15,7 @@ class Rammbock(object):
         self.data = ""
         self._servers = {}
         self._clients = {}
+        self._binary = ""
 
     def start_udp_server(self, nwinterface, port, ip=Server.DEFAULT_IP, name=Server.DEFAULT_NAME):
         self._servers[name] = UDPServer(name)
@@ -88,6 +89,15 @@ class Rammbock(object):
         while(len(data) > 0):
                 self.data += struct.pack('B', int(data[0:2],16))
                 data = data[2:]
+
+    def add_decimal_as_binary(self, value, length):
+        print "binary value for", value, "is", bin(int(value))[2:]
+        data = bin(int(value))[2:].rjust(int(length), '0')
+        if len(data) > int(length):
+            raise Exception("Value is too big for length")
+        self._binary += data
+        while len(self._binary) >= 8:
+            self.data += struct.pack('B', int(self._binary[:8]))
 
     def _convert_to_hex_and_add_padding(self, value, length):
         data = hex(int(value))[2:]

@@ -27,10 +27,11 @@ Encode Message with multiple data fields containing bits
 
 Try Encode too long decimal data as octets
     Create Message
-    Run Keyword And Expect Error  *  Add Decimal As Octets  300  1
+    Run Keyword And Expect Error  Value is too big for length  Add Decimal As Octets  300  1
 
 Try to encode too long decimal as bits
-    [Tags]  ${EMPTY}
+    Create Message
+    Run Keyword And Expect Error  Value is too big for length  Add Decimal As Binary  256  1
 
 Decode octets from message to single decimal
     Create Message and Add Decimal as octets
