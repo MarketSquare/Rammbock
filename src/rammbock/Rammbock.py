@@ -99,6 +99,7 @@ class Rammbock(object):
         while len(self._binary) >= 8:
             self._data += struct.pack('B', int(self._binary[:8],2))
             self._binary = self._binary[8:]
+        print "bin", self._binary
 
     def _convert_to_hex_and_add_padding(self, value, length):
         data = hex(int(value))[2:]
@@ -124,12 +125,12 @@ class Rammbock(object):
     def read_to_binary_from_data(self, length):
         length = int(length)
         for d in self._data[:length]:
-            self._binary += bin(int(str(struct.unpack('B', d)[0])))[2:]
+            self._binary += bin(int(str(struct.unpack('B', d)[0])))[2:].rjust(8,'0')
         self._data = self._data[length:]
 
     def read_from_binary(self, length):
         length = int(length)
         value = self._binary[:length]
         self._binary = self._binary[length:]
-        return int(value,2)
+        return str(int(value,2))
 

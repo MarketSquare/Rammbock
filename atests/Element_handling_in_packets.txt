@@ -65,7 +65,9 @@ Encode And Decode message with multiple strings
     Receive And Validate message With Multiple String fields
 
 Encode And Decode message with octets, bits and strings
-    [Tags]  ${EMPTY}
+    Create Message And Add Strings and Decimals and Binary as octets
+    Client Sends Data
+    Receive And Validate Message With Strings and Decimals and Binary As Octets
 
 *** Keywords ***
 Create Message and add two decimals as octets
@@ -87,6 +89,18 @@ Create Message And Add Multiple bitstream fields
 Create Message and Add Decimal as octets
     Create Message
     Add Decimal as Octets  72  1
+
+Create Message And Add Strings and Decimals and Binary as octets
+    Create Message
+    Add Decimal as Octets  255  1
+    Add Decimal as Octets  4  2
+    Add Decimal As Bits  63  6
+    Add Decimal As Bits  3  6
+    Add Decimal As Bits  10  4
+    Add String  value
+    Add String  ${SPACE}
+    Add String  key
+    Add String  \r\n
 
 Receive data and checks it exists
     ${message}=  Server Receives Data
@@ -110,7 +124,7 @@ Receive And Validate Message With single binary decimal
     Server Receives Data
     read to binary from data  1
     ${value}=  Read From binary  8
-    Should Be Equal As Integers  ${value}  255
+    Should Be Equal  ${value}  255
 
 Receive And Validate Message With multiple binary decimals
     Server Receives Data
@@ -118,9 +132,27 @@ Receive And Validate Message With multiple binary decimals
     ${value1}=  Read From Binary  6
     ${value2}=  Read From Binary  6
     ${value3}=  Read From Binary  4
-    Should Be Equal As Numbers  ${value1}  32
-    Should Be Equal As Numbers  ${value2}  40
-    Should Be Equal As Numbers  ${value3}  15
+    Should Be Equal  ${value1}  32
+    Should Be Equal  ${value2}  40
+    Should Be Equal  ${value3}  15
+
+Receive And Validate Message With Strings and Decimals and Binary As Octets
+    Server Receives Data
+    ${value1}=  Read From Data  1
+    ${value2}=  Read From Data  2
+    Should Be Equal  ${value1}  255
+    Should Be Equal  ${value2}  4
+    Read To Binary From Data  2
+    ${value1}=  Read From Binary  6
+    ${value2}=  Read From Binary  6
+    ${value3}=  Read From Binary  4
+    Should Be Equal  ${value1}  63
+    Should Be Equal  ${value2}  3
+    Should Be Equal  ${value3}  10
+    ${field1}=  Read Until  ${SPACE}
+    ${field2}=  Read Until  \r\n
+    Should Be Equal  ${field1}  value
+    Should Be Equal  ${field2}  key
 
 Receive And Validate message With Multiple String fields
     Server Receives Data
