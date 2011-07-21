@@ -39,26 +39,28 @@ Try to encode too long decimal as bits
 Decode octets from message to single decimal
     Create Message and Add Decimal as octets
     Client sends Data
-    Server receives and validates message
+    Server receives and validates message with single decimal
 
 Decode octets from message to decimals
     Create Message and add two decimals as octets
     Client sends Data
-    Server Receives And Validates message with multipart binary data
+    Server Receives And Validates message with multiple decimals
 
 Decode bits from message to single decimal
-    [Tags]  ${EMPTY}
+    Create Message And Add Bitstream data
+    Client Sends Data
+    Receive And Validate Message With single binary decimal
 
 Decode bits from message to decimals
     [Tags]  ${EMPTY}
 
 Encode And Decode message with string
-    Create And Send Message with String
-    Receive Message with String and validate field
+    Create And Send Message with single String field
+    Receive and validate Message with single String field
 
 Encode And Decode message with multiple strings
     Create and Send Message With Multiple String Fields
-    Receive Message With Multiple String fields and validate them
+    Receive And Validate message With Multiple String fields
 
 Encode And Decode message with octets, bits and strings
     [Tags]  ${EMPTY}
@@ -88,20 +90,13 @@ Server receives data and checks it exists
     ${message}=  Server Receives Data
     Should Not Be Empty  ${message}
 
-Server receives data and validates header
-    Receive data and validate against string  \ 7
-
-Server receives and validates data
-    ${message}=  Server Receives Data
-    Should Be Equal As Strings  ${message}  H
-
-Server receives and validates message
+Server receives and validates message with single decimal
     Create Message
     Server Receives Data
     ${flags}=  Read From Data  1
     Should Be Equal  ${flags}  72
 
-Server Receives And Validates message with multipart binary data
+Server Receives And Validates message with multiple decimals
     Create Message
     Server Receives Data
     ${flags}=  Read From Data  1
@@ -109,24 +104,19 @@ Server Receives And Validates message with multipart binary data
     Should Be Equal  ${flags}  72
     Should Be Equal  ${message_length}  216
 
-Receive Message With Multiple String fields and validate them
+Receive And Validate message With Multiple String fields
     Server Receives Data
     ${field1}=  Read Until  ${SPACE}
     ${field2}=  Read Until  \r\n
     Should Be Equal  ${field1}  field1
     Should Be Equal  ${field2}  field2
 
-Receive Message with String and validate field
+Receive and validate Message with single String field
     Server Receives Data
     ${test field}=  Read Until
     Should Be Equal  ${test field}  Test
 
-Receive data and validate against string
-    [Arguments]  ${content}
-    ${data}=  Server Receives Data
-    Should Be Equal  ${data}  ${content}
-
-Create And Send Message with String
+Create And Send Message with single String field
     Create Message
     Add String  Test
     Client Sends Data
@@ -138,4 +128,10 @@ Create and Send Message With Multiple String Fields
     Add String  field2
     Add String  \r\n
     Client Sends Data
+
+Receive And Validate Message With single binary decimal
+    Server Receives Data
+    read to binary from data  1
+    ${value}=  Read From binary  8
+    Should Be Equal As Integers  ${value}  255
 
