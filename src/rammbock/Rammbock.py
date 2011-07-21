@@ -90,14 +90,15 @@ class Rammbock(object):
                 self.data += struct.pack('B', int(data[0:2],16))
                 data = data[2:]
 
-    def add_decimal_as_binary(self, value, length):
+    def add_decimal_as_bits(self, value, length):
         print "binary value for", value, "is", bin(int(value))[2:]
         data = bin(int(value))[2:].rjust(int(length), '0')
         if len(data) > int(length):
             raise Exception("Value is too big for length")
         self._binary += data
         while len(self._binary) >= 8:
-            self.data += struct.pack('B', int(self._binary[:8]))
+            self.data += struct.pack('B', int(self._binary[:8],2))
+            self._binary = self._binary[8:]
 
     def _convert_to_hex_and_add_padding(self, value, length):
         data = hex(int(value))[2:]

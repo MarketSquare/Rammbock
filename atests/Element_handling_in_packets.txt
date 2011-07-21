@@ -17,7 +17,6 @@ Encode message with multiple decimal data elements as octets
     Server receives data and checks it exists
 
 Encode message with bitstream data as binary
-    [Tags]  ${EMPTY}
     Create Message And Add Bitstream data
     Client sends data
     Server receives data and checks it exists
@@ -31,7 +30,7 @@ Try Encode too long decimal data as octets
 
 Try to encode too long decimal as bits
     Create Message
-    Run Keyword And Expect Error  Value is too big for length  Add Decimal As Binary  256  1
+    Run Keyword And Expect Error  Value is too big for length  Add Decimal As Bits  256  1
 
 Decode octets from message to single decimal
     Create Message and Add Decimal as octets
@@ -68,7 +67,7 @@ Create Message and add two decimals as octets
 
 Create Message And Add Bitstream data
     Create Message
-    Add decimal as bits  6  8
+    Add decimal as bits  255  8
     Client Sends Data
 
 Create Message and Add Decimal as octets
