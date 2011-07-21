@@ -114,8 +114,16 @@ class Rammbock(object):
         return self._data
 
     def read_from_data(self, length):
+        length = int(length)
         message = ""
-        for d in range(0, int(length)):
-            message += str(struct.unpack('B', self._data[0])[0])
-            self._data = self._data[1:]
+        for d in self._data[:length]:
+            message += str(struct.unpack('B', d)[0])
+        self._data = self._data[length:]
         return str(int(message))
+
+    def read_to_binary_from_data(self, length):
+        self.binary += bin(self.read_from_data(length))[2:]
+
+    def read_from_binary(self, length):
+        pass
+
