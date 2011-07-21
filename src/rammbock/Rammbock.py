@@ -5,6 +5,9 @@ import Client
 import struct
 
 
+d2b = lambda d: (not isinstance(d,int) or (d==0)) and '0' \
+    or (d2b(d//2)+str(d%2))
+
 class Rammbock(object):
 
     IE_NOT_FOUND = "Information Element does not exist: '%s'"
@@ -91,8 +94,8 @@ class Rammbock(object):
                 data = data[2:]
 
     def add_decimal_as_bits(self, value, length):
-        print "binary value for", value, "is", bin(int(value))[2:]
-        data = bin(int(value))[2:].rjust(int(length), '0')
+        print "binary value for", value, "is", d2b(int(value))[1:]
+        data = d2b(int(value))[1:].rjust(int(length), '0')
         if len(data) > int(length):
             raise Exception("Value is too big for length")
         self._binary += data
@@ -125,8 +128,9 @@ class Rammbock(object):
     def read_to_binary_from_data(self, length):
         length = int(length)
         for d in self._data[:length]:
-            self._binary += bin(int(str(struct.unpack('B', d)[0])))[2:].rjust(8,'0')
+            self._binary += d2b(int(str(struct.unpack('B', d)[0])))[1:].rjust(8,'0')
         self._data = self._data[length:]
+        print self._binary
 
     def read_from_binary(self, length):
         length = int(length)
