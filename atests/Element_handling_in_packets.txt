@@ -1,4 +1,6 @@
 *** Settings ***
+Suite Setup   
+Suite Teardown
 Test Setup      UDP Server and Client are initialized
 Test Teardown   Close Connections
 Default Tags    regression
@@ -22,7 +24,9 @@ Encode message with bitstream data as binary
     Server receives data and checks it exists
 
 Encode Message with multiple data fields containing bits
-    [Tags]  ${EMPTY}
+    Create Message And Add Multiple bitstream fields
+    Client Sends Data
+    Server receives data and checks it exists
 
 Try Encode too long decimal data as octets
     Create Message
@@ -48,15 +52,15 @@ Decode bits from message to single decimal
 Decode bits from message to decimals
     [Tags]  ${EMPTY}
 
-Send And Receive message with string
+Encode And Decode message with string
     Create And Send Message with String
     Receive Message with String and validate field
 
-Send And Receive message with multiple strings
+Encode And Decode message with multiple strings
     Create and Send Message With Multiple String Fields
     Receive Message With Multiple String fields and validate them
 
-Send And Receive message containing octets, bits and strings
+Encode And Decode message with octets, bits and strings
     [Tags]  ${EMPTY}
 
 *** Keywords ***
@@ -69,6 +73,12 @@ Create Message And Add Bitstream data
     Create Message
     Add decimal as bits  255  8
     Client Sends Data
+
+Create Message And Add Multiple bitstream fields
+    Create Message
+    Add Decimal As Bits  4  3
+    Add Decimal As Bits  7  3
+    Add Decimal As Bits  3  2
 
 Create Message and Add Decimal as octets
     Create Message
