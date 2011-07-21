@@ -114,10 +114,8 @@ class Rammbock(object):
         return self.data
 
     def read_from_data(self, length):
-        message_temp = ""
-        temp = list(self.data)
+        message = ""
         for d in range(0, int(length)):
-            message_temp += str(struct.unpack('B', temp[0])[0])
-            temp = temp[1:]
-        self.data = temp
-        return str(int(message_temp))
+            message += str(struct.unpack('B', self.data[0])[0])
+            self.data = self.data[1:]
+        return str(int(message))
