@@ -83,6 +83,8 @@ class Rammbock(object):
 
     def add_decimal_as_octets(self, value, length):
         data = self._convert_to_hex_and_add_padding(value, length)
+        if len(data) > int(length)*2:
+            raise Exception("Value is too big for length")
         while(len(data) > 0):
                 self.data += struct.pack('B', int(data[0:2],16))
                 data = data[2:]
