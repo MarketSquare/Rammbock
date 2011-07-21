@@ -12,7 +12,7 @@ class Rammbock(object):
     BINARY_NOT_FOUND = "Header does not exist: '%s'"
 
     def __init__(self):
-        self.data = ""
+        self._data = ""
         self._servers = {}
         self._clients = {}
         self._binary = ""
@@ -58,36 +58,36 @@ class Rammbock(object):
         if packet:
             self._clients[name].send_packet(packet)
         else:
-            self._clients[name].send_packet(self.data)
+            self._clients[name].send_packet(self._data)
 
     def server_receives_data(self, name=Server.DEFAULT_NAME):
-        self.data = self._servers[name].server_receives_data()
-        return self.data
+        self._data = self._servers[name].server_receives_data()
+        return self._data
 
     def client_receives_data(self, name=Client.DEFAULT_NAME):
-        self.data = self._clients[name].receive_data()
-        return self.data
+        self._data = self._clients[name].receive_data()
+        return self._data
 
     def server_sends_data(self, packet=None, name=Server.DEFAULT_NAME): 
         if packet:
             self._servers[name].send_data(packet)
         else:
-            self._servers[name].send_data(self.data)
+            self._servers[name].send_data(self._data)
 
     def create_message(self):
-        self.data = ""
+        self._data = ""
 
     def add_string(self, value, length=None):
         if not length:
             length = len(value)
-        self.data += str(value).rjust(int(length), '\0')
+        self._data += str(value).rjust(int(length), '\0')
 
     def add_decimal_as_octets(self, value, length):
         data = self._convert_to_hex_and_add_padding(value, length)
         if len(data) > int(length)*2:
             raise Exception("Value is too big for length")
         while(len(data) > 0):
-                self.data += struct.pack('B', int(data[0:2],16))
+                self._data += struct.pack('B', int(data[0:2],16))
                 data = data[2:]
 
     def add_decimal_as_bits(self, value, length):
@@ -97,7 +97,7 @@ class Rammbock(object):
             raise Exception("Value is too big for length")
         self._binary += data
         while len(self._binary) >= 8:
-            self.data += struct.pack('B', int(self._binary[:8],2))
+            self._data += struct.pack('B', int(self._binary[:8],2))
             self._binary = self._binary[8:]
 
     def _convert_to_hex_and_add_padding(self, value, length):
@@ -109,13 +109,13 @@ class Rammbock(object):
 
     def read_until(self, delimiter=None):
         if delimiter:
-            i,_,self.data = self.data.partition(delimiter)
+            i,_,self._data = self._data.partition(delimiter)
             return i
-        return self.data
+        return self._data
 
     def read_from_data(self, length):
         message = ""
         for d in range(0, int(length)):
-            message += str(struct.unpack('B', self.data[0])[0])
-            self.data = self.data[1:]
+            message += str(struct.unpack('B', self._data[0])[0])
+            self._data = self._data[1:]
         return str(int(message))
