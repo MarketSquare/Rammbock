@@ -11,22 +11,22 @@ Resource        resources/Messaging.txt
 Encode message with decimal data as octets
     Create Message and Add Decimal as octets
     Client sends Data
-    Server receives data and checks it exists
+    Receive data and checks it exists
 
 Encode message with multiple decimal data elements as octets
     Create Message and add two decimals as octets
     Client Sends Data
-    Server receives data and checks it exists
+    Receive data and checks it exists
 
 Encode message with bitstream data as binary
     Create Message And Add Bitstream data
     Client sends data
-    Server receives data and checks it exists
+    Receive data and checks it exists
 
 Encode Message with multiple data fields containing bits
     Create Message And Add Multiple bitstream fields
     Client Sends Data
-    Server receives data and checks it exists
+    Receive data and checks it exists
 
 Try Encode too long decimal data as octets
     Create Message
@@ -39,20 +39,22 @@ Try to encode too long decimal as bits
 Decode octets from message to single decimal
     Create Message and Add Decimal as octets
     Client sends Data
-    Server receives and validates message with single decimal
+    receive and validate message with single decimal
 
 Decode octets from message to decimals
     Create Message and add two decimals as octets
     Client sends Data
-    Server Receives And Validates message with multiple decimals
+    Receive And Validate message with multiple decimals
 
 Decode bits from message to single decimal
     Create Message And Add Bitstream data
     Client Sends Data
     Receive And Validate Message With single binary decimal
 
-Decode bits from message to decimals
-    [Tags]  ${EMPTY}
+Decode bits from message to Multiple decimals
+    Create Message And Add Multiple bitstream fields
+    Client Sends Data
+    Receive And Validate Message With multiple binary decimals
 
 Encode And Decode message with string
     Create And Send Message with single String field
@@ -78,31 +80,47 @@ Create Message And Add Bitstream data
 
 Create Message And Add Multiple bitstream fields
     Create Message
-    Add Decimal As Bits  4  3
-    Add Decimal As Bits  7  3
-    Add Decimal As Bits  3  2
+    Add Decimal As Bits  32  6
+    Add Decimal As Bits  40  6
+    Add Decimal As Bits  15  4
 
 Create Message and Add Decimal as octets
     Create Message
     Add Decimal as Octets  72  1
 
-Server receives data and checks it exists
+Receive data and checks it exists
     ${message}=  Server Receives Data
     Should Not Be Empty  ${message}
 
-Server receives and validates message with single decimal
+receive and validate message with single decimal
     Create Message
     Server Receives Data
     ${flags}=  Read From Data  1
     Should Be Equal  ${flags}  72
 
-Server Receives And Validates message with multiple decimals
+Receive And Validate message with multiple decimals
     Create Message
     Server Receives Data
     ${flags}=  Read From Data  1
     ${message_length}=  Read From Data  2
     Should Be Equal  ${flags}  72
     Should Be Equal  ${message_length}  216
+
+Receive And Validate Message With single binary decimal
+    Server Receives Data
+    read to binary from data  1
+    ${value}=  Read From binary  8
+    Should Be Equal As Integers  ${value}  255
+
+Receive And Validate Message With multiple binary decimals
+    Server Receives Data
+    Read To Binary From Data  2
+    ${value1}=  Read From Binary  6
+    ${value2}=  Read From Binary  6
+    ${value3}=  Read From Binary  4
+    Should Be Equal As Numbers  ${value1}  32
+    Should Be Equal As Numbers  ${value2}  40
+    Should Be Equal As Numbers  ${value3}  15
 
 Receive And Validate message With Multiple String fields
     Server Receives Data
@@ -128,10 +146,4 @@ Create and Send Message With Multiple String Fields
     Add String  field2
     Add String  \r\n
     Client Sends Data
-
-Receive And Validate Message With single binary decimal
-    Server Receives Data
-    read to binary from data  1
-    ${value}=  Read From binary  8
-    Should Be Equal As Integers  ${value}  255
 
