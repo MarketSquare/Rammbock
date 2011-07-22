@@ -33,3 +33,14 @@ class TestNumberFormatting(unittest.TestCase):
         rammbock.add_number_as_tbcd(str(long_int))
         temp = self._unpack_bytes_to_hex_string()
         assert temp == '123342322443322431354245f3'
+
+    def test_add_mnc_as_tbcd(self):
+        rammbock.add_number_as_tbcd(str(262))
+        mcc = self._unpack_bytes_to_hex_string()
+        assert mcc == '62f2'
+
+    def test_add_mcc_as_tbcd(self):
+        rammbock.add_number_as_tbcd(str(12))
+        mnc = self._unpack_bytes_to_hex_string()
+        assert mnc == '21'
+

@@ -5,19 +5,10 @@ Set Create Session Request send
     Message Length  216
     Tunnel Endpoint Identifier  0
     Sequence Number  48
-    Spare Octets  1
+    Add Spare Octets  1
     International Mobile Subscriber Identity (IMSI)   262120000000001
     MSISDN  358  86100000000001
-    Add Decimal as Octets  86  1  # IE Type: User Location Info (ULI) (86)
-    Add Decimal as Octets  13  2  # IE Length: 13
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  24  1  # ...1 .... = ECGI Present Flag): True, .... 1... = TAI Present Flag): True, .... .0.. = RAI Present Flag): False, .... ..0. = SAI Present Flag): False, .... ...0 = CGI Present Flag): False
-    Add Decimal as Octets  25330  2  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
-    Add Decimal as Octets  33  1  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
-    Add Decimal as Octets  1  2  # Tracking Area Code: 1
-    Add Decimal as Octets  25330  2  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
-    Add Decimal as Octets  33  1  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
-    Add Decimal as Octets  234  4  # Spare: 0, ECI (E-UTRAN Cell Identifier): 234
+    User Location Info (ULI) 
     Add Decimal as Octets  83  1  # IE Type: Serving Network (83)
     Add Decimal as Octets  3  2  # IE Length: 3
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
@@ -128,7 +119,7 @@ Sequence Number
     [Arguments]  ${no}
     Add Decimal as Octets  ${no}  3
 
-Spare Octets
+Add Spare Octets
     [Arguments]  ${amount}
     Add Decimal as Octets  0  ${amount}
 
@@ -143,9 +134,32 @@ MSISDN
     [Arguments]  ${country_code}  ${address_digits}
     Add Decimal as Octets  76  1  # IE Type: MSISDN (76)
     Add Decimal as Octets  8  2  # IE Length: 8
-    Add Decimal as Bits  0  4  # Spare
+    Add Spare Bits  4
     Add Decimal as Bits  0  4  # Instance: 0
     Add Number As TBCD  358  86100000000001
     Add Decimal as Octets  ${country_code}  2  # Country Code: 358 Finland length 3
     Add Decimal as Octets  ${address_digits}  6  # Address digits: 86100000000001
+
+User Location Info (ULI)
+    Add Decimal as Octets  86  1  # IE Type: User Location Info (ULI) (86)
+    Add Decimal as Octets  13  2  # IE Length: 13
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Spare Bits  4
+    Add Decimal as Bits  0  4  # Instance: 0
+    Add Spare Bits  3
+    Add Decimal as Bits  24  5  # ...1 .... = ECGI Present Flag): True, .... 1... = TAI Present Flag): True, .... .0.. = RAI Present Flag): False, .... ..0. = SAI Present Flag): False, .... ...0 = CGI Present Flag): False
+    Tracking Area Identity(TAI)  262  12
+    Add Decimal as Octets  25330  2  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
+    Add Decimal as Octets  33  1  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
+    Add Decimal as Octets  234  4  # Spare: 0, ECI (E-UTRAN Cell Identifier): 234
+
+Add Spare Bits
+    [Arguments]  ${length}
+    Add Decimal as Bits  0  ${length}
+
+Tracking Area Identity(TAI)
+    [Arguments]  ${mnc}  ${mcc}
+    add_number_as_tbcd  ${mnc}  ${EMPTY}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
+    Add Number as tbcd  ${mcc}  ${EMPTY}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
+    Add Decimal as Octets  1  2  # Tracking Area Code: 1
 
