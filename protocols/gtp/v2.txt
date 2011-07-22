@@ -1,28 +1,13 @@
 *** Keywords ***
-Set Create Session Request rcv
-
-Add Ip Address ${part1}.${part2}.${part3}.${part4}
-    Add Decimal as Octets  ${part1}  1
-    Add Decimal as Octets  ${part2}  1
-    Add Decimal as Octets  ${part3}  1
-    Add Decimal as Octets  ${part4}  1
-
 Set Create Session Request send
-    Add Decimal as Octets  72  1  # Flags: 72
-    Add Decimal as Octets  32  1  # Message Type: Create Session Request (32)
-    Add Decimal as Octets  216  2  # Message Length: 216
-    Add Decimal as Octets  0  4  # Tunnel Endpoint Identifier: 0
-    Add Decimal as Octets  48  3  # Sequence Number: 48
-    Add Decimal as Octets  0  1  # Spare: 0
-    Add Decimal as Octets  1  1  # IE Type: International Mobile Subscriber Identity (IMSI) (1)
-    Add Decimal as Octets  8  2  # IE Length: 8
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  262120000000001  8  # IMSI(International Mobile Subscriber Identity number): 262120000000001
-    Add Decimal as Octets  76  1  # IE Type: MSISDN (76)
-    Add Decimal as Octets  8  2  # IE Length: 8
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  21352  2  # Country Code: 358 Finland length 3
-    Add Decimal as Octets  1099511627792  6  # Address digits: 86100000000001
+    Flags  72  # Version:2  P: 0 T: 1
+    Message Type  32  # Create Session Request
+    Message Length  216
+    Tunnel Endpoint Identifier  0
+    Sequence Number  48
+    Spare Octets  1
+    International Mobile Subscriber Identity (IMSI)   262120000000001
+    MSISDN  358  86100000000001
     Add Decimal as Octets  86  1  # IE Type: User Location Info (ULI) (86)
     Add Decimal as Octets  13  2  # IE Length: 13
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
@@ -114,4 +99,51 @@ Set Create Session Request send
     Add Decimal as Octets  2  2  # IE Length: 2
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  12800  2  # Charging Characteristic: 12800
+
+Set Create Session Request rcv
+
+Add Ip Address ${part1}.${part2}.${part3}.${part4}
+    Add Decimal as Octets  ${part1}  1
+    Add Decimal as Octets  ${part2}  1
+    Add Decimal as Octets  ${part3}  1
+    Add Decimal as Octets  ${part4}  1
+
+Flags
+    [Arguments]  ${flags}
+    Add Decimal as Octets  ${flags}  1
+
+Message Type
+    [Arguments]  ${type}
+    Add Decimal as Octets  ${type}  1
+
+Message Length
+    [Arguments]  ${lenght}
+    Add Decimal as Octets  ${lenght}  2
+
+Tunnel Endpoint Identifier
+    [Arguments]  ${id}
+    Add Decimal as Octets  ${id}  4
+
+Sequence Number
+    [Arguments]  ${no}
+    Add Decimal as Octets  ${no}  3
+
+Spare Octets
+    [Arguments]  ${amount}
+    Add Decimal as Octets  0  ${amount}
+
+International Mobile Subscriber Identity (IMSI)
+    [Arguments]  ${imsi}
+    Add Decimal as Octets  1  1  # IE Type: International Mobile Subscriber Identity (IMSI) (1)
+    Add Decimal as Octets  8  2  # IE Length: 8
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal as Octets  ${imsi}  8  # IMSI(International Mobile Subscriber Identity number): 262120000000001
+
+MSISDN
+    [Arguments]  ${country_code}  ${address_digits}
+    Add Decimal as Octets  76  1  # IE Type: MSISDN (76)
+    Add Decimal as Octets  8  2  # IE Length: 8
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal as Octets  ${country_code}  2  # Country Code: 358 Finland length 3
+    Add Decimal as Octets  ${address_digits}  6  # Address digits: 86100000000001
 

@@ -69,6 +69,12 @@ Encode And Decode message with octets, bits and strings
     Client Sends Data
     Receive And Validate Message With Strings and Decimals and Binary As Octets
 
+Encode message with TBCD coded number.
+    Create Message
+    Add Number As TBCD  358  86100000000001
+    Client Sends Data
+    Receive data and checks it exists
+
 *** Keywords ***
 Create Message and add two decimals as octets
     Create Message
