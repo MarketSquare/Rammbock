@@ -1,3 +1,7 @@
+*** Variables ***
+${MCC}  262
+${MNC}  12
+
 *** Keywords ***
 Set Create Session Request send
     Flags  72  # Version:2 P: 0 T: 1
@@ -9,11 +13,7 @@ Set Create Session Request send
     International Mobile Subscriber Identity (IMSI)  262120000000001
     MSISDN  358  86100000000001
     User Location Info (ULI)
-    Add Decimal as Octets  83  1  # IE Type: Serving Network (83)
-    Add Decimal as Octets  3  2  # IE Length: 3
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  25330  2  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
-    Add Decimal as Octets  33  1  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
+    Serving Network
     Add Decimal as Octets  82  1  # IE Type: RAT Type (82)
     Add Decimal as Octets  1  2  # IE Length: 1
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
@@ -136,9 +136,7 @@ MSISDN
     Add Decimal as Octets  8  2  # IE Length: 8
     Add Spare Bits  4
     Add Decimal as Bits  0  4  # Instance: 0
-    Add Number As TBCD  358  86100000000001
-    Add Decimal as Octets  ${country_code}  2  # Country Code: 358 Finland length 3
-    Add Decimal as Octets  ${address_digits}  6  # Address digits: 86100000000001
+    Add Number As TBCD  ${country_code}  ${address_digits}
 
 User Location Info (ULI)
     Add Decimal as Octets  86  1  # IE Type: User Location Info (ULI) (86)
@@ -148,8 +146,8 @@ User Location Info (ULI)
     Add Decimal as Bits  0  4  # Instance: 0
     Add Spare Bits  3
     Add Decimal as Bits  24  5  # ...1 .... = ECGI Present Flag): True, .... 1... = TAI Present Flag): True, .... .0.. = RAI Present Flag): False, .... ..0. = SAI Present Flag): False, .... ...0 = CGI Present Flag): False
-    Tracking Area Identity(TAI)  262  12
-    E-UTRAN Cell Global Identifier (ECGI)  262  12
+    Tracking Area Identity(TAI)  ${MCC}  ${MNC}
+    E-UTRAN Cell Global Identifier (ECGI)  ${MCC}  ${MNC}
 
 Add Spare Bits
     [Arguments]  ${length}
@@ -162,8 +160,15 @@ Tracking Area Identity(TAI)
     Add Decimal as Octets  1  2  # Tracking Area Code: 1
 
 E-UTRAN Cell Global Identifier (ECGI)
-    [Arguments]  ${mnc}  ${mcc}
-    Add Number as tbcd  ${mnc}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
-    Add Number as tbcd  ${mcc}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
+    [Arguments]  ${mcc}  ${mnc}
+    Add Number as tbcd  ${mcc}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
+    Add Number as tbcd  ${mnc}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
     Add Decimal as Octets  234  4  # Spare: 0, ECI (E-UTRAN Cell Identifier): 234
+
+Serving Network
+    Add Decimal as Octets  83  1  # IE Type: Serving Network (83)
+    Add Decimal as Octets  3  2  # IE Length: 3
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Number as tbcd  ${MCC}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
+    Add Number as tbcd  ${MNC}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
 
