@@ -1,10 +1,13 @@
 *** Settings ***
-Test Setup      UDP Server and Client are initialized
+Test Setup      UDP Server and Client are initialized in port ${GTP_CONTROL_PORT}
 Test Teardown   Close Connections
 Default Tags    regression
 Library         rammbock.Rammbock
 Resource        ../resources/Messaging.txt
 Resource        ../protocols/gtp/v2.txt
+
+*** Variables ***
+${GTP_CONTROL_PORT}  2123
 
 *** Test Cases ***
 Send and Receive Create Session Request and validate the message.
