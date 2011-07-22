@@ -137,13 +137,15 @@ International Mobile Subscriber Identity (IMSI)
     Add Decimal as Octets  1  1  # IE Type: International Mobile Subscriber Identity (IMSI) (1)
     Add Decimal as Octets  8  2  # IE Length: 8
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  ${imsi}  8  # IMSI(International Mobile Subscriber Identity number): 262120000000001
+    Add Number as TBCD  ${imsi}  8  # IMSI(International Mobile Subscriber Identity number): 262120000000001
 
 MSISDN
     [Arguments]  ${country_code}  ${address_digits}
     Add Decimal as Octets  76  1  # IE Type: MSISDN (76)
     Add Decimal as Octets  8  2  # IE Length: 8
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal as Bits  0  4  # Spare
+    Add Decimal as Bits  0  4  # Instance: 0
+    Add Number As TBCD  358  86100000000001
     Add Decimal as Octets  ${country_code}  2  # Country Code: 358 Finland length 3
     Add Decimal as Octets  ${address_digits}  6  # Address digits: 86100000000001
 

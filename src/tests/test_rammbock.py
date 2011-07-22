@@ -1,6 +1,7 @@
 from rammbock import Rammbock
 import struct
 import unittest
+import sys
 rammbock = Rammbock()
 
 class TestNumberFormatting(unittest.TestCase):
@@ -26,3 +27,9 @@ class TestNumberFormatting(unittest.TestCase):
         temp = self._unpack_bytes_to_hex_string()
         print temp
         assert temp == '536801f0'
+
+    def test_add_long_number(self):
+        long_int = '2133242342342342135324543'
+        rammbock.add_number_as_tbcd(str(long_int))
+        temp = self._unpack_bytes_to_hex_string()
+        assert temp == '123342322443322431354245f3'
