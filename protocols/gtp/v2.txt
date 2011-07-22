@@ -14,15 +14,8 @@ Set Create Session Request send
     MSISDN  358  86100000000001
     User Location Info (ULI)
     Serving Network
-    Add Decimal as Octets  82  1  # IE Type: RAT Type (82)
-    Add Decimal as Octets  1  2  # IE Length: 1
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  6  1  # RAT Type: EUTRAN (6)
-    Add Decimal as Octets  77  1  # IE Type: Indication (77)
-    Add Decimal as Octets  2  2  # IE Length: 2
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  0  1  # 0... .... = DAF (Dual Address Bearer Flag): False, .0.. .... = DTF (Direct Tunnel Flag): False, ..0. .... = HI (Handover Indication): False, ...0 .... = DFI (Direct Forwarding Indication): False, .... 0... = OI (Operation Indication): False, .... .0.. = ISRSI (Idle mode Signalling Reduction Supported Indication): False, .... ..0. = ISRAI (Idle mode Signalling Reduction Activation Indication): False, .... ...0 = SGWCI (SGW Change Indication): False
-    Add Decimal as Octets  0  1  # .... 0... = PT (Protocol Type): False, .... .0.. = TDI (Teardown Indication): False, .... ..0. = SI (Scope Indication): False, .... ...0 = MSV (MS Validated): False
+    RAT Type
+    Indication
     Add Decimal as Octets  87  1  # IE Type: Fully Qualified Tunnel Endpoint Identifier (F-TEID) (87)
     Add Decimal as Octets  9  2  # IE Length: 9
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
@@ -171,4 +164,17 @@ Serving Network
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Number as tbcd  ${MCC}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
     Add Number as tbcd  ${MNC}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
+
+RAT Type
+    Add Decimal as Octets  82  1  # IE Type: RAT Type (82)
+    Add Decimal as Octets  1  2  # IE Length: 1
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal as Octets  6  1  # RAT Type: EUTRAN (6)
+
+Indication
+    Add Decimal as Octets  77  1  # IE Type: Indication (77)
+    Add Decimal as Octets  2  2  # IE Length: 2
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal as Octets  0  1  # 0... .... = DAF (Dual Address Bearer Flag): False, .0.. .... = DTF (Direct Tunnel Flag): False, ..0. .... = HI (Handover Indication): False, ...0 .... = DFI (Direct Forwarding Indication): False, .... 0... = OI (Operation Indication): False, .... .0.. = ISRSI (Idle mode Signalling Reduction Supported Indication): False, .... ..0. = ISRAI (Idle mode Signalling Reduction Activation Indication): False, .... ...0 = SGWCI (SGW Change Indication): False
+    Add Decimal as Octets  0  1  # .... 0... = PT (Protocol Type): False, .... .0.. = TDI (Teardown Indication): False, .... ..0. = SI (Scope Indication): False, .... ...0 = MSV (MS Validated): False
 
