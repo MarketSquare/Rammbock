@@ -11,7 +11,6 @@ ${GTP_CONTROL_PORT}  2123
 
 *** Test Cases ***
 Send and Receive Create Session Request and validate the message.
-    [Tags]
     Create and send Create Session Request
     Receive Create Session Request and Validate Data
 

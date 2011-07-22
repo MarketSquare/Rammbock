@@ -1,14 +1,14 @@
 *** Keywords ***
 Set Create Session Request send
-    Flags  72  # Version:2  P: 0 T: 1
+    Flags  72  # Version:2 P: 0 T: 1
     Message Type  32  # Create Session Request
     Message Length  216
     Tunnel Endpoint Identifier  0
     Sequence Number  48
     Add Spare Octets  1
-    International Mobile Subscriber Identity (IMSI)   262120000000001
+    International Mobile Subscriber Identity (IMSI)  262120000000001
     MSISDN  358  86100000000001
-    User Location Info (ULI) 
+    User Location Info (ULI)
     Add Decimal as Octets  83  1  # IE Type: Serving Network (83)
     Add Decimal as Octets  3  2  # IE Length: 3
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
@@ -149,9 +149,7 @@ User Location Info (ULI)
     Add Spare Bits  3
     Add Decimal as Bits  24  5  # ...1 .... = ECGI Present Flag): True, .... 1... = TAI Present Flag): True, .... .0.. = RAI Present Flag): False, .... ..0. = SAI Present Flag): False, .... ...0 = CGI Present Flag): False
     Tracking Area Identity(TAI)  262  12
-    Add Decimal as Octets  25330  2  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
-    Add Decimal as Octets  33  1  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
-    Add Decimal as Octets  234  4  # Spare: 0, ECI (E-UTRAN Cell Identifier): 234
+    E-UTRAN Cell Global Identifier (ECGI)  262  12
 
 Add Spare Bits
     [Arguments]  ${length}
@@ -159,7 +157,13 @@ Add Spare Bits
 
 Tracking Area Identity(TAI)
     [Arguments]  ${mnc}  ${mcc}
-    add_number_as_tbcd  ${mnc}  ${EMPTY}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
-    Add Number as tbcd  ${mcc}  ${EMPTY}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
+    add_number_as_tbcd  ${mnc}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
+    Add Number as tbcd  ${mcc}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
     Add Decimal as Octets  1  2  # Tracking Area Code: 1
+
+E-UTRAN Cell Global Identifier (ECGI)
+    [Arguments]  ${mnc}  ${mcc}
+    Add Number as tbcd  ${mnc}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
+    Add Number as tbcd  ${mcc}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
+    Add Decimal as Octets  234  4  # Spare: 0, ECI (E-UTRAN Cell Identifier): 234
 
