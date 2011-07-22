@@ -117,9 +117,7 @@ class Rammbock(object):
 
     def read_from_data(self, length):
         length = int(length)
-        message = ""
-        for d in self._data[:length]:
-            message += str(struct.unpack('B', d)[0])
+        message = "".join([str(struct.unpack('B', d)[0]) for d in self._data[:length]])
         self._data = self._data[length:]
         return str(int(message))
 
