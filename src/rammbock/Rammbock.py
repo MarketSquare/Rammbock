@@ -79,6 +79,7 @@ class Rammbock(object):
 
     def create_message(self):
         self._data = ""
+        self._binary = ""
 
     def add_string(self, value, length=None):
         if not length:
@@ -89,7 +90,7 @@ class Rammbock(object):
         data = self._convert_to_hex_and_add_padding(value, length)
         if len(data) > int(length)*2:
             raise Exception("Value is too big for length")
-        while(len(data) > 0):
+        while data:
                 self._data += struct.pack('B', int(data[0:2],16))
                 data = data[2:]
 
