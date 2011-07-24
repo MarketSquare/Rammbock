@@ -16,12 +16,7 @@ Set Create Session Request send
     Add Serving Network
     Add RAT Type
     Add Indication
-    Add Decimal as Octets  87  1  # IE Type: Fully Qualified Tunnel Endpoint Identifier (F-TEID) (87)
-    Add Decimal as Octets  9  2  # IE Length: 9
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  138  1  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
-    Add Decimal as Octets  50331665  4  # TEID/GRE Key: 50331665
-    Add Ip Address 192.168.112.10  # F-TEID IPv4: 192.168.112.10 (192.168.112.10)
+    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)
     Add Decimal as Octets  87  1  # IE Type: Fully Qualified Tunnel Endpoint Identifier (F-TEID) (87)
     Add Decimal as Octets  9  2  # IE Length: 9
     Add Decimal as Octets  1  1  # 000. .... = CR flag: 0, .... 0001 = Instance: 1
@@ -177,4 +172,12 @@ Add Indication
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  0  1  # 0... .... = DAF (Dual Address Bearer Flag): False, .0.. .... = DTF (Direct Tunnel Flag): False, ..0. .... = HI (Handover Indication): False, ...0 .... = DFI (Direct Forwarding Indication): False, .... 0... = OI (Operation Indication): False, .... .0.. = ISRSI (Idle mode Signalling Reduction Supported Indication): False, .... ..0. = ISRAI (Idle mode Signalling Reduction Activation Indication): False, .... ...0 = SGWCI (SGW Change Indication): False
     Add Decimal as Octets  0  1  # .... 0... = PT (Protocol Type): False, .... .0.. = TDI (Teardown Indication): False, .... ..0. = SI (Scope Indication): False, .... ...0 = MSV (MS Validated): False
+
+Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)
+    Add Decimal as Octets  87  1  # IE Type: Fully Qualified Tunnel Endpoint Identifier (F-TEID) (87)
+    Add Decimal as Octets  9  2  # IE Length: 9
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal as Octets  138  1  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
+    Add Decimal as Octets  50331665  4  # TEID/GRE Key: 50331665
+    Add Ip Address 192.168.112.10  # F-TEID IPv4: 192.168.112.10 (192.168.112.10)
 
