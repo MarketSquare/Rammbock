@@ -116,13 +116,11 @@ Receive data and checks it exists
     Should Not Be Empty  ${message}
 
 receive and validate message with single decimal
-    Create Message
     Server Receives Data
     ${flags}=  Read From Data  1
     Should Be Equal  ${flags}  72
 
 Receive And Validate message with multiple decimals
-    Create Message
     Server Receives Data
     ${flags}=  Read From Data  1
     ${message_length}=  Read From Data  2
