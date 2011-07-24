@@ -116,15 +116,20 @@ class Rammbock(object):
         return self._data
 
     def read_from_data(self, length):
-        length = int(length)
-        message = "".join(str(struct.unpack('B', d)[0]) for d in self._data[:length])
-        self._data = self._data[length:]
-        return str(int(message))
+        return str(int("".join(self._read_from_data(int(length)))))
+
+    def _read_from_data(self, length):
+        for d in self._data[:length]:
+            yield str(struct.unpack('B', d)[0])
+        self._data = self._data[int(length):]
 
     def read_to_binary_from_data(self, length):
-        length = int(length)
-        self._binary += "".join(d2b(int(str(struct.unpack('B', d)[0])))[1:].rjust(8,'0') for d in self._data[:length])
-        self._data = self._data[length:]
+        self._binary += "".join(self._read_binary_from_data(int(length)))
+
+    def _read_binary_from_data(self, length):
+        for d in self._data[:length]:
+            yield d2b(int(str(struct.unpack('B', d)[0])))[1:].rjust(8,'0')
+        self._data = self._data[int(length):]
 
     def read_from_binary(self, length):
         length = int(length)
