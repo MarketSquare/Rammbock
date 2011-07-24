@@ -55,7 +55,7 @@ class Rammbock(object):
 
     def close_client(self, name=Client.DEFAULT_NAME):
         self._clients[name].close()
-        del self._clients[name] 
+        del self._clients[name]
 
     def client_sends_data(self, packet=None, name=Client.DEFAULT_NAME):
         if packet:
@@ -91,8 +91,8 @@ class Rammbock(object):
         if len(data) > int(length)*2:
             raise Exception("Value is too big for length")
         while data:
-                self._data += struct.pack('B', int(data[0:2],16))
-                data = data[2:]
+            self._data += struct.pack('B', int(data[0:2],16))
+            data = data[2:]
 
     def add_decimal_as_bits(self, value, length):
         data = d2b(int(value))[1:].rjust(int(length), '0')
@@ -107,8 +107,7 @@ class Rammbock(object):
         data = hex(int(value))[2:]
         if data[-1] == 'L':
             data = data[:-1]
-        data = data.rjust(int(length)*2, '0')
-        return data
+        return data.rjust(int(length)*2, '0')
 
     def read_until(self, delimiter=None):
         if delimiter:
@@ -143,5 +142,5 @@ class Rammbock(object):
         for a in temp:
             self.add_decimal_as_bits(int(a), 4)
         if nmbr:
-            self.add_decimal_as_bits(int(15), 4)
+            self.add_decimal_as_bits(15, 4)
             self.add_decimal_as_bits(int(nmbr[0]),4)
