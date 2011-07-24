@@ -5,7 +5,7 @@ import Client
 import struct
 
 
-d2b = lambda d: (not isinstance(d,int) or (d==0)) and '0' \
+d2b = lambda d: (not isinstance(d, int) or (d==0)) and '0' \
     or (d2b(d//2)+str(d%2))
 
 class Rammbock(object):
@@ -88,10 +88,10 @@ class Rammbock(object):
 
     def add_decimal_as_octets(self, value, length):
         data = self._convert_to_hex_and_add_padding(value, length)
-        if len(data) > int(length)*2:
+        if len(data) > int(length) * 2:
             raise Exception("Value is too big for length")
         while data:
-            self._data += struct.pack('B', int(data[:2],16))
+            self._data += struct.pack('B', int(data[:2], 16))
             data = data[2:]
 
     def add_decimal_as_bits(self, value, length):
@@ -100,7 +100,7 @@ class Rammbock(object):
             raise Exception("Value is too big for length")
         self._binary += data
         while len(self._binary) >= 8:
-            self._data += struct.pack('B', int(self._binary[:8],2))
+            self._data += struct.pack('B', int(self._binary[:8], 2))
             self._binary = self._binary[8:]
 
     def _convert_to_hex_and_add_padding(self, value, length):
@@ -128,7 +128,7 @@ class Rammbock(object):
 
     def _read_binary_from_data(self, length):
         for d in self._data[:length]:
-            yield d2b(int(str(struct.unpack('B', d)[0])))[1:].rjust(8,'0')
+            yield d2b(int(str(struct.unpack('B', d)[0])))[1:].rjust(8, '0')
         self._data = self._data[int(length):]
 
     def read_from_binary(self, length):
@@ -139,13 +139,10 @@ class Rammbock(object):
 
     def add_number_as_tbcd(self, *args):
         nmbr = "".join(args)
-        temp = ""
         while len(nmbr) > 1:
-            temp += nmbr[1]
-            temp += nmbr[0]
+            self.add_decimal_as_bits(int(nmbr[1]), 4)
+            self.add_decimal_as_bits(int(nmbr[0]), 4)
             nmbr = nmbr[2:]
-        for a in temp:
-            self.add_decimal_as_bits(int(a), 4)
         if nmbr:
             self.add_decimal_as_bits(15, 4)
-            self.add_decimal_as_bits(int(nmbr[0]),4)
+            self.add_decimal_as_bits(int(nmbr[0]), 4)
