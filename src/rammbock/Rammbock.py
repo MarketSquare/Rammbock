@@ -91,7 +91,7 @@ class Rammbock(object):
         if len(data) > int(length)*2:
             raise Exception("Value is too big for length")
         while data:
-            self._data += struct.pack('B', int(data[0:2],16))
+            self._data += struct.pack('B', int(data[:2],16))
             data = data[2:]
 
     def add_decimal_as_bits(self, value, length):
@@ -105,13 +105,13 @@ class Rammbock(object):
 
     def _convert_to_hex_and_add_padding(self, value, length):
         data = hex(int(value))[2:]
-        if data[-1] == 'L':
+        if data.endswith('L'):
             data = data[:-1]
         return data.rjust(int(length)*2, '0')
 
     def read_until(self, delimiter=None):
         if delimiter:
-            i,_,self._data = self._data.partition(delimiter)
+            i,self._data = self._data.split(str(delimiter),1)
             return i
         return self._data
 
@@ -123,7 +123,9 @@ class Rammbock(object):
 
     def read_to_binary_from_data(self, length):
         length = int(length)
-        self._binary += "".join([d2b(int(str(struct.unpack('B', d)[0])))[1:].rjust(8,'0') for d in self._data])
+        print "before",':',self._binary
+        self._binary += "".join([d2b(int(str(struct.unpack('B', d)[0])))[1:].rjust(8,'0') for d in self._data[:length]])
+        print "after",':',self._binary
         self._data = self._data[length:]
 
     def read_from_binary(self, length):
