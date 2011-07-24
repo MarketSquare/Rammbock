@@ -123,9 +123,7 @@ class Rammbock(object):
 
     def read_to_binary_from_data(self, length):
         length = int(length)
-        print "before",':',self._binary
-        self._binary += "".join([d2b(int(str(struct.unpack('B', d)[0])))[1:].rjust(8,'0') for d in self._data[:length]])
-        print "after",':',self._binary
+        self._binary += "".join([d2b(int(str(struct.unpack('B', d)[0])))[1:].rjust(8,'0') for d in self._data])
         self._data = self._data[length:]
 
     def read_from_binary(self, length):
