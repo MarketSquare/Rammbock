@@ -16,8 +16,8 @@ IP_FROM_OBJ = re.compile(r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[
 class Parser(object):
     def __init__(self, infile, outfile, tcname):
         self.prevnode = None
-        self.temp_binary = None 
-        self.temp_name = ""
+        self.temp_binary = None
+        self.temp_name = None
         self.of = []
         self.infile = infile
         self.outfile = outfile
@@ -39,10 +39,9 @@ class Parser(object):
             self.of.append("\n")
 
     def _write_file(self):
-        output_file = open(self.outfile, 'w')
-        for line in self.of:
-            output_file.write(line)
-        output_file.close()
+        with open(self.outfile, 'w') as output_file:
+            for line in self.of:
+                output_file.write(line)
 
     def _add_test_case(self):
         self.of.append("*** Test Cases ***\n")
@@ -70,32 +69,32 @@ class Parser(object):
     def _handle_node(self, node):
         if not node.toxml().startswith('\n'):
             length = self._length(node)
-            if length is 1 or len(node.childNodes) is 0:
-                if self._pos(node) == self._pos(self.prevnode) and self._name(self.prevnode) != "":
+            if length is 1 or not node.childNodes:
+                if self._pos(node) == self._pos(self.prevnode) and self._name(self.prevnode):
                     self._add_binary(node)
                     self.prevnode = node
                 else:
-                    if len(self.temp_name) > 0:
+                    if self.temp_name:
                         self.of.append("    Add Decimal As Binary    " + str(self.temp_binary) + "    " + str(self._length(self.prevnode)) + "    #" + self.temp_name + "\n")
-                        self.temp_name = ""
+                        self.temp_name = None 
                         self.temp_binary = None
-                    if self._name(node) == "":
+                    if not self._name(node):
                         to_add = "    Add Decimal As Binary    " + self._value(node) + "    " + str(length) + "    #" + self._show(node) + "\n"
                     else:
                         if IP_FROM_OBJ.match(self._show(node)):
-                            to_add = "    Add Ip Address " + self._show(node) + "    #" + self._name(node) + "\n"
+                            to_add = "    Add Ip As Hex    " + self._show(node) + "    #" + self._name(node) + "\n"
                         else:
                             to_add = "    Add Decimal As Binary    " + self._show(node) + "    " + str(length) + "    #" + self._name(node) + "\n"
                     self.of.append(to_add)
                     self.prevnode = node
             else:
-                if self._name(node) != "":
+                if self._name(node):
                     self.prevnode = node
                 for subnode in node.childNodes:
                     self._handle_node(subnode)
 
     def _add_binary(self, node):
-        if self.temp_name == "":
+        if not self.temp_name:
             self.of = self.of[:-1]
             self.temp_name = self._name(self.prevnode)
             self.temp_binary = self._showname_bin(self.prevnode)
@@ -105,10 +104,9 @@ class Parser(object):
     def _showname_bin(self, node):
         showname = SHOWNAME_FROM_OBJ.match(node.toxml()).group(1)
         try:
-            ret = int(showname[:9].replace('.','0').replace(' ', ''), 2)
+            return int(showname[:9].replace('.','0').replace(' ', ''), 2)
         except ValueError:
-            ret = int(SHOW_FROM_OBJ.match(node.toxml()).group(1))
-        return ret
+            return int(SHOW_FROM_OBJ.match(node.toxml()).group(1))
 
     def _length(self, node):
         if not node:
@@ -127,7 +125,7 @@ class Parser(object):
         return NAME_FROM_OBJ.match(node.toxml()).group(1)
 
     def _pos(self, node):
-        if not node: 
+        if not node:
             return "-1"
         return POS_FROM_OBJ.match(node.toxml()).group(1)
 
