@@ -1,3 +1,4 @@
+from __future__ import with_statement
 from xml.dom import minidom
 from sys import argv
 from time import asctime
