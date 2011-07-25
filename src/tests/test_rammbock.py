@@ -51,5 +51,4 @@ class TestNumberFormatting(unittest.TestCase):
         assert mnc == '01010101'
 
     def test_add_false_ip_as_hex(self):
-        with self.assertRaises(Exception):
-            rammbock.add_ip_as_hex("255.255.255.256")
+        self.assertRaises(Exception, rammbock.add_ip_as_hex, "255.255.255.256")
