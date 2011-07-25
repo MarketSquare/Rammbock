@@ -22,7 +22,7 @@ Set Create Session Request send
     Add Decimal as Octets  1  1  # 000. .... = CR flag: 0, .... 0001 = Instance: 1
     Add Decimal as Octets  135  1  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 0111 = Interface Type: S5/S8 PGW GTP-C interface (7)
     Add Decimal as Octets  0  4  # TEID/GRE Key: 0
-    Add Ip Address 10.102.182.184  # F-TEID IPv4: 10.102.182.184 (10.102.182.184)
+    Add Ip As Hex         10.102.182.184  # F-TEID IPv4: 10.102.182.184 (10.102.182.184)
     Add Decimal as Octets  71  1  # IE Type: Access Point Name (APN) (71)
     Add Decimal as Octets  31  2  # IE Length: 31
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
@@ -39,7 +39,7 @@ Set Create Session Request send
     Add Decimal as Octets  5  2  # IE Length: 5
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  1  1  # .... .001 = PDN Type: IPv4 (1)
-    Add Ip Address 0.0.0.0  # PDN IPv4: 0.0.0.0 (0.0.0.0)
+    Add Ip As Hex         0.0.0.0  # PDN IPv4: 0.0.0.0 (0.0.0.0)
     Add Decimal as Octets  127  1  # IE Type: APN Restriction (127)
     Add Decimal as Octets  1  2  # IE Length: 1
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
@@ -81,11 +81,6 @@ Set Create Session Request send
 
 Set Create Session Request rcv
 
-Add Ip Address ${part1}.${part2}.${part3}.${part4}
-    Add Decimal as Octets  ${part1}  1
-    Add Decimal as Octets  ${part2}  1
-    Add Decimal as Octets  ${part3}  1
-    Add Decimal as Octets  ${part4}  1
 
 Add Flags
     [Arguments]  ${flags}
@@ -179,5 +174,5 @@ Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  138  1  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
     Add Decimal as Octets  50331665  4  # TEID/GRE Key: 50331665
-    Add Ip Address 192.168.112.10  # F-TEID IPv4: 192.168.112.10 (192.168.112.10)
+    Add Ip As Hex         192.168.112.10  # F-TEID IPv4: 192.168.112.10 (192.168.112.10)
 

@@ -3,10 +3,14 @@ from Server import UDPServer, TCPServer
 import Server
 import Client
 import struct
+import re
 
+
+IP_REGEX = re.compile(r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
 
 d2b = lambda d: (not isinstance(d, int) or (d==0)) and '0' \
     or (d2b(d//2)+str(d%2))
+
 
 class Rammbock(object):
 
@@ -146,3 +150,10 @@ class Rammbock(object):
         if nmbr:
             self.add_decimal_as_bits(15, 4)
             self.add_decimal_as_bits(int(nmbr[0]), 4)
+
+    def add_ip_as_hex(self, address):
+        if IP_REGEX.match(address):
+            for a in address.split('.'):
+                self.add_decimal_as_octets(int(a), 2)
+        else:
+            raise Exception("Not a valid ip Address")
