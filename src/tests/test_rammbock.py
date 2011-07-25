@@ -1,7 +1,6 @@
 from rammbock import Rammbock
 import struct
 import unittest
-import sys
 rammbock = Rammbock()
 
 class TestNumberFormatting(unittest.TestCase):
@@ -41,3 +40,16 @@ class TestNumberFormatting(unittest.TestCase):
         mnc = self._unpack_bytes_to_hex_string()
         assert mnc == '21'
 
+    def test_add_ip_as_hex(self):
+        rammbock.add_ip_as_hex("255.255.255.255")
+        mnc = self._unpack_bytes_to_hex_string()
+        assert mnc == 'ffffffff'
+
+    def test_add_another_ip_as_hex(self):
+        rammbock.add_ip_as_hex("1.1.1.1")
+        mnc = self._unpack_bytes_to_hex_string()
+        assert mnc == '01010101'
+
+    def test_add_false_ip_as_hex(self):
+        with self.assertRaises(Exception):
+            rammbock.add_ip_as_hex("255.255.255.256")

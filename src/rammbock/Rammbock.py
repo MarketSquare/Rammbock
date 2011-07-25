@@ -154,6 +154,6 @@ class Rammbock(object):
     def add_ip_as_hex(self, address):
         if IP_REGEX.match(address):
             for a in address.split('.'):
-                self.add_decimal_as_octets(int(a), 2)
+                self.add_decimal_as_octets(int(a), 1)
         else:
             raise Exception("Not a valid ip Address")
