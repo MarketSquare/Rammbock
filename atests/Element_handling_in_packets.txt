@@ -7,6 +7,9 @@ Default Tags    regression
 Library         rammbock.Rammbock
 Resource        resources/Messaging.txt
 
+*** Variables ***
+${COUNTRY CODE}  358
+
 *** Test Cases ***
 Encode message with decimal data as octets
     Create Message and Add Decimal as octets
@@ -70,13 +73,16 @@ Encode And Decode message with octets, bits and strings
     Receive And Validate Message With Strings and Decimals and Binary As Octets
 
 Encode message with TBCD coded number.
-    Create and send Message with TBCD number
+    Create and send Message with TBCD number  358  6100000000001
     Receive data and checks it exists
 
-Decode message with TBCD coded Number
-    [Tags]  ${EMPTY}
-    Create and send Message with TBCD number
-    Receive and validate message with TBCD number
+Decode message with TBCD coded Even Number
+    Create and send Message with TBCD number  358  6100000000001
+    Receive and validate message with TBCD number  16  3  13  6100000000001
+
+Decode message with TBCD coded Odd Number
+    Create and send Message with TBCD number  358  61000000000001
+    Receive and validate message with TBCD number  17  3  14  61000000000001
 
 *** Keywords ***
 Create Message and add two decimals as octets
@@ -197,13 +203,17 @@ Create and Send Message With Multiple String Fields
     Client Sends Data
 
 Create and send Message with TBCD number
+    [Arguments]  ${no1}  ${no2}
     Create Message
-    Add Number As TBCD  358  6100000000001
+    Add Number As TBCD  ${no1}  ${no2}
     Client Sends Data
 
 Receive and validate message with TBCD number
+    [Arguments]  ${length}  ${length1}  ${length2}  ${expected-add-digits}
     Server Receives Data
-    Read TBCD coded numbers From Data  16
-    ${country-code}=  Read from TBCD  3
-    ${address-digits}=  Read from TBCD  13
+    Read TBCD coded numbers From Data  ${length}
+    ${country-code}=  Read from TBCD  ${length1}
+    ${address-digits}=  Read from TBCD  ${length2}
+    Should Be Equal  ${country-code}  ${COUNTRY CODE}
+    Should Be Equal  ${address-digits}  ${expected-add-digits}
 
