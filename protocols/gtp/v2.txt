@@ -53,7 +53,7 @@ Validate Create Session Request
     Add Bearer Context : [Grouped IE]
     Add Recovery (Restart Counter)
     Add UE Time Zone
-    Add Charging Characteristics
+    Validate Charging Characteristic
 
 Add Flags
     [Arguments]  ${flags}
@@ -232,4 +232,14 @@ Add Charging Characteristics
     Add Decimal as Octets  2  2  # IE Length: 2
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  12800  2  # Charging Characteristic: 12800
+
+Validate Charging Characteristic
+    ${ie-type}=  Read From Data  1
+    Should Be Equal  ${ie-type}  95  # IE Type: Charging Characteristics (95)
+    ${ie-length}=  Read From Data  2
+    Should Be Equal  ${ie-length}  2
+    ${flags-and-instance}=  Read From Data  1
+    Should Be Equal  ${flags-and-instance}  0
+    ${charging-characteristic}=  Read From Data  2
+    Should Be Equal  ${charging-characteristic}  12800
 

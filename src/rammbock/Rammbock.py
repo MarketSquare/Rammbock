@@ -182,6 +182,3 @@ class Rammbock(object):
 
     def read_ip_from_hex(self):
         return ".".join(str(self.read_from_data(1)) for _ in range(0, 4))
-
-
-        
