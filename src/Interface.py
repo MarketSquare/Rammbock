@@ -14,21 +14,23 @@ def get_ip_address(ifname):
     get_ip_address | <interface>
     e.g. get_ip_address | eth0
     """
-    return _get_ip_addresses_for_ifname(ifname)[0]
+    ip = _get_ip_addresses_for_ifname(ifname)
+    if ip:
+        return ip[0]
+    return None
 
 def create_interface_alias(ifname, ip, netmask):
     """ Creates interface """
     virtual_if_name = _get_free_interface_alias(ifname)
     print "ifconfig", virtual_if_name, ip, "netmask", netmask
-    process = subprocess.Popen(_get_ifconfig_cmd("add", virtual_if_name, ip, netmask), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = _get_ifconfig_cmd("add", virtual_if_name, ip, netmask)
     process.wait()
     return virtual_if_name
 
 def check_interface(ifname):
     """Checks if interface have ip address. Returns False or True"""
-    ipaddress= get_ip_address(ifname)
-    print "ipaddress=" + ipaddress 
-    return ipaddress != ""
+    ipaddress = get_ip_address(ifname)
+    return ipaddress
 
 def check_interface_for_ip(ifname, ip):
     """checks given network interface for given ip address"""
@@ -36,12 +38,11 @@ def check_interface_for_ip(ifname, ip):
 
 def del_alias(ifname, ip):
     """Deletes this interface"""
-    print "ifconfig", ifname, "down"
-    process = subprocess.Popen(_get_ifconfig_cmd("del", ifname, ip), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = _get_ifconfig_cmd("del", ifname, ip)
     process.wait()
 
 def _get_ip_addresses_for_ifname(ifname):
-    process = subprocess.Popen(_get_ifconfig_cmd("show", ifname), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = _get_ifconfig_cmd("show", ifname)
     output = process.communicate()[0]
     addresses = []
     for line in output.split('\n'):
@@ -69,7 +70,7 @@ def _get_ifconfig_cmd(cmd, ifname, ip=None, netmask=None):
     elif cmd == "show":
         re = returnable + _get_show_cmd(ifname)
     print re
-    return re
+    return subprocess.Popen(re, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def _get_base_ifcmd():
     if platform in OSX:
