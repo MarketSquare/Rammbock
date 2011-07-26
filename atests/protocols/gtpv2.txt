@@ -34,5 +34,5 @@ Receive Create Session Request and Validate that Data is not empty
 
 Receive Session Request and Validate Message
     Server Receives Data
-    Validate  Create Session Request
+    Validate Create Session Request
 

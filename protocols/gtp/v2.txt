@@ -30,7 +30,7 @@ Set Create Session Request
     Add Charging Characteristics
 
 Validate Create Session Request
-    Add Flags  72  # Version:2 P: 0 T: 1
+    Validate Flags  72  # Version:2 P: 0 T: 1
     Add Message Type  32  # Create Session Request
     Add Message Length  216
     Add Tunnel Endpoint Identifier  0
@@ -232,4 +232,9 @@ Add Charging Characteristics
     Add Decimal as Octets  2  2  # IE Length: 2
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  12800  2  # Charging Characteristic: 12800
+
+Validate Flags
+    [Arguments]  ${flags}
+    ${flags}=  Read From Data  1
+    Should Be Equal  ${flags}  72
 
