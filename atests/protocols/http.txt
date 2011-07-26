@@ -2,6 +2,7 @@
 Test Setup      TCP Server and Client are Initialized
 Test Teardown   Close Connections
 Default Tags    regression
+Test Timeout    5 seconds
 Library         rammbock.Rammbock
 Resource        ../resources/Messaging.txt
 Resource        ../protocols/http/v1_1.txt
