@@ -12,75 +12,24 @@ Set Create Session Request send
     Add Spare Octets  1
     Add International Mobile Subscriber Identity (IMSI)  262120000000001
     Add MSISDN  358  86100000000001
-    Add User Location Info (ULI)
-    Add Serving Network
+    Add User Location Info (ULI)  ${MCC}  ${MNC}
+    Add Serving Network  ${MCC}  ${MNC}
     Add RAT Type
     Add Indication
-    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)
-    Add Decimal as Octets  87  1  # IE Type: Fully Qualified Tunnel Endpoint Identifier (F-TEID) (87)
-    Add Decimal as Octets  9  2  # IE Length: 9
-    Add Decimal as Octets  1  1  # 000. .... = CR flag: 0, .... 0001 = Instance: 1
-    Add Decimal as Octets  135  1  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 0111 = Interface Type: S5/S8 PGW GTP-C interface (7)
-    Add Decimal as Octets  0  4  # TEID/GRE Key: 0
-    Add Ip As Hex         10.102.182.184  # F-TEID IPv4: 10.102.182.184 (10.102.182.184)
-    Add Decimal as Octets  71  1  # IE Type: Access Point Name (APN) (71)
-    Add Decimal as Octets  31  2  # IE Length: 31
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add String  sgw.nsn.com.mnc012.mcc262.gprs  31  # APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
-    Add Decimal as Octets  128  1  # IE Type: Selection Mode (128)
-    Add Decimal as Octets  1  2  # IE Length: 1
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  252  1  # .... ..00 = Selection Mode: MS or network provided APN, subscribed verified (0)
-    Add Decimal as Octets  99  1  # IE Type: PDN Type (99)
-    Add Decimal as Octets  1  2  # IE Length: 1
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  1  1  # .... .001 = PDN Type: IPv4 (1)
-    Add Decimal as Octets  79  1  # IE Type: PDN Address Allocation (PAA) (79)
-    Add Decimal as Octets  5  2  # IE Length: 5
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  1  1  # .... .001 = PDN Type: IPv4 (1)
-    Add Ip As Hex         0.0.0.0  # PDN IPv4: 0.0.0.0 (0.0.0.0)
-    Add Decimal as Octets  127  1  # IE Type: APN Restriction (127)
-    Add Decimal as Octets  1  2  # IE Length: 1
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  0  1  # APN Restriction: 0
-    Add Decimal as Octets  72  1  # IE Type: Aggregate Maximum Bit Rate (AMBR) (72)
-    Add Decimal as Octets  8  2  # IE Length: 8
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  2  4  # AMBR Uplink (Aggregate Maximum Bit Rate for Uplink): 2
-    Add Decimal as Octets  1  4  # AMBR Downlink(Aggregate Maximum Bit Rate for Downlink): 1
-    Add Decimal as Octets  93  1  # IE Type: Bearer Context (93)
-    Add Decimal as Octets  31  2  # IE Length: 31
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  73  1  # IE Type: EPS Bearer ID (EBI) (73)
-    Add Decimal as Octets  1  2  # IE Length: 1
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  5  1  # .... 0101 = EPS Bearer ID (EBI): 5
-    Add Decimal as Octets  80  1  # IE Type: Bearer Level Quality of Service (Bearer QoS) (80)
-    Add Decimal as Octets  22  2  # IE Length: 22
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  4  1  # .... ...0 = PVI (Pre-emption Vulnerability): False, ..00 01.. = PL (Priority Level): 1, .0.. .... = PCI (Pre-emption Capability): False
-    Add Decimal as Octets  9  1  # Label (QCI): 9
-    Add Decimal as Octets  0  5  # Maximum Bit Rate For Uplink: 0
-    Add Decimal as Octets  0  5  # Maximum Bit Rate For Downlink: 0
-    Add Decimal as Octets  0  5  # Guaranteed Bit Rate For Uplink: 0
-    Add Decimal as Octets  0  5  # Guaranteed Bit Rate For Downlink: 0
-    Add Decimal as Octets  3  1  # IE Type: Recovery (Restart Counter) (3)
-    Add Decimal as Octets  1  2  # IE Length: 1
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  1  1  # Restart Counter: 1
-    Add Decimal as Octets  114  1  # IE Type: UE Time Zone (114)
-    Add Decimal as Octets  2  2  # IE Length: 2
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  8  1  # Time Zone: 8
-    Add Decimal as Octets  0  1  # .... ..00 = Daylight Saving Time: No Adjustments for Daylight Saving Time (0)
-    Add Decimal as Octets  95  1  # IE Type: Charging Characteristics (95)
-    Add Decimal as Octets  2  2  # IE Length: 2
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  12800  2  # Charging Characteristic: 12800
+    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  50331665  192.168.112.10
+    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  0  10.102.182.184
+    Add Access Point Name (APN)
+    Add Selection Mode
+    Add PDN Type
+    Add PDN Address Allocation (PAA)
+    Add APN Restriction
+    Add Aggregate Maximum Bit Rate (AMBR)
+    Add Bearer Context : [Grouped IE]
+    Add Recovery (Restart Counter)
+    Add UE Time Zone
+    Add Charging Characteristics
 
 Set Create Session Request rcv
-
 
 Add Flags
     [Arguments]  ${flags}
@@ -122,6 +71,7 @@ Add MSISDN
     Add Number As TBCD  ${country_code}  ${address_digits}
 
 Add User Location Info (ULI)
+    [Arguments]  ${mcc}  ${mnc}
     Add Decimal as Octets  86  1  # IE Type: User Location Info (ULI) (86)
     Add Decimal as Octets  13  2  # IE Length: 13
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
@@ -129,8 +79,8 @@ Add User Location Info (ULI)
     Add Decimal as Bits  0  4  # Instance: 0
     Add Spare Bits  3
     Add Decimal as Bits  24  5  # ...1 .... = ECGI Present Flag): True, .... 1... = TAI Present Flag): True, .... .0.. = RAI Present Flag): False, .... ..0. = SAI Present Flag): False, .... ...0 = CGI Present Flag): False
-    Add Tracking Area Identity(TAI)  ${MCC}  ${MNC}
-    Add E-UTRAN Cell Global Identifier (ECGI)  ${MCC}  ${MNC}
+    Add Tracking Area Identity(TAI)  ${mcc}  ${mnc}
+    Add E-UTRAN Cell Global Identifier (ECGI)  ${mcc}  ${mnc}
 
 Add Spare Bits
     [Arguments]  ${length}
@@ -149,11 +99,12 @@ Add E-UTRAN Cell Global Identifier (ECGI)
     Add Decimal as Octets  234  4  # Spare: 0, ECI (E-UTRAN Cell Identifier): 234
 
 Add Serving Network
+    [Arguments]  ${mcc}  ${mnc}
     Add Decimal as Octets  83  1  # IE Type: Serving Network (83)
     Add Decimal as Octets  3  2  # IE Length: 3
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Number as tbcd  ${MCC}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
-    Add Number as tbcd  ${MNC}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
+    Add Number as tbcd  ${mcc}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
+    Add Number as tbcd  ${mnc}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
 
 Add RAT Type
     Add Decimal as Octets  82  1  # IE Type: RAT Type (82)
@@ -169,10 +120,92 @@ Add Indication
     Add Decimal as Octets  0  1  # .... 0... = PT (Protocol Type): False, .... .0.. = TDI (Teardown Indication): False, .... ..0. = SI (Scope Indication): False, .... ...0 = MSV (MS Validated): False
 
 Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)
+    [Arguments]  ${teidgre}  ${ip}
     Add Decimal as Octets  87  1  # IE Type: Fully Qualified Tunnel Endpoint Identifier (F-TEID) (87)
     Add Decimal as Octets  9  2  # IE Length: 9
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  138  1  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
-    Add Decimal as Octets  50331665  4  # TEID/GRE Key: 50331665
-    Add Ip As Hex         192.168.112.10  # F-TEID IPv4: 192.168.112.10 (192.168.112.10)
+    Add Decimal as Octets  ${teidgre}  4  # TEID/GRE Key: 50331665
+    Add Ip As Hex  ${ip}  # F-TEID IPv4: 192.168.112.10 (192.168.112.10)
+
+Add Access Point Name (APN)
+    Add Decimal as Octets  71  1  # IE Type: Access Point Name (APN) (71)
+    Add Decimal as Octets  31  2  # IE Length: 31
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add String  sgw.nsn.com.mnc012.mcc262.gprs  31  # APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
+
+Add Selection Mode
+    Add Decimal as Octets  128  1  # IE Type: Selection Mode (128)
+    Add Decimal as Octets  1  2  # IE Length: 1
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal as Octets  252  1  # .... ..00 = Selection Mode: MS or network provided APN, subscribed verified (0)
+
+Add PDN Type
+    Add Decimal as Octets  99  1  # IE Type: PDN Type (99)
+    Add Decimal as Octets  1  2  # IE Length: 1
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal as Octets  1  1  # .... .001 = PDN Type: IPv4 (1)
+
+Add PDN Address Allocation (PAA)
+    Add Decimal as Octets  79  1  # IE Type: PDN Address Allocation (PAA) (79)
+    Add Decimal as Octets  5  2  # IE Length: 5
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal as Octets  1  1  # .... .001 = PDN Type: IPv4 (1)
+    Add Ip As Hex  0.0.0.0  # PDN IPv4: 0.0.0.0 (0.0.0.0)
+
+Add APN Restriction
+    Add Decimal as Octets  127  1  # IE Type: APN Restriction (127)
+    Add Decimal as Octets  1  2  # IE Length: 1
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal as Octets  0  1  # APN Restriction: 0
+
+Add Aggregate Maximum Bit Rate (AMBR)
+    Add Decimal as Octets  72  1  # IE Type: Aggregate Maximum Bit Rate (AMBR) (72)
+    Add Decimal as Octets  8  2  # IE Length: 8
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal as Octets  2  4  # AMBR Uplink (Aggregate Maximum Bit Rate for Uplink): 2
+    Add Decimal as Octets  1  4  # AMBR Downlink(Aggregate Maximum Bit Rate for Downlink): 1
+
+Add Bearer Context : [Grouped IE]
+    Add Decimal as Octets  93  1  # IE Type: Bearer Context (93)
+    Add Decimal as Octets  31  2  # IE Length: 31
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add EPS Bearer ID (EBI)
+    Add Bearer Level Quality of Service (Bearer QoS)
+
+Add EPS Bearer ID (EBI)
+    Add Decimal as Octets  73  1  # IE Type: EPS Bearer ID (EBI) (73)
+    Add Decimal as Octets  1  2  # IE Length: 1
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal as Octets  5  1  # .... 0101 = EPS Bearer ID (EBI): 5
+
+Add Bearer Level Quality of Service (Bearer QoS)
+    Add Decimal as Octets  80  1  # IE Type: Bearer Level Quality of Service (Bearer QoS) (80)
+    Add Decimal as Octets  22  2  # IE Length: 22
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal as Octets  4  1  # .... ...0 = PVI (Pre-emption Vulnerability): False, ..00 01.. = PL (Priority Level): 1, .0.. .... = PCI (Pre-emption Capability): False
+    Add Decimal as Octets  9  1  # Label (QCI): 9
+    Add Decimal as Octets  0  5  # Maximum Bit Rate For Uplink: 0
+    Add Decimal as Octets  0  5  # Maximum Bit Rate For Downlink: 0
+    Add Decimal as Octets  0  5  # Guaranteed Bit Rate For Uplink: 0
+    Add Decimal as Octets  0  5  # Guaranteed Bit Rate For Downlink: 0
+
+Add Recovery (Restart Counter)
+    Add Decimal as Octets  3  1  # IE Type: Recovery (Restart Counter) (3)
+    Add Decimal as Octets  1  2  # IE Length: 1
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal as Octets  1  1  # Restart Counter: 1
+
+Add UE Time Zone
+    Add Decimal as Octets  114  1  # IE Type: UE Time Zone (114)
+    Add Decimal as Octets  2  2  # IE Length: 2
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal as Octets  8  1  # Time Zone: 8
+    Add Decimal as Octets  0  1  # .... ..00 = Daylight Saving Time: No Adjustments for Daylight Saving Time (0)
+
+Add Charging Characteristics
+    Add Decimal as Octets  95  1  # IE Type: Charging Characteristics (95)
+    Add Decimal as Octets  2  2  # IE Length: 2
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal as Octets  12800  2  # Charging Characteristic: 12800
 
