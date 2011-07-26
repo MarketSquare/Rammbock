@@ -3,7 +3,7 @@ ${MCC}  262
 ${MNC}  12
 
 *** Keywords ***
-Set Create Session Request send
+Set Create Session Request
     Add Flags  72  # Version:2 P: 0 T: 1
     Add Message Type  32  # Create Session Request
     Add Message Length  216
@@ -29,7 +29,31 @@ Set Create Session Request send
     Add UE Time Zone
     Add Charging Characteristics
 
-Set Create Session Request rcv
+Validate  Create Session Request
+    Add Flags  72  # Version:2 P: 0 T: 1
+    Add Message Type  32  # Create Session Request
+    Add Message Length  216
+    Add Tunnel Endpoint Identifier  0
+    Add Sequence Number  48
+    Add Spare Octets  1
+    Add International Mobile Subscriber Identity (IMSI)  262120000000001
+    Add MSISDN  358  6100000000001
+    Add User Location Info (ULI)  ${MCC}  ${MNC}
+    Add Serving Network  ${MCC}  ${MNC}
+    Add RAT Type
+    Add Indication
+    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  50331665  192.168.112.10
+    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  0  10.102.182.184
+    Add Access Point Name (APN)
+    Add Selection Mode
+    Add PDN Type
+    Add PDN Address Allocation (PAA)
+    Add APN Restriction
+    Add Aggregate Maximum Bit Rate (AMBR)
+    Add Bearer Context : [Grouped IE]
+    Add Recovery (Restart Counter)
+    Add UE Time Zone
+    Add Charging Characteristics
 
 Add Flags
     [Arguments]  ${flags}

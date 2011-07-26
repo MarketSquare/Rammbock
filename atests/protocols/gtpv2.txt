@@ -10,23 +10,29 @@ Resource        ../protocols/gtp/v2.txt
 ${GTP_CONTROL_PORT}  2123
 
 *** Test Cases ***
-Send and Receive Create Session Request and validate the message.
+Send and Receive Create Session Request and check that it exist.
     Create and send Create Session Request
-    Receive Create Session Request and Validate Data
+    Receive Create Session Request and Validate that Data is not empty
 
 Make GTPv2 Attach
     [Tags]
 
 Send and Receive Create Session Request and validate the message
     [Tags]  ${EMPTY}
+    Create and send Create Session Request
+    Receive Session Request and Validate Message
 
 *** Keywords ***
 Create and send Create Session Request
     Create Message
-    Set Create Session Request send
+    Set Create Session Request
     Client Sends Data
 
-Receive Create Session Request and Validate Data
+Receive Create Session Request and Validate that Data is not empty
     ${message}=  Server Receives Data
     Should not be empty  ${message}
+
+Receive Session Request and Validate Message
+    Server Receives Data
+    Validate  Create Session Request
 
