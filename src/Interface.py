@@ -55,11 +55,10 @@ def _get_ip_addresses_for_ifname(ifname):
 def _get_free_interface_alias(ifname):
     if platform in OSX or platform in WINDOWS:
         return ifname
-    else:
-        while True:
-            virtual_if_name = ifname + ":" + str(randint(1, 10000))
-            if not check_interface(virtual_if_name):
-                return virtual_if_name
+    while True:
+        virtual_if_name = ifname + ":" + str(randint(1, 10000))
+        if not check_interface(virtual_if_name):
+            return virtual_if_name
 
 def _get_ifconfig_cmd(cmd, ifname, ip=None, netmask=None):
     returnable = _get_base_ifcmd()
