@@ -180,4 +180,8 @@ class Rammbock(object):
         self._tbcd = self._tbcd[int(length):]
         return number
 
+    def read_ip_from_hex(self):
+        return ".".join(str(self.read_from_data(1)) for _ in range(0, 4))
+
+
         

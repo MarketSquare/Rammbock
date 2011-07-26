@@ -84,6 +84,14 @@ Decode message with TBCD coded Odd Number
     Create and send Message with TBCD number  358  61000000000001
     Receive and validate message with TBCD number  17  3  14  61000000000001
 
+Encode and Decode message with ip-address
+    Create Message
+    Add IP as hex  10.10.10.10
+    Client Sends Data
+    Server Receives Data
+    ${ip}=  Read IP from Hex
+    Should Be Equal  ${ip}  10.10.10.10
+
 *** Keywords ***
 Create Message and add two decimals as octets
     Create Message
