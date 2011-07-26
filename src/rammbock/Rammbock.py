@@ -23,6 +23,7 @@ class Rammbock(object):
         self._servers = {}
         self._clients = {}
         self._binary = ""
+        self._tbcd = ""
 
     def start_udp_server(self, nwinterface, port, ip=Server.DEFAULT_IP, name=Server.DEFAULT_NAME):
         self._servers[name] = UDPServer(name)
@@ -157,3 +158,30 @@ class Rammbock(object):
                 self.add_decimal_as_octets(int(a), 1)
         else:
             raise Exception("Not a valid ip Address")
+
+    def read_tbcd_coded_numbers_from_data(self, amount):
+        length = (int(amount)/2)+(int(amount)%2)
+        self.read_binary_from_data(length)
+
+        while len(self._binary) > 8:
+            a = self.read_from_binary(4)
+            b = self.read_from_binary(4)
+            self._tbcd += str(b)
+            self._tbcd += str(a)
+
+        a = self.read_from_binary(4)
+        b = self.read_from_binary(4)
+        self._tbcd += str(b)
+        if int(a) < 10:
+            self._tbcd += str(a)
+
+    def read_from_tbcd(self, length):
+        number = self._tbcd[:int(length)]
+        self._tbcd = self._tbcd[int(length):]
+        return number
+
+    def read_ip_from_hex(self):
+        return ".".join(str(self.read_from_data(1)) for _ in range(0, 4))
+
+
+        
