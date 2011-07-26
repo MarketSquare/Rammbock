@@ -70,10 +70,13 @@ Encode And Decode message with octets, bits and strings
     Receive And Validate Message With Strings and Decimals and Binary As Octets
 
 Encode message with TBCD coded number.
-    Create Message
-    Add Number As TBCD  358  86100000000001
-    Client Sends Data
+    Create and send Message with TBCD number
     Receive data and checks it exists
+
+Decode message with TBCD coded Number
+    [Tags]  ${EMPTY}
+    Create and send Message with TBCD number
+    Receive and validate message with TBCD number
 
 *** Keywords ***
 Create Message and add two decimals as octets
@@ -129,13 +132,13 @@ Receive And Validate message with multiple decimals
 
 Receive And Validate Message With single binary decimal
     Server Receives Data
-    read to binary from data  1
+    read binary from data  1
     ${value}=  Read From binary  8
     Should Be Equal  ${value}  255
 
 Receive And Validate Message With multiple binary decimals
     Server Receives Data
-    Read To Binary From Data  2
+    Read Binary From Data  2
     ${value1}=  Read From Binary  6
     ${value2}=  Read From Binary  6
     ${value3}=  Read From Binary  4
@@ -149,7 +152,7 @@ Receive And Validate Message With Strings and Decimals and Binary As Octets
     ${value2}=  Read From Data  2
     Should Be Equal  ${value1}  255
     Should Be Equal  ${value2}  4
-    Read To Binary From Data  2
+    Read Binary From Data  2
     ${value1}=  Read From Binary  6
     ${value2}=  Read From Binary  6
     ${value3}=  Read From Binary  4
@@ -160,7 +163,7 @@ Receive And Validate Message With Strings and Decimals and Binary As Octets
     ${field2}=  Read Until  \r\n
     Should Be Equal  ${field1}  value
     Should Be Equal  ${field2}  key
-    Read To Binary From Data  2
+    Read Binary From Data  2
     ${value1}=  Read From Binary  6
     ${value2}=  Read From Binary  6
     ${value3}=  Read From Binary  4
@@ -192,4 +195,15 @@ Create and Send Message With Multiple String Fields
     Add String  field2
     Add String  \r\n
     Client Sends Data
+
+Create and send Message with TBCD number
+    Create Message
+    Add Number As TBCD  358  6100000000001
+    Client Sends Data
+
+Receive and validate message with TBCD number
+    Server Receives Data
+    Read TBCD coded numbers From Data  16
+    ${country-code}=  Read from TBCD  3
+    ${address-digits}=  Read from TBCD  13
 

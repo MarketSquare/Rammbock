@@ -75,7 +75,7 @@ class Rammbock(object):
         self._data = self._clients[name].receive_data()
         return self._data
 
-    def server_sends_data(self, packet=None, name=Server.DEFAULT_NAME): 
+    def server_sends_data(self, packet=None, name=Server.DEFAULT_NAME):
         if packet:
             self._servers[name].send_data(packet)
         else:
@@ -127,7 +127,7 @@ class Rammbock(object):
             yield str(struct.unpack('B', d)[0])
         self._data = self._data[int(length):]
 
-    def read_to_binary_from_data(self, length):
+    def read_binary_from_data(self, length):
         self._binary += "".join(self._read_binary_from_data(int(length)))
 
     def _read_binary_from_data(self, length):
