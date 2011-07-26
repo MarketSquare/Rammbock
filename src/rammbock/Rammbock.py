@@ -162,13 +162,10 @@ class Rammbock(object):
     def read_tbcd_coded_numbers_from_data(self, amount):
         length = (int(amount)/2)+(int(amount)%2)
         self.read_binary_from_data(length)
-
         while len(self._binary) > 8:
             a = self.read_from_binary(4)
             b = self.read_from_binary(4)
-            self._tbcd += str(b)
-            self._tbcd += str(a)
-
+            self._tbcd += str(b)+str(a)
         a = self.read_from_binary(4)
         b = self.read_from_binary(4)
         self._tbcd += str(b)
