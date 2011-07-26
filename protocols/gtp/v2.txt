@@ -11,7 +11,7 @@ Set Create Session Request send
     Add Sequence Number  48
     Add Spare Octets  1
     Add International Mobile Subscriber Identity (IMSI)  262120000000001
-    Add MSISDN  358  86100000000001
+    Add MSISDN  358  6100000000001
     Add User Location Info (ULI)  ${MCC}  ${MNC}
     Add Serving Network  ${MCC}  ${MNC}
     Add RAT Type
@@ -74,9 +74,9 @@ Add User Location Info (ULI)
     [Arguments]  ${mcc}  ${mnc}
     Add Decimal as Octets  86  1  # IE Type: User Location Info (ULI) (86)
     Add Decimal as Octets  13  2  # IE Length: 13
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Spare Bits  4
-    Add Decimal as Bits  0  4  # Instance: 0
+    Add Decimal as Bits  0  3  # 000. .... = CR flag
+    Add Spare Bits  1
+    Add Decimal As Bits  0  4  #.... 0000 = Instance: 0
     Add Spare Bits  3
     Add Decimal as Bits  24  5  # ...1 .... = ECGI Present Flag): True, .... 1... = TAI Present Flag): True, .... .0.. = RAI Present Flag): False, .... ..0. = SAI Present Flag): False, .... ...0 = CGI Present Flag): False
     Add Tracking Area Identity(TAI)  ${mcc}  ${mnc}
