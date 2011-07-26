@@ -31,28 +31,28 @@ Set Create Session Request
 
 Validate Create Session Request
     Validate Flags  72  # Version:2 P: 0 T: 1
-    Add Message Type  32  # Create Session Request
-    Add Message Length  216
-    Add Tunnel Endpoint Identifier  0
-    Add Sequence Number  48
-    Add Spare Octets  1
-    Add International Mobile Subscriber Identity (IMSI)  262120000000001
-    Add MSISDN  358  6100000000001
-    Add User Location Info (ULI)  ${MCC}  ${MNC}
-    Add Serving Network  ${MCC}  ${MNC}
-    Add RAT Type
-    Add Indication
-    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  50331665  192.168.112.10
-    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  0  10.102.182.184
-    Add Access Point Name (APN)
-    Add Selection Mode
-    Add PDN Type
-    Add PDN Address Allocation (PAA)
-    Add APN Restriction
-    Add Aggregate Maximum Bit Rate (AMBR)
-    Add Bearer Context : [Grouped IE]
-    Add Recovery (Restart Counter)
-    Add UE Time Zone
+    Validate Message Type  32  # Create Session Request
+    Validate Message Length  216
+    Validate Tunnel Endpoint Identifier  0
+    Validate Sequence Number  48
+    Read From Data  1  # Read spare octets
+    Validate International Mobile Subscriber Identity (IMSI)  262120000000001
+    Validate MSISDN  358  6100000000001
+    Validate User Location Info (ULI)  ${MCC}  ${MNC}
+    Validate Serving Network  ${MCC}  ${MNC}
+    Validate RAT Type
+    Validate Indication
+    Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  50331665  192.168.112.10
+    Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  0  10.102.182.184
+    Validate Access Point Name (APN)
+    Validate Selection Mode
+    Validate PDN Type
+    Validate PDN Address Allocation (PAA)
+    Validate APN Restriction
+    Validate Aggregate Maximum Bit Rate (AMBR)
+    Validate Bearer Context : [Grouped IE]
+    Validate Recovery (Restart Counter)
+    Validate UE Time Zone
     Validate Charging Characteristics
 
 Add Flags
@@ -64,8 +64,8 @@ Add Message Type
     Add Decimal as Octets  ${type}  1
 
 Add Message Length
-    [Arguments]  ${lenght}
-    Add Decimal as Octets  ${lenght}  2
+    [Arguments]  ${length}
+    Add Decimal as Octets  ${length}  2
 
 Add Tunnel Endpoint Identifier
     [Arguments]  ${id}
@@ -233,17 +233,76 @@ Add Charging Characteristics
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  12800  2  # Charging Characteristic: 12800
 
+Validate ie type And length
+    [Arguments]  ${type}  ${length}
+    ${ie-type}=  Read From Data  1
+    Should Be Equal  ${ie-type}  ${type}
+    ${ie-length}=  Read From Data  2
+    Should Be Equal  ${ie-length}  ${length}
+
 Validate Flags
-    [Arguments]  ${flags}
-    ${flags}=  Read From Data  1
-    Should Be Equal  ${flags}  72
+    [Arguments]  ${expected}
+    ${actual}=  Read From Data  1
+    Should Be Equal  ${expected}  ${actual}
+
+Validate Message Type
+    [Arguments]  ${expected}
+    ${actual}=  Read From Data  1
+    Should Be Equal  ${actual}  ${expected}
+
+Validate Message Length
+    [Arguments]  ${expected}
+    ${actual}=  Read From Data  2
+    Should Be Equal  ${expected}  ${actual}
+
+Validate Tunnel Endpoint Identifier
+    [Arguments]  ${expected}
+    ${actual}=  Read From Data  4
+    Should Be Equal  ${actual}  ${expected}
+
+Validate Sequence Number
+    [Arguments]  ${expected}
+    ${actual}=  Read From Data  3
+    Should Be Equal  ${actual}  ${expected}
+
+Validate International Mobile Subscriber Identity (IMSI)
+    [Arguments]  ${expected}
+    Validate ie type and length  1  8
+    ${flags-and-instance}=  Read From Data  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Should Be Equal  ${flags-and-instance}  0
+    Read TBCD Coded Numbers From Data  15
+    ${actual}=  Read From TBCD  15  # IMSI(International Mobile Subscriber Identity number): 262120000000001
+    Should Be Equal  ${actual}  ${expected}
+
+Validate MSISDN
+    [Arguments]  ${country_code}  ${address_digits}
+    Validate ie type And length  76  8
+    Read Binary From Data  1
+    Read From Binary  4  #spare bits
+    ${instance}=  Read From Binary  4
+    Should Be Equal  ${instance}  0
+    read tbcd coded numbers from data  16
+    ${cc}=  Read From TBCD  3
+    ${ad}=  Read From TBCD  13
+    Should Be Equal  ${cc}  ${country_code}
+    Should Be Equal  ${ad}  ${address_digits}
+
+Validate User Location Info (ULI)
+    [Arguments]  ${mcc}  ${mnc}
+    Validate ie type and length  86  13  # IE Type: User Location Info (ULI) (86), length: 13
+    ${cr-flag-and-instance}=  Read From Data  1
+    Should Be Equal  ${cr-flag-and-instance}  0
+    Read Binary From Data  1
+    Read From Binary  3  #spare bits
+    ${flags}=  Read From Binary  5
+    Should Be Equal  ${flags}  24  # ...1 .... = ECGI Present Flag): True, .... 1... = TAI Present Flag): True, .... .0.. = RAI Present Flag): False, .... ..0. = SAI Present Flag): False, .... ...0 = CGI Present Flag): False
+    Validate Tracking Area Identity(TAI)  ${mcc}  ${mnc}
+    Validate E-UTRAN Cell Global Identifier (ECGI)  ${mcc}  ${mnc}
 
 Validate Charging Characteristic
-    ${ie-type}=  Read From Data  1
-    Should Be Equal  ${ie-type}  95  # IE Type: Charging Characteristics (95)
-    ${ie-length}=  Read From Data  2
-    Should Be Equal  ${ie-length}  2
+    Validate ie type and length  95  2
     ${flags-and-instance}=  Read From Data  1
     Should Be Equal  ${flags-and-instance}  0
     ${charging-characteristic}=  Read From Data  2
     Should Be Equal  ${charging-characteristic}  12800
+
