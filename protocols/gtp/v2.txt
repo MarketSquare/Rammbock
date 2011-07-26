@@ -29,7 +29,7 @@ Set Create Session Request
     Add UE Time Zone
     Add Charging Characteristics
 
-Validate  Create Session Request
+Validate Create Session Request
     Add Flags  72  # Version:2 P: 0 T: 1
     Add Message Type  32  # Create Session Request
     Add Message Length  216
@@ -100,7 +100,7 @@ Add User Location Info (ULI)
     Add Decimal as Octets  13  2  # IE Length: 13
     Add Decimal as Bits  0  3  # 000. .... = CR flag
     Add Spare Bits  1
-    Add Decimal As Bits  0  4  #.... 0000 = Instance: 0
+    Add Decimal As Bits  0  4  # .... 0000 = Instance: 0
     Add Spare Bits  3
     Add Decimal as Bits  24  5  # ...1 .... = ECGI Present Flag): True, .... 1... = TAI Present Flag): True, .... .0.. = RAI Present Flag): False, .... ..0. = SAI Present Flag): False, .... ...0 = CGI Present Flag): False
     Add Tracking Area Identity(TAI)  ${mcc}  ${mnc}
