@@ -154,9 +154,9 @@ Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)
 
 Add Access Point Name (APN)
     Add Decimal as Octets  71  1  # IE Type: Access Point Name (APN) (71)
-    Add Decimal as Octets  31  2  # IE Length: 31
+    Add Decimal as Octets  30  2  # IE Length: 31
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add String  sgw.nsn.com.mnc012.mcc262.gprs  31  # APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
+    Add String  sgw.nsn.com.mnc012.mcc262.gprs  30  # APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
 
 Add Selection Mode
     Add Decimal as Octets  128  1  # IE Type: Selection Mode (128)
@@ -327,10 +327,10 @@ Validate Serving Network
     Validate mcc and mnc  ${mcc}  ${mnc}
 
 Validate RAT Type
-    Validate ie type and length  82  1  #RAT Type (82)
+    Validate ie type and length  82  1  # RAT Type (82)
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${rat-type}=  Read From Data  1
-    Should Be Equal  ${rat-type}  6  #EUTRAN (6)
+    Should Be Equal  ${rat-type}  6  # EUTRAN (6)
 
 Validate Charging Characteristic
     Validate ie type and length  95  2
@@ -358,8 +358,8 @@ Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)
     Should Be Equal  ${ip}  ${ip-act}  # F-TEID IPv4: 192.168.112.10 (192.168.112.10)
 
 Validate Access Point Name (APN)
-    Validate ie type and length  71  31  # IE Type: Access Point Name (APN) (71)
+    Validate ie type and length  71  30  # IE Type: Access Point Name (APN) (71)
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    ${string}=  Read From Data  31
+    ${string}=  Read String From Data  30
     Should Be Equal  sgw.nsn.com.mnc012.mcc262.gprs  ${string}  # APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
 
