@@ -138,6 +138,8 @@ class Rammbock(object):
 
     def read_from_binary(self, length):
         length = int(length)
+        if len(self._binary) < length:
+            raise Exception("Not enough bits to read")
         value = self._binary[:length]
         self._binary = self._binary[length:]
         return str(int(value,2))
