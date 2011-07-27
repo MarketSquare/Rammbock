@@ -121,8 +121,7 @@ class Rammbock(object):
         return self._data
 
     def read_from_data(self, length):
-        a = str(int("".join(self._read_from_data(int(length))), 16))
-        return a
+        return str(int("".join(self._read_from_data(int(length))), 16))
 
     def _read_from_data(self, length):
         for d in self._data[:length]:
