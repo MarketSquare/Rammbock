@@ -314,7 +314,7 @@ Validate Tracking Area Identity(TAI)
     ${tac-act}  Read From Data  2
     Should Be Equal  1  ${tac-act}  # Tracking Area Code: 1
 
-Validata E-UTRAN Cell Global Identifier (ECGI)
+Validate E-UTRAN Cell Global Identifier (ECGI)
     [Arguments]  ${mcc}  ${mnc}
     Validate mcc and mnc  ${mcc}  ${mnc}
     ${cid}=  Read From Data  4
@@ -324,7 +324,7 @@ Validate Serving Network
     [Arguments]  ${mcc}  ${mnc}
     Validate ie type and length  83  3  # IE Type: Serving Network (83) # IE Length: 3
     ${cr-flags-and-instance}=  Read From Data  1
-    Should Be Equal  ${cr-flags-and-instance}=  0
+    Should Be Equal  ${cr-flags-and-instance}  0
     Validate mcc and mnc  ${mcc}  ${mnc}
 
 Validate RAT Type
