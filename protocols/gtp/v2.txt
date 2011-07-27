@@ -240,6 +240,11 @@ Validate ie type And length
     ${ie-length}=  Read From Data  2
     Should Be Equal  ${ie-length}  ${length}
 
+Validate cr-flags and instance
+    [Arguments]  ${value}
+    ${cr-flags-and-instance}=  Read From Data  1
+    Should Be Equal  ${cr-flags-and-instance}  ${value}  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+
 Validate mcc and mnc
     [Arguments]  ${mcc}  ${mnc}
     read tbcd coded numbers from data  3
@@ -277,8 +282,7 @@ Validate Sequence Number
 Validate International Mobile Subscriber Identity (IMSI)
     [Arguments]  ${expected}
     Validate ie type and length  1  8
-    ${flags-and-instance}=  Read From Data  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Should Be Equal  ${flags-and-instance}  0
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Read TBCD Coded Numbers From Data  15
     ${actual}=  Read From TBCD  15  # IMSI(International Mobile Subscriber Identity number): 262120000000001
     Should Be Equal  ${actual}  ${expected}
@@ -286,10 +290,7 @@ Validate International Mobile Subscriber Identity (IMSI)
 Validate MSISDN
     [Arguments]  ${country_code}  ${address_digits}
     Validate ie type And length  76  8
-    Read Binary From Data  1
-    Read From Binary  4  # spare bits
-    ${instance}=  Read From Binary  4
-    Should Be Equal  ${instance}  0
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     read tbcd coded numbers from data  16
     ${cc}=  Read From TBCD  3
     ${ad}=  Read From TBCD  13
@@ -299,8 +300,7 @@ Validate MSISDN
 Validate User Location Info (ULI)
     [Arguments]  ${mcc}  ${mnc}
     Validate ie type and length  86  13  # IE Type: User Location Info (ULI) (86), length: 13
-    ${cr-flag-and-instance}=  Read From Data  1
-    Should Be Equal  ${cr-flag-and-instance}  0
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Read Binary From Data  1
     Read From Binary  3  # spare bits
     ${flags}=  Read From Binary  5
@@ -323,28 +323,24 @@ Validate E-UTRAN Cell Global Identifier (ECGI)
 Validate Serving Network
     [Arguments]  ${mcc}  ${mnc}
     Validate ie type and length  83  3  # IE Type: Serving Network (83) # IE Length: 3
-    ${cr-flags-and-instance}=  Read From Data  1
-    Should Be Equal  ${cr-flags-and-instance}  0
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Validate mcc and mnc  ${mcc}  ${mnc}
 
 Validate RAT Type
     Validate ie type and length  82  1  #RAT Type (82)
-    ${flags-and-instance}=  Read From Data  1
-    Should Be Equal  ${flags-and-instance}  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${rat-type}=  Read From Data  1
     Should Be Equal  ${rat-type}  6  #EUTRAN (6)
 
 Validate Charging Characteristic
     Validate ie type and length  95  2
-    ${flags-and-instance}=  Read From Data  1
-    Should Be Equal  ${flags-and-instance}  0
+    Validate cr-flags and instance  0
     ${charging-characteristic}=  Read From Data  2
     Should Be Equal  ${charging-characteristic}  12800
 
 Validate Indication
     Validate ie type and length  77  2  # IE Type: Indication (77)
-    ${cr-flags-and-instance}=  Read From Data  1
-    Should Be Equal  ${cr-flags-and-instance}  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${flags1}=  Read From Data  1
     Should Be Equal  0  ${flags1}  # 0... .... = DAF (Dual Address Bearer Flag): False, .0.. .... = DTF (Direct Tunnel Flag): False, ..0. .... = HI (Handover Indication): False, ...0 .... = DFI (Direct Forwarding Indication): False, .... 0... = OI (Operation Indication): False, .... .0.. = ISRSI (Idle mode Signalling Reduction Supported Indication): False, .... ..0. = ISRAI (Idle mode Signalling Reduction Activation Indication): False, .... ...0 = SGWCI (SGW Change Indication): False
     ${flags2}=  Read From Data  1
@@ -353,12 +349,17 @@ Validate Indication
 Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)
     [Arguments]  ${teidgre}  ${ip}
     Validate ie type and length  87  9  # IE Type: Fully Qualified Tunnel Endpoint Identifier (F-TEID) (87) # IE Length: 9
-    ${cr-flags-and-instance}=  Read From Data  1
-    Should Be Equal  ${cr-flags-and-instance}  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Validate cr-flags and instance  0
     ${flags}=  Read From Data  1
     Should Be Equal  138  ${flags}  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
     ${teidgre-act}=  Read From Data  4
     Should Be Equal  ${teidgre}  ${teidgre-act}  # TEID/GRE Key: 50331665
     ${ip-act}=  Read Ip From Hex
     Should Be Equal  ${ip}  ${ip-act}  # F-TEID IPv4: 192.168.112.10 (192.168.112.10)
+
+Validate Access Point Name (APN)
+    Validate ie type and length  71  31  # IE Type: Access Point Name (APN) (71)
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${string}=  Read From Data  31
+    Should Be Equal  sgw.nsn.com.mnc012.mcc262.gprs  ${string}  # APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
 
