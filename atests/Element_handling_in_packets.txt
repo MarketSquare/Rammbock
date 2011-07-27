@@ -92,6 +92,14 @@ Encode and Decode message with ip-address
     ${ip}=  Read IP from Hex
     Should Be Equal  ${ip}  10.10.10.10
 
+Try To Read Too Many Bits From Bitstream Data
+    Create Message
+    Add Decimal As Bits  255  8
+    Client Sends Data
+    Server Receives Data
+    Read Binary From Data  1
+    Run keyword and expect error  *  Read From Binary  9
+
 *** Keywords ***
 Create Message and add two decimals as octets
     Create Message
