@@ -14,13 +14,13 @@ Send and Receive Create Session Request and check that it exist.
     Create and send Create Session Request
     Receive Create Session Request and Validate that Data is not empty
 
-Make GTPv2 Attach
-    [Tags]
-
 Send and Receive Create Session Request and validate the message
     [Tags]  ${EMPTY}
     Create and send Create Session Request
     Receive Session Request and Validate Message
+
+Make GTPv2 Attach
+    [Tags]
 
 *** Keywords ***
 Create and send Create Session Request
