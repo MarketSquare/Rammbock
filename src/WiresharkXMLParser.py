@@ -61,7 +61,7 @@ class Parser(object):
         self.of.append("Default Tags    regression\n")
         self.of.append("Library         rammbock.Rammbock\n")
         self.of.append("Resource        ../resources/Messaging.txt\n")
-        self.of.append("Resource        ../protocols/gtp/v2.txt\n")
+        self.of.append("Resource        ../send_and_receive_messages/gtp/v2.txt\n")
         self.of.append("\n")
         self.of.append("*** Variables ***\n")
         self.of.append("${GTP_CONTROL_PORT}=    2123\n")
