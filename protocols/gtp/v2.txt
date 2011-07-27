@@ -342,9 +342,23 @@ Validate Charging Characteristic
     Should Be Equal  ${charging-characteristic}  12800
 
 Validate Indication
-    Add Decimal as Octets  77  1  # IE Type: Indication (77)
-    Add Decimal as Octets  2  2  # IE Length: 2
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  0  1  # 0... .... = DAF (Dual Address Bearer Flag): False, .0.. .... = DTF (Direct Tunnel Flag): False, ..0. .... = HI (Handover Indication): False, ...0 .... = DFI (Direct Forwarding Indication): False, .... 0... = OI (Operation Indication): False, .... .0.. = ISRSI (Idle mode Signalling Reduction Supported Indication): False, .... ..0. = ISRAI (Idle mode Signalling Reduction Activation Indication): False, .... ...0 = SGWCI (SGW Change Indication): False
-    Add Decimal as Octets  0  1  # .... 0... = PT (Protocol Type): False, .... .0.. = TDI (Teardown Indication): False, .... ..0. = SI (Scope Indication): False, .... ...0 = MSV (MS Validated): False
+    Validate ie type and length  77  2  # IE Type: Indication (77)
+    ${cr-flags-and-instance}=  Read From Data  1
+    Should Be Equal  ${cr-flags-and-instance}  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${flags1}=  Read From Data  1
+    Should Be Equal  0  ${flags1}  # 0... .... = DAF (Dual Address Bearer Flag): False, .0.. .... = DTF (Direct Tunnel Flag): False, ..0. .... = HI (Handover Indication): False, ...0 .... = DFI (Direct Forwarding Indication): False, .... 0... = OI (Operation Indication): False, .... .0.. = ISRSI (Idle mode Signalling Reduction Supported Indication): False, .... ..0. = ISRAI (Idle mode Signalling Reduction Activation Indication): False, .... ...0 = SGWCI (SGW Change Indication): False
+    ${flags2}=  Read From Data  1
+    Should Be Equal  0  ${flags2}  # .... 0... = PT (Protocol Type): False, .... .0.. = TDI (Teardown Indication): False, .... ..0. = SI (Scope Indication): False, .... ...0 = MSV (MS Validated): False
+
+Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)
+    [Arguments]  ${teidgre}  ${ip}
+    Validate ie type and length  87  9  # IE Type: Fully Qualified Tunnel Endpoint Identifier (F-TEID) (87) # IE Length: 9
+    ${cr-flags-and-instance}=  Read From Data  1
+    Should Be Equal  ${cr-flags-and-instance}  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${flags}=  Read From Data  1
+    Should Be Equal  138  ${flags}  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
+    ${teidgre-act}=  Read From Data  4
+    Should Be Equal  ${teidgre}  ${teidgre-act}  # TEID/GRE Key: 50331665
+    ${ip-act}=  Read Ip From Hex
+    Should Be Equal  ${ip}  ${ip-act}  # F-TEID IPv4: 192.168.112.10 (192.168.112.10)
 

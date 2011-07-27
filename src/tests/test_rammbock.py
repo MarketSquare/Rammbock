@@ -52,3 +52,9 @@ class TestNumberFormatting(unittest.TestCase):
 
     def test_add_false_ip_as_hex(self):
         self.assertRaises(Exception, rammbock.add_ip_as_hex, "255.255.255.256")
+
+    def test_read_from_data(self):
+        rammbock.add_decimal_as_octets(50331665,4)
+        a = rammbock.read_from_data(4)
+        print a
+        assert a == "50331665"

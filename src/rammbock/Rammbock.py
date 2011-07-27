@@ -121,11 +121,12 @@ class Rammbock(object):
         return self._data
 
     def read_from_data(self, length):
-        return str(int("".join(self._read_from_data(int(length)))))
+        a = str(int("".join(self._read_from_data(int(length))), 16))
+        return a
 
     def _read_from_data(self, length):
         for d in self._data[:length]:
-            yield str(struct.unpack('B', d)[0])
+            yield hex((struct.unpack('B', d)[0]))[2:].rjust(2, '0')
         self._data = self._data[int(length):]
 
     def read_binary_from_data(self, length):
