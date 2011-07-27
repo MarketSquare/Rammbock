@@ -84,7 +84,7 @@ Add International Mobile Subscriber Identity (IMSI)
     Add Decimal as Octets  1  1  # IE Type: International Mobile Subscriber Identity (IMSI) (1)
     Add Decimal as Octets  8  2  # IE Length: 8
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Number as TBCD  ${imsi}  8  # IMSI(International Mobile Subscriber Identity number): 262120000000001
+    Add Number as TBCD  ${imsi}  ${EMPTY}  # IMSI(International Mobile Subscriber Identity number): 262120000000001
 
 Add MSISDN
     [Arguments]  ${country_code}  ${address_digits}
@@ -111,9 +111,9 @@ Add Spare Bits
     Add Decimal as Bits  0  ${length}
 
 Add Tracking Area Identity(TAI)
-    [Arguments]  ${mnc}  ${mcc}
-    add_number_as_tbcd  ${mnc}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
-    Add Number as tbcd  ${mcc}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
+    [Arguments]  ${mcc}  ${mnc}
+    add number as tbcd  ${mcc}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
+    Add Number as tbcd  ${mnc}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
     Add Decimal as Octets  1  2  # Tracking Area Code: 1
 
 Add E-UTRAN Cell Global Identifier (ECGI)
@@ -240,6 +240,15 @@ Validate ie type And length
     ${ie-length}=  Read From Data  2
     Should Be Equal  ${ie-length}  ${length}
 
+Validate mcc and mnc
+    [Arguments]  ${mcc}  ${mnc}
+    read tbcd coded numbers from data  3
+    ${mcc-act}  read from tbcd  3
+    read tbcd coded numbers from data  2
+    Should be equal  ${mcc}  ${mcc-act}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
+    ${mnc-act}  read from tbcd  2
+    Should Be Equal  ${mnc}  ${mnc-act}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
+
 Validate Flags
     [Arguments]  ${expected}
     ${actual}=  Read From Data  1
@@ -278,7 +287,7 @@ Validate MSISDN
     [Arguments]  ${country_code}  ${address_digits}
     Validate ie type And length  76  8
     Read Binary From Data  1
-    Read From Binary  4  #spare bits
+    Read From Binary  4  # spare bits
     ${instance}=  Read From Binary  4
     Should Be Equal  ${instance}  0
     read tbcd coded numbers from data  16
@@ -293,11 +302,37 @@ Validate User Location Info (ULI)
     ${cr-flag-and-instance}=  Read From Data  1
     Should Be Equal  ${cr-flag-and-instance}  0
     Read Binary From Data  1
-    Read From Binary  3  #spare bits
+    Read From Binary  3  # spare bits
     ${flags}=  Read From Binary  5
     Should Be Equal  ${flags}  24  # ...1 .... = ECGI Present Flag): True, .... 1... = TAI Present Flag): True, .... .0.. = RAI Present Flag): False, .... ..0. = SAI Present Flag): False, .... ...0 = CGI Present Flag): False
     Validate Tracking Area Identity(TAI)  ${mcc}  ${mnc}
     Validate E-UTRAN Cell Global Identifier (ECGI)  ${mcc}  ${mnc}
+
+Validate Tracking Area Identity(TAI)
+    [Arguments]  ${mcc}  ${mnc}
+    Validate mcc and mnc  ${mcc}  ${mnc}
+    ${tac-act}  Read From Data  2
+    Should Be Equal  1  ${tac-act}  # Tracking Area Code: 1
+
+Validata E-UTRAN Cell Global Identifier (ECGI)
+    [Arguments]  ${mcc}  ${mnc}
+    Validate mcc and mnc  ${mcc}  ${mnc}
+    ${cid}=  Read From Data  4
+    Should Be Equal  ${cid}  234  # Spare: 0, ECI (E-UTRAN Cell Identifier): 234
+
+Validate Serving Network
+    [Arguments]  ${mcc}  ${mnc}
+    Validate ie type and length  83  3  # IE Type: Serving Network (83) # IE Length: 3
+    ${cr-flags-and-instance}=  Read From Data  1
+    Should Be Equal  ${cr-flags-and-instance}=  0
+    Validate mcc and mnc  ${mcc}  ${mnc}
+
+Validate RAT Type
+    Validate ie type and length  82  1  #RAT Type (82)
+    ${flags-and-instance}=  Read From Data  1
+    Should Be Equal  ${flags-and-instance}  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${rat-type}=  Read From Data  1
+    Should Be Equal  ${rat-type}  6  #EUTRAN (6)
 
 Validate Charging Characteristic
     Validate ie type and length  95  2
@@ -305,4 +340,11 @@ Validate Charging Characteristic
     Should Be Equal  ${flags-and-instance}  0
     ${charging-characteristic}=  Read From Data  2
     Should Be Equal  ${charging-characteristic}  12800
+
+Validate Indication
+    Add Decimal as Octets  77  1  # IE Type: Indication (77)
+    Add Decimal as Octets  2  2  # IE Length: 2
+    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal as Octets  0  1  # 0... .... = DAF (Dual Address Bearer Flag): False, .0.. .... = DTF (Direct Tunnel Flag): False, ..0. .... = HI (Handover Indication): False, ...0 .... = DFI (Direct Forwarding Indication): False, .... 0... = OI (Operation Indication): False, .... .0.. = ISRSI (Idle mode Signalling Reduction Supported Indication): False, .... ..0. = ISRAI (Idle mode Signalling Reduction Activation Indication): False, .... ...0 = SGWCI (SGW Change Indication): False
+    Add Decimal as Octets  0  1  # .... 0... = PT (Protocol Type): False, .... .0.. = TDI (Teardown Indication): False, .... ..0. = SI (Scope Indication): False, .... ...0 = MSV (MS Validated): False
 

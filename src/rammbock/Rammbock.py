@@ -165,7 +165,7 @@ class Rammbock(object):
         while len(self._binary) > 8:
             a = self.read_from_binary(4)
             b = self.read_from_binary(4)
-            self._tbcd += str(b)+str(a)
+            self._tbcd += str(b) + str(a)
         a = self.read_from_binary(4)
         b = self.read_from_binary(4)
         self._tbcd += str(b)
