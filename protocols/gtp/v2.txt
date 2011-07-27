@@ -332,12 +332,6 @@ Validate RAT Type
     ${rat-type}=  Read From Data  1
     Should Be Equal  ${rat-type}  6  #EUTRAN (6)
 
-Validate Charging Characteristic
-    Validate ie type and length  95  2
-    Validate cr-flags and instance  0
-    ${charging-characteristic}=  Read From Data  2
-    Should Be Equal  ${charging-characteristic}  12800
-
 Validate Indication
     Validate ie type and length  77  2  # IE Type: Indication (77)
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
@@ -362,4 +356,86 @@ Validate Access Point Name (APN)
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${string}=  Read From Data  31
     Should Be Equal  sgw.nsn.com.mnc012.mcc262.gprs  ${string}  # APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
+
+Validate Selection Mode
+    Validate ie type and length  128  1  # IE Type: Selection Mode (128)
+    validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${sm}=  Read From Data  1
+    Should Be Equal  252  ${sm}  # .... ..00 = Selection Mode: MS or network provided APN, subscribed verified (0)
+
+Validate PDN Type
+    Validate ie type and length  99  1  # IE Type: PDN Type (99)
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${pdnt}=  Read From Data  1
+    Should Be Equal  1  ${pdnt}  # .... .001 = PDN Type: IPv4 (1)
+
+Validate PDN Address Allocation (PAA)
+    Validate ie type and length  79  5  # IE Type: PDN Address Allocation (PAA) (79)
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${pdnt}=  Read From Data  1
+    Should Be Equal  1  ${pdnt}  # .... .001 = PDN Type: IPv4 (1)
+    ${ip}=  Read Ip From Hex
+    Should Be Equal  0.0.0.0  ${ip}  # PDN IPv4: 0.0.0.0 (0.0.0.0)
+
+Validate APN Restriction
+    Validate ie type and length  127  1  # IE Type: APN Restriction (127)
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${apnr}=  Read From Data  1
+    Should Be Equal  0  ${apnr}  # APN Restriction: 0
+
+Validate Aggregate Maximum Bit Rate (AMBR)
+    Validate ie type and length  72  8  # IE Type: Aggregate Maximum Bit Rate (AMBR) (72)
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${ambr-ul}=  Read From Data  4
+    Should Be Equal  2  ${ambr-ul}  # AMBR Uplink (Aggregate Maximum Bit Rate for Uplink): 2
+    ${ambr-dl}=  Read From Data  4
+    Should Be Equal  1  ${ambr-dl}  # AMBR Downlink(Aggregate Maximum Bit Rate for Downlink): 1
+
+Validate Bearer Context : [Grouped IE]
+    Validate ie type and length  93  31  # IE Type: Bearer Context (93)
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Validate EPS Bearer ID (EBI)
+    Validate Bearer Level Quality of Service (Bearer QoS)
+
+Validate EPS Bearer ID (EBI)
+    Validate ie type and length  73  1  # IE Type: EPS Bearer ID (EBI) (73)
+    validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${eps-bearer-id}=  Read From Data  1
+    Should Be Equal  5  ${eps-bearer-id}  # .... 0101 = EPS Bearer ID (EBI): 5
+
+Validate Bearer Level Quality of Service (Bearer QoS)
+    Validate ie type and length  80  22  # IE Type: Bearer Level Quality of Service (Bearer QoS) (80)
+    validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${flags1}=  Read From Data  1
+    Should Be Equal  4  ${flags1}  # .... ...0 = PVI (Pre-emption Vulnerability): False, ..00 01.. = PL (Priority Level): 1, .0.. .... = PCI (Pre-emption Capability): False
+    ${label}=  Read From Data  1
+    Should Be Equal  9  ${label}  # Label (QCI): 9
+    ${mbr4ul}=  Read From Data  5
+    ${mbr4dl}=  Read From Data  5
+    ${gbr4ul}=  Read From Data  5
+    ${gbr4dl}=  Read From Data  5
+    Should Be Equal  0  ${mbr4ul}  # Maximum Bit Rate For Uplink: 0
+    Should Be Equal  0  ${mbr4dl}  # Maximum Bit Rate For Downlink: 0
+    Should Be Equal  0  ${gbr4ul}  # Guaranteed Bit Rate For Uplink: 0
+    Should Be Equal  0  ${gbr4dl}  # Guaranteed Bit Rate For Downlink: 0
+
+Validate Recovery (Restart Counter)
+    Validate ie type and length  3  1  # IE Type: Recovery (Restart Counter) (3)
+    validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${restart-counter}=  Read From Data  1
+    Should Be Equal  1  ${restart-counter}  # Restart Counter: 1
+
+Validate UE Time Zone
+    Validate ie type and length  114  2  # IE Type: UE Time Zone (114)
+    validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${tz}=  Read From Data  1
+    Should Be Equal  8  ${tz}  # Time Zone: 8
+    ${dlst}=  Read From Data  1
+    Should Be Equal  0  ${dlst}  # .... ..00 = Daylight Saving Time: No Adjustments for Daylight Saving Time (0)
+
+Validate Charging Characteristics
+    Validate ie type and length  95  2
+    Validate cr-flags and instance  0
+    ${charging-characteristic}=  Read From Data  2
+    Should Be Equal  ${charging-characteristic}  12800
 
