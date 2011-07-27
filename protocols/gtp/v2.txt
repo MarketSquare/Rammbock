@@ -55,6 +55,15 @@ Validate Create Session Request
     Validate UE Time Zone
     Validate Charging Characteristics
 
+Set Create Session Response
+    Add Flags  72
+    Add Message Type  33  #create session response
+    Add Message Length  136
+    Add Tunnel Endpoint Identifier  50331665
+    Add Sequence Number  48
+    Add Spare Octets  1
+    Add Cause
+
 Add Flags
     [Arguments]  ${flags}
     Add Decimal as Octets  ${flags}  1
@@ -232,6 +241,14 @@ Add Charging Characteristics
     Add Decimal as Octets  2  2  # IE Length: 2
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  12800  2  # Charging Characteristic: 12800
+
+Add Cause
+    Add Decimal as Octets  2  1  #Type(2) Cause
+    Add Decimal As Octets  2  2  #ie length
+    Add Decimal as Octets  0  1  #cr-flags and instance
+    Add Decimal As Octets  16  1  #cause: Request Accepted
+    Add spare bits  5
+    add decimal as bits  0  3
 
 Validate ie type And length
     [Arguments]  ${type}  ${length}
@@ -438,4 +455,13 @@ Validate Charging Characteristics
     Validate cr-flags and instance  0
     ${charging-characteristic}=  Read From Data  2
     Should Be Equal  ${charging-characteristic}  12800
+
+Validate Cause
+    Validate ie type and length  2  2  #Type(2) Cause
+    validate cr-flags and instance  0
+    ${cause}=  Read From Data  1
+    Should Be Equal  16  ${cause}  #cause: Request Accepted
+    Read Binary From Data  1
+    ${spare-and-dec}=  Read from binary  8
+    Should Be Equal  0  ${spare-and-dec}
 
