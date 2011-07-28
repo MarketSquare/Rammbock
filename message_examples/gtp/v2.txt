@@ -67,4 +67,5 @@ Set Create Session Response
     Add Sequence Number  48
     Add Spare Octets  1
     Add Cause
+    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  1  1
 
