@@ -1,0 +1,216 @@
+*** Keywords ***
+Validate ie type And length
+    [Arguments]  ${type}  ${length}
+    ${ie-type}=  Read From Data  1
+    Should Be Equal  ${ie-type}  ${type}
+    ${ie-length}=  Read From Data  2
+    Should Be Equal  ${ie-length}  ${length}
+
+Validate cr-flags and instance
+    [Arguments]  ${value}
+    ${cr-flags-and-instance}=  Read From Data  1
+    Should Be Equal  ${cr-flags-and-instance}  ${value}  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+
+Validate mcc and mnc
+    [Arguments]  ${mcc}  ${mnc}
+    read tbcd coded numbers from data  3
+    ${mcc-act}  read from tbcd  3
+    read tbcd coded numbers from data  2
+    Should be equal  ${mcc}  ${mcc-act}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
+    ${mnc-act}  read from tbcd  2
+    Should Be Equal  ${mnc}  ${mnc-act}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
+
+Validate Flags
+    [Arguments]  ${expected}
+    ${actual}=  Read From Data  1
+    Should Be Equal  ${expected}  ${actual}
+
+Validate Message Type
+    [Arguments]  ${expected}
+    ${actual}=  Read From Data  1
+    Should Be Equal  ${actual}  ${expected}
+
+Validate Message Length
+    [Arguments]  ${expected}
+    ${actual}=  Read From Data  2
+    Should Be Equal  ${expected}  ${actual}
+
+Validate Tunnel Endpoint Identifier
+    [Arguments]  ${expected}
+    ${actual}=  Read From Data  4
+    Should Be Equal  ${actual}  ${expected}
+
+Validate Sequence Number
+    [Arguments]  ${expected}
+    ${actual}=  Read From Data  3
+    Should Be Equal  ${actual}  ${expected}
+
+Validate International Mobile Subscriber Identity (IMSI)
+    [Arguments]  ${expected}
+    Validate ie type and length  1  8
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Read TBCD Coded Numbers From Data  15
+    ${actual}=  Read From TBCD  15  # IMSI(International Mobile Subscriber Identity number): 262120000000001
+    Should Be Equal  ${actual}  ${expected}
+
+Validate MSISDN
+    [Arguments]  ${country_code}  ${address_digits}
+    Validate ie type And length  76  8
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    read tbcd coded numbers from data  16
+    ${cc}=  Read From TBCD  3
+    ${ad}=  Read From TBCD  13
+    Should Be Equal  ${cc}  ${country_code}
+    Should Be Equal  ${ad}  ${address_digits}
+
+Validate User Location Info (ULI)
+    [Arguments]  ${mcc}  ${mnc}
+    Validate ie type and length  86  13  # IE Type: User Location Info (ULI) (86), length: 13
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Read Binary From Data  1
+    Read From Binary  3  # spare bits
+    ${flags}=  Read From Binary  5
+    Should Be Equal  ${flags}  24  # ...1 .... = ECGI Present Flag): True, .... 1... = TAI Present Flag): True, .... .0.. = RAI Present Flag): False, .... ..0. = SAI Present Flag): False, .... ...0 = CGI Present Flag): False
+    Validate Tracking Area Identity(TAI)  ${mcc}  ${mnc}
+    Validate E-UTRAN Cell Global Identifier (ECGI)  ${mcc}  ${mnc}
+
+Validate Tracking Area Identity(TAI)
+    [Arguments]  ${mcc}  ${mnc}
+    Validate mcc and mnc  ${mcc}  ${mnc}
+    ${tac-act}  Read From Data  2
+    Should Be Equal  1  ${tac-act}  # Tracking Area Code: 1
+
+Validate E-UTRAN Cell Global Identifier (ECGI)
+    [Arguments]  ${mcc}  ${mnc}
+    Validate mcc and mnc  ${mcc}  ${mnc}
+    ${cid}=  Read From Data  4
+    Should Be Equal  ${cid}  234  # Spare: 0, ECI (E-UTRAN Cell Identifier): 234
+
+Validate Serving Network
+    [Arguments]  ${mcc}  ${mnc}
+    Validate ie type and length  83  3  # IE Type: Serving Network (83) # IE Length: 3
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Validate mcc and mnc  ${mcc}  ${mnc}
+
+Validate RAT Type
+    Validate ie type and length  82  1  # RAT Type (82)
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${rat-type}=  Read From Data  1
+    Should Be Equal  ${rat-type}  6  # EUTRAN (6)
+
+Validate Indication
+    Validate ie type and length  77  2  # IE Type: Indication (77)
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${flags1}=  Read From Data  1
+    Should Be Equal  0  ${flags1}  # 0... .... = DAF (Dual Address Bearer Flag): False, .0.. .... = DTF (Direct Tunnel Flag): False, ..0. .... = HI (Handover Indication): False, ...0 .... = DFI (Direct Forwarding Indication): False, .... 0... = OI (Operation Indication): False, .... .0.. = ISRSI (Idle mode Signalling Reduction Supported Indication): False, .... ..0. = ISRAI (Idle mode Signalling Reduction Activation Indication): False, .... ...0 = SGWCI (SGW Change Indication): False
+    ${flags2}=  Read From Data  1
+    Should Be Equal  0  ${flags2}  # .... 0... = PT (Protocol Type): False, .... .0.. = TDI (Teardown Indication): False, .... ..0. = SI (Scope Indication): False, .... ...0 = MSV (MS Validated): False
+
+Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)
+    [Arguments]  ${teidgre}  ${ip}
+    Validate ie type and length  87  9  # IE Type: Fully Qualified Tunnel Endpoint Identifier (F-TEID) (87) # IE Length: 9
+    Validate cr-flags and instance  0
+    ${flags}=  Read From Data  1
+    Should Be Equal  138  ${flags}  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
+    ${teidgre-act}=  Read From Data  4
+    Should Be Equal  ${teidgre}  ${teidgre-act}  # TEID/GRE Key: 50331665
+    ${ip-act}=  Read Ip From Hex
+    Should Be Equal  ${ip}  ${ip-act}  # F-TEID IPv4: 192.168.112.10 (192.168.112.10)
+
+Validate Access Point Name (APN)
+    Validate ie type and length  71  30  # IE Type: Access Point Name (APN) (71)
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${string}=  Read String From Data  30
+    Should Be Equal  sgw.nsn.com.mnc012.mcc262.gprs  ${string}  # APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
+
+Validate Selection Mode
+    Validate ie type and length  128  1  # IE Type: Selection Mode (128)
+    validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${sm}=  Read From Data  1
+    Should Be Equal  252  ${sm}  # .... ..00 = Selection Mode: MS or network provided APN, subscribed verified (0)
+
+Validate PDN Type
+    Validate ie type and length  99  1  # IE Type: PDN Type (99)
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${pdnt}=  Read From Data  1
+    Should Be Equal  1  ${pdnt}  # .... .001 = PDN Type: IPv4 (1)
+
+Validate PDN Address Allocation (PAA)
+    Validate ie type and length  79  5  # IE Type: PDN Address Allocation (PAA) (79)
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${pdnt}=  Read From Data  1
+    Should Be Equal  1  ${pdnt}  # .... .001 = PDN Type: IPv4 (1)
+    ${ip}=  Read Ip From Hex
+    Should Be Equal  0.0.0.0  ${ip}  # PDN IPv4: 0.0.0.0 (0.0.0.0)
+
+Validate APN Restriction
+    Validate ie type and length  127  1  # IE Type: APN Restriction (127)
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${apnr}=  Read From Data  1
+    Should Be Equal  0  ${apnr}  # APN Restriction: 0
+
+Validate Aggregate Maximum Bit Rate (AMBR)
+    Validate ie type and length  72  8  # IE Type: Aggregate Maximum Bit Rate (AMBR) (72)
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${ambr-ul}=  Read From Data  4
+    Should Be Equal  2  ${ambr-ul}  # AMBR Uplink (Aggregate Maximum Bit Rate for Uplink): 2
+    ${ambr-dl}=  Read From Data  4
+    Should Be Equal  1  ${ambr-dl}  # AMBR Downlink(Aggregate Maximum Bit Rate for Downlink): 1
+
+Validate Bearer Context : [Grouped IE]
+    Validate ie type and length  93  31  # IE Type: Bearer Context (93)
+    Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Validate EPS Bearer ID (EBI)
+    Validate Bearer Level Quality of Service (Bearer QoS)
+
+Validate EPS Bearer ID (EBI)
+    Validate ie type and length  73  1  # IE Type: EPS Bearer ID (EBI) (73)
+    validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${eps-bearer-id}=  Read From Data  1
+    Should Be Equal  5  ${eps-bearer-id}  # .... 0101 = EPS Bearer ID (EBI): 5
+
+Validate Bearer Level Quality of Service (Bearer QoS)
+    Validate ie type and length  80  22  # IE Type: Bearer Level Quality of Service (Bearer QoS) (80)
+    validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${flags1}=  Read From Data  1
+    Should Be Equal  4  ${flags1}  # .... ...0 = PVI (Pre-emption Vulnerability): False, ..00 01.. = PL (Priority Level): 1, .0.. .... = PCI (Pre-emption Capability): False
+    ${label}=  Read From Data  1
+    Should Be Equal  9  ${label}  # Label (QCI): 9
+    ${mbr4ul}=  Read From Data  5
+    ${mbr4dl}=  Read From Data  5
+    ${gbr4ul}=  Read From Data  5
+    ${gbr4dl}=  Read From Data  5
+    Should Be Equal  0  ${mbr4ul}  # Maximum Bit Rate For Uplink: 0
+    Should Be Equal  0  ${mbr4dl}  # Maximum Bit Rate For Downlink: 0
+    Should Be Equal  0  ${gbr4ul}  # Guaranteed Bit Rate For Uplink: 0
+    Should Be Equal  0  ${gbr4dl}  # Guaranteed Bit Rate For Downlink: 0
+
+Validate Recovery (Restart Counter)
+    Validate ie type and length  3  1  # IE Type: Recovery (Restart Counter) (3)
+    validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${restart-counter}=  Read From Data  1
+    Should Be Equal  1  ${restart-counter}  # Restart Counter: 1
+
+Validate UE Time Zone
+    Validate ie type and length  114  2  # IE Type: UE Time Zone (114)
+    validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    ${tz}=  Read From Data  1
+    Should Be Equal  8  ${tz}  # Time Zone: 8
+    ${dlst}=  Read From Data  1
+    Should Be Equal  0  ${dlst}  # .... ..00 = Daylight Saving Time: No Adjustments for Daylight Saving Time (0)
+
+Validate Charging Characteristics
+    Validate ie type and length  95  2
+    Validate cr-flags and instance  0
+    ${charging-characteristic}=  Read From Data  2
+    Should Be Equal  ${charging-characteristic}  12800
+
+Validate Cause
+    Validate ie type and length  2  2  # Type(2) Cause
+    validate cr-flags and instance  0
+    ${cause}=  Read From Data  1
+    Should Be Equal  16  ${cause}  # cause: Request Accepted
+    Read Binary From Data  1
+    ${spare-and-dec}=  Read from binary  8
+    Should Be Equal  0  ${spare-and-dec}
+
