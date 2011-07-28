@@ -67,13 +67,16 @@ class Rammbock(object):
             self._clients[name].send_packet(packet)
         else:
             self._clients[name].send_packet(self._data)
+            print "Data sent:", self._data
 
     def server_receives_data(self, name=Server.DEFAULT_NAME):
         self._data = self._servers[name].server_receives_data()
+        print "Data received:", self._data
         return self._data
 
     def client_receives_data(self, name=Client.DEFAULT_NAME):
         self._data = self._clients[name].receive_data()
+        print "Data received:", self._data
         return self._data
 
     def server_sends_data(self, packet=None, name=Server.DEFAULT_NAME):
@@ -81,6 +84,7 @@ class Rammbock(object):
             self._servers[name].send_data(packet)
         else:
             self._servers[name].send_data(self._data)
+            print "Data sent:", self._data
 
     def create_message(self):
         self._data = ""
@@ -186,3 +190,6 @@ class Rammbock(object):
         string = self._data[:int(length)]
         self._data = self._data[int(length):]
         return string
+
+    def calculate_length_from_string(self, value):
+        return len(value)

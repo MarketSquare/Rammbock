@@ -107,11 +107,11 @@ Validate Indication
     Should Be Equal  0  ${flags2}  # .... 0... = PT (Protocol Type): False, .... .0.. = TDI (Teardown Indication): False, .... ..0. = SI (Scope Indication): False, .... ...0 = MSV (MS Validated): False
 
 Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)
-    [Arguments]  ${teidgre}  ${ip}
+    [Arguments]  ${teidgre}  ${ip}  ${flags}
     Validate ie type and length  87  9  # IE Type: Fully Qualified Tunnel Endpoint Identifier (F-TEID) (87) # IE Length: 9
     Validate cr-flags and instance  0
     ${flags}=  Read From Data  1
-    Should Be Equal  138  ${flags}  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
+    Should Be Equal  ${flags}  ${flags}  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
     ${teidgre-act}=  Read From Data  4
     Should Be Equal  ${teidgre}  ${teidgre-act}  # TEID/GRE Key: 50331665
     ${ip-act}=  Read Ip From Hex

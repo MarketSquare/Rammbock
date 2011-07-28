@@ -1,6 +1,7 @@
 from rammbock import Rammbock
 import struct
 import unittest
+from time import time
 rammbock = Rammbock()
 
 class TestNumberFormatting(unittest.TestCase):
@@ -58,3 +59,11 @@ class TestNumberFormatting(unittest.TestCase):
         a = rammbock.read_from_data(4)
         print a
         assert a == "50331665"
+
+    def test_speed_of_read_from_date(self):
+        a = "a" * 10000
+        rammbock._data = a
+        s = time()
+        rammbock.read_from_data(len(a))
+        b = time()
+        assert b-s < 0.1

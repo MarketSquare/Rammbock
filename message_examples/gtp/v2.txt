@@ -20,16 +20,16 @@ Set Create Session Request
     Add Serving Network  ${MCC}  ${MNC}
     Add RAT Type
     Add Indication
-    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  50331665  192.168.112.10
-    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  0  10.102.182.184
-    Add Access Point Name (APN)
+    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  50331665  192.168.112.10  138  # ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
+    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  0  10.102.182.184  135  # ...0 0111 = Interface Type: S5/S8 PGW GTP-C interface (7)
+    Add Access Point Name (APN)  sgw.nsn.com.mnc012.mcc262.gprs
     Add Selection Mode
     Add PDN Type
-    Add PDN Address Allocation (PAA)
+    Add PDN Address Allocation (PAA)  0.0.0.0  # PDN IPv4: 0.0.0.0 (0.0.0.0)
     Add APN Restriction
     Add Aggregate Maximum Bit Rate (AMBR)
-    Add Bearer Context : [Grouped IE]
-    Add Recovery (Restart Counter)
+    Add Bearer Context : [Grouped IE]  31  # IE Length: 31
+    Add Recovery (Restart Counter)  1
     Add UE Time Zone
     Add Charging Characteristics
 
@@ -46,8 +46,8 @@ Validate Create Session Request
     Validate Serving Network  ${MCC}  ${MNC}
     Validate RAT Type
     Validate Indication
-    Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  50331665  192.168.112.10
-    Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  0  10.102.182.184
+    Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  50331665  192.168.112.10  138
+    Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  0  10.102.182.184  135
     Validate Access Point Name (APN)
     Validate Selection Mode
     Validate PDN Type
@@ -67,7 +67,12 @@ Set Create Session Response
     Add Sequence Number  48
     Add Spare Octets  1
     Add Cause
-    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  123564  10.102.250.95
+    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  123564  10.102.250.95  139  # ...0 1011 = Interface Type: S11/S4 SGW GTP-C interface (11)
+    Add PDN Address Allocation (PAA)  192.168.0.1  # Prefix(IPv4): 192.168.0.1 (192.168.0.1)
+    Add APN Restriction
+    Add Bearer Context : [Grouped IE]  45
+    Add Recovery (Restart Counter)  13
+    Add Fully Qualified Domain Name (FQDN)  rammbock.googlecode.com
 
 Validate Create Session Response
 

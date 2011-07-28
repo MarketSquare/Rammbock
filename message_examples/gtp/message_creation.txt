@@ -88,19 +88,21 @@ Add Indication
     Add Decimal as Octets  0  1  # .... 0... = PT (Protocol Type): False, .... .0.. = TDI (Teardown Indication): False, .... ..0. = SI (Scope Indication): False, .... ...0 = MSV (MS Validated): False
 
 Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)
-    [Arguments]  ${teidgre}  ${ip}
+    [Arguments]  ${teidgre}  ${ip}  ${flags}
     Add Decimal as Octets  87  1  # IE Type: Fully Qualified Tunnel Endpoint Identifier (F-TEID) (87)
     Add Decimal as Octets  9  2  # IE Length: 9
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  138  1  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
+    Add Decimal as Octets  ${flags}  1  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
     Add Decimal as Octets  ${teidgre}  4  # TEID/GRE Key: 50331665
     Add Ip As Hex  ${ip}  # F-TEID IPv4: 192.168.112.10 (192.168.112.10)
 
 Add Access Point Name (APN)
+    [Arguments]  ${apn}
     Add Decimal as Octets  71  1  # IE Type: Access Point Name (APN) (71)
-    Add Decimal as Octets  30  2  # IE Length: 31
+    ${length}=  Calculate Length From String  ${apn}
+    Add Decimal as Octets  ${length}  2
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add String  sgw.nsn.com.mnc012.mcc262.gprs  30  # APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
+    Add String  ${apn}  ${EMPTY}  # APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
 
 Add Selection Mode
     Add Decimal as Octets  128  1  # IE Type: Selection Mode (128)
@@ -115,11 +117,12 @@ Add PDN Type
     Add Decimal as Octets  1  1  # .... .001 = PDN Type: IPv4 (1)
 
 Add PDN Address Allocation (PAA)
+    [Arguments]  ${ip}
     Add Decimal as Octets  79  1  # IE Type: PDN Address Allocation (PAA) (79)
     Add Decimal as Octets  5  2  # IE Length: 5
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  1  1  # .... .001 = PDN Type: IPv4 (1)
-    Add Ip As Hex  0.0.0.0  # PDN IPv4: 0.0.0.0 (0.0.0.0)
+    Add Ip As Hex  ${ip}
 
 Add APN Restriction
     Add Decimal as Octets  127  1  # IE Type: APN Restriction (127)
@@ -135,8 +138,9 @@ Add Aggregate Maximum Bit Rate (AMBR)
     Add Decimal as Octets  1  4  # AMBR Downlink(Aggregate Maximum Bit Rate for Downlink): 1
 
 Add Bearer Context : [Grouped IE]
+    [Arguments]  ${len}
     Add Decimal as Octets  93  1  # IE Type: Bearer Context (93)
-    Add Decimal as Octets  31  2  # IE Length: 31
+    Add Decimal as Octets  ${len}  2
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add EPS Bearer ID (EBI)
     Add Bearer Level Quality of Service (Bearer QoS)
@@ -159,6 +163,7 @@ Add Bearer Level Quality of Service (Bearer QoS)
     Add Decimal as Octets  0  5  # Guaranteed Bit Rate For Downlink: 0
 
 Add Recovery (Restart Counter)
+    [Arguments]  ${value}
     Add Decimal as Octets  3  1  # IE Type: Recovery (Restart Counter) (3)
     Add Decimal as Octets  1  2  # IE Length: 1
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
@@ -184,4 +189,11 @@ Add Cause
     Add Decimal As Octets  16  1  # cause: Request Accepted
     Add spare bits  5
     add decimal as bits  0  3
+
+Add Fully Qualified Domain Name (FQDN)
+    [Arguments]  ${domain}
+    ${length}=  Calculate Length From String  ${domain}
+    Add Decimal As Octets  136  1  #136 = FQDN
+    Add Decimal As Octets  ${length}  2
+    Add String  ${domain}
 
