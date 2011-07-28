@@ -1,11 +1,8 @@
 *** Variables ***
-
-# ie types
-${ie_types.imsi}=                   1               # IE Type: International Mobile Subscriber Identity (IMSI)
-${ie_types.bearer_context}=         93              # IE Type: Bearer Context
-${ie_types.ambr}=                   72              # IE Type: Aggregate Maximum Bit Rate (AMBR) (72)
-
-
-
-
+${ie_type.imsi}  1  # ie types IE Type: International Mobile Subscriber Identity (IMSI)
+${ie_type.bearer_context}  93  # IE Type: Bearer Context
+${ie_type.ambr}  72  # IE Type: Aggregate Maximum Bit Rate (AMBR) (72)
+${ie_type.ebi}  73  # IE Type: EPS Bearer ID (EBI)
+${ie_type.cause}  2  # IE Type: Cause
+${cause.request_accepted}  16  # Cause: Request accepted
 

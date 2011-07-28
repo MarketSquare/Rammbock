@@ -25,7 +25,7 @@ Add Spare Octets
 
 Add International Mobile Subscriber Identity (IMSI)
     [Arguments]  ${imsi}
-    Add Decimal as Octets  ${ie_types.imsi}  1
+    Add Decimal as Octets  ${ie_type.imsi}  1
     Add Decimal as Octets  8  2  # IE Length: 8
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Number as TBCD  ${imsi}  ${EMPTY}  # IMSI(International Mobile Subscriber Identity number): 262120000000001
@@ -131,24 +131,25 @@ Add APN Restriction
     Add Decimal as Octets  0  1  # APN Restriction: 0
 
 Add Aggregate Maximum Bit Rate (AMBR)
-    Add ie type and length  ${ie_types.ambr}  8
+    Add ie type and length  ${ie_type.ambr}  8
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  2  4  # AMBR Uplink (Aggregate Maximum Bit Rate for Uplink): 2
     Add Decimal as Octets  1  4  # AMBR Downlink(Aggregate Maximum Bit Rate for Downlink): 1
 
 Add Bearer Context : [Grouped IE]
-    Add ie type and length  ${ie_types.bearer_context}  31
+    Add ie type and length  ${ie_type.bearer_context}  31
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add EPS Bearer ID (EBI)
     Add Bearer Level Quality of Service (Bearer QoS)
 
 Add Bearer Context with EBI, Cause, F-TEID and CI : [Grouped IE]
-    Add Decimal As Octets  93  1  #bearer context
-    Add Decimal As Octets
+    Add ie type and length  ${ie_type.bearer_context}  45
+    Add Decimal As Octets  0  1  #cr-flags and instance
+    Add EPS Bearer ID (EBI)
+    Add Cause
 
 Add EPS Bearer ID (EBI)
-    Add Decimal as Octets  73  1  # IE Type: EPS Bearer ID (EBI) (73)
-    Add Decimal as Octets  1  2  # IE Length: 1
+    Add ie type and length  ${ie_type.ebi}  1
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  5  1  # .... 0101 = EPS Bearer ID (EBI): 5
 
@@ -184,10 +185,9 @@ Add Charging Characteristics
     Add Decimal as Octets  12800  2  # Charging Characteristic: 12800
 
 Add Cause
-    Add Decimal as Octets  2  1  # Type(2) Cause
-    Add Decimal As Octets  2  2  # ie length
+    Add ie type and length  ${ie_type.cause}  2
     Add Decimal as Octets  0  1  # cr-flags and instance
-    Add Decimal As Octets  16  1  # cause: Request Accepted
+    Add Decimal As Octets  ${cause.request_accepted}  1
     Add spare bits  5
     add decimal as bits  0  3
 
