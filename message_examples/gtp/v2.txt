@@ -69,3 +69,5 @@ Set Create Session Response
     Add Cause
     Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  123564  10.102.250.95
 
+Validate Create Session Response
+
