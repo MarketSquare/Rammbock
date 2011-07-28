@@ -1,6 +1,7 @@
 *** Settings ***
 Resource        message_creation.txt
 Resource        message_validation.txt
+Resource        variables.txt
 
 *** Variables ***
 ${MCC}  262
@@ -28,7 +29,7 @@ Set Create Session Request
     Add PDN Address Allocation (PAA)  0.0.0.0  # PDN IPv4: 0.0.0.0 (0.0.0.0)
     Add APN Restriction
     Add Aggregate Maximum Bit Rate (AMBR)
-    Add Bearer Context : [Grouped IE]  31  # IE Length: 31
+    Add Bearer Context : [Grouped IE]
     Add Recovery (Restart Counter)  1
     Add UE Time Zone
     Add Charging Characteristics
@@ -70,9 +71,10 @@ Set Create Session Response
     Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  123564  10.102.250.95  139  # ...0 1011 = Interface Type: S11/S4 SGW GTP-C interface (11)
     Add PDN Address Allocation (PAA)  192.168.0.1  # Prefix(IPv4): 192.168.0.1 (192.168.0.1)
     Add APN Restriction
-    Add Bearer Context : [Grouped IE]  45
+    Add Bearer Context with EBI, Cause, F-TEID and CI : [Grouped IE]
     Add Recovery (Restart Counter)  13
     Add Fully Qualified Domain Name (FQDN)  rammbock.googlecode.com
+    Add Ip Address  17.34.51.68
 
 Validate Create Session Response
 

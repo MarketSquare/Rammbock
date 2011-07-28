@@ -1,0 +1,11 @@
+*** Variables ***
+
+# ie types
+${ie_types.imsi}=                   1               # IE Type: International Mobile Subscriber Identity (IMSI)
+${ie_types.bearer_context}=         93              # IE Type: Bearer Context
+${ie_types.ambr}=                   72              # IE Type: Aggregate Maximum Bit Rate (AMBR) (72)
+
+
+
+
+
