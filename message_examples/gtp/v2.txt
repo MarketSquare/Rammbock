@@ -68,3 +68,5 @@ Set Create Session Response
     Add Spare Octets  1
     Add Cause
 
+Validate Create Session Response
+

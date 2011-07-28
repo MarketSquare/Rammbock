@@ -52,3 +52,7 @@ Create And Send Create Session Response
     Create Message
     Set Create Session Response
 
+Receive and Validate Create Session Response
+    Server Receives Data
+    Validate Create Session Response
+
