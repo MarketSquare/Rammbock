@@ -5,7 +5,6 @@ Default Tags    regression
 Test Timeout    5 seconds
 Library         rammbock.Rammbock
 Resource        ../resources/Messaging.txt
-Resource        ../protocols/http/v1_1.txt
 
 *** Test Cases ***
 Send HTTP Get Message And Acquire Response

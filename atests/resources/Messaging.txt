@@ -1,7 +1,8 @@
 *** Settings ***
 Library         rammbock.Rammbock
 Resource        server_client.txt
-Resource        ../protocols/http/v1_1.txt
+Resource        ../message_examples/http/v1_1.txt
+Resource        ../message_examples/gtp/v2.txt
 
 *** Keywords ***
 Initialize UDP Client and Server and Use Application Protocol and Create Message
