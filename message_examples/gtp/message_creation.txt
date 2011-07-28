@@ -144,9 +144,9 @@ Add Bearer Context : [Grouped IE]
 
 Add Bearer Context with EBI, Cause, F-TEID and CI : [Grouped IE]
     Add ie type and length  ${ie_type.bearer_context}  45
-    Add Decimal As Octets  0  1  #cr-flags and instance
+    Add Decimal As Octets  0  1  # cr-flags and instance
     Add EPS Bearer ID (EBI)
-    Add Cause
+    Add Cause  ${cause.request_accepted}
 
 Add EPS Bearer ID (EBI)
     Add ie type and length  ${ie_type.ebi}  1
@@ -179,30 +179,29 @@ Add UE Time Zone
     Add Decimal as Octets  0  1  # .... ..00 = Daylight Saving Time: No Adjustments for Daylight Saving Time (0)
 
 Add Charging Characteristics
-    Add Decimal as Octets  95  1  # IE Type: Charging Characteristics (95)
-    Add Decimal as Octets  2  2  # IE Length: 2
+    Add Ie type and length  ${ie_type.charging_characteristics}  2
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  12800  2  # Charging Characteristic: 12800
 
 Add Cause
+    [Arguments]  ${cause}
     Add ie type and length  ${ie_type.cause}  2
     Add Decimal as Octets  0  1  # cr-flags and instance
-    Add Decimal As Octets  ${cause.request_accepted}  1
+    Add Decimal As Octets  ${cause}  1
     Add spare bits  5
     add decimal as bits  0  3
 
 Add Fully Qualified Domain Name (FQDN)
     [Arguments]  ${domain}
     ${length}=  Calculate Length From String  ${domain}
-    Add Decimal As Octets  136  1  #136 = FQDN
-    Add Decimal As Octets  ${length}  2
+    Add ie type and length  ${ie_type.fqdn}  ${length}
+    Add Decimal As Octets  0  1  #cr-flags and instance
     Add String  ${domain}
 
 Add Ip Address
     [Arguments]  ${ip}
-    Add Decimal As Octets  74  #74 = ip
-    Add Decimal As Octets  4  2  #ie length
-    Add Decimal As Octets  0  1  #cr-flags and instance
+    Add ie type and length  ${ie_type.ip_address}  4
+    Add Decimal As Octets  0  1  # cr-flags and instance
     Add Ip As Hex  ${ip}
 
 Add ie type and length
