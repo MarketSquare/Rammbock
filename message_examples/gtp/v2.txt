@@ -83,7 +83,7 @@ Validate Create Session Response
     Validate Message Length  136
     Validate Tunnel Endpoint Identifier  50331665
     Validate Sequence Number  48
-    Read From Data  1  #spare
+    Read From Data  1  # spare
     Validate Cause  ${cause.request_accepted}
     Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  123564  10.102.250.95  139
     Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  789889  10.102.185.69  135
@@ -106,6 +106,16 @@ Set Modify Bearer Request
     Add UE Time Zone
 
 Validate Modify Bearer Request
+    Validate flags  72
+    Validate Message Type  ${message_type.modify_bearer_request}
+    Validate Message Length  55
+    Validate Tunnel Endpoint Identifier  126534
+    Validate Sequence Number  49
+    Read From Data  1  #spare
+    Validate Indication
+    Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  50331665  192.168.112.10  138
+    Validate Bearer Context With EBI and F-TEID
+    Validate UE Time Zone
 
 Set Modify Bearer Response
     Add Message Type And Length  ${message_type.modify_bearer_response}  47

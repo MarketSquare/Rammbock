@@ -196,7 +196,7 @@ Validate Recovery (Restart Counter)
     Should Be Equal  ${rc}  ${restart-counter}  # Restart Counter: 1
 
 Validate UE Time Zone
-    Validate ie type and length  114  2  # IE Type: UE Time Zone (114)
+    Validate ie type and length  ${ie_type.ue_timezone}  2
     validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${tz}=  Read From Data  1
     Should Be Equal  8  ${tz}  # Time Zone: 8
@@ -249,4 +249,10 @@ Validate Ip Address
     Validate cr-flags and instance  0
     ${ip-act}=  Read Ip From hex
     Should Be Equal  ${ip}  ${ip-act}
+
+Validate Bearer Context With EBI and F-TEID
+    Validate Ie Type And Length  ${ie_type.bearer_context}  18
+    Validate cr-flags and instance  0
+    Validate EPS Bearer ID (EBI)  5
+    Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  12345  10.140.67.93  128
 

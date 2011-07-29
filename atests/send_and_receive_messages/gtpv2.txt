@@ -18,7 +18,6 @@ Create Session Response
     Receive and Validate Create Session Response
 
 Modify Bearer Request
-    [Tags]  ${EMPTY}
     Create And Send Modify Bearer Request
     Receive And Validate Modify Bearer Request
 
