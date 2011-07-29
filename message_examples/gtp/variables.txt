@@ -1,6 +1,7 @@
 *** Variables ***
 ${ie_type.imsi}  1  # ie types IE Type: International Mobile Subscriber Identity (IMSI)
 ${ie_type.cause}  2  # IE Type: Cause
+${rat_types.eutran}  6
 ${cause.request_accepted}  16  # Cause: Request accepted
 ${message_type.create_session_request}  32  # Message Type: Create Session Request
 ${message_type.create_session_response}  33  # Message Type: Create Session Response
@@ -18,6 +19,8 @@ ${ie_type.bearer_context}  93  # IE Type: Bearer Context
 ${ie_type.charging_id}  94  # Charging ID
 ${ie_type.charging_characteristics}  95  # IE Type: Charging Characteristics
 ${ie_type.ue_time_zone}  114  # # IE Type: UE Time Zone
+${ie_type.apn_restriction}  127  # # IE Type: APN Restriction ()
 ${ie_type.fqdn}  136  # IE Type: Fully Qualified Domain Name (FQDN)
-${rat_types.eutran}  6
+${ie_type.paa}  79  # # IE Type: PDN Address Allocation (PAA)
+${ie_type.recovery_restart_counter}  3  # # IE Type: Recovery (Restart Counter)
 

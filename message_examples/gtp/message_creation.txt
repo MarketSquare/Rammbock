@@ -121,15 +121,13 @@ Add PDN Type
 
 Add PDN Address Allocation (PAA)
     [Arguments]  ${ip}
-    Add Decimal as Octets  79  1  # IE Type: PDN Address Allocation (PAA) (79)
-    Add Decimal as Octets  5  2  # IE Length: 5
+    Add Ie Type And Length  ${ie_type.paa}  5
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  1  1  # .... .001 = PDN Type: IPv4 (1)
     Add Ip As Hex  ${ip}
 
 Add APN Restriction
-    Add Decimal as Octets  127  1  # IE Type: APN Restriction (127)
-    Add Decimal as Octets  1  2  # IE Length: 1
+    Add Ie Type And Length  ${ie_type.apn_restriction}  1
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  0  1  # APN Restriction: 0
 
@@ -152,7 +150,7 @@ Add Bearer Context with EBI, Cause, F-TEID and CI
     Add Cause  ${cause.request_accepted}
     Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  12345  10.102.10.11  129
     Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  12345  10.102.250.95  133
-    Add Charging Id
+    Add Charging Id  5
 
 Add EPS Bearer ID (EBI)
     [Arguments]  ${id}
@@ -162,7 +160,7 @@ Add EPS Bearer ID (EBI)
 
 Add Bearer Context With EBI, Cause and F-TEID
     add ie type and length  ${ie_type.bearer_context}  24
-    Add decimal As Octets  0  1  #cr-flag and instance
+    Add decimal As Octets  0  1  # cr-flag and instance
     Add EPS Bearer ID (EBI)  5
     Add Cause  ${cause.request_accepted}
     Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  12345  10.102.10.11  129
@@ -179,10 +177,9 @@ Add Bearer Level Quality of Service (Bearer QoS)
 
 Add Recovery (Restart Counter)
     [Arguments]  ${value}
-    Add Decimal as Octets  3  1  # IE Type: Recovery (Restart Counter) (3)
-    Add Decimal as Octets  1  2  # IE Length: 1
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  1  1  # Restart Counter: 1
+    Add Ie Type And length  ${ie_type.recovery_restart_counter}  1
+    Add decimal as octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Decimal as Octets  ${value}  1  # Restart Counter: 1
 
 Add UE Time Zone
     Add ie type and length  ${ie_type.ue_time_zone}  2
@@ -222,13 +219,14 @@ Add ie type and length
     Add Decimal As Octets  ${iel}  2
 
 Add Charging Id
+    [Arguments]  ${cid}
     Add Ie Type And length  ${ie_type.charging_id}  4
     Add Decimal As Octets  0  1  # cr-flags and instance
-    Add Decimal As Octets  5  4  # charging id
+    Add Decimal As Octets  ${cid}  4  # charging id
 
 Add Bearer Context With EBI and F-TEID
     Add Ie Type And Length  ${ie_type.bearer_context}  18
     add Decimal As Octets  0  1  # cr-flags and instance
-    Add EPS Bearer ID (EBI)
+    Add EPS Bearer ID (EBI)  5
     Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  12345  10.140.67.93  128
 

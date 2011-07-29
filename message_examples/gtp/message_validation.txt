@@ -2,9 +2,9 @@
 Validate ie type And length
     [Arguments]  ${type}  ${length}
     ${ie-type}=  Read From Data  1
-    Should Be Equal  ${ie-type}  ${type}
+    Should Be Equal As Numbers  ${ie-type}  ${type}
     ${ie-length}=  Read From Data  2
-    Should Be Equal  ${ie-length}  ${length}
+    Should Be Equal As Numbers  ${ie-length}  ${length}
 
 Validate cr-flags and instance
     [Arguments]  ${value}
@@ -109,10 +109,10 @@ Validate Indication
 
 Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)
     [Arguments]  ${teidgre}  ${ip}  ${flags}
-    Validate ie type and length  87  9  # IE Type: Fully Qualified Tunnel Endpoint Identifier (F-TEID) (87) # IE Length: 9
+    Validate ie type and length  ${ie_type.fteid}  9  # IE Type: Fully Qualified Tunnel Endpoint Identifier (F-TEID) (87) # IE Length: 9
     Validate cr-flags and instance  0
-    ${flags}=  Read From Data  1
-    Should Be Equal  ${flags}  ${flags}  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
+    ${flags-act}  Read From Data  1
+    Should Be Equal  ${flags}  ${flags-act}  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
     ${teidgre-act}=  Read From Data  4
     Should Be Equal  ${teidgre}  ${teidgre-act}  # TEID/GRE Key: 50331665
     ${ip-act}=  Read Ip From Hex
@@ -137,15 +137,16 @@ Validate PDN Type
     Should Be Equal  1  ${pdnt}  # .... .001 = PDN Type: IPv4 (1)
 
 Validate PDN Address Allocation (PAA)
+    [Arguments]  ${expected-ip}
     Validate ie type and length  79  5  # IE Type: PDN Address Allocation (PAA) (79)
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${pdnt}=  Read From Data  1
     Should Be Equal  1  ${pdnt}  # .... .001 = PDN Type: IPv4 (1)
     ${ip}=  Read Ip From Hex
-    Should Be Equal  0.0.0.0  ${ip}  # PDN IPv4: 0.0.0.0 (0.0.0.0)
+    Should Be Equal  ${expected-ip}  ${ip}  # PDN IPv4: 0.0.0.0 (0.0.0.0)
 
 Validate APN Restriction
-    Validate ie type and length  127  1  # IE Type: APN Restriction (127)
+    Validate ie type and length  ${ie_type.apn_restriction}  1
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${apnr}=  Read From Data  1
     Should Be Equal  0  ${apnr}  # APN Restriction: 0
@@ -161,14 +162,15 @@ Validate Aggregate Maximum Bit Rate (AMBR)
 Validate Bearer Context with EBI and Bearer qos
     Validate ie type and length  93  31  # IE Type: Bearer Context (93)
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Validate EPS Bearer ID (EBI)
+    Validate EPS Bearer ID (EBI)  5
     Validate Bearer Level Quality of Service (Bearer QoS)
 
 Validate EPS Bearer ID (EBI)
+    [Arguments]  ${expected-ebi}
     Validate ie type and length  73  1  # IE Type: EPS Bearer ID (EBI) (73)
     validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${eps-bearer-id}=  Read From Data  1
-    Should Be Equal  5  ${eps-bearer-id}  # .... 0101 = EPS Bearer ID (EBI): 5
+    Should Be Equal  ${expected-ebi}  ${eps-bearer-id}  # .... 0101 = EPS Bearer ID (EBI): 5
 
 Validate Bearer Level Quality of Service (Bearer QoS)
     Validate ie type and length  80  22  # IE Type: Bearer Level Quality of Service (Bearer QoS) (80)
@@ -187,10 +189,11 @@ Validate Bearer Level Quality of Service (Bearer QoS)
     Should Be Equal  0  ${gbr4dl}  # Guaranteed Bit Rate For Downlink: 0
 
 Validate Recovery (Restart Counter)
-    Validate ie type and length  3  1  # IE Type: Recovery (Restart Counter) (3)
+    [Arguments]  ${rc}
+    Validate ie type and length  ${ie_type.recovery_restart_counter}  1  # IE Type: Recovery (Restart Counter) (3)
     validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${restart-counter}=  Read From Data  1
-    Should Be Equal  1  ${restart-counter}  # Restart Counter: 1
+    Should Be Equal  ${rc}  ${restart-counter}  # Restart Counter: 1
 
 Validate UE Time Zone
     Validate ie type and length  114  2  # IE Type: UE Time Zone (114)
@@ -215,4 +218,35 @@ Validate Cause
     Read Binary From Data  1
     ${spare-and-dec}=  Read from binary  8
     Should Be Equal  0  ${spare-and-dec}
+
+Validate Bearer Context with EBI, Cause, F-TEID and CI
+    Validate ie type and length  ${ie_type.bearer_context}  45
+    Validate cr-flags and instance  0
+    Validate EPS Bearer ID (EBI)  5
+    Validate Cause  ${cause.request_accepted}
+    Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  12345  10.102.10.11  129
+    Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  12345  10.102.250.95  133
+    Validate Charging Id  5
+
+Validate Charging Id
+    [Arguments]  ${expected-cid}
+    Validate Ie Type And length  ${ie_type.charging_id}  4
+    Validate cr-flags and instance  0
+    ${charging-id}=  Read From Data  4
+    Should Be Equal  ${expected-cid}  ${charging-id}
+
+Validate Fully Qualified Domain Name (FQDN)
+    [Arguments]  ${domain}
+    ${length}=  Calculate Length From String  ${domain}
+    Validate ie type and length  ${ie_type.fqdn}  ${length}
+    Validate cr-flags and instance  0
+    ${domain-actual}=  Read String from Data  ${length}
+    Should Be Equal  ${domain}  ${domain-actual}
+
+Validate Ip Address
+    [Arguments]  ${ip}
+    Validate ie type and length  ${ie_type.ip_address}  4
+    Validate cr-flags and instance  0
+    ${ip-act}=  Read Ip From hex
+    Should Be Equal  ${ip}  ${ip-act}
 

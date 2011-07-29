@@ -26,7 +26,7 @@ Set Create Session Request
     Add Access Point Name (APN)  sgw.nsn.com.mnc012.mcc262.gprs
     Add Selection Mode
     Add PDN Type
-    Add PDN Address Allocation (PAA)  0.0.0.0  # PDN IPv4: 0.0.0.0 (0.0.0.0)
+    Add PDN Address Allocation (PAA)  0.0.0.0
     Add APN Restriction
     Add Aggregate Maximum Bit Rate (AMBR)
     Add Bearer Context with EBI and Bearer qos
@@ -36,7 +36,7 @@ Set Create Session Request
 
 Validate Create Session Request
     Validate Flags  72  # Version:2 P: 0 T: 1
-    Validate Message Type  ${message_type.create_session_request}  # Create Session Request
+    Validate Message Type  ${message_type.create_session_request}
     Validate Message Length  216
     Validate Tunnel Endpoint Identifier  0
     Validate Sequence Number  48
@@ -52,11 +52,11 @@ Validate Create Session Request
     Validate Access Point Name (APN)
     Validate Selection Mode
     Validate PDN Type
-    Validate PDN Address Allocation (PAA)
+    Validate PDN Address Allocation (PAA)  0.0.0.0
     Validate APN Restriction
     Validate Aggregate Maximum Bit Rate (AMBR)
     Validate Bearer Context with EBI and Bearer qos
-    Validate Recovery (Restart Counter)
+    Validate Recovery (Restart Counter)  1
     Validate UE Time Zone
     Validate Charging Characteristics
 
@@ -69,6 +69,7 @@ Set Create Session Response
     Add Spare Octets  1
     Add Cause  ${cause.request_accepted}
     Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  123564  10.102.250.95  139  # ...0 1011 = Interface Type: S11/S4 SGW GTP-C interface (11)
+    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  789889  10.102.185.69  135
     Add PDN Address Allocation (PAA)  192.168.0.1  # Prefix(IPv4): 192.168.0.1 (192.168.0.1)
     Add APN Restriction
     Add Bearer Context with EBI, Cause, F-TEID and CI
@@ -82,13 +83,23 @@ Validate Create Session Response
     Validate Message Length  136
     Validate Tunnel Endpoint Identifier  50331665
     Validate Sequence Number  48
+    Read From Data  1  #spare
+    Validate Cause  ${cause.request_accepted}
+    Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  123564  10.102.250.95  139
+    Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  789889  10.102.185.69  135
+    Validate PDN Address Allocation (PAA)  192.168.0.1
+    Validate APN Restriction
+    Validate Bearer Context with EBI, Cause, F-TEID and CI
+    Validate Recovery (Restart Counter)  13
+    Validate Fully Qualified Domain Name (FQDN)  rammbock.googlecode.com
+    Validate Ip Address  17.34.51.68
 
 Set Modify Bearer Request
     Add Flags  72
     Add Message Type And Length  ${message_type.modify_bearer_request}  55
     Add Tunnel Endpoint Identifier  126534
     Add Sequence Number  49
-    Add Decimal As Octets  0  1  # spare
+    Add Spare Octets  1
     Add Indication
     Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  50331665  192.168.112.10  138
     Add Bearer Context With EBI and F-TEID
@@ -113,7 +124,7 @@ Set Delete Session Response
     Add Message Type And Length  ${message_type.delete_session_response}  19
     Add Tunnel Endpoint Identifier  50331665
     Add Sequence Number  50
-    Add Decimal As OCtets  0  1  #spare
+    Add Decimal As OCtets  0  1  # spare
     Add Cause  ${cause.request_accepted}
     Add Recovery (Restart Counter)  13
 
@@ -123,6 +134,6 @@ Validate Delete Session Response
     Validate Message Length  19
     Validate Tunnel Endpoint Identifier  50331665
     Validate Sequence Number  50
-    Read From Data  1  #read spare
+    Read From Data  1  # read spare
     Validate Cause  ${cause.request_accepted}
 
