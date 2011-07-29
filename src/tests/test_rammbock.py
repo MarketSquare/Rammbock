@@ -66,4 +66,6 @@ class TestNumberFormatting(unittest.TestCase):
         s = time()
         rammbock.read_from_data(len(a))
         b = time()
-        assert b-s < 0.1
+        print b-s
+        assert b-s < 0.2
+
