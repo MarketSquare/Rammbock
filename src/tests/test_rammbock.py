@@ -60,6 +60,12 @@ class TestNumberFormatting(unittest.TestCase):
         print a
         assert a == "50331665"
 
+
+class TestSpeed():
+    def setUp(self):
+        rammbock._data = ""
+        rammbock._binary = ""
+
     def test_speed_of_read_from_date(self):
         a = "a" * 10000
         rammbock._data = a
