@@ -10,7 +10,7 @@ ${MNC}  12
 *** Keywords ***
 Set Create Session Request
     Add Flags  72  # Version:2 P: 0 T: 1
-    Add Message Type  32  # Create Session Request
+    Add Message Type  ${message_type.create_session_request}
     Add Message Length  216
     Add Tunnel Endpoint Identifier  0
     Add Sequence Number  48
@@ -29,14 +29,14 @@ Set Create Session Request
     Add PDN Address Allocation (PAA)  0.0.0.0  # PDN IPv4: 0.0.0.0 (0.0.0.0)
     Add APN Restriction
     Add Aggregate Maximum Bit Rate (AMBR)
-    Add Bearer Context : [Grouped IE]
+    Add Bearer Context with EBI and Bearer qos
     Add Recovery (Restart Counter)  1
     Add UE Time Zone
     Add Charging Characteristics
 
 Validate Create Session Request
     Validate Flags  72  # Version:2 P: 0 T: 1
-    Validate Message Type  32  # Create Session Request
+    Validate Message Type  ${message_type.create_session_request}  # Create Session Request
     Validate Message Length  216
     Validate Tunnel Endpoint Identifier  0
     Validate Sequence Number  48
@@ -55,14 +55,14 @@ Validate Create Session Request
     Validate PDN Address Allocation (PAA)
     Validate APN Restriction
     Validate Aggregate Maximum Bit Rate (AMBR)
-    Validate Bearer Context : [Grouped IE]
+    Validate Bearer Context with EBI and Bearer qos
     Validate Recovery (Restart Counter)
     Validate UE Time Zone
     Validate Charging Characteristics
 
 Set Create Session Response
     Add Flags  72
-    Add Message Type  33  # create session response
+    Add Message Type  ${message_type.create_session_response}
     Add Message Length  136
     Add Tunnel Endpoint Identifier  50331665
     Add Sequence Number  48
@@ -71,10 +71,35 @@ Set Create Session Response
     Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  123564  10.102.250.95  139  # ...0 1011 = Interface Type: S11/S4 SGW GTP-C interface (11)
     Add PDN Address Allocation (PAA)  192.168.0.1  # Prefix(IPv4): 192.168.0.1 (192.168.0.1)
     Add APN Restriction
-    Add Bearer Context with EBI, Cause, F-TEID and CI : [Grouped IE]
+    Add Bearer Context with EBI, Cause, F-TEID and CI
     Add Recovery (Restart Counter)  13
     Add Fully Qualified Domain Name (FQDN)  rammbock.googlecode.com
     Add Ip Address  17.34.51.68
 
 Validate Create Session Response
+
+Set Modify Bearer Request
+    Add Flags  72
+    Add Message Type And Length  ${message_type.modify_bearer_request}  55
+    Add Tunnel Endpoint Identifier  126534
+    Add Sequence Number  49
+    Add Decimal As Octets  0  1  # spare
+    Add Indication
+    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  50331665  192.168.112.10  138
+    Add Bearer Context With EBI and F-TEID
+    Add UE Time Zone
+
+Validate Modify Bearer Request
+
+Set Modify Bearer Response
+
+Validate Modify Bearer Response
+
+Set Delete Session Request
+
+Validate Delete Session Request
+
+Set Delete Session Response
+
+Validate Delete Session Response
 

@@ -157,7 +157,7 @@ Validate Aggregate Maximum Bit Rate (AMBR)
     ${ambr-dl}=  Read From Data  4
     Should Be Equal  1  ${ambr-dl}  # AMBR Downlink(Aggregate Maximum Bit Rate for Downlink): 1
 
-Validate Bearer Context : [Grouped IE]
+Validate Bearer Context with EBI and Bearer qos
     Validate ie type and length  93  31  # IE Type: Bearer Context (93)
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Validate EPS Bearer ID (EBI)

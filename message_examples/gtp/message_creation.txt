@@ -7,6 +7,11 @@ Add Message Type
     [Arguments]  ${type}
     Add Decimal as Octets  ${type}  1
 
+Add Message Type And Length
+    [Arguments]  ${type}  ${length}
+    Add Message Type  ${type}
+    Add Message Length  ${length}
+
 Add Message Length
     [Arguments]  ${length}
     Add Decimal as Octets  ${length}  2
@@ -81,20 +86,18 @@ Add RAT Type
     Add Decimal as Octets  6  1  # RAT Type: EUTRAN (6)
 
 Add Indication
-    Add Decimal as Octets  77  1  # IE Type: Indication (77)
-    Add Decimal as Octets  2  2  # IE Length: 2
+    Add Ie type and length  ${ie_type.indication}  2
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  0  1  # 0... .... = DAF (Dual Address Bearer Flag): False, .0.. .... = DTF (Direct Tunnel Flag): False, ..0. .... = HI (Handover Indication): False, ...0 .... = DFI (Direct Forwarding Indication): False, .... 0... = OI (Operation Indication): False, .... .0.. = ISRSI (Idle mode Signalling Reduction Supported Indication): False, .... ..0. = ISRAI (Idle mode Signalling Reduction Activation Indication): False, .... ...0 = SGWCI (SGW Change Indication): False
     Add Decimal as Octets  0  1  # .... 0... = PT (Protocol Type): False, .... .0.. = TDI (Teardown Indication): False, .... ..0. = SI (Scope Indication): False, .... ...0 = MSV (MS Validated): False
 
 Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)
     [Arguments]  ${teidgre}  ${ip}  ${flags}
-    Add Decimal as Octets  87  1  # IE Type: Fully Qualified Tunnel Endpoint Identifier (F-TEID) (87)
-    Add Decimal as Octets  9  2  # IE Length: 9
+    Add Ie Type And Length  ${ie_type.fteid}  9
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  ${flags}  1  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
     Add Decimal as Octets  ${teidgre}  4  # TEID/GRE Key: 50331665
-    Add Ip As Hex  ${ip}  # F-TEID IPv4: 192.168.112.10 (192.168.112.10)
+    Add Ip As Hex  ${ip}
 
 Add Access Point Name (APN)
     [Arguments]  ${apn}
@@ -136,17 +139,20 @@ Add Aggregate Maximum Bit Rate (AMBR)
     Add Decimal as Octets  2  4  # AMBR Uplink (Aggregate Maximum Bit Rate for Uplink): 2
     Add Decimal as Octets  1  4  # AMBR Downlink(Aggregate Maximum Bit Rate for Downlink): 1
 
-Add Bearer Context : [Grouped IE]
+Add Bearer Context with EBI and Bearer qos
     Add ie type and length  ${ie_type.bearer_context}  31
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add EPS Bearer ID (EBI)
     Add Bearer Level Quality of Service (Bearer QoS)
 
-Add Bearer Context with EBI, Cause, F-TEID and CI : [Grouped IE]
+Add Bearer Context with EBI, Cause, F-TEID and CI
     Add ie type and length  ${ie_type.bearer_context}  45
     Add Decimal As Octets  0  1  # cr-flags and instance
     Add EPS Bearer ID (EBI)
     Add Cause  ${cause.request_accepted}
+    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  12345  10.102.10.11  129
+    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  12345  10.102.250.95  133
+    Add Charging Id
 
 Add EPS Bearer ID (EBI)
     Add ie type and length  ${ie_type.ebi}  1
@@ -154,8 +160,7 @@ Add EPS Bearer ID (EBI)
     Add Decimal as Octets  5  1  # .... 0101 = EPS Bearer ID (EBI): 5
 
 Add Bearer Level Quality of Service (Bearer QoS)
-    Add Decimal as Octets  80  1  # IE Type: Bearer Level Quality of Service (Bearer QoS) (80)
-    Add Decimal as Octets  22  2  # IE Length: 22
+    Add Ie Type And length  ${ie_type.bearer_qos}  22
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  4  1  # .... ...0 = PVI (Pre-emption Vulnerability): False, ..00 01.. = PL (Priority Level): 1, .0.. .... = PCI (Pre-emption Capability): False
     Add Decimal as Octets  9  1  # Label (QCI): 9
@@ -172,8 +177,7 @@ Add Recovery (Restart Counter)
     Add Decimal as Octets  1  1  # Restart Counter: 1
 
 Add UE Time Zone
-    Add Decimal as Octets  114  1  # IE Type: UE Time Zone (114)
-    Add Decimal as Octets  2  2  # IE Length: 2
+    Add ie type and length  ${ie_type.ue_time_zone}  2
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  8  1  # Time Zone: 8
     Add Decimal as Octets  0  1  # .... ..00 = Daylight Saving Time: No Adjustments for Daylight Saving Time (0)
@@ -195,7 +199,7 @@ Add Fully Qualified Domain Name (FQDN)
     [Arguments]  ${domain}
     ${length}=  Calculate Length From String  ${domain}
     Add ie type and length  ${ie_type.fqdn}  ${length}
-    Add Decimal As Octets  0  1  #cr-flags and instance
+    Add Decimal As Octets  0  1  # cr-flags and instance
     Add String  ${domain}
 
 Add Ip Address
@@ -208,4 +212,15 @@ Add ie type and length
     [Arguments]  ${iet}  ${iel}
     Add Decimal As Octets  ${iet}  1
     Add Decimal As Octets  ${iel}  2
+
+Add Charging Id
+    Add Ie Type And length  ${ie_type.charging_id}  4
+    Add Decimal As Octets  0  1  # cr-flags and instance
+    Add Decimal As Octets  5  4  # charging id
+
+Add Bearer Context With EBI and F-TEID
+    Add Ie Type And Length  ${ie_type.bearer_context}  18
+    add Decimal As Octets  0  1  # cr-flags and instance
+    Add EPS Bearer ID (EBI)
+    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  12345  10.140.67.93  128
 
