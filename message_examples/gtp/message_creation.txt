@@ -37,16 +37,14 @@ Add International Mobile Subscriber Identity (IMSI)
 
 Add MSISDN
     [Arguments]  ${country_code}  ${address_digits}
-    Add Decimal as Octets  76  1  # IE Type: MSISDN (76)
-    Add Decimal as Octets  8  2  # IE Length: 8
+    Add Ie type and length  ${ie_type.msisdn}  8
     Add Spare Bits  4
     Add Decimal as Bits  0  4  # Instance: 0
     Add Number As TBCD  ${country_code}  ${address_digits}
 
 Add User Location Info (ULI)
     [Arguments]  ${mcc}  ${mnc}
-    Add Decimal as Octets  86  1  # IE Type: User Location Info (ULI) (86)
-    Add Decimal as Octets  13  2  # IE Length: 13
+    Add Ie type and length  ${ie_type.uli}  13
     Add Decimal as Bits  0  3  # 000. .... = CR flag
     Add Spare Bits  1
     Add Decimal As Bits  0  4  # .... 0000 = Instance: 0
@@ -73,8 +71,7 @@ Add E-UTRAN Cell Global Identifier (ECGI)
 
 Add Serving Network
     [Arguments]  ${mcc}  ${mnc}
-    Add Decimal as Octets  83  1  # IE Type: Serving Network (83)
-    Add Decimal as Octets  3  2  # IE Length: 3
+    Add Ie type and length  ${ie_type.serving_network}  3
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Number as tbcd  ${mcc}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
     Add Number as tbcd  ${mnc}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
@@ -101,21 +98,18 @@ Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)
 
 Add Access Point Name (APN)
     [Arguments]  ${apn}
-    Add Decimal as Octets  71  1  # IE Type: Access Point Name (APN) (71)
     ${length}=  Calculate Length From String  ${apn}
-    Add Decimal as Octets  ${length}  2
+    Add Ie type and length  ${ie_type.apn}  ${length}
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add String  ${apn}  ${EMPTY}  # APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
 
 Add Selection Mode
-    Add Decimal as Octets  128  1  # IE Type: Selection Mode (128)
-    Add Decimal as Octets  1  2  # IE Length: 1
+    Add ie type and length  ${ie_type.selection_mode}  1
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  252  1  # .... ..00 = Selection Mode: MS or network provided APN, subscribed verified (0)
 
 Add PDN Type
-    Add Decimal as Octets  99  1  # IE Type: PDN Type (99)
-    Add Decimal as Octets  1  2  # IE Length: 1
+    Add ie type and length  ${ie_type.pdn_type}  1
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  1  1  # .... .001 = PDN Type: IPv4 (1)
 

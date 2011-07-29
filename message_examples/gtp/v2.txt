@@ -111,30 +111,59 @@ Validate Modify Bearer Request
     Validate Message Length  55
     Validate Tunnel Endpoint Identifier  126534
     Validate Sequence Number  49
-    Read From Data  1  #spare
+    Read From Data  1  # spare
     Validate Indication
     Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  50331665  192.168.112.10  138
     Validate Bearer Context With EBI and F-TEID
     Validate UE Time Zone
 
 Set Modify Bearer Response
+    Add flags  72
     Add Message Type And Length  ${message_type.modify_bearer_response}  47
+    Add Tunnel Endpoint Identifier  50331665
+    Add Sequence Number  49
+    Add Spare Octets  1
     Add Cause  ${cause.request_accepted}
     Add Bearer Context With EBI, Cause and F-TEID
     Add Recovery (Restart Counter)  13
 
 Validate Modify Bearer Response
+    Validate flags  72
+    Validate Message Type  ${message_type.modify_bearer_response}
+    Validate Message Length  47
+    Validate Tunnel Endpoint Identifier  50331665
+    Validate Sequence Number  49
+    Read From Data  1  # spare
+    Validate Cause  ${cause.request_accepted}
+    Validate Bearer Context With EBI, Cause and F-TEID
+    Validate Recovery (Restart Counter)  13
 
 Set Delete Session Request
+    Add Flags  72
+    Add Message Type And Length  ${message_type.delete_session_request}  36
+    Add Tunnel Endpoint Identifier  126534
+    Add Sequence Number  50
+    Add spare octets  1
+    Add EPS Bearer ID (EBI)  5
+    Add User Location Info (ULI)  ${MCC}  ${MNC}
+    Add Indication
 
 Validate Delete Session Request
+    Validate Flags  72
+    Validate Message Type And Length  ${message_type.delete_session_request}  36
+    Validate Tunnel Endpoint Identifier  126534
+    Validate Sequence Number  50
+    Read From Data  1  # spare
+    Validate EPS Bearer ID (EBI)  5
+    Validate User Location Info (ULI)  ${MCC}  ${MNC}
+    Validate Indication
 
 Set Delete Session Response
     Add flags  72
     Add Message Type And Length  ${message_type.delete_session_response}  19
     Add Tunnel Endpoint Identifier  50331665
     Add Sequence Number  50
-    Add Decimal As OCtets  0  1  # spare
+    Add Spare Octets  1
     Add Cause  ${cause.request_accepted}
     Add Recovery (Restart Counter)  13
 
@@ -146,4 +175,5 @@ Validate Delete Session Response
     Validate Sequence Number  50
     Read From Data  1  # read spare
     Validate Cause  ${cause.request_accepted}
+    Validate Recovery (Restart Counter)  13
 

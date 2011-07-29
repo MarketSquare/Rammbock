@@ -22,12 +22,10 @@ Modify Bearer Request
     Receive And Validate Modify Bearer Request
 
 Modify Bearer Response
-    [Tags]  ${EMPTY}
     Create And Send Modify Bearer Response
     Receive And Validate Modify Bearer Response
 
 Delete Session Request
-    [Tags]  ${EMPTY}
     Create And Send Delete Session Request
     Receive And Validate Delete Session Request
 

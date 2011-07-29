@@ -23,4 +23,11 @@ ${ie_type.apn_restriction}  127  # # IE Type: APN Restriction ()
 ${ie_type.fqdn}  136  # IE Type: Fully Qualified Domain Name (FQDN)
 ${ie_type.paa}  79  # # IE Type: PDN Address Allocation (PAA)
 ${ie_type.recovery_restart_counter}  3  # # IE Type: Recovery (Restart Counter)
+${message_type.delete_session_request}  36  # Message Type: Delete Session Request
+${ie_type.pdn_type}  99  # # IE Type: PDN Type
+${ie_type.selection_mode}  128  # # IE Type: Selection Mode
+${ie_type.apn}  71  # # IE Type: Access Point Name (APN)
+${ie_type.serving_network}  83  # # IE Type: Serving Network
+${ie_type.uli}  86  # # IE Type: User Location Info (ULI)
+${ie_type.msisdn}  76  # IE Type: MSISDN
 

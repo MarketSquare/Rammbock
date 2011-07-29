@@ -25,7 +25,6 @@ Try To Bind Server To network interface which does not exist
     Try to bind server to 'foo' interface
     Exeception "IOError: cannot bind server to interface: 'foo'" should raise
 
-
 *** Keywords ***
 Try To Bind Server To ${interface} interface
     ${error}=  Run Keyword And Expect Error  *  Start UDP Server  ${interface}  ${PORT}

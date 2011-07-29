@@ -47,7 +47,7 @@ Validate Sequence Number
 
 Validate International Mobile Subscriber Identity (IMSI)
     [Arguments]  ${expected}
-    Validate ie type and length  1  8
+    Validate ie type and length  ${ie_type.imsi}  8
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Read TBCD Coded Numbers From Data  15
     ${actual}=  Read From TBCD  15  # IMSI(International Mobile Subscriber Identity number): 262120000000001
@@ -55,7 +55,7 @@ Validate International Mobile Subscriber Identity (IMSI)
 
 Validate MSISDN
     [Arguments]  ${country_code}  ${address_digits}
-    Validate ie type And length  76  8
+    Validate ie type And length  ${ie_type.msisdn}  8
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     read tbcd coded numbers from data  16
     ${cc}=  Read From TBCD  3
@@ -65,7 +65,7 @@ Validate MSISDN
 
 Validate User Location Info (ULI)
     [Arguments]  ${mcc}  ${mnc}
-    Validate ie type and length  86  13  # IE Type: User Location Info (ULI) (86), length: 13
+    Validate ie type and length  ${ie_type.uli}  13
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Read Binary From Data  1
     Read From Binary  3  # spare bits
@@ -88,7 +88,7 @@ Validate E-UTRAN Cell Global Identifier (ECGI)
 
 Validate Serving Network
     [Arguments]  ${mcc}  ${mnc}
-    Validate ie type and length  83  3  # IE Type: Serving Network (83) # IE Length: 3
+    Validate ie type and length  ${ie_type.serving_network}  3
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Validate mcc and mnc  ${mcc}  ${mnc}
 
@@ -109,7 +109,7 @@ Validate Indication
 
 Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)
     [Arguments]  ${teidgre}  ${ip}  ${flags}
-    Validate ie type and length  ${ie_type.fteid}  9  # IE Type: Fully Qualified Tunnel Endpoint Identifier (F-TEID) (87) # IE Length: 9
+    Validate ie type and length  ${ie_type.fteid}  9
     Validate cr-flags and instance  0
     ${flags-act}  Read From Data  1
     Should Be Equal  ${flags}  ${flags-act}  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
@@ -119,26 +119,26 @@ Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)
     Should Be Equal  ${ip}  ${ip-act}  # F-TEID IPv4: 192.168.112.10 (192.168.112.10)
 
 Validate Access Point Name (APN)
-    Validate ie type and length  71  30  # IE Type: Access Point Name (APN) (71)
+    Validate ie type and length  ${ie_type.apn}  30
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${string}=  Read String From Data  30
     Should Be Equal  sgw.nsn.com.mnc012.mcc262.gprs  ${string}  # APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
 
 Validate Selection Mode
-    Validate ie type and length  128  1  # IE Type: Selection Mode (128)
+    Validate ie type and length  ${ie_type.selection_mode}  1
     validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${sm}=  Read From Data  1
     Should Be Equal  252  ${sm}  # .... ..00 = Selection Mode: MS or network provided APN, subscribed verified (0)
 
 Validate PDN Type
-    Validate ie type and length  99  1  # IE Type: PDN Type (99)
+    Validate ie type and length  ${ie_type.pdn_type}  1
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${pdnt}=  Read From Data  1
     Should Be Equal  1  ${pdnt}  # .... .001 = PDN Type: IPv4 (1)
 
 Validate PDN Address Allocation (PAA)
     [Arguments]  ${expected-ip}
-    Validate ie type and length  79  5  # IE Type: PDN Address Allocation (PAA) (79)
+    Validate ie type and length  ${ie_type.paa}  5
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${pdnt}=  Read From Data  1
     Should Be Equal  1  ${pdnt}  # .... .001 = PDN Type: IPv4 (1)
@@ -152,7 +152,7 @@ Validate APN Restriction
     Should Be Equal  0  ${apnr}  # APN Restriction: 0
 
 Validate Aggregate Maximum Bit Rate (AMBR)
-    Validate ie type and length  72  8  # IE Type: Aggregate Maximum Bit Rate (AMBR) (72)
+    Validate ie type and length  ${ie_type.ambr}  8
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${ambr-ul}=  Read From Data  4
     Should Be Equal  2  ${ambr-ul}  # AMBR Uplink (Aggregate Maximum Bit Rate for Uplink): 2
@@ -160,20 +160,20 @@ Validate Aggregate Maximum Bit Rate (AMBR)
     Should Be Equal  1  ${ambr-dl}  # AMBR Downlink(Aggregate Maximum Bit Rate for Downlink): 1
 
 Validate Bearer Context with EBI and Bearer qos
-    Validate ie type and length  93  31  # IE Type: Bearer Context (93)
+    Validate ie type and length  ${ie_type.bearer_context}  31
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Validate EPS Bearer ID (EBI)  5
     Validate Bearer Level Quality of Service (Bearer QoS)
 
 Validate EPS Bearer ID (EBI)
     [Arguments]  ${expected-ebi}
-    Validate ie type and length  73  1  # IE Type: EPS Bearer ID (EBI) (73)
+    Validate ie type and length  ${ie_type.ebi}  1
     validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${eps-bearer-id}=  Read From Data  1
     Should Be Equal  ${expected-ebi}  ${eps-bearer-id}  # .... 0101 = EPS Bearer ID (EBI): 5
 
 Validate Bearer Level Quality of Service (Bearer QoS)
-    Validate ie type and length  80  22  # IE Type: Bearer Level Quality of Service (Bearer QoS) (80)
+    Validate ie type and length  ${ie_type.bearer_qos}  22
     validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${flags1}=  Read From Data  1
     Should Be Equal  4  ${flags1}  # .... ...0 = PVI (Pre-emption Vulnerability): False, ..00 01.. = PL (Priority Level): 1, .0.. .... = PCI (Pre-emption Capability): False
@@ -204,14 +204,14 @@ Validate UE Time Zone
     Should Be Equal  0  ${dlst}  # .... ..00 = Daylight Saving Time: No Adjustments for Daylight Saving Time (0)
 
 Validate Charging Characteristics
-    Validate ie type and length  95  2
+    Validate ie type and length  ${ie_type.charging_characteristics}  2
     Validate cr-flags and instance  0
     ${charging-characteristic}=  Read From Data  2
     Should Be Equal  ${charging-characteristic}  12800
 
 Validate Cause
     [Arguments]  ${expected}
-    Validate ie type and length  2  2  # Type(2) Cause
+    Validate ie type and length  ${ie_type.cause}  2  # Type(2) Cause
     validate cr-flags and instance  0
     ${cause}=  Read From Data  1
     Should Be Equal  ${expected}  ${cause}  # cause: Request Accepted
@@ -255,4 +255,16 @@ Validate Bearer Context With EBI and F-TEID
     Validate cr-flags and instance  0
     Validate EPS Bearer ID (EBI)  5
     Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  12345  10.140.67.93  128
+
+Validate Bearer Context With EBI, Cause and F-TEID
+    Validate ie type and length  ${ie_type.bearer_context}  24
+    Validate cr-flags and instance  0
+    Validate EPS Bearer ID (EBI)  5
+    Validate Cause  ${cause.request_accepted}
+    Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  12345  10.102.10.11  129
+
+Validate Message Type And Length
+    [Arguments]  ${arg1}  ${arg2}
+    Validate message type  ${arg1}
+    Validate Message Length  ${arg2}
 
