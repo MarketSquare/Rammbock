@@ -80,10 +80,10 @@ Add Serving Network
     Add Number as tbcd  ${mnc}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
 
 Add RAT Type
-    Add Decimal as Octets  82  1  # IE Type: RAT Type (82)
-    Add Decimal as Octets  1  2  # IE Length: 1
+    [Arguments]  ${rat_type}
+    Add Ie type and length  ${ie_type.rat_type}  1
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  6  1  # RAT Type: EUTRAN (6)
+    Add Decimal as Octets  ${rat_type}  1  # RAT Type: EUTRAN (6)
 
 Add Indication
     Add Ie type and length  ${ie_type.indication}  2
@@ -142,22 +142,30 @@ Add Aggregate Maximum Bit Rate (AMBR)
 Add Bearer Context with EBI and Bearer qos
     Add ie type and length  ${ie_type.bearer_context}  31
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add EPS Bearer ID (EBI)
+    Add EPS Bearer ID (EBI)  5
     Add Bearer Level Quality of Service (Bearer QoS)
 
 Add Bearer Context with EBI, Cause, F-TEID and CI
     Add ie type and length  ${ie_type.bearer_context}  45
     Add Decimal As Octets  0  1  # cr-flags and instance
-    Add EPS Bearer ID (EBI)
+    Add EPS Bearer ID (EBI)  5
     Add Cause  ${cause.request_accepted}
     Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  12345  10.102.10.11  129
     Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  12345  10.102.250.95  133
     Add Charging Id
 
 Add EPS Bearer ID (EBI)
+    [Arguments]  ${id}
     Add ie type and length  ${ie_type.ebi}  1
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  5  1  # .... 0101 = EPS Bearer ID (EBI): 5
+    Add Decimal as Octets  ${id}  1  # .... 0101 = EPS Bearer ID (EBI): 5
+
+Add Bearer Context With EBI, Cause and F-TEID
+    add ie type and length  ${ie_type.bearer_context}  24
+    Add decimal As Octets  0  1  #cr-flag and instance
+    Add EPS Bearer ID (EBI)  5
+    Add Cause  ${cause.request_accepted}
+    Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  12345  10.102.10.11  129
 
 Add Bearer Level Quality of Service (Bearer QoS)
     Add Ie Type And length  ${ie_type.bearer_qos}  22

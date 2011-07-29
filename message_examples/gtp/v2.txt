@@ -19,7 +19,7 @@ Set Create Session Request
     Add MSISDN  358  6100000000001
     Add User Location Info (ULI)  ${MCC}  ${MNC}
     Add Serving Network  ${MCC}  ${MNC}
-    Add RAT Type
+    Add RAT Type  ${rat_types.eutran}
     Add Indication
     Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  50331665  192.168.112.10  138  # ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
     Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  0  10.102.182.184  135  # ...0 0111 = Interface Type: S5/S8 PGW GTP-C interface (7)
@@ -45,7 +45,7 @@ Validate Create Session Request
     Validate MSISDN  358  6100000000001
     Validate User Location Info (ULI)  ${MCC}  ${MNC}
     Validate Serving Network  ${MCC}  ${MNC}
-    Validate RAT Type
+    Validate RAT Type  ${rat_types.eutran}
     Validate Indication
     Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  50331665  192.168.112.10  138
     Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  0  10.102.182.184  135
@@ -77,6 +77,11 @@ Set Create Session Response
     Add Ip Address  17.34.51.68
 
 Validate Create Session Response
+    Validate Flags  72
+    Validate Message Type  ${message_type.create_session_response}
+    Validate Message Length  136
+    Validate Tunnel Endpoint Identifier  50331665
+    Validate Sequence Number  48
 
 Set Modify Bearer Request
     Add Flags  72
@@ -92,6 +97,10 @@ Set Modify Bearer Request
 Validate Modify Bearer Request
 
 Set Modify Bearer Response
+    Add Message Type And Length  ${message_type.modify_bearer_response}  47
+    Add Cause  ${cause.request_accepted}
+    Add Bearer Context With EBI, Cause and F-TEID
+    Add Recovery (Restart Counter)  13
 
 Validate Modify Bearer Response
 
@@ -100,6 +109,20 @@ Set Delete Session Request
 Validate Delete Session Request
 
 Set Delete Session Response
+    Add flags  72
+    Add Message Type And Length  ${message_type.delete_session_response}  19
+    Add Tunnel Endpoint Identifier  50331665
+    Add Sequence Number  50
+    Add Decimal As OCtets  0  1  #spare
+    Add Cause  ${cause.request_accepted}
+    Add Recovery (Restart Counter)  13
 
 Validate Delete Session Response
+    Validate Flags  72
+    Validate Message Type  ${message_type.delete_session_response}
+    Validate Message Length  19
+    Validate Tunnel Endpoint Identifier  50331665
+    Validate Sequence Number  50
+    Read From Data  1  #read spare
+    Validate Cause  ${cause.request_accepted}
 

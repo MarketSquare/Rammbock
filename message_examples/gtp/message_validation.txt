@@ -93,13 +93,14 @@ Validate Serving Network
     Validate mcc and mnc  ${mcc}  ${mnc}
 
 Validate RAT Type
-    Validate ie type and length  82  1  # RAT Type (82)
+    [Arguments]  ${expected}
+    Validate ie type and length  ${ie_type.rat_type}  1  # RAT Type (82)
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${rat-type}=  Read From Data  1
-    Should Be Equal  ${rat-type}  6  # EUTRAN (6)
+    Should Be Equal  ${rat-type}  ${expected}
 
 Validate Indication
-    Validate ie type and length  77  2  # IE Type: Indication (77)
+    Validate ie type and length  ${ie_type.indication}  2
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${flags1}=  Read From Data  1
     Should Be Equal  0  ${flags1}  # 0... .... = DAF (Dual Address Bearer Flag): False, .0.. .... = DTF (Direct Tunnel Flag): False, ..0. .... = HI (Handover Indication): False, ...0 .... = DFI (Direct Forwarding Indication): False, .... 0... = OI (Operation Indication): False, .... .0.. = ISRSI (Idle mode Signalling Reduction Supported Indication): False, .... ..0. = ISRAI (Idle mode Signalling Reduction Activation Indication): False, .... ...0 = SGWCI (SGW Change Indication): False
@@ -206,10 +207,11 @@ Validate Charging Characteristics
     Should Be Equal  ${charging-characteristic}  12800
 
 Validate Cause
+    [Arguments]  ${expected}
     Validate ie type and length  2  2  # Type(2) Cause
     validate cr-flags and instance  0
     ${cause}=  Read From Data  1
-    Should Be Equal  16  ${cause}  # cause: Request Accepted
+    Should Be Equal  ${expected}  ${cause}  # cause: Request Accepted
     Read Binary From Data  1
     ${spare-and-dec}=  Read from binary  8
     Should Be Equal  0  ${spare-and-dec}
