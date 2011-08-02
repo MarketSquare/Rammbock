@@ -14,14 +14,18 @@ UDP Server and Client are initialized in port ${desired_port}
     Create UDP Client
     Connect to UDP server  ${HOST}  ${desired_port}
 
-Close Connections
-    Close Client
-    Close Server
-
 TCP Server and Client are Initialized
     Start TCP Server  ${PHYSICAL_INTERFACE}  ${PORT}
     Create TCP Client And Connect To Server  ${HOST}  ${PORT}
     accept tcp connection
+
+SCTP client and server are initialized
+    Start SCTP Server  ${PHYSICAL_INTERFACE}  ${PORT}
+    Create SCTP Client And Connect To Server  ${HOST}  ${PORT}
+
+Close Connections
+    Close Client
+    Close Server
 
 Check Server Existence
     [Arguments]  ${servername}  ${boolean}
@@ -37,4 +41,9 @@ Create TCP Client And Connect To Server
     [Arguments]  ${host}  ${port}
     Create TCP Client
     Connect to TCP server  ${host}  ${port}
+
+Create SCTP Client And Connect To Server
+    [Arguments]  ${host}  ${port}
+    Create SCTP Client
+    Connect to SCTP server  ${host}  ${port}
 

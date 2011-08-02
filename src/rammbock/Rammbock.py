@@ -1,5 +1,8 @@
-from Client import UDPClient, TCPClient
-from Server import UDPServer, TCPServer
+#!/usr/bin/python
+#-*- coding: iso-8859-15 -*-
+#
+from Client import UDPClient, TCPClient, SCTPClient
+from Server import UDPServer, TCPServer, SCTPServer
 import Server
 import Client
 import struct
@@ -29,6 +32,10 @@ class Rammbock(object):
         self._servers[name] = UDPServer(name)
         self._servers[name].server_startup(nwinterface, ip, port)
 
+    def start_sctp_server(self, nwinterface, port, ip=Server.DEFAULT_IP, name=Server.DEFAULT_NAME):
+        self._servers[name] = SCTPServer(name)
+        self._servers[name].server_startup(nwinterface, ip, port)
+
     def start_tcp_server(self, nwinterface, port, ip=Server.DEFAULT_IP, name=Server.DEFAULT_NAME):
         self._servers[name] = TCPServer(name)
         self._servers[name].server_startup(nwinterface, ip, port)
@@ -39,10 +46,13 @@ class Rammbock(object):
     def check_client_status(self, name=Client.DEFAULT_NAME):
         return name in self._clients
 
-    def connect_to_udp_server(self, host, port, ifname = False, client=Client.DEFAULT_NAME):
+    def connect_to_udp_server(self, host, port, ifname=False, client=Client.DEFAULT_NAME):
         self._clients[client].establish_connection_to_server(host, port, ifname)
 
-    def connect_to_tcp_server(self, host, port, ifname = False, client=Client.DEFAULT_NAME):
+    def connect_to_sctp_server(self, host, port, ifname=False, client=Client.DEFAULT_NAME):
+        self._clients[client].establish_connection_to_server(host, port, ifname)
+
+    def connect_to_tcp_server(self, host, port, ifname=False, client=Client.DEFAULT_NAME):
         self._clients[client].establish_connection_to_server(host, port, ifname)
 
     def accept_tcp_connection(self, server=Server.DEFAULT_NAME):
@@ -54,6 +64,9 @@ class Rammbock(object):
 
     def create_udp_client(self, name=Client.DEFAULT_NAME):
         self._clients[name] = UDPClient(name)
+
+    def create_sctp_client(self, name=Client.DEFAULT_NAME):
+        self._clients[name] = SCTPClient(name)
 
     def create_tcp_client(self, name=Client.DEFAULT_NAME):
         self._clients[name] = TCPClient(name)

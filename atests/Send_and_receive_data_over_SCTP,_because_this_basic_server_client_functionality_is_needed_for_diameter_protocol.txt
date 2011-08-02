@@ -2,24 +2,36 @@
 Test Setup      SCTP client and server are initialized
 Test Teardown   Close Connections
 Library         rammbock.Rammbock
+Resource        resources/server_client.txt
+Resource        resources/data_transfer.txt
 
 *** Test Cases ***
 Send packet from Client to Server
-    Create message and send it
-    Receive message and validate it
+    Client Creates Message And Sends It to Server
+    Server Receives message and validates it
 
 Send packet from Client to Server and return it back
+    Client Creates Message And Sends It to Server
+    Server Receives Message and Sends It Back to Client
+    Client Receives message and validates it
 
 Send multiple packets from Client to Server
 
 *** Keywords ***
-Create message and send it
+Client Creates Message And Sends It to Server
     Create Message
     Add String  sctp control message
     Client Sends Data
 
-Receive message and validate it
+Server Receives message and validates it
     Server Receives Data
     ${value}=  Read Until
     Should Be Equal  ${value}  sctp control message
+
+Server Receives Message and Sends It Back to Client
+    Server Receives message and validates it
+    Server Sends Data
+
+Client Receives message and validates it
+    Client Receives Data
 

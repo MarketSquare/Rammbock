@@ -2,6 +2,10 @@
 #-*- coding: iso-8859-15 -*-
 
 import socket
+try:
+    from sctp import sctpsocket_udp
+except ImportError:
+    SCTP_ENABLED = False
 
 UDP_PACKET_MAX_SIZE = 1024
 TCP_PACKET_MAX_SIZE = 1000000
@@ -12,7 +16,6 @@ class _Client(object):
 
     def __init__(self, clientname=DEFAULT_NAME):
         self._name = clientname
-
 
     def establish_connection_to_server(self, host, port, interface):
         print 'Connecting to host and port: '+host+':'+port
@@ -45,3 +48,12 @@ class TCPClient(_Client):
             data = self._client_socket.recv(TCP_PACKET_MAX_SIZE)
             if not data: break
             return data
+
+class SCTPClient(UDPClient):
+
+    def __init__(self, server_name=DEFAULT_NAME):
+        if not SCTP_ENABLED:
+            raise Exception("SCTP Not enabled")
+        else:
+            _Client.__init__(self, server_name)
+            self._client_socket = sctpsocket_udp(socket.AF_INET)
