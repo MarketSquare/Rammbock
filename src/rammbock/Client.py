@@ -62,4 +62,4 @@ class SCTPClient(UDPClient):
 
     def establish_connection_to_server(self, host, port, interface):
         print 'Connecting to host and port: '+host+':'+port
-        self._client_socket.connect(host+":"+int(port))
+        self._client_socket.connect(host,port)
