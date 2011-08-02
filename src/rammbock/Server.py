@@ -1,10 +1,13 @@
 #!/usr/bin/python
 #-*- coding: iso-8859-15 -*-
 #
+
 import socket
 import Interface
+
 try:
     from sctp import sctpsocket_udp
+    SCTP_ENABLED = True
 except ImportError:
     SCTP_ENABLED = False
 

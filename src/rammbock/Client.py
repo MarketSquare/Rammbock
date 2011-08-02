@@ -2,8 +2,10 @@
 #-*- coding: iso-8859-15 -*-
 
 import socket
+
 try:
     from sctp import sctpsocket_udp
+    SCTP_ENABLED = True
 except ImportError:
     SCTP_ENABLED = False
 
@@ -57,3 +59,7 @@ class SCTPClient(UDPClient):
         else:
             _Client.__init__(self, server_name)
             self._client_socket = sctpsocket_udp(socket.AF_INET)
+
+    def establish_connection_to_server(self, host, port, interface):
+        print 'Connecting to host and port: '+host+':'+port
+        self._client_socket.connect(host+":"+int(port))
