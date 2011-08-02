@@ -6,7 +6,7 @@ import socket
 import Interface
 
 try:
-    from sctp import sctpsocket_udp
+    from sctp import sctpsocket_tcp
     SCTP_ENABLED = True
 except ImportError:
     SCTP_ENABLED = False
@@ -75,13 +75,11 @@ class TCPServer(_Server):
         self.connection.send(packet)
 
 
-class SCTPServer(UDPServer):
-
+class SCTPServer(TCPServer):
 
     def __init__(self, server_name=DEFAULT_NAME):
         if not SCTP_ENABLED:
             raise Exception("SCTP Not enabled")
         else:
             _Server.__init__(self, server_name)
-            self._server_socket = sctpsocket_udp(socket.AF_INET)
-
+            self._server_socket = sctpsocket_tcp(socket.AF_INET)

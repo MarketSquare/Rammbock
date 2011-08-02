@@ -4,7 +4,7 @@
 import socket
 
 try:
-    from sctp import sctpsocket_udp
+    from sctp import sctpsocket_tcp
     SCTP_ENABLED = True
 except ImportError:
     SCTP_ENABLED = False
@@ -23,7 +23,7 @@ class _Client(object):
         print 'Connecting to host and port: '+host+':'+port
         self._client_socket.connect((host, int(port)))
 
-    def send_packet(self, packet): 
+    def send_packet(self, packet):
         self._client_socket.send(packet)
 
     def close(self):
@@ -51,15 +51,11 @@ class TCPClient(_Client):
             if not data: break
             return data
 
-class SCTPClient(UDPClient):
+class SCTPClient(TCPClient):
 
     def __init__(self, server_name=DEFAULT_NAME):
         if not SCTP_ENABLED:
             raise Exception("SCTP Not enabled")
         else:
             _Client.__init__(self, server_name)
-            self._client_socket = sctpsocket_udp(socket.AF_INET)
-
-    def establish_connection_to_server(self, host, port, interface):
-        print 'Connecting to host and port: '+host+':'+port
-        self._client_socket.connect(host,port)
+            self._client_socket = sctpsocket_tcp(socket.AF_INET)

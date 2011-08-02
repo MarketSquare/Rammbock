@@ -1,21 +1,25 @@
 *** Settings ***
 Test Setup      SCTP client and server are initialized
 Test Teardown   Close Connections
+Default Tags    regression
 Library         rammbock.Rammbock
 Resource        resources/server_client.txt
 Resource        resources/data_transfer.txt
 
 *** Test Cases ***
 Send packet from Client to Server
+    [Tags]  no-ci
     Client Creates Message And Sends It to Server
     Server Receives message and validates it
 
 Send packet from Client to Server and return it back
+    [Tags]  ${EMPTY}
     Client Creates Message And Sends It to Server
     Server Receives Message and Sends It Back to Client
     Client Receives message and validates it
 
 Send multiple packets from Client to Server
+    [Tags]  ${EMPTY}
 
 *** Keywords ***
 Client Creates Message And Sends It to Server
