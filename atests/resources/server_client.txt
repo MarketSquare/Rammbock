@@ -25,6 +25,12 @@ SCTP client and server are initialized
     Connect to sctp server  ${HOST}  ${PORT}
     accept sctp connection
 
+SCTP client and server are initialized in port ${desired_port}
+    Start SCTP Server  ${PHYSICAL_INTERFACE}  ${desired_port}
+    Create SCTP Client
+    Connect to sctp server  ${HOST}  ${desired_port}
+    accept sctp connection
+
 Close Connections
     Close Client
     Close Server

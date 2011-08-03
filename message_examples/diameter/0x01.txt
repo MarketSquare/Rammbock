@@ -1,0 +1,38 @@
+*** Settings ***
+Resource        variables.txt
+Resource        message_creation.txt
+Resource        message_validation.txt
+
+*** Keywords ***
+Set Capabilities-ExchangeRequest
+
+Validate Capabilities-ExchangeRequest
+
+Set Capabilities-ExchangeAnswer
+
+Validate Capabilities-ExchangeAnswer
+
+Set 3GPP-Authentication-InformationRequest
+
+Validate 3GPP-Authentication-InformationRequest
+
+Set 3GPP-Authentication-InformationAnswer
+
+Validate 3GPP-Authentication-InformationAnswer
+
+Set 3GPP-Update-LocationRequest
+
+Validate 3GPP-Update-LocationRequest
+
+Set 3GPP-Update-LocationAnswer
+
+Validate 3GPP-Update-LocationAnswer
+
+Set Disconnect-PeerRequest
+
+Validate Disconnect-PeerRequest
+
+Set Disconnect-PeerAnswer
+
+Validate Disconnect-PeerAnswer
+
