@@ -2,6 +2,7 @@
 Resource        variables.txt
 Resource        message_creation.txt
 Resource        message_validation.txt
+Library         String
 
 *** Keywords ***
 Set Capabilities-ExchangeRequest
@@ -12,6 +13,7 @@ Set Capabilities-ExchangeRequest
     Add Application Id  0
     Add Hop-By-Hop Identifier  0xe36006e2
     Add End-To-End Identifier  0x00003bab
+    Add AVP: Origin-Host  originhost.mme.com
 
 Validate Capabilities-ExchangeRequest
 
@@ -42,4 +44,11 @@ Validate Disconnect-PeerRequest
 Set Disconnect-PeerAnswer
 
 Validate Disconnect-PeerAnswer
+
+Add AVP: Origin-Host
+    [Arguments]  ${host}
+    ${length}=  Get Length  ${host}
+    Add AVP Code  ${avp_code.origin_host}
+    Add AVP Flags  0x40
+    Add AVP Length  ${length + 2}
 

@@ -98,7 +98,7 @@ Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)
 
 Add Access Point Name (APN)
     [Arguments]  ${apn}
-    ${length}=  Calculate Length From String  ${apn}
+    ${length}=  Get Length  ${apn}
     Add Ie type and length  ${ie_type.apn}  ${length}
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add String  ${apn}  ${EMPTY}  # APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
@@ -196,7 +196,7 @@ Add Cause
 
 Add Fully Qualified Domain Name (FQDN)
     [Arguments]  ${domain}
-    ${length}=  Calculate Length From String  ${domain}
+    ${length}=  Get Length  ${domain}
     Add ie type and length  ${ie_type.fqdn}  ${length}
     Add Decimal As Octets  0  1  # cr-flags and instance
     Add String  ${domain}

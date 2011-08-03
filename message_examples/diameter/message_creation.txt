@@ -15,3 +15,15 @@ Add Command Code
     [Arguments]  ${cc}
     Add Decimal As Octets  ${cc}  3
 
+Add Application Id
+    [Arguments]  ${ai}
+    Add Decimal As Octets  ${ai}  4
+
+Add Hop-By-Hop Identifier
+    [Arguments]  ${hbhi}
+    Add Hex Data  ${hbhi}  4
+
+Add End-To-End Identifier
+    [Arguments]  ${e2ei}
+    Add Hex Data  ${e2ei}  4
+

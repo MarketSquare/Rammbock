@@ -215,6 +215,3 @@ class Rammbock(object):
         string = self._data[:int(length)]
         self._data = self._data[int(length):]
         return string
-
-    def calculate_length_from_string(self, value):
-        return len(value)

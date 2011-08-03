@@ -237,7 +237,7 @@ Validate Charging Id
 
 Validate Fully Qualified Domain Name (FQDN)
     [Arguments]  ${domain}
-    ${length}=  Calculate Length From String  ${domain}
+    ${length}=  Get Length  ${domain}
     Validate ie type and length  ${ie_type.fqdn}  ${length}
     Validate cr-flags and instance  0
     ${domain-actual}=  Read String from Data  ${length}
