@@ -5,6 +5,13 @@ Resource        message_validation.txt
 
 *** Keywords ***
 Set Capabilities-ExchangeRequest
+    Add Version  0x01
+    Add Message Length  188
+    Add Message Flags
+    Add Command Code  ${cmd_code.capabilities_exchange}
+    Add Application Id  0
+    Add Hop-By-Hop Identifier  0xe36006e2
+    Add End-To-End Identifier  0x00003bab
 
 Validate Capabilities-ExchangeRequest
 
@@ -35,4 +42,8 @@ Validate Disconnect-PeerRequest
 Set Disconnect-PeerAnswer
 
 Validate Disconnect-PeerAnswer
+
+Add Version
+    [Arguments]  ${version}
+    Add Hex Data  ${version}  1
 

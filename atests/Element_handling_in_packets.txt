@@ -100,6 +100,22 @@ Try To Read Too Many Bits From Bitstream Data
     Read Binary From Data  1
     Run keyword and expect error  *  Read From Binary  9
 
+Encode And Decode Message with raw hex data
+    Create Message
+    Add hex data  0xe36006e2  4
+    Client Sends Data
+    Server Receives Data
+    ${value}=  read hex data  4
+    Should Be Equal  ${value}  0xe36006e2
+
+Try to add Too big hex data
+    Create Message
+    Run keyword and expect error  Value is too big for length  Add hex data  0xe36006e2  3
+
+Try to add hex with wrong format
+    Create Message
+    Run keyword and expect error  Value is not valid hex  Add hex data  GGGGG  4
+
 *** Keywords ***
 Create Message and add two decimals as octets
     Create Message

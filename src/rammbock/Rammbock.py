@@ -8,7 +8,6 @@ import Client
 import struct
 import re
 
-
 IP_REGEX = re.compile(r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
 
 d2b = lambda d: (not isinstance(d, int) or (d==0)) and '0' \
@@ -175,11 +174,21 @@ class Rammbock(object):
             self.add_decimal_as_bits(int(nmbr[0]), 4)
 
     def add_ip_as_hex(self, address):
-        if IP_REGEX.match(address):
-            for a in address.split('.'):
-                self.add_decimal_as_octets(int(a), 1)
-        else:
+        if not IP_REGEX.match(address):
             raise Exception("Not a valid ip Address")
+        for a in address.split('.'):
+            self.add_decimal_as_octets(int(a), 1)
+
+    def add_hex_data(self, data, length):
+        if int(length) < len(data[2:])/2:
+            raise Exception("Value is too big for length")
+        try:
+            self.add_decimal_as_octets(str(int(data,16)),length)
+        except ValueError:
+            raise Exception("Value is not valid hex")
+
+    def read_hex_data(self, length):
+        return "0x" + "".join(hex(int(self.read_from_data(1)))[2:].rjust(2, '0') for _ in range(0, 4))
 
     def read_tbcd_coded_numbers_from_data(self, amount):
         length = (int(amount)/2)+(int(amount)%2)
