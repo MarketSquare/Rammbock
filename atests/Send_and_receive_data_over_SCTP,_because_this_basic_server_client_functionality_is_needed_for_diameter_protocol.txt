@@ -13,7 +13,7 @@ Send packet from Client to Server
     Server Receives message and validates it
 
 Send packet from Client to Server and return it back
-    [Tags]  ${EMPTY}
+    [Tags]  no-ci
     Client Creates Message And Sends It to Server
     Server Receives Message and Sends It Back to Client
     Client Receives message and validates it
@@ -31,11 +31,16 @@ Server Receives message and validates it
     Server Receives Data
     ${value}=  Read Until
     Should Be Equal  ${value}  sctp control message
+    set test variable  ${value}
 
 Server Receives Message and Sends It Back to Client
     Server Receives message and validates it
-    Server Sends Data
+    Create Message
+    Add String  ${value}
+    Server sends data
 
 Client Receives message and validates it
     Client Receives Data
+    ${value}=  Read Until
+    Should Be Equal  ${value}  sctp control message
 
