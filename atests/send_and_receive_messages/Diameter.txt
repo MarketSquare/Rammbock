@@ -1,5 +1,23 @@
 *** Settings ***
+Test Setup      SCTP client and server are initialized
 Test Teardown   Close Connections
 Library         rammbock.Rammbock
 Resource        ../resources/Messaging.txt
+
+*** Test Cases ***
+Capabilities-ExchangeRequest
+
+Capabilities-ExchangeAnswer
+
+3GPP-Authentication-InformationRequest
+
+3GPP-Authentication-InformationAnswer
+
+3GPP-Update-LocationRequest
+
+3GPP-Update-LocationAnswer
+
+Disconnect-PeerRequest
+
+Disconnect-PeerAnswer
 
