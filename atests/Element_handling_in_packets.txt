@@ -5,7 +5,7 @@ Test Setup      UDP Server and Client are initialized
 Test Teardown   Close Connections
 Default Tags    regression
 Library         rammbock.Rammbock
-Resource        resources/Messaging.txt
+Resource        resources/server_client.txt
 
 *** Variables ***
 ${COUNTRY CODE}  358

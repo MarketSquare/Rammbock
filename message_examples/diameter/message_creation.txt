@@ -1,0 +1,17 @@
+*** Keywords ***
+Add Version
+    [Arguments]  ${version}
+    Add Hex Data  ${version}  1
+
+Add Message Length
+    [Arguments]  ${length}
+    Add Decimal As Octets  ${length}  3
+
+Add Message Flags
+    [Arguments]  ${flags}
+    Add Hex Data  ${flags}  1
+
+Add Command Code
+    [Arguments]  ${cc}
+    Add Decimal As Octets  ${cc}  3
+
