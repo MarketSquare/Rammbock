@@ -14,12 +14,9 @@ Send packet from Client to Server
 
 Send packet from Client to Server and return it back
     [Tags]  no-ci
-    Client Creates Message And Sends It to Server
+    Client creates Message And Sends It To Server
     Server Receives Message and Sends It Back to Client
-    Client Receives message and validates it
-
-Send multiple packets from Client to Server
-    [Tags]  ${EMPTY}
+    Client Receives message and validates It
 
 *** Keywords ***
 Client Creates Message And Sends It to Server

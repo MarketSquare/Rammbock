@@ -59,3 +59,4 @@ class SCTPClient(TCPClient):
         else:
             _Client.__init__(self, server_name)
             self._client_socket = sctpsocket_tcp(socket.AF_INET)
+            self._client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
