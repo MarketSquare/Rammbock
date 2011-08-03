@@ -1,0 +1,5 @@
+*** Settings ***
+Test Teardown   Close Connections
+Library         rammbock.Rammbock
+Resource        ../resources/Messaging.txt
+
