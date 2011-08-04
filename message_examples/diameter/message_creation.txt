@@ -3,7 +3,7 @@ ${NO_INBAND_SECURITY}  0
 ${DIAMETER_SUCCESS}  2001
 
 *** Keywords ***
-Add Version
+Add Message Version
     [Arguments]  ${version}
     Add Hex Data  ${version}  1
 

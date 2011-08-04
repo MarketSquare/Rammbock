@@ -6,7 +6,7 @@ Library         String
 
 *** Keywords ***
 Set Capabilities-ExchangeRequest
-    Add Version  0x01
+    Add Message Version  0x01
     Add Message Length  188
     Add Message Flags  0x80
     Add Command Code  ${command_code.capabilities_exchange}
@@ -24,7 +24,7 @@ Set Capabilities-ExchangeRequest
     Add AVP: Firmware-Revision  1
 
 Validate Capabilities-ExchangeRequest
-    Validate Version  0x01
+    Validate Message Version  0x01
     Validate Message Length  188
     Validate Message Flags  0x80
     Validate Command Code  ${command_code.capabilities_exchange}
@@ -35,14 +35,14 @@ Validate Capabilities-ExchangeRequest
     Validate AVP: Origin-Realm  originrealmnsn.com
     Validate AVP: Host-IP-Address  192.168.112.20
     Validate AVP: Vendor-Id  ${vendor_id.nsn}
-    Validate AVP: Product Name  FlexiNS
+    Validate AVP: Product-Name  FlexiNS
     Validate AVP: Supported-Vendor-Id  10415
     Validate AVP: Vendor-Specific-Application-Id  10415  16777251
     Validate AVP: Inband-Security-Id  ${NO_INBAND_SECURITY}
     Validate AVP: Firmware-Revision  1
 
 Set Capabilities-ExchangeAnswer
-    Add Version  0x01
+    Add Message Version  0x01
     Add Message Length  132
     Add Message Flags  0x00
     Add Command Code  ${command_code.capabilities_exchange}
@@ -55,9 +55,23 @@ Set Capabilities-ExchangeAnswer
     Add AVP: Host-Ip-Address  10.102.250.95
     Add AVP: Vendor-Id  10415
     Add AVP: Product-Name  Authentication Server
-    Add Decimal As Octets  0  3  #spare / delimiter?
+    Add Decimal As Octets  0  3  # spare / delimiter?
 
 Validate Capabilities-ExchangeAnswer
+    Validate Message Version  0x01
+    Validate Message Length  132
+    Validate Message Flags  0x00
+    Validate Command Code  ${command_code.capabilities_exchange}
+    Validate ApplicationId  0
+    Validate Hop-by-Hop Identifier  0xe36006e2
+    Validate End-to-End Identifier  0x00003bab
+    Validate AVP: Result-Code  ${DIAMETER_SUCCESS}
+    Validate AVP: Origin-Host  HSS.ttcn3
+    Validate AVP: Origin-Realm  test.nsn.com
+    Validate AVP: Host-Ip-Address  10.102.250.95
+    Validate AVP: Vendor-Id  10415
+    Validate AVP: Product-Name  Authentication Server
+    Read From Data  3  # spare / delimiter?
 
 Set 3GPP-Authentication-InformationRequest
 
@@ -92,4 +106,15 @@ Add AVP: Result-Code
 Add Result-Code
     [Arguments]  ${code}
     Add Decimal As Octets  ${code}  4
+
+Validate AVP: Result-Code
+    [Arguments]  ${code}
+    Validate AVP Code And Flags  ${avp_code.result_code}  0x40
+    Validate AVP Length  12
+    Validate Result-Code  ${code}
+
+Validate Result-Code
+    [Arguments]  ${code}
+    ${code-act}=  Read From Data  4
+    Should Be Equal  ${code}  ${code-act}
 

@@ -1,5 +1,5 @@
 *** Keywords ***
-Validate Version
+Validate Message Version
     [Arguments]  ${version}
     ${version-act}  Read Hex Data  1
     Should Be Equal  ${version}  ${version-act}
@@ -97,7 +97,7 @@ Validate Vendor-Id
     ${id-act}=  Read From Data  4
     Should Be Equal  ${id}  ${id-act}
 
-Validate AVP: Product Name
+Validate AVP: Product-Name
     [Arguments]  ${product_name}
     Validate AVP Code And FLags  ${avp_code.product_name}  0x00
     ${length}=  Get Length  ${product_name}

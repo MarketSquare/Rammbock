@@ -45,3 +45,7 @@ Create And Send Capabilities-ExchangeAnswer
     Set Capabilities-ExchangeAnswer
     Client Sends Data
 
+Receive And Validate Capabilities-ExchangeAnswer
+    Server Receives Data
+    Validate Capabilities-ExchangeAnswer
+
