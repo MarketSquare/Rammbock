@@ -1,6 +1,7 @@
 *** Settings ***
 Test Setup      SCTP client and server are initialized in port ${DIAMETER_PORT}
 Test Teardown   Close Connections
+Default Tags    no-ci  linux-only
 Library         rammbock.Rammbock
 Resource        ../message_examples/diameter/0x01.txt
 Resource        ../resources/server_client.txt
