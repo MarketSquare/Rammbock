@@ -41,7 +41,7 @@ Validate AVP: Origin-Host
     Validate AVP Length  ${length + 8}
     ${host-act}=  Read String From Data  ${length}
     Should Be Equal  ${host}  ${host-act}
-    Read From Data  2
+    Read Padding After String Data  ${length}
 
 Validate AVP Code And Flags
     [Arguments]  ${avp_code}  ${avp_flags}
@@ -70,7 +70,7 @@ Validate AVP: Origin-Realm
     Validate AVP Length  ${length + 8}
     ${realm-act}=  Read String From DAta  ${length}
     Should Be Equal  ${realm}  ${realm-act}
-    Read From Data  2
+    Read Padding After String Data  ${length}
 
 Validate AVP: Host-IP-Address
     [Arguments]  ${ip}
@@ -104,7 +104,7 @@ Validate AVP: Product-Name
     Validate AVP Length  ${length + 8}
     ${pn-act}=  Read String From DAta  ${length}
     Should Be Equal  ${product_name}  ${pn-act}
-    Read From Data  1
+    Read Padding After String Data  ${length}
 
 Validate AVP: Supported-Vendor-Id
     [Arguments]  ${id}
@@ -167,4 +167,9 @@ Validate Result-Code
     [Arguments]  ${code}
     ${code-act}=  Read From Data  4
     Should Be Equal  ${code}  ${code-act}
+
+Read Padding After String Data
+    [Arguments]  ${length}
+    ${padding}=  Evaluate  4-${length%4}%4
+    Read From Data  ${padding}
 

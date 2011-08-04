@@ -37,7 +37,7 @@ Add AVP: Origin-Host
     Add AVP Code And Flags  ${avp_code.origin_host}  0x40
     Add AVP Length  ${length + 8}
     Add String  ${host}
-    Add Decimal As Octets  0  2  # delimiter / spare(?)
+    Add Padding After String Data  ${length}
 
 Add AVP Code
     [Arguments]  ${code}
@@ -62,7 +62,7 @@ Add AVP: Origin-Realm
     Add AVP Code And Flags  ${avp_code.origin_realm}  0x40
     Add Avp Length  ${length + 8}
     Add String  ${realm}
-    Add Decimal As OCtets  0  2
+    Add Padding After String Data  ${length}
 
 Add AVP: Host-IP-Address
     [Arguments]  ${ip}
@@ -92,7 +92,7 @@ Add AVP: Product-Name
     ${length}=  Get Length  ${product_name}
     Add AVP Length  ${length + 8}
     Add String  ${product_name}
-    Add Decimal As Octets  0  1  # spare / demiliter
+    Add Padding After String Data  ${length}
 
 Add AVP: Supported-Vendor-Id
     [Arguments]  ${id}
@@ -150,4 +150,9 @@ Add AVP: Result-Code
 Add Result-Code
     [Arguments]  ${code}
     Add Decimal As Octets  ${code}  4
+
+Add Padding After String Data
+    [Arguments]  ${length}
+    ${padding}=  Evaluate  4-${length%4}%4
+    Add Decimal As Octets  0  ${padding}
 
