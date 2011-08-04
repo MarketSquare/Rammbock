@@ -46,6 +46,11 @@ Add AVP Flags
     [Arguments]  ${flags}
     Add Hex Data  ${flags}  1
 
+Add AVP Code And Flags
+    [Arguments]  ${code}  ${flags}
+    Add AVP Code  ${code}
+    Add AVP Flags  ${flags}
+
 Add AVP Length
     [Arguments]  ${length}
     Add Decimal As Octets  ${length}  3
@@ -57,11 +62,6 @@ Add AVP: Origin-Realm
     Add Avp Length  ${length + 8}
     Add String  ${realm}
     Add Decimal As OCtets  0  2
-
-Add AVP Code And Flags
-    [Arguments]  ${code}  ${flags}
-    Add AVP Code  ${code}
-    Add AVP Flags  ${flags}
 
 Add AVP: Host-IP-Address
     [Arguments]  ${ip}
@@ -97,9 +97,9 @@ Add AVP: Supported-Vendor-Id
     [Arguments]  ${id}
     Add AVP Code And FLags  ${avp_code.supported_vendor_id}  0x40
     Add Avp Length  12
-    Add-Supported Vendor-Id  10415
+    Add Supported-Vendor-Id  ${id}
 
-Add-Supported Vendor-Id
+Add Supported-Vendor-Id
     [Arguments]  ${id}
     Add Decimal As Octets  ${id}  4
 
@@ -124,19 +124,172 @@ Add AVP: Inband-Security-Id
     [Arguments]  ${id}
     Add AVP Code And Flags  ${avp_code.inband_security_id}  0x40
     Add AVP Length  12
-    Add Inband Security Id  ${id}
+    Add Inband-Security-Id  ${id}
 
-Add Inband Security Id
+Add Inband-Security-Id
     [Arguments]  ${id}
     Add Decimal As Octets  ${id}  4
 
-Add Firmware Revision
+Add Firmware-Revision
     [Arguments]  ${fw_rev}
     Add Decimal As Octets  ${fw_rev}  4
 
-Add AVP: Firmware Revision
+Add AVP: Firmware-Revision
     [Arguments]  ${fw_rev}
     Add AVP Code And Flags  ${avp_code.firmware_revision}  0x00
     Add AVP Length  12
-    Add Firmware Revision  ${fw_rev}
+    Add Firmware-Revision  ${fw_rev}
+
+Validate Message Length
+    [Arguments]  ${length}
+    ${length-act}=  Read From Data  3
+    Should Be Equal  ${length}  ${length-act}
+
+Validate Message Flags
+    [Arguments]  ${flags}
+    ${flags-act}=  Read Hex data  1
+    Should Be Equal  ${flags}  ${flags-act}
+
+Validate Command Code
+    [Arguments]  ${cc}
+    ${cc-act}=  Read From Data  3
+    Should Be Equal  ${cc}  ${cc-act}
+
+Validate Application Id
+    [Arguments]  ${ai}
+    ${ai-act}=  Read From Data  4
+    Should Be Equal  ${ai}  ${ai-act}
+
+Validate Hop-By-Hop Identifier
+    [Arguments]  ${hbhi}
+    ${hbhi-act}=  Read Hex Data  4
+    Should Be Equal  ${hbhi}  ${hbhi-act}
+
+Validate End-To-End Identifier
+    [Arguments]  ${e2ei}
+    ${e2ei-act}=  Read Hex Data  4
+    Should Be Equal  ${e2ei}  ${e2ei-act}
+
+Validate AVP: Origin-Host
+    [Arguments]  ${host}
+    ${length}=  Get Length  ${host}
+    Validate AVP Code And Flags  ${avp_code.origin_host}  0x40
+    Validate AVP Length  ${length + 8}
+    ${host-act}=  Read String From Data  ${length}
+    Should Be Equal  ${host}  ${host-act}
+    Read From Data  2
+
+Validate AVP Code And Flags
+    [Arguments]  ${avp_code}  ${avp_flags}
+    Validate AVP Code  ${avp_code}
+    Validate AVP Flags  ${avp_flags}
+
+Validate AVP Code
+    [Arguments]  ${avp_code}
+    ${avp_code-act}=  Read From Data  4
+    Should Be Equal  ${avp_code-act}  ${avp_code}
+
+Validate AVP Flags
+    [Arguments]  ${flags}
+    ${flags-act}=  Read Hex Data  1
+    Should Be Equal  ${flags}  ${flags-act}
+
+Validate AVP Length
+    [Arguments]  ${length}
+    ${length-act}  Read From Data  3
+    Should Be Equal As Strings  ${length}  ${length-act}
+
+Validate AVP: Origin-Realm
+    [Arguments]  ${realm}
+    ${length}=  Get Length  ${realm}
+    Validate AVP Code And Flags  ${avp_code.origin_realm}  0x40
+    Validate AVP Length  ${length + 8}
+    ${realm-act}=  Read String From DAta  ${length}
+    Should Be Equal  ${realm}  ${realm-act}
+    Read From Data  2
+
+Validate AVP: Host-IP-Address
+    [Arguments]  ${ip}
+    Validate AVP Code And Flags  ${avp_code.host_ip_address}  0x40
+    Validate AVP Length  14
+    Validate Host Ip Address  1  ${ip}
+    Read From Data  2
+
+Validate Host Ip Address
+    [Arguments]  ${family}  ${ip}
+    ${family-act}=  Read From Data  2
+    Should Be Equal  ${family}  ${family-act}
+    ${ip-act}=  Read Ip From Hex
+    Should Be Equal  ${ip}  ${ip-act}
+
+Validate AVP: Vendor-Id
+    [Arguments]  ${id}
+    Validate AVP Code And Flags  ${avp_code.vendor_id}  0x40
+    Validate AVP Length  12
+    Validate Vendor-id  ${id}
+
+Validate Vendor-Id
+    [Arguments]  ${id}
+    ${id-act}=  Read From Data  4
+    Should Be Equal  ${id}  ${id-act}
+
+Validate AVP: Product Name
+    [Arguments]  ${product_name}
+    Validate AVP Code And FLags  ${avp_code.product_name}  0x00
+    ${length}=  Get Length  ${product_name}
+    Validate AVP Length  ${length + 8}
+    ${pn-act}=  Read String From DAta  ${length}
+    Should Be Equal  ${product_name}  ${pn-act}
+    Read From Data  1
+
+Validate AVP: Supported-Vendor-Id
+    [Arguments]  ${id}
+    Validate AVP Code And Flags  ${avp_code.supported_vendor_id}  0x40
+    Validate AVP Length  12
+    Validate Supported-vendor-id  ${id}
+
+Validate Supported-Vendor-Id
+    [Arguments]  ${id}
+    ${id-act}=  Read From Data  4
+    Should Be Equal  ${id}  ${id-act}
+
+Validate AVP: Vendor-Specific-Application-Id
+    [Arguments]  ${avp_vendor_id}  ${auth_application_id}
+    Validate AVP code and Flags  ${avp_code.vendor_specific_application_id}  0x40
+    Validate AVP Length  32
+    Validate AVP: Vendor-id  ${avp_vendor_id}
+    Validate AVP: Auth-application-id  ${auth_application_id}
+
+Validate AVP: Auth-Application-Id
+    [Arguments]  ${id}
+    Validate AVP Code And Flags  ${avp_code.auth_application_id}  0x40
+    Validate AVP Length  12
+    Validate Auth-Application-id  ${id}
+
+Validate Auth-Application-Id
+    [Arguments]  ${id}
+    ${id-act}=  Read From Data  4
+    Should Be Equal  ${id}  ${id-act}
+
+Validate AVP: Inband-Security-Id
+    [Arguments]  ${id}
+    Validate AVP Code And Flags  ${avp_code.inband_security_id}  0x40
+    Validate AVP Length  12
+    Validate Inband-Security-id  ${id}
+
+Validate Inband-Security-Id
+    [Arguments]  ${id}
+    ${id-act}=  Read From Data  4
+    Should Be Equal  ${id}  ${id-act}
+
+Validate AVP: Firmware-Revision
+    [Arguments]  ${fw_rev}
+    Validate AVP Code And Flags  ${avp_code.firmware_revision}  0x00
+    Validate AVP LEngth  12
+    Validate Firmware-revision  ${fw_rev}
+
+Validate Firmware-Revision
+    [Arguments]  ${fw_rev}
+    ${fw_rev-act}  Read From Data  4
+    Should Be Equal  ${fw_rev}  ${fw_rev-act}
 

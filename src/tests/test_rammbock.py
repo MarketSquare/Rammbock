@@ -74,4 +74,3 @@ class TestSpeed():
         b = time()
         print b-s
         assert b-s < 0.4
-

@@ -21,9 +21,25 @@ Set Capabilities-ExchangeRequest
     Add AVP: Supported-Vendor-Id  10415
     Add AVP: Vendor-Specific-Application-Id  10415  16777251
     Add AVP: Inband-Security-Id  ${NO_INBAND_SECURITY}
-    Add AVP: Firmware Revision  1
+    Add AVP: Firmware-Revision  1
 
 Validate Capabilities-ExchangeRequest
+    Validate Version  0x01
+    Validate Message Length  188
+    Validate Message Flags  0x80
+    Validate Command Code  ${cmd_code.capabilities_exchange}
+    Validate Application Id  0
+    Validate Hop-By-Hop Identifier  0xe36006e2
+    Validate End-To-End Identifier  0x00003bab
+    Validate AVP: Origin-Host  originhost.mme.com
+    Validate AVP: Origin-Realm  originrealmnsn.com
+    Validate AVP: Host-IP-Address  192.168.112.20
+    Validate AVP: Vendor-Id  ${vendor_id.nsn}
+    Validate AVP: Product Name  FlexiNS
+    Validate AVP: Supported-Vendor-Id  10415
+    Validate AVP: Vendor-Specific-Application-Id  10415  16777251
+    Validate AVP: Inband-Security-Id  ${NO_INBAND_SECURITY}
+    Validate AVP: Firmware-Revision  1
 
 Set Capabilities-ExchangeAnswer
 

@@ -1,0 +1,6 @@
+*** Keywords ***
+Validate Version
+    [Arguments]  ${version}
+    ${version-act}  Read Hex Data  1
+    Should Be Equal  ${version}  ${version-act}
+
