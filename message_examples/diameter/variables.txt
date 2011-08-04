@@ -1,5 +1,5 @@
 *** Variables ***
-${cmd_code.capabilities_exchange}  257
+${command_code.capabilities_exchange}  257
 ${avp_code.origin_host}  264
 ${avp_code.origin_realm}  296
 ${avp_code.host_ip_address}  257
@@ -11,4 +11,5 @@ ${avp_code.inband_security_id}  299
 ${avp_code.firmware_revision}  267
 ${avp_code.vendor_id}  266
 ${vendor_id.nsn}  28458
+${avp_code.result_code}  268
 

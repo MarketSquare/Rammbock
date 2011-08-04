@@ -9,7 +9,7 @@ Set Capabilities-ExchangeRequest
     Add Version  0x01
     Add Message Length  188
     Add Message Flags  0x80
-    Add Command Code  ${cmd_code.capabilities_exchange}
+    Add Command Code  ${command_code.capabilities_exchange}
     Add Application Id  0
     Add Hop-By-Hop Identifier  0xe36006e2
     Add End-To-End Identifier  0x00003bab
@@ -17,7 +17,7 @@ Set Capabilities-ExchangeRequest
     Add AVP: Origin-Realm  originrealmnsn.com
     Add AVP: Host-IP-Address  192.168.112.20
     Add AVP: Vendor-Id  ${vendor_id.nsn}
-    Add AVP: Product Name  FlexiNS
+    Add AVP: Product-Name  FlexiNS
     Add AVP: Supported-Vendor-Id  10415
     Add AVP: Vendor-Specific-Application-Id  10415  16777251
     Add AVP: Inband-Security-Id  ${NO_INBAND_SECURITY}
@@ -27,7 +27,7 @@ Validate Capabilities-ExchangeRequest
     Validate Version  0x01
     Validate Message Length  188
     Validate Message Flags  0x80
-    Validate Command Code  ${cmd_code.capabilities_exchange}
+    Validate Command Code  ${command_code.capabilities_exchange}
     Validate Application Id  0
     Validate Hop-By-Hop Identifier  0xe36006e2
     Validate End-To-End Identifier  0x00003bab
@@ -42,6 +42,20 @@ Validate Capabilities-ExchangeRequest
     Validate AVP: Firmware-Revision  1
 
 Set Capabilities-ExchangeAnswer
+    Add Version  0x01
+    Add Message Length  132
+    Add Message Flags  0x00
+    Add Command Code  ${command_code.capabilities_exchange}
+    Add ApplicationId  0
+    Add Hop-by-Hop Identifier  0xe36006e2
+    Add End-to-End Identifier  0x00003bab
+    Add AVP: Result-Code  ${DIAMETER_SUCCESS}
+    Add AVP: Origin-Host  HSS.ttcn3
+    Add AVP: Origin-Realm  test.nsn.com
+    Add AVP: Host-Ip-Address  10.102.250.95
+    Add AVP: Vendor-Id  10415
+    Add AVP: Product-Name  Authentication Server
+    Add Decimal As Octets  0  3  #spare / delimiter?
 
 Validate Capabilities-ExchangeAnswer
 
@@ -68,4 +82,14 @@ Validate Disconnect-PeerRequest
 Set Disconnect-PeerAnswer
 
 Validate Disconnect-PeerAnswer
+
+Add AVP: Result-Code
+    [Arguments]  ${code}
+    Add Avp Code And Flags  ${avp_code.result_code}  0x40
+    Add AVP Length  12
+    Add Result-Code  ${code}
+
+Add Result-Code
+    [Arguments]  ${code}
+    Add Decimal As Octets  ${code}  4
 

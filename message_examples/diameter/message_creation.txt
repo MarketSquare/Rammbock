@@ -1,5 +1,6 @@
 *** Variables ***
 ${NO_INBAND_SECURITY}  0
+${DIAMETER_SUCCESS}  2001
 
 *** Keywords ***
 Add Version
@@ -85,7 +86,7 @@ Add Vendor-Id
     [Arguments]  ${id}
     Add Decimal As Octets  ${id}  4
 
-Add AVP: Product Name
+Add AVP: Product-Name
     [Arguments]  ${product_name}
     ADD AVP Code And Flags  ${avp_code.product_name}  0x00
     ${length}=  Get Length  ${product_name}

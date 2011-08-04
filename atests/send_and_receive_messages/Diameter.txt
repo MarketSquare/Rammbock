@@ -15,6 +15,8 @@ Capabilities-ExchangeRequest
     Receive And Validate Capabilities-ExchangeRequest
 
 Capabilities-ExchangeAnswer
+    Create And Send Capabilities-ExchangeAnswer
+    Receive And Validate Capabilities-ExchangeAnswer
 
 3GPP-Authentication-InformationRequest
 
@@ -37,4 +39,9 @@ Create And Send Capabilities-ExchangeRequest
 Receive And Validate Capabilities-ExchangeRequest
     Server Receives Data
     Validate Capabilities-ExchangeRequest
+
+Create And Send Capabilities-ExchangeAnswer
+    Create Message
+    Set Capabilities-ExchangeAnswer
+    Client Sends Data
 
