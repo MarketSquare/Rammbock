@@ -14,6 +14,14 @@ Set Capabilities-ExchangeRequest
     Add Hop-By-Hop Identifier  0xe36006e2
     Add End-To-End Identifier  0x00003bab
     Add AVP: Origin-Host  originhost.mme.com
+    Add AVP: Origin-Realm  originrealmnsn.com
+    Add AVP: Host-IP-Address  192.168.112.20
+    Add AVP: Vendor-Id  ${vendor_id.nsn}
+    Add AVP: Product Name  FlexiNS
+    Add AVP: Supported-Vendor-Id  10415
+    Add AVP: Vendor-Specific-Application-Id  10415  16777251
+    Add AVP: Inband-Security-Id  ${NO_INBAND_SECURITY}
+    Add AVP: Firmware Revision  1
 
 Validate Capabilities-ExchangeRequest
 
@@ -44,11 +52,4 @@ Validate Disconnect-PeerRequest
 Set Disconnect-PeerAnswer
 
 Validate Disconnect-PeerAnswer
-
-Add AVP: Origin-Host
-    [Arguments]  ${host}
-    ${length}=  Get Length  ${host}
-    Add AVP Code  ${avp_code.origin_host}
-    Add AVP Flags  0x40
-    Add AVP Length  ${length + 2}
 

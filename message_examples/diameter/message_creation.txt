@@ -1,3 +1,6 @@
+*** Variables ***
+${NO_INBAND_SECURITY}  0
+
 *** Keywords ***
 Add Version
     [Arguments]  ${version}
@@ -26,4 +29,114 @@ Add Hop-By-Hop Identifier
 Add End-To-End Identifier
     [Arguments]  ${e2ei}
     Add Hex Data  ${e2ei}  4
+
+Add AVP: Origin-Host
+    [Arguments]  ${host}
+    ${length}=  Get Length  ${host}
+    Add AVP Code And Flags  ${avp_code.origin_host}  0x40
+    Add AVP Length  ${length + 8}
+    Add String  ${host}
+    Add Decimal As Octets  0  2  # delimiter / spare(?)
+
+Add AVP Code
+    [Arguments]  ${code}
+    Add Decimal As Octets  ${code}  4
+
+Add AVP Flags
+    [Arguments]  ${flags}
+    Add Hex Data  ${flags}  1
+
+Add AVP Length
+    [Arguments]  ${length}
+    Add Decimal As Octets  ${length}  3
+
+Add AVP: Origin-Realm
+    [Arguments]  ${realm}
+    ${length}=  Get Length  ${realm}
+    Add AVP Code And Flags  ${avp_code.origin_realm}  0x40
+    Add Avp Length  ${length + 8}
+    Add String  ${realm}
+    Add Decimal As OCtets  0  2
+
+Add AVP Code And Flags
+    [Arguments]  ${code}  ${flags}
+    Add AVP Code  ${code}
+    Add AVP Flags  ${flags}
+
+Add AVP: Host-IP-Address
+    [Arguments]  ${ip}
+    Add AVP Code And Flags  ${avp_code.host_ip_address}  0x40
+    Add AVP Length  14
+    Add Host Ip Address  1  ${ip}
+    Add Decimal As Octets  0  2  # delimiter / spare(?)
+
+Add Host Ip Address
+    [Arguments]  ${family}  ${ip}
+    Add Decimal As Octets  ${family}  2
+    Add Ip As Hex  ${ip}
+
+Add AVP: Vendor-Id
+    [Arguments]  ${id}
+    Add AVP Code And Flags  ${avp_code.vendor_id}  0x40
+    Add AVP Length  12
+    Add Vendor-Id  ${id}
+
+Add Vendor-Id
+    [Arguments]  ${id}
+    Add Decimal As Octets  ${id}  4
+
+Add AVP: Product Name
+    [Arguments]  ${product_name}
+    ADD AVP Code And Flags  ${avp_code.product_name}  0x00
+    ${length}=  Get Length  ${product_name}
+    Add AVP Length  ${length + 8}
+    Add String  ${product_name}
+    Add Decimal As Octets  0  1  # spare / demiliter
+
+Add AVP: Supported-Vendor-Id
+    [Arguments]  ${id}
+    Add AVP Code And FLags  ${avp_code.supported_vendor_id}  0x40
+    Add Avp Length  12
+    Add-Supported Vendor-Id  10415
+
+Add-Supported Vendor-Id
+    [Arguments]  ${id}
+    Add Decimal As Octets  ${id}  4
+
+Add AVP: Vendor-Specific-Application-Id
+    [Arguments]  ${avp_vendor_id}  ${auth_application_id}
+    Add AVP Code And Flags  ${avp_code.vendor_specific_application_id}  0x40
+    Add AVP Length  32
+    Add AVP: Vendor-Id  ${avp_vendor_id}
+    Add AVP: Auth-Application-Id  ${auth_application_id}
+
+Add AVP: Auth-Application-Id
+    [Arguments]  ${id}
+    Add AVP Code And Flags  ${avp_code.auth_application_id}  0x40
+    Add AVP Length  12
+    Add Auth-Application-Id  ${id}
+
+Add Auth-Application-Id
+    [Arguments]  ${id}
+    Add Decimal As Octets  ${id}  4
+
+Add AVP: Inband-Security-Id
+    [Arguments]  ${id}
+    Add AVP Code And Flags  ${avp_code.inband_security_id}  0x40
+    Add AVP Length  12
+    Add Inband Security Id  ${id}
+
+Add Inband Security Id
+    [Arguments]  ${id}
+    Add Decimal As Octets  ${id}  4
+
+Add Firmware Revision
+    [Arguments]  ${fw_rev}
+    Add Decimal As Octets  ${fw_rev}  4
+
+Add AVP: Firmware Revision
+    [Arguments]  ${fw_rev}
+    Add AVP Code And Flags  ${avp_code.firmware_revision}  0x00
+    Add AVP Length  12
+    Add Firmware Revision  ${fw_rev}
 

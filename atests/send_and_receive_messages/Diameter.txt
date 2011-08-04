@@ -10,6 +10,8 @@ ${DIAMETER_PORT}  3868
 
 *** Test Cases ***
 Capabilities-ExchangeRequest
+    Create And Send Capabilities-ExchangeRequest
+    Receive And Validate Capabilities-ExchangeRequest
 
 Capabilities-ExchangeAnswer
 
@@ -24,4 +26,14 @@ Capabilities-ExchangeAnswer
 Disconnect-PeerRequest
 
 Disconnect-PeerAnswer
+
+*** Keywords ***
+Create And Send Capabilities-ExchangeRequest
+    Create Message
+    Set Capabilities-ExchangeRequest
+    Client Sends Data
+
+Receive And Validate Capabilities-ExchangeRequest
+    Server Receives Data
+    Validate Capabilities-ExchangeRequest
 
