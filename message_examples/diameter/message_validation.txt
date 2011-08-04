@@ -157,3 +157,14 @@ Validate Firmware-Revision
     ${fw_rev-act}  Read From Data  4
     Should Be Equal  ${fw_rev}  ${fw_rev-act}
 
+Validate AVP: Result-Code
+    [Arguments]  ${code}
+    Validate AVP Code And Flags  ${avp_code.result_code}  0x40
+    Validate AVP Length  12
+    Validate Result-Code  ${code}
+
+Validate Result-Code
+    [Arguments]  ${code}
+    ${code-act}=  Read From Data  4
+    Should Be Equal  ${code}  ${code-act}
+

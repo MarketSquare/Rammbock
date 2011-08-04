@@ -97,24 +97,3 @@ Set Disconnect-PeerAnswer
 
 Validate Disconnect-PeerAnswer
 
-Add AVP: Result-Code
-    [Arguments]  ${code}
-    Add Avp Code And Flags  ${avp_code.result_code}  0x40
-    Add AVP Length  12
-    Add Result-Code  ${code}
-
-Add Result-Code
-    [Arguments]  ${code}
-    Add Decimal As Octets  ${code}  4
-
-Validate AVP: Result-Code
-    [Arguments]  ${code}
-    Validate AVP Code And Flags  ${avp_code.result_code}  0x40
-    Validate AVP Length  12
-    Validate Result-Code  ${code}
-
-Validate Result-Code
-    [Arguments]  ${code}
-    ${code-act}=  Read From Data  4
-    Should Be Equal  ${code}  ${code-act}
-

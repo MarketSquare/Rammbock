@@ -141,3 +141,13 @@ Add AVP: Firmware-Revision
     Add AVP Length  12
     Add Firmware-Revision  ${fw_rev}
 
+Add AVP: Result-Code
+    [Arguments]  ${code}
+    Add Avp Code And Flags  ${avp_code.result_code}  0x40
+    Add AVP Length  12
+    Add Result-Code  ${code}
+
+Add Result-Code
+    [Arguments]  ${code}
+    Add Decimal As Octets  ${code}  4
+
