@@ -201,29 +201,29 @@ Add AVP: User-Name
     Add Padding After String Data  ${length}
 
 Add AVP: Requested-EUTRAN-Authentication-Info
-    [Arguments]  ${avp_vendor_id}  ${number_of_requested_vectors}  ${immediate_response}
+    [Arguments]  ${number_of_requested_vectors}  ${immediate_response}
     Add AVP Code And Flags  ${avp_code.requested_eutran_authentication_info}  0xc0
     Add AVP Length  44
-    Add Decimal As Octets  ${avp_vendor_id}  4
-    Add Requested-EUTRAN-Authentication-info  ${number_of_requested_vectors}  ${immediate_response}  ${avp_vendor_id}
+    Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
+    Add Requested-EUTRAN-Authentication-info  ${number_of_requested_vectors}  ${immediate_response}
 
 Add Requested-EUTRAN-Authentication-info
-    [Arguments]  ${number_of_requested_vectors}  ${immediate_response_preferred}  ${avp_vendor_id}
-    Add AVP: Number-Of-Requested-Vectors  ${number_of_requested_vectors}  ${avp_vendor_id}
-    Add AVP: Immediate-Response-Preferred  ${immediate_response_preferred}  ${avp_vendor_id}
+    [Arguments]  ${number_of_requested_vectors}  ${immediate_response_preferred}
+    Add AVP: Number-Of-Requested-Vectors  ${number_of_requested_vectors}
+    Add AVP: Immediate-Response-Preferred  ${immediate_response_preferred}
 
 Add AVP: Number-Of-Requested-Vectors
-    [Arguments]  ${number_of_requested_vectors}  ${vendor_id}
+    [Arguments]  ${number_of_requested_vectors}
     Add AVP Code And Flags  ${avp_code.number_of_requested_vectors}  0xc0
     Add AVP Length  16
-    Add Decimal As Octets  ${vendor_id}  4
+    Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
     Add Decimal As Octets  ${number_of_requested_vectors}  4
 
 Add AVP: Immediate-Response-Preferred
-    [Arguments]  ${immediate_response_preferred}  ${avp_vendor_id}
+    [Arguments]  ${immediate_response_preferred}
     Add AVP Code And Flags  ${avp_code.immediate_response_preferred}  0xc0
     Add AVP Length  16
-    Add Decimal As Octets  ${avp_vendor_id}  4
+    Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
     Add Decimal as Octets  ${immediate_response_preferred}  4
 
 Add AVP: Visited-PLMN-Id

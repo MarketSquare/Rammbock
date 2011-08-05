@@ -86,10 +86,26 @@ Set 3GPP-Authentication-InformationRequest
     Add AVP: Destination-Host  HSS.ttcn3
     Add AVP: Destination-realm  test.nsn.com
     Add AVP: User-Name  262120000000001
-    Add AVP: Requested-EUTRAN-Authentication-Info  ${avp_vendor_id.3gpp}  1  1
+    Add AVP: Requested-EUTRAN-Authentication-Info  1  1
     Add AVP: Visited-PLMN-Id  62f221
 
 Validate 3GPP-Authentication-InformationRequest
+    Validate Message version  0x01
+    Validate Message Length  264
+    Validate Message Flags  0xc0
+    Validate Command Code  ${command_code.3gpp_authentication_information}
+    Validate ApplicationID  16777251
+    Validate Hop-By-Hop Identifier  0xe36006e6
+    Validate End-To-End Identifier  0x00003baf
+    Validate AVP: Session-ID  MME.NSN.COM;3233808406;43;16384;2505;12;0
+    Validate AVP: Auth-Session-State  ${NO_STATE_MAINTAINED}
+    Validate AVP: Origin-Host  originhost.mme.com
+    Validate AVP: Origin-Realm  originrealmnsn.com
+    Validate AVP: Destination-Host  HSS.ttcn3
+    Validate AVP: Destination-realm  test.nsn.com
+    Validate AVP: User-Name  262120000000001
+    Validate AVP: Requested-EUTRAN-Authentication-Info  1  1
+    Validate AVP: Visited-PLMN-Id  62f221
 
 Set 3GPP-Authentication-InformationAnswer
 
@@ -108,7 +124,4 @@ Set Disconnect-PeerRequest
 Validate Disconnect-PeerRequest
 
 Set Disconnect-PeerAnswer
-
-Validate Disconnect-PeerAnswer
-
 

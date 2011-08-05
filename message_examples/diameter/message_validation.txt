@@ -174,3 +174,94 @@ Read Padding After String Data
     ${padding}=  Evaluate  (4-${length%4})%4
     Read From Data  ${padding}
 
+Validate Disconnect-PeerAnswer
+
+Validate AVP: Session-ID
+    [Arguments]  ${session_id}
+    Validate AVP Code And Flags  ${avp_code.session_id}  0x40
+    ${length}=  Get Length  ${session_id}
+    Validate AVP Length  ${length + 8}
+    ${session_id-act}=  Read String From Data  ${length}
+    Should be equal  ${session_id}  ${session_id-act}
+    Read Padding After String Data  ${length}
+
+Validate AVP: Auth-Session-State
+    [Arguments]  ${session_state}
+    Validate AVP Code and Flags  ${avp_code.auth_session_state}  0x40
+    Validate AVP Length  12
+    ${session_state-act}  Read From Data  4
+    Should Be Equal  ${session_state}  ${session_state-act}
+
+Validate AVP: Destination-Host
+    [Arguments]  ${destination_host}
+    Validate AVP Code And Flags  ${avp_code.destination_host}  0x40
+    ${length}=  Get Length  ${destination_host}
+    Validate AVP Length  ${length + 8}
+    ${destination_host-act}=  Read String From Data  ${length}
+    Should Be Equal  ${destination_host}  ${destination_host-act}
+    Read Padding after String Data  ${length}
+
+Validate AVP: Destination-realm
+    [Arguments]  ${destination_realm}
+    Validate AVP Code And Flags  ${avp_code.destination_realm}  0x40
+    ${length}=  Get Length  ${destination_realm}
+    Validate Avp Length  ${length + 8}
+    ${destination_realm-act}=  Read String From Data  ${length}
+    Should Be Equal  ${destination_realm}  ${destination_realm-act}
+    Read Padding After String Data  ${length}
+
+Validate AVP: User-Name
+    [Arguments]  ${user_name}
+    Validate AVP Code And Flags  ${avp_code.user_name}  0x40
+    ${length}=  Get Length  ${user_name}
+    Validate AVP Length  ${length + 8}
+    ${user_name-act}=  Read String From Data  ${length}
+    Should be equal  ${user_name}  ${user_name-act}
+    Read Padding After String Data  ${length}
+
+Validate AVP: Requested-EUTRAN-Authentication-Info
+    [Arguments]  ${number_of_requested_vectors}  ${immediate_response}
+    Validate AVP Code And Flags  ${avp_code.requested_eutran_authentication_info}  0xc0
+    Validate AVP Length  44
+    ${avp_vendor_id-act}=  Read From DATa  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
+    Validate Requested-EUTRAN-Authentication-info  ${number_of_requested_vectors}  ${immediate_response}
+
+Validate Requested-EUTRAN-Authentication-info
+    [Arguments]  ${number_of_requested_vectors}  ${immediate_response_preferred}
+    Validate AVP: Number-Of-Requested-Vectors  ${number_of_requested_vectors}
+    Validate AVP: Immediate-Response-Preferred  ${immediate_response_preferred}
+
+Validate AVP: Number-Of-Requested-Vectors
+    [Arguments]  ${number_of_requested_vectors}
+    Validate AVP Code And Flags  ${avp_code.number_of_requested_vectors}  0xc0
+    Validate AVP Length  16
+    ${avp_vendor_id-act}=  Read From DAta  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
+    ${number_of_requested_vectors-act}=  Read From Data  4
+    Should Be Equal  ${number_of_requested_vectors}  ${number_of_requested_vectors-act}
+
+Validate AVP: Immediate-Response-Preferred
+    [Arguments]  ${immediate_response_preferred}
+    Validate AVP Code And Flags  ${avp_code.immediate_response_preferred}  0xc0
+    Validate AVP Length  16
+    ${avp_vendor_id.3gpp-act}=  Read From Data  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id.3gpp-act}
+    ${immediate_response_preferred-act}=  Read From Data  4
+    Should Be Equal  ${immediate_response_preferred}  ${immediate_response_preferred-act}
+
+Validate AVP: Visited-PLMN-Id
+    [Arguments]  ${visited_plmn_id}
+    Validate AVP Code and Flags  ${avp_code.visited_plmn_id}  0xc0
+    Validate AVP Length  15
+    ${avp_vendor_id-act}=  Read From Data  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
+    Validate visited-plmn-id  ${visited_plmn_id}
+
+Validate visited-plmn-id
+    [Arguments]  ${visited_plmn_id}
+    ${length}=  Get Length  ${visited_plmn_id}
+    ${visited_plmn_id-act}=  Read Hex Data  ${length/2}  NO_PREFIX
+    Should Be Equal  ${visited_plmn_id}  ${visited_plmn_id-act}
+    Add Padding After String Data  ${length/2}
+

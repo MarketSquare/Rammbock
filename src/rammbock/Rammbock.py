@@ -192,8 +192,11 @@ class Rammbock(object):
         except ValueError:
             raise Exception("Value is not valid hex")
 
-    def read_hex_data(self, length):
-        return "0x" + "".join(hex(int(self.read_from_data(1)))[2:].rjust(2, '0') for _ in range(0, int(length)))
+    def read_hex_data(self, length, no_prefix=None):
+        a = ""
+        if not no_prefix:
+            a += "0x"
+        return a + "".join(hex(int(self.read_from_data(1)))[2:].rjust(2, '0') for _ in range(0, int(length)))
 
     def read_tbcd_coded_numbers_from_data(self, amount):
         length = (int(amount)/2)+(int(amount)%2)
