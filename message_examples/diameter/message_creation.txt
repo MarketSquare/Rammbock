@@ -260,7 +260,7 @@ Add Authentication-Info
 Add AVP: E-UTRAN-Vector
     Add AVP Code And Flags  ${avp_code.e_utran_vector}  0xc0
     Add Avp Length  156
-    Add Decimal As Octets  ${avp_vendor_id.3gpp}
+    Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
     Add E-UTRAN-Vector
 
 Add E-UTRAN-Vector
@@ -281,5 +281,35 @@ Add AVP: RAND
     [Arguments]  ${rand}
     Add AVP Code and Flags  ${avp_code.rand}  0xc0
     ${length}=  Get Length  ${rand}
-    Add AVP Length  ${length/2 + 8}
+    Add AVP Length  ${length/2 + 12}
+    Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
+    Add Hex Data  ${rand}  ${length/2}
+    Add Padding After String Data  ${length/2}
+
+Add AVP: XRES
+    [Arguments]  ${xres}
+    Add AVP Code and Flags  ${avp_code.xres}  0xc0
+    ${length}=  Get Length  ${xres}
+    Add AVP Length  ${length/2 + 12}
+    Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
+    Add Hex Data  ${xres}  ${length/2}
+    Add Padding After String Data  ${length/2}
+
+Add AVP: AUTN
+    [Arguments]  ${autn}
+    Add AVP Code and Flags  ${avp_code.autn}  0xc0
+    ${length}=  Get Length  ${autn}
+    Add AVP Length  ${length/2 + 12}
+    Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
+    Add Hex Data  ${autn}  ${length/2}
+    Add Padding After String Data  ${length/2}
+
+Add AVP: KASME
+    [Arguments]  ${kasme}
+    Add AVP Code and Flags  ${avp_code.kasme}  0xc0
+    ${length}=  Get Length  ${kasme}
+    Add AVP Length  ${length/2 + 12}
+    Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
+    Add Hex Data  ${kasme}  ${length/2}
+    Add Padding After String Data  ${length/2}
 

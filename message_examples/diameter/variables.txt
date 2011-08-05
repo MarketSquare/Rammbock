@@ -26,4 +26,9 @@ ${avp_code.destination_realm}  283
 ${avp_code.route_record}  282
 ${avp_code.authentication_info}  1413
 ${avp_code.e_utran_vector}  1414
+${avp_code.xres}  1448
+${avp_code.rand}  1447
+${avp_code.autn}  1449
+${avp_code.kasme}  1450
+${avp_code.item_number}  1419
 
