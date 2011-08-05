@@ -253,7 +253,8 @@ Validate AVP: Immediate-Response-Preferred
 Validate AVP: Visited-PLMN-Id
     [Arguments]  ${visited_plmn_id}
     Validate AVP Code and Flags  ${avp_code.visited_plmn_id}  0xc0
-    Validate AVP Length  15
+    ${length}=  Get Length  ${visited_plmn_id}
+    Validate AVP Length  ${length/2 + 12}
     ${avp_vendor_id-act}=  Read From Data  4
     Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
     Validate visited-plmn-id  ${visited_plmn_id}

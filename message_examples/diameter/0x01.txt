@@ -108,6 +108,20 @@ Validate 3GPP-Authentication-InformationRequest
     Validate AVP: Visited-PLMN-Id  62f221
 
 Set 3GPP-Authentication-InformationAnswer
+    Add Message Version  0x01
+    Add Message Length  332
+    Add Message Flags  0x40
+    Add Command Code  ${command_code.3gpp_authentication_information}
+    Add ApplicationId  16777251
+    Add Hop-By-Hop Identifier  0xe36006e6
+    Add End-To-End Identifier  0x00003baf
+    Add AVP: Session-ID  MME.NSN.COM;3233808406;43;16384;2505;12;0
+    Add AVP: Result-Code  ${DIAMETER_SUCCESS}
+    Add AVP: Auth-Session-State  ${NO_STATE_MAINTAINED}
+    Add AVP: Origin-Host  HSS.ttcn3
+    Add AVP: Origin-Realm  test.nsn.com
+    Add AVP: Authentication-Info
+    Add AVP: Route-Record  originhost.sgsn.com
 
 Validate 3GPP-Authentication-InformationAnswer
 

@@ -73,4 +73,4 @@ class TestSpeed():
         rammbock.read_from_data(len(a))
         b = time()
         print b-s
-        assert b-s < 0.4
+        assert b-s < 0.5

@@ -23,4 +23,7 @@ ${avp_code.immediate_response_preferred}  1412
 ${avp_vendor_id.3gpp}  10415
 ${avp_code.visited_plmn_id}  1407
 ${avp_code.destination_realm}  283
+${avp_code.route_record}  282
+${avp_code.authentication_info}  1413
+${avp_code.e_utran_vector}  1414
 
