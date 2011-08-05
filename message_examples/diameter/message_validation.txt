@@ -169,7 +169,8 @@ Validate Result-Code
     Should Be Equal  ${code}  ${code-act}
 
 Read Padding After String Data
-    [Arguments]  ${length}
+    [Arguments]  ${length}  # length of string which is followed by padding
+    [Documentation]  Diameter protocol has 32 bit wide fields. As we enter string data it might cause packet malformation if length of the string is not divisible by four octets - that is is 32 bits. in order to prevent this we add or read extra padding after string if necessary.
     ${padding}=  Evaluate  (4-${length%4})%4
     Read From Data  ${padding}
 

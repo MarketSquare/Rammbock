@@ -12,4 +12,5 @@ ${avp_code.firmware_revision}  267
 ${avp_code.vendor_id}  266
 ${vendor_id.nsn}  28458
 ${avp_code.result_code}  268
+${command_code.3gpp_authentication_information}  318
 
