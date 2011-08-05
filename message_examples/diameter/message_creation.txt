@@ -1,6 +1,7 @@
 *** Variables ***
 ${NO_INBAND_SECURITY}  0
 ${DIAMETER_SUCCESS}  2001
+${NO_STATE_MAINTAINED}  1
 
 *** Keywords ***
 Add Message Version
@@ -156,4 +157,85 @@ Add Padding After String Data
     [Documentation]  Diameter protocol has 32 bit wide fields. As we enter string data it might cause packet malformation if length of the string is not divisible by four octets - that is is 32 bits. in order to prevent this we add or read extra padding after string if necessary.
     ${padding}=  Evaluate  (4-${length%4})%4
     Add Decimal As Octets  0  ${padding}
+
+Add AVP: Session-ID
+    [Arguments]  ${session_id}
+    Add AVP Code And Flags  ${avp_code.session_id}  0x40
+    ${length}=  Get Length  ${session_id}
+    Add AVP Length  ${length + 8}
+    Add String  ${session_id}
+    Add Padding After String Data  ${length}
+
+Add AVP: Auth-Session-State
+    [Arguments]  ${session_state}
+    Add AVP Code And Flags  ${avp_code.auth_session_state}  0x40
+    Add AVP Length  12
+    Add Auth-Session-state  ${session_state}
+
+Add Auth-Session-state
+    [Arguments]  ${state}
+    Add Decimal As Octets  ${state}  4
+
+Add AVP: Destination-Host
+    [Arguments]  ${destination_host}
+    Add AVP Code And Flags  ${avp_code.destination_host}  0x40
+    ${length}=  Get Length  ${destination_host}
+    Add AVP Length  ${length + 8}
+    Add String  ${destination_host}
+    Add Padding After String Data  ${length}
+
+Add AVP: Destination-realm
+    [Arguments]  ${destination_realm}
+    Add AVP Code and Flags  ${avp_code.destination_realm}  0x40
+    ${length}=  Get Length  ${destination_realm}
+    Add AVP Length  ${length + 8}
+    Add String  ${destination_realm}
+    Add Padding After String Data  ${length}
+
+Add AVP: User-Name
+    [Arguments]  ${user_name}
+    Add AVP Code And Flags  ${avp_code.user_name}  0x40
+    ${length}=  Get Length  ${user_name}
+    Add AVP Length  ${length + 8}
+    Add String  ${user_name}
+    Add Padding After String Data  ${length}
+
+Add AVP: Requested-EUTRAN-Authentication-Info
+    [Arguments]  ${avp_vendor_id}  ${number_of_requested_vectors}  ${immediate_response}
+    Add AVP Code And Flags  ${avp_code.requested_eutran_authentication_info}  0xc0
+    Add AVP Length  44
+    Add Decimal As Octets  ${avp_vendor_id}  4
+    Add Requested-EUTRAN-Authentication-info  ${number_of_requested_vectors}  ${immediate_response}  ${avp_vendor_id}
+
+Add Requested-EUTRAN-Authentication-info
+    [Arguments]  ${number_of_requested_vectors}  ${immediate_response_preferred}  ${avp_vendor_id}
+    Add AVP: Number-Of-Requested-Vectors  ${number_of_requested_vectors}  ${avp_vendor_id}
+    Add AVP: Immediate-Response-Preferred  ${immediate_response_preferred}  ${avp_vendor_id}
+
+Add AVP: Number-Of-Requested-Vectors
+    [Arguments]  ${number_of_requested_vectors}  ${vendor_id}
+    Add AVP Code And Flags  ${avp_code.number_of_requested_vectors}  0xc0
+    Add AVP Length  16
+    Add Decimal As Octets  ${vendor_id}  4
+    Add Decimal As Octets  ${number_of_requested_vectors}  4
+
+Add AVP: Immediate-Response-Preferred
+    [Arguments]  ${immediate_response_preferred}  ${avp_vendor_id}
+    Add AVP Code And Flags  ${avp_code.immediate_response_preferred}  0xc0
+    Add AVP Length  16
+    Add Decimal As Octets  ${avp_vendor_id}  4
+    Add Decimal as Octets  ${immediate_response_preferred}  4
+
+Add AVP: Visited-PLMN-Id
+    [Arguments]  ${visited_plmn_id}
+    Add AVP Code and Flags  ${avp_code.visited_plmn_id}  0xc0
+    Add AVP Length  15
+    Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
+    Add visited-plmn-id  ${visited_plmn_id}
+
+Add visited-plmn-id
+    [Arguments]  ${visited_plmn_id}
+    ${length}=  Get Length  ${visited_plmn_id}
+    Add Hex Data  ${visited_plmn_id}  ${length/2}
+    Add Padding After String Data  ${length/2}
 

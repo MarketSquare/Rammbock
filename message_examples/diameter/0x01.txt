@@ -111,11 +111,4 @@ Set Disconnect-PeerAnswer
 
 Validate Disconnect-PeerAnswer
 
-Add AVP: Session-ID
-    [Arguments]  ${session_id}
-    Add AVP Code And Flags  ${avp_code.session_id}  0x40
-    ${length}=  Get Length  ${session_id}
-    Add AVP Length  ${length + 8}
-    Add Session-Id  ${session_id}
-    Add Padding After String Data  ${length}
 

@@ -13,4 +13,14 @@ ${avp_code.vendor_id}  266
 ${vendor_id.nsn}  28458
 ${avp_code.result_code}  268
 ${command_code.3gpp_authentication_information}  318
+${avp_code.session_id}  263
+${avp_code.auth_session_state}  277
+${avp_code.destination_host}  293
+${avp_code.user_name}  1
+${avp_code.requested_eutran_authentication_info}  1408
+${avp_code.number_of_requested_vectors}  1410
+${avp_code.immediate_response_preferred}  1412
+${avp_vendor_id.3gpp}  10415
+${avp_code.visited_plmn_id}  1407
+${avp_code.destination_realm}  283
 
