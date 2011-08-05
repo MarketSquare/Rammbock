@@ -34,6 +34,17 @@ Delete Session Response
     Create And Send Delete Session Response
     Receive And Validate Delete Session Response
 
+gtpv2 attach-detach
+    Create And Send Create SEssion Request
+    Respond with Create Session Response
+    Client Receives And Validates Create Session Response
+    Create And Send Modify Bearer Request
+    Respond with Modify Bearer Response
+    Client Receives And Validates Modify Bearer Response
+    Create And Send Delete Session Request
+    Responsd with Delete Session REsponse
+    Client Receives And Validates Delete Session Response
+
 *** Keywords ***
 Create and send Create Session Request
     Create Message
@@ -88,4 +99,37 @@ Create And Send Delete Session Response
 Receive And Validate Delete Session Response
     Server Receives Data
     Validate Delete Session Response
+
+Respond with Create Session Response
+    Server Receives Data
+    Validate Create Session Request
+    Create Message
+    Set Create Session REsponse
+    Server Sends Data
+
+Client Receives And Validates Create Session Response
+    Client Receives Data
+    Validate Create Session Response
+
+Respond with Modify Bearer Response
+    Server Receives Data
+    Validate Modify Bearer Request
+    Create Message
+    Set Modify Bearer Response
+    Server Sends Data
+
+Client Receives And Validates Modify Bearer Response
+    Client Receives Data
+    Validate Modify Bearer Response
+
+Responsd with Delete Session REsponse
+    Server Receives Data
+    Validate Delete Session Request
+    Create Message
+    Set Delete Session REsponse
+    Server Sends Data
+
+Client Receives And Validates Delete Session Response
+    Client Receives Data
+    Validate Delete Session REsponse
 
