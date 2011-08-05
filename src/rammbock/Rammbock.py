@@ -105,12 +105,15 @@ class Rammbock(object):
         self._data = ""
         self._binary = ""
 
+
     def add_string(self, value, length=None):
         if not length:
             length = len(value)
         self._data += str(value).rjust(int(length), '\0')
 
     def add_decimal_as_octets(self, value, length):
+        if int(length) == 0:
+            return
         data = self._convert_to_hex_and_add_padding(value, length)
         if len(data) > int(length) * 2:
             raise Exception("Value is too big for length")
@@ -140,6 +143,8 @@ class Rammbock(object):
         return self._data
 
     def read_from_data(self, length):
+        if int(length) == 0:
+            return
         return str(int("".join(self._read_from_data(int(length))), 16))
 
     def _read_from_data(self, length):

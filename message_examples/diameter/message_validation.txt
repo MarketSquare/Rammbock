@@ -170,6 +170,6 @@ Validate Result-Code
 
 Read Padding After String Data
     [Arguments]  ${length}
-    ${padding}=  Evaluate  4-${length%4}%4
+    ${padding}=  Evaluate  (4-${length%4})%4
     Read From Data  ${padding}
 

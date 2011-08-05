@@ -153,6 +153,6 @@ Add Result-Code
 
 Add Padding After String Data
     [Arguments]  ${length}
-    ${padding}=  Evaluate  4-${length%4}%4
+    ${padding}=  Evaluate  (4-${length%4})%4
     Add Decimal As Octets  0  ${padding}
 
