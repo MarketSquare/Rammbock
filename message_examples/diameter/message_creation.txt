@@ -2,6 +2,7 @@
 ${NO_INBAND_SECURITY}  0
 ${DIAMETER_SUCCESS}  2001
 ${NO_STATE_MAINTAINED}  1
+${DO_NOT_WANT_TO_TALK_TO_YOU}  2
 
 *** Keywords ***
 Add Message Version
@@ -326,4 +327,10 @@ Add AVP: RAT-Type
     Add AVP Length  16
     Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
     Add Decimal As Octets  ${rat_type}  4
+
+Add AVP: Disconnect-Cause
+    [Arguments]  ${cause}
+    Add AVP Code and Flags  ${avp_code.disconnect_cause}  0x40
+    Add AVP Length  12
+    Add Decimal As Octets  ${cause}  4
 

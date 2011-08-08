@@ -31,8 +31,12 @@ Capabilities-ExchangeAnswer
     Receive And Validate 3GPP-Update-LocationRequest
 
 3GPP-Update-LocationAnswer
+    Create And Send 3GPP-Update-LocationAnswer
+    Receive And Validate 3GPP-Update-LocationAnswer
 
 Disconnect-PeerRequest
+    Create And Send Disconnect-PeerRequest
+    Receive And Validate Disconnect-PeerRequest
 
 Disconnect-PeerAnswer
 
@@ -81,4 +85,13 @@ Create And Send 3GPP-Update-LocationRequest
 Receive And Validate 3GPP-Update-LocationRequest
     Server Receives Data
     Validate 3GPP-Update-LocationRequest
+
+Create And Send Disconnect-PeerRequest
+    Create Message
+    Set Disconnect-PeerRequest
+    Client Sends Data
+
+Receive And Validate Disconnect-PeerRequest
+    Server Receives Data
+    Validate Disconnect-PeerRequest
 

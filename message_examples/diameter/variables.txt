@@ -35,4 +35,6 @@ ${command_code.3gpp_update_location}  316
 ${rat_type.eutran}  1004
 ${avp_code.rat_type}  1032
 ${avp_code.url_flags}  1405
+${command_code.disconnect_peer}  282
+${avp_code.disconnect_cause}  273
 

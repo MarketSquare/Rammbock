@@ -370,3 +370,10 @@ Validate AVP: RAT-Type
     ${rat_type-act}=  Read From Data  4
     Should Be Equal  ${rat_type}  ${rat_type-act}
 
+Validate AVP: Disconnect-Cause
+    [Arguments]  ${cause}
+    Validate AVP Code and Flags  ${avp_code.disconnect_cause}  0x40
+    Validate AVP Length  12
+    ${cause-act}=  Read From Data  4
+    Should Be Equal  ${cause}  ${cause-act}
+

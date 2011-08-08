@@ -182,8 +182,30 @@ Set 3GPP-Update-LocationAnswer
 Validate 3GPP-Update-LocationAnswer
 
 Set Disconnect-PeerRequest
+    Add Message Version  0x01
+    Add MEssage Length  72
+    Add MessageFlags  0x80
+    Add Command Code  ${command_code.disconnect_peer}
+    Add ApplicationId  0
+    Add Hop-By-Hop Identifier  0xe36006ee
+    Add End-To-End Identifier  0x00003bb7
+    Add AVP: Origin-Host  HSS.ttcn3
+    Add AVP: Origin-Realm  test.xxx.com
+    Add AVP: Disconnect-Cause  ${DO_NOT_WANT_TO_TALK_TO_YOU}
 
 Validate Disconnect-PeerRequest
+    Validate Message Version  0x01
+    Validate MEssage Length  72
+    Validate MessageFlags  0x80
+    Validate Command Code  ${command_code.disconnect_peer}
+    Validate ApplicationId  0
+    Validate Hop-By-Hop Identifier  0xe36006ee
+    Validate End-To-End Identifier  0x00003bb7
+    Validate AVP: Origin-Host  HSS.ttcn3
+    Validate AVP: Origin-Realm  test.xxx.com
+    Validate AVP: Disconnect-Cause  ${DO_NOT_WANT_TO_TALK_TO_YOU}
 
 Set Disconnect-PeerAnswer
+
+Validate Disconnect-PeerAnswer
 
