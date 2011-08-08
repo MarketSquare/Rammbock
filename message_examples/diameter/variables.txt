@@ -37,4 +37,24 @@ ${avp_code.rat_type}  1032
 ${avp_code.url_flags}  1405
 ${command_code.disconnect_peer}  282
 ${avp_code.disconnect_cause}  273
+${avp_code.ula_flags}  1406
+${avp_code.subscription_data}  1400
+${avp_code.subscriber_status}  1424
+${avp_code.msisdn}  701
+${avp_code.apn_oi_replacement}  1427
+${avp_code.3gpp_charging_characteristics}  13
+${avp_code.ambr}  1435
+${avp_code.max_requested_bandwith_ul}  516
+${avp_code.max_requested_bandwith_dl}  515
+${avp_code.context_identifier}  1423
+${avp_code.all_apn_configurations_included_indicator}  1428
+${avp_code.apn_configuration}  1430
+${avp_code.server_party_ip_address}  848
+${avp_code.pdn_type}  1456
+${pdn_type.ipv4}  0
+${avp_code.servire_selection}  493
+${avp_code.vplmn_dynamic_address_allowed}  1432
+${avp_code.eps_subscribed_qos_profile}  1431
+${avp_code.pre_emption_vulnerability}  1048
+${avp_code.pre_emption_capability}  1047
 

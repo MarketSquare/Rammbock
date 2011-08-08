@@ -178,6 +178,21 @@ Validate 3GPP-Update-LocationRequest
     Validate AVP: RAT-Type  ${rat_type.eutran}
 
 Set 3GPP-Update-LocationAnswer
+    Add Message Version  0x01
+    Add Message Length  828
+    Add MEssage Flags  0x40
+    Add Command Code  ${command_code.3gpp_update_location}
+    Add ApplicationId  16777251
+    Add Hop-By-Hop Identifier  0xe36006ea
+    Add End-To-End Identifier  0x00003bb3
+    Add AVP: Session-ID  MME.XXX.COM;3233808406;44;16384;2505;12;0
+    Add AVP: Result-Code  ${DIAMETER_SUCCESS}
+    Add AVP: Auth-Session-State  ${NO_STATE_MAINTAINED}
+    Add AVP: Origin-Host  HSS.ttcn3
+    Add AVP: Origin-Realm  test.xxx.com
+    Add AVP: ULA-Flags  1
+    Add AVP: Subscription-Data
+    Add AVP: Route-Record  originhost.sgsn.com
 
 Validate 3GPP-Update-LocationAnswer
 

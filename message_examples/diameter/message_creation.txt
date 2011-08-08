@@ -3,6 +3,17 @@ ${NO_INBAND_SECURITY}  0
 ${DIAMETER_SUCCESS}  2001
 ${NO_STATE_MAINTAINED}  1
 ${DO_NOT_WANT_TO_TALK_TO_YOU}  2
+${avp_code.access_restriction_data}  1426
+${avp_code.apn_configuration_profile}  1429
+${SERVICE_GRANTED}  0
+${ALL_CONFIGURATIONS_INCLUDED}  0
+${NOTALLOWED}  0
+${avp_code.qos_class_identifier}  1034
+${avp_code.allocation_retention_priority}  1034
+${avp_code.priority_level}  1046
+${QCI_9}  9
+${PRE_EMPTION_CAPABILITY_ENABLED}  0
+${PRE_EMPTION_VULNERABILITY_ENABLED}  0
 
 *** Keywords ***
 Add Message Version
@@ -316,7 +327,7 @@ Add AVP: KASME
 
 Add AVP: URL-Flags
     [Arguments]  ${flags}
-    Add AVP Code and Flags   ${avp_code.url_flags}  0xc0
+    Add AVP Code and Flags  ${avp_code.url_flags}  0xc0
     Add AVP Length  16
     Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
     add decimal as octets  ${flags}  4
@@ -333,4 +344,234 @@ Add AVP: Disconnect-Cause
     Add AVP Code and Flags  ${avp_code.disconnect_cause}  0x40
     Add AVP Length  12
     Add Decimal As Octets  ${cause}  4
+
+Add AVP: ULA-Flags
+    [Arguments]  ${flags}
+    Add AVP Code and Flags  ${avp_code.ula_flags}  0xc0
+    Add AVP Length  16
+    Add Decimal As OCtets  ${avp_vendor_id.3gpp}  4
+    Add Decimal As Octets  ${flags}  4
+
+Add AVP: Subscription-Data
+    Add Avp Code And Flags  ${avp_code.subscription_data}  0xc0
+    Add AVP Length  648
+    Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
+    Add Subscription Data
+
+Add Subscription Data
+    Add AVP: Subscriber-Status  ${SERVICE_GRANTED}
+    Add AVP: MSISDN  358  6100000000001
+    Add AVP: Access-Restriction-Data  0
+    Add AVP: APN-OI-Replacement  MNC123.MCC456.MME
+    Add AVP: 3gpp-charging-characteristics  ab
+    Add AVP: AMBR  5000  5000
+    Add AVP: APN-Configuration-Profile
+    Add AVP: Rat-Frequency-Selection-Priority-Id  1
+
+Add AVP: Subscriber-Status
+    [Arguments]  ${subscriber_status}
+    Add AVP Code and Flags  ${avp_code.subscriber_status}  0xc0
+    Add AVP Length  16
+    Add Decimal As OCtets  ${avp_vendor_id.3gpp}  4
+    Add Decimal As Octets  ${subscriber_status}  4
+
+Add AVP: MSISDN
+    [Arguments]  ${country_code}  ${address_digits}
+    Add AVP Code and Flags  ${avp_code.msisdn}  0xc0
+    Add AVP Length  20
+    Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
+    Add Number As TBCD  ${country_code}  ${address_digits}
+
+Add AVP: Access-Restriction-Data
+    [Arguments]  ${access_restriction_data}
+    Add AVP Code And Flags  ${avp_code.access_restriction_data}  0xc0
+    Add AVP Length  16
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add Decimal As Octets  ${access_restriction_data}  4
+
+Add AVP: APN-OI-Replacement
+    [Arguments]  ${apn_oi_replacement}
+    Add AVP Code and Flags  ${avp_code.apn_oi_replacement}  0xc0
+    ${length}=  Get Length  ${apn_oi_replacement}
+    Add Avp Length  ${length + 12}
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add String  ${apn_oi_replacement}
+    Add Padding after string data  ${length}
+
+Add AVP: 3gpp-charging-characteristics
+    [Arguments]  ${charging_characteristics}
+    Add AVP Code And Flags  ${avp_code.3gpp_charging_characteristics}  0x80
+    ${length}=  Get Length  ${charging_characteristics}
+    Add AVP Length  ${length + 12}
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add String  ${avp_code.3gpp_charging_characteristics}
+    Add Padding After String Data  ${length}
+
+Add AVP: AMBR
+    [Arguments]  ${max_request_bandwith_ul}  ${max_request_bandwith_dl}
+    Add Avp Code and Flags  ${avp_code.ambr}  0xc0
+    Add Avp Length  44
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add AMBR  ${max_request_bandwith_ul}  ${max_request_bandwith_dl}
+
+Add AMBR
+    [Arguments]  ${ul}  ${dl}
+    Add AVP: Max-Requested-Bandwidth-UL  ${ul}
+    Add AVP: Max-Requested-Bandwidth-DL  ${dl}
+
+Add AVP: Max-Requested-Bandwidth-UL
+    [Arguments]  ${ul}
+    Add AVP Code And Flags  ${avp_code.max_requested_bandwith_ul}  0xc0
+    Add AVP Length  16
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add Decimal As Octets  ${ul}  4
+
+Add AVP Vendor Id
+    [Arguments]  ${vendor_id}
+    Add Decimal As Octets  ${vendor_id}  4
+
+Add AVP: Max-Requested-Bandwidth-DL
+    [Arguments]  ${dl}
+    Add AVP Code And Flags  ${avp_code.max_requested_bandwith_dl}  0xc0
+    Add AVP Length  16
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add Decimal As Octets  ${dl}  4
+
+Add AVP: Rat-Frequency-Selection-Priority-Id
+    [Arguments]  ${priority_id}
+    Add AVP code And Flags  ${avp_code.rat_frequency_selection_priority_id}  0xc0
+    Add AVP Length  16
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add Decimal As Octets  ${priority_id}
+
+Add AVP: APN-Configuration-Profile
+    Add AVP Code And Flags  ${avp_code.apn_configuration_profile}  0xc0
+    Add AVP Length  476
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add APN-Configuration-Profile
+
+Add APN-Configuration-Profile
+    Add AVP: Context-Identifier  1
+    Add AVP: All-APN-Configurations-Included-Indicator  ${ALL_CONFIGURATIONS_INCLUDED}
+    Add AVP: APN-Configuration
+
+Add AVP: Context-Identifier
+    [Arguments]  ${context_identifier}
+    Add AVP Code And Flags  ${avp_code.context_identifier}  0xc0
+    Add AVP Length  16
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add Decimal As Octets  ${context_identifier}  4
+
+Add AVP: All-APN-Configurations-Included-Indicator
+    [Arguments]  ${all_apn_configurations_included_indicator}
+    Add AVP Code And Flags  ${avp_code.all_apn_configurations_included_indicator}  0xc0
+    Add AVP Length  16
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add Decimal As Octets  ${all_apn_configurations_included_indicator}  4
+
+Add AVP: APN-Configuration
+    Add AVP Code and Flags  ${avp_code.apn_configuration}  0xc0
+    Add AVP Length  432
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add APN-Configuration
+
+Add APN-Configuration
+    Add AVP: Context-Identifier  1
+    Add AVP: Served-Party-IP-Address  127.0.0.1
+    Add AVP: PDN-Type  ${pdn_type.ipv4}
+    Add AVP: Service-Selection  sgw.xxx.com
+    Add AVP: EPS-Subscribed-QoS-Profile
+    Add AVP: VPLMN-Dynamic-Address-Allowed  ${NOTALLOWED}
+    Add AVP: MIP6-Agent-Info
+    Add AVP: PDN-GW-Allocation-Type  ${STATIC}
+    Add AVP: 3GPP-Charging-Characteristics  ab
+    Add AVP: AMBR  2000  1000
+    Add AVP: Specific-APN-Info
+
+Add AVP: Served-Party-IP-Address
+    [Arguments]  ${ip}
+    Add AVP Code And Flags  ${avp_code.server_party_ip_address}  0xc0
+    Add AVP Length  18
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add Decimal As Octets  1  2  # ipv4 ip address family
+    Add Ip As Hex  ${ip}
+
+Add AVP: PDN-Type
+    [Arguments]  ${pdn_type}
+    Add AVP Code and Flags  ${avp_code.pdn_type}  0xc0
+    Add AVP Length  16
+    Add AVP Vendor id  ${avp_vendor_id.3gpp}
+    Add Decimal As Octets  ${pdn_type}  4
+
+Add AVP: Service-Selection
+    [Arguments]  ${service_selection}
+    Add AVP Code and Flags  ${avp_code.servire_selection}  0x40
+    ${length}=  Get Length  ${service_selection}
+    Add AVP Length  ${length + 8}
+    Add String  ${service_selection}
+
+Add AVP: VPLMN-Dynamic-Address-Allowed
+    [Arguments]  ${dynamic_address_allowed}
+    Add AVP Code and Flags  ${avp_code.vplmn_dynamic_address_allowed}  0xc0
+    Add AVP Length  16
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add Decimal As Octets  ${dynamic_address_allowed}  4
+
+Add AVP: PDN-GW-Allocation-Type
+    [Arguments]  ${allocation_type}
+    Add AVP Code and Flags  ${avp_code.pdn_gw_allocation_type}  0xc0
+    Add AVP Length  16
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add Decimal As Octets  ${allocation_type}  4
+
+Add AVP: EPS-Subscribed-QoS-Profile
+    Add Avp Code and Flags  ${avp_code.eps_subscribed_qos_profile}  0xc0
+    Add AVP Length  88
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add EPS-Subscribed-QoS-Profile
+
+Add EPS-Subscribed-QoS-Profile
+    Add AVP: Qos-class-identifier  ${QCI_9}
+    Add AVP: Allocation-Retention-Priority  1  ${PRE_EMPTION_CAPABILITY_ENABLED}  ${PRE_EMPTION_VULNERABILITY_ENABLED}
+
+Add AVP: Qos-class-identifier
+    [Arguments]  ${qos_class_identifier}
+    Add AVP Code and Flags  ${avp_code.qos_class_identifier}  0xc0
+    Add AVP Length  16
+    Add Avp vendor id  ${avp_vendor_id.3gpp}
+    Add Decimal As Octets  ${qos_class_identifier}  4
+
+Add AVP: Allocation-Retention-Priority
+    [Arguments]  ${priority_level}  ${pre_epmtion_capability}  ${pre_epmtion_vulnerability}
+    Add AVP Code and Flags  ${avp_code.allocation_retention_priority}  0xc0
+    Add AVP Length  60
+    Add Avp Vendor Id  ${avp_vendor_id.3gpp}
+    Add Allocation-Retention-Priority  ${priority_level}  ${pre_epmtion_capability}  ${pre_epmtion_vulnerability}
+
+Add Allocation-Retention-Priority
+    [Arguments]  ${priority_level}  ${pre_emption_capability}  ${pre_emption_vulnerability}
+    Add AVP: Priority-Level  ${priority_level}
+    Add AVP: Pre-emption-Capability  ${pre_emption_capability}
+    Add AVP: Pre-emption-Vulnerability  ${pre_emption_vulnerability}
+
+Add AVP: Priority-Level
+    [Arguments]  ${priority_level}
+    Add AVP Code and Flags  ${avp_code.priority_level}  0xc0
+    Add Avp Length  16
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add Decimal As OCtets  ${priority_level}  4
+
+Add AVP: Pre-emption-Capability
+    [Arguments]  ${pre_emption_capability}
+    Add AVP code and Flags  ${avp_code.pre_emption_capability}  0xc0
+    Add AVP Length  16
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add Decimal As Octets  ${pre_emption_capability}  4
+
+Add AVP: Pre-emption-Vulnerability
+    [Arguments]  ${pre_emption_vulnerability}
+    Add AVP code and Flags  ${avp_code.pre_emption_vulnerability}  0xc0
+    Add AVP Length  16
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add Decimal As Octets  ${pre_emption_vulnerability}  4
 

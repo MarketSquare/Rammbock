@@ -106,3 +106,12 @@ Receive And Validate Disconnect-PeerAnswer
     Server Receives Data
     Validate Disconnect-PeerAnswer
 
+Create And Send 3GPP-Update-LocationAnswer
+    Create MEssage
+    Set 3GPP-Update-LocationAnswer
+    Client Sends Data
+
+Receive And Validate 3GPP-Update-LocationAnswer
+    Server Receives Data
+    Validate 3GPP-Update-LocationAnswer
+
