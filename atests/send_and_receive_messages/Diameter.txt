@@ -27,6 +27,8 @@ Capabilities-ExchangeAnswer
     Receive And Validate 3GPP-Authentication-InformationAnswer
 
 3GPP-Update-LocationRequest
+    Create And Send 3GPP-Update-LocationRequest
+    Receive And Validate 3GPP-Update-LocationRequest
 
 3GPP-Update-LocationAnswer
 
@@ -70,4 +72,13 @@ Create And Send 3GPP-Authentication-InformationAnswer
 Receive And Validate 3GPP-Authentication-InformationAnswer
     Server Receives Data
     Validate 3GPP-Authentication-InformationAnswer
+
+Create And Send 3GPP-Update-LocationRequest
+    Create Message
+    Set 3GPP-Update-LocationRequest
+    Client Sends Data
+
+Receive And Validate 3GPP-Update-LocationRequest
+    Server Receives Data
+    Validate 3GPP-Update-LocationRequest
 

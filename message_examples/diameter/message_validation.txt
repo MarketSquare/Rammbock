@@ -264,7 +264,7 @@ Validate visited-plmn-id
     ${length}=  Get Length  ${visited_plmn_id}
     ${visited_plmn_id-act}=  Read Hex Data  ${length/2}  NO_PREFIX
     Should Be Equal  ${visited_plmn_id}  ${visited_plmn_id-act}
-    Add Padding After String Data  ${length/2}
+    Read Padding After String Data  ${length/2}
 
 Validate AVP: Authentication-Info
     Validate AVP Code and Flags  ${avp_code.authentication_info}  0xc0
@@ -351,4 +351,22 @@ Validate AVP: RAND
     ${rand-act}=  Read Hex Data  ${length/2}  NO_0x
     Should Be Equal  ${rand}  ${rand-act}
     Read Padding After String Data  ${length/2}
+
+Validate AVP: URL-Flags
+    [Arguments]  ${flags}
+    Validate AVP Code and Flags   ${avp_code.url_flags}  0xc0
+    Validate AVP Length  16
+    ${avp_vendor_id-act}=  Read From Data  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
+    ${flags-act}=  Read From Data  4
+    Should Be Equal  ${flags}  ${flags-act}
+
+Validate AVP: RAT-Type
+    [Arguments]  ${rat_type}
+    Validate AVP Code and Flags  ${avp_code.rat_type}  0x80
+    Validate AVP Length  16
+    ${avp_vendor_id-act}=  Read From Data  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
+    ${rat_type-act}=  Read From Data  4
+    Should Be Equal  ${rat_type}  ${rat_type-act}
 

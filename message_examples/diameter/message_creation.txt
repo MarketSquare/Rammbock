@@ -313,3 +313,17 @@ Add AVP: KASME
     Add Hex Data  ${kasme}  ${length/2}
     Add Padding After String Data  ${length/2}
 
+Add AVP: URL-Flags
+    [Arguments]  ${flags}
+    Add AVP Code and Flags   ${avp_code.url_flags}  0xc0
+    Add AVP Length  16
+    Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
+    add decimal as octets  ${flags}  4
+
+Add AVP: RAT-Type
+    [Arguments]  ${rat_type}
+    Add AVP Code and Flags  ${avp_code.rat_type}  0x80
+    Add AVP Length  16
+    Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
+    Add Decimal As Octets  ${rat_type}  4
+

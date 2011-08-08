@@ -31,4 +31,8 @@ ${avp_code.rand}  1447
 ${avp_code.autn}  1449
 ${avp_code.kasme}  1450
 ${avp_code.item_number}  1419
+${command_code.3gpp_update_location}  316
+${rat_type.eutran}  1004
+${avp_code.rat_type}  1032
+${avp_code.url_flags}  1405
 
