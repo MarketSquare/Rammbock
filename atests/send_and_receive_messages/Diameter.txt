@@ -67,3 +67,7 @@ Create And Send 3GPP-Authentication-InformationAnswer
     Set 3GPP-Authentication-InformationAnswer
     Client Sends Data
 
+Receive And Validate 3GPP-Authentication-InformationAnswer
+    Server Receives Data
+    Validate 3GPP-Authentication-InformationAnswer
+

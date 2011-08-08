@@ -14,7 +14,7 @@ Set Capabilities-ExchangeRequest
     Add Hop-By-Hop Identifier  0xe36006e2
     Add End-To-End Identifier  0x00003bab
     Add AVP: Origin-Host  originhost.mme.com
-    Add AVP: Origin-Realm  originrealmnsn.com
+    Add AVP: Origin-Realm  originrealmxxx.com
     Add AVP: Host-IP-Address  192.168.112.20
     Add AVP: Vendor-Id  ${vendor_id.nsn}
     Add AVP: Product-Name  FlexiNS
@@ -32,7 +32,7 @@ Validate Capabilities-ExchangeRequest
     Validate Hop-By-Hop Identifier  0xe36006e2
     Validate End-To-End Identifier  0x00003bab
     Validate AVP: Origin-Host  originhost.mme.com
-    Validate AVP: Origin-Realm  originrealmnsn.com
+    Validate AVP: Origin-Realm  originrealmxxx.com
     Validate AVP: Host-IP-Address  192.168.112.20
     Validate AVP: Vendor-Id  ${vendor_id.nsn}
     Validate AVP: Product-Name  FlexiNS
@@ -79,12 +79,12 @@ Set 3GPP-Authentication-InformationRequest
     Add ApplicationID  16777251
     Add Hop-By-Hop Identifier  0xe36006e6
     Add End-To-End Identifier  0x00003baf
-    Add AVP: Session-ID  MME.NSN.COM;3233808406;43;16384;2505;12;0
+    Add AVP: Session-ID  MME.XXX.COM;3233808406;43;16384;2505;12;0
     Add AVP: Auth-Session-State  ${NO_STATE_MAINTAINED}
     Add AVP: Origin-Host  originhost.mme.com
-    Add AVP: Origin-Realm  originrealmnsn.com
+    Add AVP: Origin-Realm  originrealmxxx.com
     Add AVP: Destination-Host  HSS.ttcn3
-    Add AVP: Destination-realm  test.nsn.com
+    Add AVP: Destination-realm  test.xxx.com
     Add AVP: User-Name  262120000000001
     Add AVP: Requested-EUTRAN-Authentication-Info  1  1
     Add AVP: Visited-PLMN-Id  62f221
@@ -97,12 +97,12 @@ Validate 3GPP-Authentication-InformationRequest
     Validate ApplicationID  16777251
     Validate Hop-By-Hop Identifier  0xe36006e6
     Validate End-To-End Identifier  0x00003baf
-    Validate AVP: Session-ID  MME.NSN.COM;3233808406;43;16384;2505;12;0
+    Validate AVP: Session-ID  MME.XXX.COM;3233808406;43;16384;2505;12;0
     Validate AVP: Auth-Session-State  ${NO_STATE_MAINTAINED}
     Validate AVP: Origin-Host  originhost.mme.com
-    Validate AVP: Origin-Realm  originrealmnsn.com
+    Validate AVP: Origin-Realm  originrealmxxx.com
     Validate AVP: Destination-Host  HSS.ttcn3
-    Validate AVP: Destination-realm  test.nsn.com
+    Validate AVP: Destination-realm  test.xxx.com
     Validate AVP: User-Name  262120000000001
     Validate AVP: Requested-EUTRAN-Authentication-Info  1  1
     Validate AVP: Visited-PLMN-Id  62f221
@@ -115,11 +115,11 @@ Set 3GPP-Authentication-InformationAnswer
     Add ApplicationId  16777251
     Add Hop-By-Hop Identifier  0xe36006e6
     Add End-To-End Identifier  0x00003baf
-    Add AVP: Session-ID  MME.NSN.COM;3233808406;43;16384;2505;12;0
+    Add AVP: Session-ID  MME.XXX.COM;3233808406;43;16384;2505;12;0
     Add AVP: Result-Code  ${DIAMETER_SUCCESS}
     Add AVP: Auth-Session-State  ${NO_STATE_MAINTAINED}
     Add AVP: Origin-Host  HSS.ttcn3
-    Add AVP: Origin-Realm  test.nsn.com
+    Add AVP: Origin-Realm  test.xxx.com
     Add AVP: Authentication-Info
     Add AVP: Route-Record  originhost.sgsn.com
 
