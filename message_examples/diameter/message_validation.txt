@@ -266,3 +266,89 @@ Validate visited-plmn-id
     Should Be Equal  ${visited_plmn_id}  ${visited_plmn_id-act}
     Add Padding After String Data  ${length/2}
 
+Validate AVP: Authentication-Info
+    Validate AVP Code and Flags  ${avp_code.authentication_info}  0xc0
+    Validate AVP Length  168
+    ${avp_vendor_id-act}=  Read From Data  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
+    Validate Authentication-Info
+
+Validate Authentication-Info
+    Validate AVP: E-UTRAN-Vector
+
+Validate E-UTRAN-Vector
+    Validate AVP: Item-Number  1
+    Validate AVP: RAND  63c619b4ae986823d79234cf0073e550
+    Validate AVP: XRES  72e42af0fbfe1fabc6b0078b55159251
+    Validate AVP: AUTN  01021104040060001102304400626500
+    Validate AVP: KASME  1234567890123456789012345678901234567890123456789012345678901234
+
+Validate AVP: E-UTRAN-Vector
+    Validate AVP Code And Flags  ${avp_code.e_utran_vector}  0xc0
+    Validate Avp Length  156
+    ${avp_vendor_id-act}=  Read From Data  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
+    Validate E-UTRAN-Vector
+
+Validate AVP: Route-Record
+    [Arguments]  ${route_record}
+    Validate AVP Code And Flags  ${avp_code.route_record}  0x40
+    ${length}=  Get Length  ${route_record}
+    Validate AVP Length  ${length + 8}
+    ${route_record-act}=  Read String From Data  ${length}
+    Should Be Equal  ${route_record}  ${route_record-act}
+    read Padding After String Data  ${length}
+
+Validate AVP: Item-Number
+    [Arguments]  ${item_number}
+    Validate AVP Code and Flags  ${avp_code.item_number}  0xc0
+    Validate AVP Length  16
+    ${avp_vendor_id-act}=  Read From Data  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
+    ${item_number-act}=  Read From Data  4
+    Should Be Equal  ${item_number}  ${item_number-act}
+
+Validate AVP: KASME
+    [Arguments]  ${kasme}
+    Validate AVP Code and Flags  ${avp_code.kasme}  0xc0
+    ${length}=  Get Length  ${kasme}
+    Validate AVP Length  ${length/2 + 12}
+    ${avp_vendor_id-act}=  Read From Data  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
+    ${kasme-act}=  Read Hex Data  ${length/2}  NO_0x
+    Should Be Equal  ${kasme}  ${kasme-act}
+    Read Padding After String Data  ${length/2}
+
+Validate AVP: AUTN
+    [Arguments]  ${autn}
+    Validate AVP Code and Flags  ${avp_code.autn}  0xc0
+    ${length}=  Get Length  ${autn}
+    Validate AVP Length  ${length/2 + 12}
+    ${avp_vendor_id-act}=  Read From Data  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
+    ${autn-act}=  Read Hex Data  ${length/2}  NO_0x
+    Should Be Equal  ${autn}  ${autn-act}
+    Read Padding After String Data  ${length/2}
+
+Validate AVP: XRES
+    [Arguments]  ${xres}
+    Validate AVP Code and Flags  ${avp_code.xres}  0xc0
+    ${length}=  Get Length  ${xres}
+    Validate AVP Length  ${length/2 + 12}
+    ${avp_vendor_id-act}=  Read From Data  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
+    ${xres-act}=  Read Hex Data  ${length/2}  NO_0x
+    Should Be Equal  ${xres}  ${xres-act}
+    Read Padding After String Data  ${length/2}
+
+Validate AVP: RAND
+    [Arguments]  ${rand}
+    Validate AVP Code and Flags  ${avp_code.rand}  0xc0
+    ${length}=  Get Length  ${rand}
+    Validate AVP Length  ${length/2 + 12}
+    ${avp_vendor_id-act}=  Read From Data  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
+    ${rand-act}=  Read Hex Data  ${length/2}  NO_0x
+    Should Be Equal  ${rand}  ${rand-act}
+    Read Padding After String Data  ${length/2}
+

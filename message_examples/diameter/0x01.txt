@@ -124,6 +124,20 @@ Set 3GPP-Authentication-InformationAnswer
     Add AVP: Route-Record  originhost.sgsn.com
 
 Validate 3GPP-Authentication-InformationAnswer
+    Validate Message Version  0x01
+    Validate Message Length  332
+    Validate Message Flags  0x40
+    Validate Command Code  ${command_code.3gpp_authentication_information}
+    Validate ApplicationId  16777251
+    Validate Hop-By-Hop Identifier  0xe36006e6
+    Validate End-To-End Identifier  0x00003baf
+    Validate AVP: Session-ID  MME.XXX.COM;3233808406;43;16384;2505;12;0
+    Validate AVP: Result-Code  ${DIAMETER_SUCCESS}
+    Validate AVP: Auth-Session-State  ${NO_STATE_MAINTAINED}
+    Validate AVP: Origin-Host  HSS.ttcn3
+    Validate AVP: Origin-Realm  test.xxx.com
+    Validate AVP: Authentication-Info
+    Validate AVP: Route-Record  originhost.sgsn.com
 
 Set 3GPP-Update-LocationRequest
 
