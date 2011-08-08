@@ -174,8 +174,6 @@ Read Padding After String Data
     ${padding}=  Evaluate  (4-${length%4})%4
     Read From Data  ${padding}
 
-Validate Disconnect-PeerAnswer
-
 Validate AVP: Session-ID
     [Arguments]  ${session_id}
     Validate AVP Code And Flags  ${avp_code.session_id}  0x40
@@ -354,7 +352,7 @@ Validate AVP: RAND
 
 Validate AVP: URL-Flags
     [Arguments]  ${flags}
-    Validate AVP Code and Flags   ${avp_code.url_flags}  0xc0
+    Validate AVP Code and Flags  ${avp_code.url_flags}  0xc0
     Validate AVP Length  16
     ${avp_vendor_id-act}=  Read From Data  4
     Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}

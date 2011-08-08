@@ -206,6 +206,26 @@ Validate Disconnect-PeerRequest
     Validate AVP: Disconnect-Cause  ${DO_NOT_WANT_TO_TALK_TO_YOU}
 
 Set Disconnect-PeerAnswer
+    Add Message Version  0x01
+    Add Message Length  88
+    Add MEssage Flags  0x00
+    Add Command Code  ${command_code.disconnect_peer}
+    Add ApplicationId  0
+    Add Hop-By-Hop Identifier  0xe36006ee
+    Add End-To-End Identifier  0x00003bb7
+    Add AVP: Result-Code  ${DIAMETER_SUCCESS}
+    Add AVP: Origin-Host  originhost.mme.com
+    Add AVP: Origin-Realm  originrealmxxx.com
 
 Validate Disconnect-PeerAnswer
+    Validate Message Version  0x01
+    Validate Message Length  88
+    Validate MEssage Flags  0x00
+    Validate Command Code  ${command_code.disconnect_peer}
+    Validate ApplicationId  0
+    Validate Hop-By-Hop Identifier  0xe36006ee
+    Validate End-To-End Identifier  0x00003bb7
+    Validate AVP: Result-Code  ${DIAMETER_SUCCESS}
+    Validate AVP: Origin-Host  originhost.mme.com
+    Validate AVP: Origin-Realm  originrealmxxx.com
 

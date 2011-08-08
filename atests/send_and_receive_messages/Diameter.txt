@@ -39,6 +39,8 @@ Disconnect-PeerRequest
     Receive And Validate Disconnect-PeerRequest
 
 Disconnect-PeerAnswer
+    Create And Send Disconnect-PeerAnswer
+    Receive And Validate Disconnect-PeerAnswer
 
 *** Keywords ***
 Create And Send Capabilities-ExchangeRequest
@@ -94,4 +96,13 @@ Create And Send Disconnect-PeerRequest
 Receive And Validate Disconnect-PeerRequest
     Server Receives Data
     Validate Disconnect-PeerRequest
+
+Create And Send Disconnect-PeerAnswer
+    Create Message
+    Set Disconnect-PeerAnswer
+    Client Sends Data
+
+Receive And Validate Disconnect-PeerAnswer
+    Server Receives Data
+    Validate Disconnect-PeerAnswer
 
