@@ -1,3 +1,6 @@
+*** Settings ***
+Library     Rammbock
+
 *** Keywords ***
 Add Flags
     [Arguments]  ${flags}

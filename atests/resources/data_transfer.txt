@@ -1,3 +1,6 @@
+*** Settings ***
+Library     Rammbock
+
 *** Variables ***
 ${EXPECTED_STRING}  ismo_rulettaa
 ${VIRTUAL_HOST}  1.1.1.1

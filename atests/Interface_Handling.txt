@@ -1,7 +1,6 @@
 *** Settings ***
 Default Tags    no-ci
 Library         Interface
-Library         rammbock.Rammbock
 Resource        resources/data_transfer.txt
 Resource        resources/server_client.txt
 

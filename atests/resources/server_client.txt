@@ -1,3 +1,6 @@
+*** Settings ***
+Library     Rammbock
+
 *** Variables ***
 ${PHYSICAL_INTERFACE}  ${LOOPBACK_DEVICE}
 ${PORT}  3011

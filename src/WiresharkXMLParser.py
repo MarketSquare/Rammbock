@@ -59,7 +59,7 @@ class Parser(object):
         self.of.append("Test Setup      UDP Server and Client are initialized in port ${GTP_CONTROL_PORT}\n")
         self.of.append("Test Teardown   Close Connections\n")
         self.of.append("Default Tags    regression\n")
-        self.of.append("Library         rammbock.Rammbock\n")
+        self.of.append("Library         Rammbock\n")
         self.of.append("Resource        ../resources/Messaging.txt\n")
         self.of.append("Resource        ../send_and_receive_messages/gtp/v2.txt\n")
         self.of.append("\n")

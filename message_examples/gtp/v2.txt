@@ -1,4 +1,5 @@
 *** Settings ***
+Library         Rammbock
 Resource        message_creation.txt
 Resource        message_validation.txt
 Resource        variables.txt

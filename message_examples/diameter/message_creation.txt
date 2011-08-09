@@ -1,3 +1,6 @@
+*** Settings ***
+Library     Rammbock
+
 *** Variables ***
 ${NO_INBAND_SECURITY}  0
 ${DIAMETER_SUCCESS}  2001

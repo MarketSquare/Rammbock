@@ -2,7 +2,6 @@
 Test Setup      UDP Server and Client are initialized in port ${GTP_CONTROL_PORT}
 Test Teardown   Close Connections
 Default Tags    regression
-Library         rammbock.Rammbock
 Resource        ../message_examples/gtp/v2.txt
 Resource        ../resources/server_client.txt
 

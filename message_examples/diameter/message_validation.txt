@@ -1,3 +1,6 @@
+*** Settings ***
+Library     Rammbock
+
 *** Keywords ***
 Validate Message Version
     [Arguments]  ${version}

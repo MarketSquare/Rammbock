@@ -4,7 +4,6 @@ Suite Teardown
 Test Setup      UDP Server and Client are initialized
 Test Teardown   Close Connections
 Default Tags    regression
-Library         rammbock.Rammbock
 Resource        resources/server_client.txt
 
 *** Variables ***

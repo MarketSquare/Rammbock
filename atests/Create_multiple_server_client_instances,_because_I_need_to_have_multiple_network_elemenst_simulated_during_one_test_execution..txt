@@ -2,7 +2,6 @@
 Test Setup      Create Two TCP Servers And Clients
 Test Teardown   Delete Two Servers And Clients And Verify Deletion
 Default Tags    regression
-Library         rammbock.Rammbock
 Resource        resources/data_transfer.txt
 Resource        resources/server_client.txt
 

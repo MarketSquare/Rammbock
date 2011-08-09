@@ -1,3 +1,6 @@
+*** Settings ***
+Library     Rammbock
+
 *** Variables ***
 ${REQUEST VERSION}  HTTP/1.1
 ${CONNECTION}  keep-alive
