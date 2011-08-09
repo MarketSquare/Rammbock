@@ -57,4 +57,19 @@ ${avp_code.vplmn_dynamic_address_allowed}  1432
 ${avp_code.eps_subscribed_qos_profile}  1431
 ${avp_code.pre_emption_vulnerability}  1048
 ${avp_code.pre_emption_capability}  1047
+${avp_code.mip6_agent_info}  486
+${avp_code.qos_class_identifier}  1028
+${avp_code.allocation_retention_priority}  1034
+${avp_code.access_restriction_data}  1426
+${avp_code.apn_configuration_profile}  1429
+${avp_code.priority_level}  1046
+${avp_flags.V}  0x80
+${avp_flags.M}  0x40
+${avp_flags.VM}  0xc0
+${avp_code.mip_home_agent_address}  334
+${avp_code.mip6_home_link_prefix}  125
+${avp_code.mip_home_agent_host}  348
+${avp_code.pdn_gw_allocation_type}  1438
+${avp_specific_apn_info}  1472
+${avp_code.rat_frequency_selection_priority_id}  1440
 

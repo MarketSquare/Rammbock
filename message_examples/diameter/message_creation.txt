@@ -3,17 +3,13 @@ ${NO_INBAND_SECURITY}  0
 ${DIAMETER_SUCCESS}  2001
 ${NO_STATE_MAINTAINED}  1
 ${DO_NOT_WANT_TO_TALK_TO_YOU}  2
-${avp_code.access_restriction_data}  1426
-${avp_code.apn_configuration_profile}  1429
 ${SERVICE_GRANTED}  0
 ${ALL_CONFIGURATIONS_INCLUDED}  0
 ${NOTALLOWED}  0
-${avp_code.qos_class_identifier}  1034
-${avp_code.allocation_retention_priority}  1034
-${avp_code.priority_level}  1046
 ${QCI_9}  9
 ${PRE_EMPTION_CAPABILITY_ENABLED}  0
 ${PRE_EMPTION_VULNERABILITY_ENABLED}  0
+${STATIC}  0
 
 *** Keywords ***
 Add Message Version
@@ -47,7 +43,7 @@ Add End-To-End Identifier
 Add AVP: Origin-Host
     [Arguments]  ${host}
     ${length}=  Get Length  ${host}
-    Add AVP Code And Flags  ${avp_code.origin_host}  0x40
+    Add AVP Code And Flags  ${avp_code.origin_host}  ${avp_flags.M}
     Add AVP Length  ${length + 8}
     Add String  ${host}
     Add Padding After String Data  ${length}
@@ -72,7 +68,7 @@ Add AVP Length
 Add AVP: Origin-Realm
     [Arguments]  ${realm}
     ${length}=  Get Length  ${realm}
-    Add AVP Code And Flags  ${avp_code.origin_realm}  0x40
+    Add AVP Code And Flags  ${avp_code.origin_realm}  ${avp_flags.M}
     Add Avp Length  ${length + 8}
     Add String  ${realm}
     Add Padding After String Data  ${length}
@@ -91,7 +87,7 @@ Add Host Ip Address
 
 Add AVP: Vendor-Id
     [Arguments]  ${id}
-    Add AVP Code And Flags  ${avp_code.vendor_id}  0x40
+    Add AVP Code And Flags  ${avp_code.vendor_id}  ${avp_flags.M}
     Add AVP Length  12
     Add Vendor-Id  ${id}
 
@@ -109,7 +105,7 @@ Add AVP: Product-Name
 
 Add AVP: Supported-Vendor-Id
     [Arguments]  ${id}
-    Add AVP Code And FLags  ${avp_code.supported_vendor_id}  0x40
+    Add AVP Code And FLags  ${avp_code.supported_vendor_id}  ${avp_flags.M}
     Add Avp Length  12
     Add Supported-Vendor-Id  ${id}
 
@@ -119,14 +115,14 @@ Add Supported-Vendor-Id
 
 Add AVP: Vendor-Specific-Application-Id
     [Arguments]  ${avp_vendor_id}  ${auth_application_id}
-    Add AVP Code And Flags  ${avp_code.vendor_specific_application_id}  0x40
+    Add AVP Code And Flags  ${avp_code.vendor_specific_application_id}  ${avp_flags.M}
     Add AVP Length  32
     Add AVP: Vendor-Id  ${avp_vendor_id}
     Add AVP: Auth-Application-Id  ${auth_application_id}
 
 Add AVP: Auth-Application-Id
     [Arguments]  ${id}
-    Add AVP Code And Flags  ${avp_code.auth_application_id}  0x40
+    Add AVP Code And Flags  ${avp_code.auth_application_id}  ${avp_flags.M}
     Add AVP Length  12
     Add Auth-Application-Id  ${id}
 
@@ -136,7 +132,7 @@ Add Auth-Application-Id
 
 Add AVP: Inband-Security-Id
     [Arguments]  ${id}
-    Add AVP Code And Flags  ${avp_code.inband_security_id}  0x40
+    Add AVP Code And Flags  ${avp_code.inband_security_id}  ${avp_flags.M}
     Add AVP Length  12
     Add Inband-Security-Id  ${id}
 
@@ -156,7 +152,7 @@ Add AVP: Firmware-Revision
 
 Add AVP: Result-Code
     [Arguments]  ${code}
-    Add Avp Code And Flags  ${avp_code.result_code}  0x40
+    Add Avp Code And Flags  ${avp_code.result_code}  ${avp_flags.M}
     Add AVP Length  12
     Add Result-Code  ${code}
 
@@ -169,10 +165,11 @@ Add Padding After String Data
     [Documentation]  Diameter protocol has 32 bit wide fields. As we enter string data it might cause packet malformation if length of the string is not divisible by four octets - that is is 32 bits. in order to prevent this we add or read extra padding after string if necessary.
     ${padding}=  Evaluate  (4-${length%4})%4
     Add Decimal As Octets  0  ${padding}
+    [Return]  ${padding}
 
 Add AVP: Session-ID
     [Arguments]  ${session_id}
-    Add AVP Code And Flags  ${avp_code.session_id}  0x40
+    Add AVP Code And Flags  ${avp_code.session_id}  ${avp_flags.M}
     ${length}=  Get Length  ${session_id}
     Add AVP Length  ${length + 8}
     Add String  ${session_id}
@@ -180,7 +177,7 @@ Add AVP: Session-ID
 
 Add AVP: Auth-Session-State
     [Arguments]  ${session_state}
-    Add AVP Code And Flags  ${avp_code.auth_session_state}  0x40
+    Add AVP Code And Flags  ${avp_code.auth_session_state}  ${avp_flags.M}
     Add AVP Length  12
     Add Auth-Session-state  ${session_state}
 
@@ -190,15 +187,15 @@ Add Auth-Session-state
 
 Add AVP: Destination-Host
     [Arguments]  ${destination_host}
-    Add AVP Code And Flags  ${avp_code.destination_host}  0x40
+    Add AVP Code And Flags  ${avp_code.destination_host}  ${avp_flags.M}
     ${length}=  Get Length  ${destination_host}
     Add AVP Length  ${length + 8}
     Add String  ${destination_host}
-    Add Padding After String Data  ${length}
+    Add Padding after string data  ${length}
 
 Add AVP: Destination-realm
     [Arguments]  ${destination_realm}
-    Add AVP Code and Flags  ${avp_code.destination_realm}  0x40
+    Add AVP Code and Flags  ${avp_code.destination_realm}  ${avp_flags.M}
     ${length}=  Get Length  ${destination_realm}
     Add AVP Length  ${length + 8}
     Add String  ${destination_realm}
@@ -206,7 +203,7 @@ Add AVP: Destination-realm
 
 Add AVP: User-Name
     [Arguments]  ${user_name}
-    Add AVP Code And Flags  ${avp_code.user_name}  0x40
+    Add AVP Code And Flags  ${avp_code.user_name}  ${avp_flags.M}
     ${length}=  Get Length  ${user_name}
     Add AVP Length  ${length + 8}
     Add String  ${user_name}
@@ -214,7 +211,7 @@ Add AVP: User-Name
 
 Add AVP: Requested-EUTRAN-Authentication-Info
     [Arguments]  ${number_of_requested_vectors}  ${immediate_response}
-    Add AVP Code And Flags  ${avp_code.requested_eutran_authentication_info}  0xc0
+    Add AVP Code And Flags  ${avp_code.requested_eutran_authentication_info}  ${avp_flags.VM}
     Add AVP Length  44
     Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
     Add Requested-EUTRAN-Authentication-info  ${number_of_requested_vectors}  ${immediate_response}
@@ -226,21 +223,21 @@ Add Requested-EUTRAN-Authentication-info
 
 Add AVP: Number-Of-Requested-Vectors
     [Arguments]  ${number_of_requested_vectors}
-    Add AVP Code And Flags  ${avp_code.number_of_requested_vectors}  0xc0
+    Add AVP Code And Flags  ${avp_code.number_of_requested_vectors}  ${avp_flags.VM}
     Add AVP Length  16
     Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
     Add Decimal As Octets  ${number_of_requested_vectors}  4
 
 Add AVP: Immediate-Response-Preferred
     [Arguments]  ${immediate_response_preferred}
-    Add AVP Code And Flags  ${avp_code.immediate_response_preferred}  0xc0
+    Add AVP Code And Flags  ${avp_code.immediate_response_preferred}  ${avp_flags.VM}
     Add AVP Length  16
     Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
     Add Decimal as Octets  ${immediate_response_preferred}  4
 
 Add AVP: Visited-PLMN-Id
     [Arguments]  ${visited_plmn_id}
-    Add AVP Code and Flags  ${avp_code.visited_plmn_id}  0xc0
+    Add AVP Code and Flags  ${avp_code.visited_plmn_id}  ${avp_flags.VM}
     ${length}=  Get Length  ${visited_plmn_id}
     Add AVP Length  ${length/2 + 12}
     Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
@@ -261,7 +258,7 @@ Add AVP: Route-Record
     Add Padding After String Data  ${length}
 
 Add AVP: Authentication-Info
-    Add AVP Code and Flags  ${avp_code.authentication_info}  0xc0
+    Add AVP Code and Flags  ${avp_code.authentication_info}  ${avp_flags.VM}
     Add AVP Length  168
     Add decimal As Octets  ${avp_vendor_id.3gpp}  4
     Add Authentication-Info
@@ -270,7 +267,7 @@ Add Authentication-Info
     Add AVP: E-UTRAN-Vector
 
 Add AVP: E-UTRAN-Vector
-    Add AVP Code And Flags  ${avp_code.e_utran_vector}  0xc0
+    Add AVP Code And Flags  ${avp_code.e_utran_vector}  ${avp_flags.VM}
     Add Avp Length  156
     Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
     Add E-UTRAN-Vector
@@ -284,14 +281,14 @@ Add E-UTRAN-Vector
 
 Add AVP: Item-Number
     [Arguments]  ${item_number}
-    Add AVP Code and Flags  ${avp_code.item_number}  0xc0
+    Add AVP Code and Flags  ${avp_code.item_number}  ${avp_flags.VM}
     Add AVP Length  16
     Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
     Add Decimal As Octets  ${item_number}  4
 
 Add AVP: RAND
     [Arguments]  ${rand}
-    Add AVP Code and Flags  ${avp_code.rand}  0xc0
+    Add AVP Code and Flags  ${avp_code.rand}  ${avp_flags.VM}
     ${length}=  Get Length  ${rand}
     Add AVP Length  ${length/2 + 12}
     Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
@@ -300,7 +297,7 @@ Add AVP: RAND
 
 Add AVP: XRES
     [Arguments]  ${xres}
-    Add AVP Code and Flags  ${avp_code.xres}  0xc0
+    Add AVP Code and Flags  ${avp_code.xres}  ${avp_flags.VM}
     ${length}=  Get Length  ${xres}
     Add AVP Length  ${length/2 + 12}
     Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
@@ -309,7 +306,7 @@ Add AVP: XRES
 
 Add AVP: AUTN
     [Arguments]  ${autn}
-    Add AVP Code and Flags  ${avp_code.autn}  0xc0
+    Add AVP Code and Flags  ${avp_code.autn}  ${avp_flags.VM}
     ${length}=  Get Length  ${autn}
     Add AVP Length  ${length/2 + 12}
     Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
@@ -318,7 +315,7 @@ Add AVP: AUTN
 
 Add AVP: KASME
     [Arguments]  ${kasme}
-    Add AVP Code and Flags  ${avp_code.kasme}  0xc0
+    Add AVP Code and Flags  ${avp_code.kasme}  ${avp_flags.VM}
     ${length}=  Get Length  ${kasme}
     Add AVP Length  ${length/2 + 12}
     Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
@@ -327,7 +324,7 @@ Add AVP: KASME
 
 Add AVP: URL-Flags
     [Arguments]  ${flags}
-    Add AVP Code and Flags  ${avp_code.url_flags}  0xc0
+    Add AVP Code and Flags  ${avp_code.url_flags}  ${avp_flags.VM}
     Add AVP Length  16
     Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
     add decimal as octets  ${flags}  4
@@ -341,19 +338,19 @@ Add AVP: RAT-Type
 
 Add AVP: Disconnect-Cause
     [Arguments]  ${cause}
-    Add AVP Code and Flags  ${avp_code.disconnect_cause}  0x40
+    Add AVP Code and Flags  ${avp_code.disconnect_cause}  ${avp_flags.M}
     Add AVP Length  12
     Add Decimal As Octets  ${cause}  4
 
 Add AVP: ULA-Flags
     [Arguments]  ${flags}
-    Add AVP Code and Flags  ${avp_code.ula_flags}  0xc0
+    Add AVP Code and Flags  ${avp_code.ula_flags}  ${avp_flags.VM}
     Add AVP Length  16
     Add Decimal As OCtets  ${avp_vendor_id.3gpp}  4
     Add Decimal As Octets  ${flags}  4
 
 Add AVP: Subscription-Data
-    Add Avp Code And Flags  ${avp_code.subscription_data}  0xc0
+    Add Avp Code And Flags  ${avp_code.subscription_data}  ${avp_flags.VM}
     Add AVP Length  648
     Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
     Add Subscription Data
@@ -370,28 +367,28 @@ Add Subscription Data
 
 Add AVP: Subscriber-Status
     [Arguments]  ${subscriber_status}
-    Add AVP Code and Flags  ${avp_code.subscriber_status}  0xc0
+    Add AVP Code and Flags  ${avp_code.subscriber_status}  ${avp_flags.VM}
     Add AVP Length  16
     Add Decimal As OCtets  ${avp_vendor_id.3gpp}  4
     Add Decimal As Octets  ${subscriber_status}  4
 
 Add AVP: MSISDN
     [Arguments]  ${country_code}  ${address_digits}
-    Add AVP Code and Flags  ${avp_code.msisdn}  0xc0
+    Add AVP Code and Flags  ${avp_code.msisdn}  ${avp_flags.VM}
     Add AVP Length  20
     Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
     Add Number As TBCD  ${country_code}  ${address_digits}
 
 Add AVP: Access-Restriction-Data
     [Arguments]  ${access_restriction_data}
-    Add AVP Code And Flags  ${avp_code.access_restriction_data}  0xc0
+    Add AVP Code And Flags  ${avp_code.access_restriction_data}  ${avp_flags.VM}
     Add AVP Length  16
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
     Add Decimal As Octets  ${access_restriction_data}  4
 
 Add AVP: APN-OI-Replacement
     [Arguments]  ${apn_oi_replacement}
-    Add AVP Code and Flags  ${avp_code.apn_oi_replacement}  0xc0
+    Add AVP Code and Flags  ${avp_code.apn_oi_replacement}  ${avp_flags.VM}
     ${length}=  Get Length  ${apn_oi_replacement}
     Add Avp Length  ${length + 12}
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
@@ -400,7 +397,7 @@ Add AVP: APN-OI-Replacement
 
 Add AVP: 3gpp-charging-characteristics
     [Arguments]  ${charging_characteristics}
-    Add AVP Code And Flags  ${avp_code.3gpp_charging_characteristics}  0x80
+    Add AVP Code And Flags  ${avp_code.3gpp_charging_characteristics}  ${avp_flags.V}
     ${length}=  Get Length  ${charging_characteristics}
     Add AVP Length  ${length + 12}
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
@@ -409,7 +406,7 @@ Add AVP: 3gpp-charging-characteristics
 
 Add AVP: AMBR
     [Arguments]  ${max_request_bandwith_ul}  ${max_request_bandwith_dl}
-    Add Avp Code and Flags  ${avp_code.ambr}  0xc0
+    Add Avp Code and Flags  ${avp_code.ambr}  ${avp_flags.VM}
     Add Avp Length  44
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
     Add AMBR  ${max_request_bandwith_ul}  ${max_request_bandwith_dl}
@@ -421,7 +418,7 @@ Add AMBR
 
 Add AVP: Max-Requested-Bandwidth-UL
     [Arguments]  ${ul}
-    Add AVP Code And Flags  ${avp_code.max_requested_bandwith_ul}  0xc0
+    Add AVP Code And Flags  ${avp_code.max_requested_bandwith_ul}  ${avp_flags.VM}
     Add AVP Length  16
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
     Add Decimal As Octets  ${ul}  4
@@ -432,20 +429,20 @@ Add AVP Vendor Id
 
 Add AVP: Max-Requested-Bandwidth-DL
     [Arguments]  ${dl}
-    Add AVP Code And Flags  ${avp_code.max_requested_bandwith_dl}  0xc0
+    Add AVP Code And Flags  ${avp_code.max_requested_bandwith_dl}  ${avp_flags.VM}
     Add AVP Length  16
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
     Add Decimal As Octets  ${dl}  4
 
 Add AVP: Rat-Frequency-Selection-Priority-Id
     [Arguments]  ${priority_id}
-    Add AVP code And Flags  ${avp_code.rat_frequency_selection_priority_id}  0xc0
+    Add AVP code And Flags  ${avp_code.rat_frequency_selection_priority_id}  ${avp_flags.VM}
     Add AVP Length  16
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
-    Add Decimal As Octets  ${priority_id}
+    Add Decimal As Octets  ${priority_id}  4
 
 Add AVP: APN-Configuration-Profile
-    Add AVP Code And Flags  ${avp_code.apn_configuration_profile}  0xc0
+    Add AVP Code And Flags  ${avp_code.apn_configuration_profile}  ${avp_flags.VM}
     Add AVP Length  476
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
     Add APN-Configuration-Profile
@@ -457,20 +454,20 @@ Add APN-Configuration-Profile
 
 Add AVP: Context-Identifier
     [Arguments]  ${context_identifier}
-    Add AVP Code And Flags  ${avp_code.context_identifier}  0xc0
+    Add AVP Code And Flags  ${avp_code.context_identifier}  ${avp_flags.VM}
     Add AVP Length  16
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
     Add Decimal As Octets  ${context_identifier}  4
 
 Add AVP: All-APN-Configurations-Included-Indicator
     [Arguments]  ${all_apn_configurations_included_indicator}
-    Add AVP Code And Flags  ${avp_code.all_apn_configurations_included_indicator}  0xc0
+    Add AVP Code And Flags  ${avp_code.all_apn_configurations_included_indicator}  ${avp_flags.VM}
     Add AVP Length  16
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
     Add Decimal As Octets  ${all_apn_configurations_included_indicator}  4
 
 Add AVP: APN-Configuration
-    Add AVP Code and Flags  ${avp_code.apn_configuration}  0xc0
+    Add AVP Code and Flags  ${avp_code.apn_configuration}  ${avp_flags.VM}
     Add AVP Length  432
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
     Add APN-Configuration
@@ -482,50 +479,52 @@ Add APN-Configuration
     Add AVP: Service-Selection  sgw.xxx.com
     Add AVP: EPS-Subscribed-QoS-Profile
     Add AVP: VPLMN-Dynamic-Address-Allowed  ${NOTALLOWED}
-    Add AVP: MIP6-Agent-Info
+    Add AVP: MIP6-Agent-Info  255.255.255.255  ${EMPTY}  ${EMPTY}  11
     Add AVP: PDN-GW-Allocation-Type  ${STATIC}
     Add AVP: 3GPP-Charging-Characteristics  ab
     Add AVP: AMBR  2000  1000
-    Add AVP: Specific-APN-Info
+    Add AVP: Specific-APN-Info  test  127.0.0.1  example.com  example.com  11
 
 Add AVP: Served-Party-IP-Address
     [Arguments]  ${ip}
-    Add AVP Code And Flags  ${avp_code.server_party_ip_address}  0xc0
+    Add AVP Code And Flags  ${avp_code.server_party_ip_address}  ${avp_flags.VM}
     Add AVP Length  18
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
     Add Decimal As Octets  1  2  # ipv4 ip address family
     Add Ip As Hex  ${ip}
+    Add Spare Octets  2
 
 Add AVP: PDN-Type
     [Arguments]  ${pdn_type}
-    Add AVP Code and Flags  ${avp_code.pdn_type}  0xc0
+    Add AVP Code and Flags  ${avp_code.pdn_type}  ${avp_flags.VM}
     Add AVP Length  16
     Add AVP Vendor id  ${avp_vendor_id.3gpp}
     Add Decimal As Octets  ${pdn_type}  4
 
 Add AVP: Service-Selection
     [Arguments]  ${service_selection}
-    Add AVP Code and Flags  ${avp_code.servire_selection}  0x40
+    Add AVP Code and Flags  ${avp_code.servire_selection}  ${avp_flags.M}
     ${length}=  Get Length  ${service_selection}
     Add AVP Length  ${length + 8}
     Add String  ${service_selection}
+    Add Padding After String Data  ${length}
 
 Add AVP: VPLMN-Dynamic-Address-Allowed
     [Arguments]  ${dynamic_address_allowed}
-    Add AVP Code and Flags  ${avp_code.vplmn_dynamic_address_allowed}  0xc0
+    Add AVP Code and Flags  ${avp_code.vplmn_dynamic_address_allowed}  ${avp_flags.VM}
     Add AVP Length  16
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
     Add Decimal As Octets  ${dynamic_address_allowed}  4
 
 Add AVP: PDN-GW-Allocation-Type
     [Arguments]  ${allocation_type}
-    Add AVP Code and Flags  ${avp_code.pdn_gw_allocation_type}  0xc0
+    Add AVP Code and Flags  ${avp_code.pdn_gw_allocation_type}  ${avp_flags.VM}
     Add AVP Length  16
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
     Add Decimal As Octets  ${allocation_type}  4
 
 Add AVP: EPS-Subscribed-QoS-Profile
-    Add Avp Code and Flags  ${avp_code.eps_subscribed_qos_profile}  0xc0
+    Add Avp Code and Flags  ${avp_code.eps_subscribed_qos_profile}  ${avp_flags.VM}
     Add AVP Length  88
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
     Add EPS-Subscribed-QoS-Profile
@@ -536,14 +535,14 @@ Add EPS-Subscribed-QoS-Profile
 
 Add AVP: Qos-class-identifier
     [Arguments]  ${qos_class_identifier}
-    Add AVP Code and Flags  ${avp_code.qos_class_identifier}  0xc0
+    Add AVP Code and Flags  ${avp_code.qos_class_identifier}  ${avp_flags.VM}
     Add AVP Length  16
     Add Avp vendor id  ${avp_vendor_id.3gpp}
     Add Decimal As Octets  ${qos_class_identifier}  4
 
 Add AVP: Allocation-Retention-Priority
     [Arguments]  ${priority_level}  ${pre_epmtion_capability}  ${pre_epmtion_vulnerability}
-    Add AVP Code and Flags  ${avp_code.allocation_retention_priority}  0xc0
+    Add AVP Code and Flags  ${avp_code.allocation_retention_priority}  ${avp_flags.VM}
     Add AVP Length  60
     Add Avp Vendor Id  ${avp_vendor_id.3gpp}
     Add Allocation-Retention-Priority  ${priority_level}  ${pre_epmtion_capability}  ${pre_epmtion_vulnerability}
@@ -556,22 +555,86 @@ Add Allocation-Retention-Priority
 
 Add AVP: Priority-Level
     [Arguments]  ${priority_level}
-    Add AVP Code and Flags  ${avp_code.priority_level}  0xc0
+    Add AVP Code and Flags  ${avp_code.priority_level}  ${avp_flags.VM}
     Add Avp Length  16
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
     Add Decimal As OCtets  ${priority_level}  4
 
 Add AVP: Pre-emption-Capability
     [Arguments]  ${pre_emption_capability}
-    Add AVP code and Flags  ${avp_code.pre_emption_capability}  0xc0
+    Add AVP code and Flags  ${avp_code.pre_emption_capability}  ${avp_flags.VM}
     Add AVP Length  16
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
     Add Decimal As Octets  ${pre_emption_capability}  4
 
 Add AVP: Pre-emption-Vulnerability
     [Arguments]  ${pre_emption_vulnerability}
-    Add AVP code and Flags  ${avp_code.pre_emption_vulnerability}  0xc0
+    Add AVP code and Flags  ${avp_code.pre_emption_vulnerability}  ${avp_flags.VM}
     Add AVP Length  16
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
     Add Decimal As Octets  ${pre_emption_vulnerability}  4
+
+Add AVP: MIP6-Agent-Info
+    [Arguments]  ${address}  ${realm}  ${host}  ${prefix}
+    Add AVP Code and Flags  ${avp_code.mip6_agent_info}  ${avp_flags.M}
+    ${length}=  Get Length  ${realm}${host}
+    ${prefix_length}=  Get Length  ${prefix}
+    ${length}=  Evaluate  ${length}+((${prefix_length}/2)+(4-(${prefix_length}/2)%4)%4)
+    Add AVP Length  ${length + 56}
+    Add MIP6-Agent-Info  ${address}  ${realm}  ${host}  ${prefix}
+
+Add MIP6-Agent-Info
+    [Arguments]  ${address}  ${realm}  ${host}  ${prefix}
+    Add AVP: MIP-Home-Agent-Address  ${address}
+    Add AVP: MIP-Home-Agent-Host  ${realm}  ${host}
+    Add AVP: MIP6-Home-Link-Prefix  ${prefix}
+
+Add AVP: MIP-Home-Agent-Address
+    [Arguments]  ${address}
+    Add AVP Code and Flags  ${avp_code.mip_home_agent_address}  ${avp_flags.M}
+    Add AVP Length  14
+    Add Decimal As Octets  1  2
+    Add Ip As Hex  ${address}
+    Add Spare Octets  2
+
+Add AVP: MIP6-Home-Link-Prefix
+    [Arguments]  ${prefix}
+    Add AVP Code and Flags  ${avp_code.mip6_home_link_prefix}  ${avp_flags.M}
+    ${length}=  Get Length  ${prefix}
+    Add AVP Length  ${length/2 + 8}
+    Add Hex Data  ${prefix}  1
+    Add Padding After String Data  ${length/2}
+
+Add AVP: MIP-Home-Agent-Host
+    [Arguments]  ${realm}  ${host}
+    Add AVP Code and Flags  ${avp_code.mip_home_agent_host}  ${avp_flags.M}
+    ${length}=  Get LEngth  ${realm}${host}
+    ${length}=  Evaluate  ${length}+(4-${length%4})%4
+    Add AVP Length  ${length + 24}
+    Add MIP-Home-Agent-Host  ${realm}  ${host}
+
+Add MIP-Home-Agent-Host
+    [Arguments]  ${realm}  ${host}
+    Add AVP: Destination-realm  ${realm}
+    Add AVP: Destination-Host  ${host}
+
+Add AVP: Specific-APN-Info
+    [Arguments]  ${service_selection}  ${address}  ${realm}  ${host}  ${prefix}
+    Add AVP Code and flags  ${avp_specific_apn_info}  ${avp_flags.VM}
+    ${length}=  Get Length  ${service_selection}${address}${realm}${host}$
+    ${prefix_length}=  Get Length  ${prefix}
+    ${length}=  Evaluate  ${length}+(${prefix_length}/2)+(4-${prefix_length/2%4})%4
+    log  ${length}
+    Add AVP Length  ${length + 68}
+    Add AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Add Specific-APN-Info  ${service_selection}  ${address}  ${realm}  ${host}  ${prefix}
+
+Add Specific-APN-Info
+    [Arguments]  ${service_selection}  ${address}  ${realm}  ${host}  ${prefix}
+    Add AVP: Service-Selection  ${service_selection}
+    Add AVP: MIP6-Agent-Info  ${address}  ${realm}  ${host}  ${prefix}
+
+Add Spare Octets
+    [Arguments]  ${amount}
+    Add Decimal As Octets  0  ${amount}
 
