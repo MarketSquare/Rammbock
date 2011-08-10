@@ -1,5 +1,5 @@
 *** Settings ***
-Library     Rammbock
+Library         Rammbock
 
 *** Keywords ***
 Validate Message Version
@@ -387,13 +387,6 @@ Validate AVP: ULA-Flags
     ${flags-act}=  Read From Data  4
     Should Be Equal  ${flags}  ${flags-act}
 
-Validate AVP: Subscription-Data
-    Validate Avp Code And Flags  ${avp_code.subscription_data}  0xc0
-    Validate AVP Length  648
-    ${avp_vendor_id-act}=  Read From Data  4
-    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
-    Validate Subscription Data
-
 Validate Subscription Data
     Validate AVP: Subscriber-Status  ${SERVICE_GRANTED}
     Validate AVP: MSISDN  358  6100000000001
@@ -402,7 +395,7 @@ Validate Subscription Data
     Validate AVP: 3gpp-charging-characteristics  ab
     Validate AVP: AMBR  5000  5000
     Validate AVP: Configuration-Profile
-    Validate AVP: Rat-Frequency-Selection-Priority  1
+    Validate AVP: Rat-Frequency-Selection-Priority-ID  1
 
 Validate AVP: Subscriber-Status
     [Arguments]  ${subscriber_status}
@@ -412,4 +405,93 @@ Validate AVP: Subscriber-Status
     Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
     ${subscriber_status-act}=  Read From Data  4
     Should Be Equal  ${subscriber_status}  ${subscriber_status-act}
+
+Validate AVP: MSISDN
+    [Arguments]  ${country_code}  ${address_digits}
+    Validate AVP Code and Flags  ${avp_code.msisdn}  ${avp_flags.VM}
+    Validate AVP Length  20
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    ${len}=  Get Length  ${country_code}${address_digits}
+    Read TBCD coded Numbers From Data  ${len}
+    ${len}=  Get Length  ${country_code}
+    ${country_code-act}=  Read From TBCD  ${len}
+    Should Be Equal  ${country_code}  ${country_code-act}
+    ${len}=  Get Length  ${address_digits}
+    ${address_digits-act}  Read From TBCD  ${len}
+    Should Be Equal  ${address_digits}  ${address_digits-act}
+
+Validate AVP Vendor Id
+    [Arguments]  ${vendor_id}
+    ${vendor_id-act}=  Read From DAta  4
+    Should Be Equal  ${vendor_id}  ${vendor_id-act}
+
+Validate AVP: Subscription-Data
+    Validate Avp Code And Flags  ${avp_code.subscription_data}  ${avp_flags.VM}
+    Validate AVP Length  648
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Validate Subscription Data
+
+Validate AVP: Access-Restriction-Data
+    [Arguments]  ${access_restriction_data}
+    Validate AVP Code And Flags  ${avp_code.access_restriction_data}  ${avp_flags.VM}
+    Validate AVP Length  16
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    ${ard-act}=  Read From DAta  4
+    Should Be Equal  ${access_restriction_data}  ${ard-act}
+
+Validate AVP: APN-OI-Replacement
+    [Arguments]  ${apn_oi_replacement}
+    Validate AVP Code and Flags  ${avp_code.apn_oi_replacement}  ${avp_flags.VM}
+    ${length}=  Get Length  ${apn_oi_replacement}
+    Validate Avp Length  ${length + 12}
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    ${aor-act}=  Read String from data  ${length}
+    Should Be Equal  ${apn_oi_replacement}  ${aor-act}
+    Read Padding after string data  ${length}
+
+Validate AVP: 3gpp-charging-characteristics
+    [Arguments]  ${charging_characteristics}
+    Validate AVP Code And Flags  ${avp_code.3gpp_charging_characteristics}  ${avp_flags.V}
+    ${length}=  Get Length  ${charging_characteristics}
+    Validate AVP Length  ${length + 12}
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    ${3gpp_cc-act}=  Read String from data  ${length}
+    Should Be Equal  ${avp_code.3gpp_charging_characteristics}  ${3gpp_cc-act}
+    Read Padding After String Data  ${length}
+
+Validate AVP: AMBR
+    [Arguments]  ${max_request_bandwith_ul}  ${max_request_bandwith_dl}
+    Validate Avp Code and Flags  ${avp_code.ambr}  ${avp_flags.VM}
+    Validate Avp Length  44
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Validate AMBR  ${max_request_bandwith_ul}  ${max_request_bandwith_dl}
+
+Validate AMBR
+    [Arguments]  ${ul}  ${dl}
+    Validate AVP: Max-Requested-Bandwidth-UL  ${ul}
+    Validate AVP: Max-Requested-Bandwidth-DL  ${dl}
+
+Validate AVP: Max-Requested-Bandwidth-UL
+    [Arguments]  ${ul}
+    Validate AVP Code And Flags  ${avp_code.max_requested_bandwith_ul}  ${avp_flags.VM}
+    Validate AVP Length  16
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    ${ul-act}=  Read From Data  4
+    Should Be Equal  ${ul}  ${ul-act}
+
+Validate AVP: Max-Requested-Bandwidth-DL
+    [Arguments]  ${dl}
+    Validate AVP Code And Flags  ${avp_code.max_requested_bandwith_dl}  ${avp_flags.VM}
+    Validate AVP Length  16
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    ${dl-act}=  read from data  4
+    Should Be Equal  ${dl}  ${dl-act}
+
+Validate AVP: Rat-Frequency-Selection-Priority-Id
+    [Arguments]  ${priority_id}
+    Validate AVP code And Flags  ${avp_code.rat_frequency_selection_priority_id}  ${avp_flags.VM}
+    Validate AVP Length  16
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    ${pi-act}=  Read From Data  4
+    Should Be Equal  ${priority_id}  ${pi-act}
 

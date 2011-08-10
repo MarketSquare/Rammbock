@@ -195,8 +195,6 @@ Set 3GPP-Update-LocationAnswer
     Add AVP: Subscription-Data
     Add AVP: Route-Record  originhost.sgsn.com
 
-Validate 3GPP-Update-LocationAnswer
-
 Set Disconnect-PeerRequest
     Add Message Version  0x01
     Add MEssage Length  72
@@ -244,4 +242,21 @@ Validate Disconnect-PeerAnswer
     Validate AVP: Result-Code  ${DIAMETER_SUCCESS}
     Validate AVP: Origin-Host  originhost.mme.com
     Validate AVP: Origin-Realm  originrealmxxx.com
+
+Validate 3GPP-Update-LocationAnswer
+    Validate Message Version  0x01
+    Validate Message Length  828
+    Validate MEssage Flags  0x40
+    Validate Command Code  ${command_code.3gpp_update_location}
+    Validate ApplicationId  16777251
+    Validate Hop-By-Hop Identifier  0xe36006ea
+    Validate End-To-End Identifier  0x00003bb3
+    Validate AVP: Session-ID  MME.XXX.COM;3233808406;44;16384;2505;12;0
+    Validate AVP: Result-Code  ${DIAMETER_SUCCESS}
+    Validate AVP: Auth-Session-State  ${NO_STATE_MAINTAINED}
+    Validate AVP: Origin-Host  HSS.ttcn3
+    Validate AVP: Origin-Realm  test.xxx.com
+    Validate AVP: ULA-Flags  1
+    Validate AVP: Subscription-Data
+    Validate AVP: Route-Record  originhost.sgsn.com
 
