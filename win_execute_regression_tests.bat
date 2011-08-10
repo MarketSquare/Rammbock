@@ -1,3 +1,6 @@
 @ECHO OFF
-pybot -c regression -L DEBUG --variablefile win_vars.py --pythonpath src\ %1 %2 atests\
+set BASE=%~dp0
+set DEFAULT_TARGET=
+IF [%1]==[] set DEFAULT_TARGET="%BASE%atests"
+pybot -c regression -L DEBUG --variablefile "%BASE%win_vars.py" --pythonpath "%BASE%src" %DEFAULT_TARGET% %*
 pause
