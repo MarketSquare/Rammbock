@@ -3,6 +3,6 @@ base=`dirname $0`
 default_target=
 if [ -z "$*" ]
     then
-      default_target=atests
+      default_target="$base/atests"
 fi
 pybot -c regression -L debug --variablefile "$base/linux_vars.py" --pythonpath "$base/src/" $default_target "$@"
