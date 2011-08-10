@@ -627,7 +627,6 @@ Add AVP: Specific-APN-Info
     ${length}=  Get Length  ${service_selection}${address}${realm}${host}$
     ${prefix_length}=  Get Length  ${prefix}
     ${length}=  Evaluate  ${length}+(${prefix_length}/2)+(4-${prefix_length/2%4})%4
-    log  ${length}
     Add AVP Length  ${length + 68}
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
     Add Specific-APN-Info  ${service_selection}  ${address}  ${realm}  ${host}  ${prefix}
