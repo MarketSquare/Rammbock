@@ -1,3 +1,9 @@
 #!/bin/bash
+base=`dirname $0`
 export PATH=$PATH:/usr/local/bin
-pybot -c regression -L debug --variablefile osx_vars.py --pythonpath src/ "$@" atests
+default_target=
+if [ -z "$*" ]
+    then
+      default_target=atests
+fi
+pybot -c regression -L debug --variablefile "$base/osx_vars.py" --pythonpath "$base/src/" $default_target "$@"

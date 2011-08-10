@@ -1,2 +1,8 @@
 #!/bin/bash
-pybot -c regression -L debug --variablefile  linux_vars.py --pythonpath src/ "$@" atests
+base=`dirname $0`
+default_target=
+if [ -z "$*" ]
+    then
+      default_target=atests
+fi
+pybot -c regression -L debug --variablefile "$base/linux_vars.py" --pythonpath "$base/src/" $default_target "$@"
