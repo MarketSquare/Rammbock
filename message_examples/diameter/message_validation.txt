@@ -394,7 +394,7 @@ Validate Subscription Data
     Validate AVP: APN-OI-Replacement  MNC123.MCC456.MME
     Validate AVP: 3gpp-charging-characteristics  ab
     Validate AVP: AMBR  5000  5000
-    Validate AVP: Configuration-Profile
+    Validate AVP: APN-Configuration-Profile
     Validate AVP: Rat-Frequency-Selection-Priority-ID  1
 
 Validate AVP: Subscriber-Status
@@ -494,4 +494,215 @@ Validate AVP: Rat-Frequency-Selection-Priority-Id
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
     ${pi-act}=  Read From Data  4
     Should Be Equal  ${priority_id}  ${pi-act}
+
+Validate AVP: APN-Configuration-Profile
+    Validate AVP Code And Flags  ${avp_code.apn_configuration_profile}  ${avp_flags.VM}
+    Validate AVP Length  476
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Validate APN-Configuration-Profile
+
+Validate APN-Configuration-Profile
+    Validate AVP: Context-Identifier  1
+    Validate AVP: All-APN-Configurations-Included-Indicator  ${ALL_CONFIGURATIONS_INCLUDED}
+    Validate AVP: APN-Configuration
+
+Validate AVP: APN-Configuration
+    Validate AVP Code and Flags  ${avp_code.apn_configuration}  ${avp_flags.VM}
+    Validate AVP Length  432
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Validate APN-Configuration
+
+Validate APN-Configuration
+    Validate AVP: Context-Identifier  1
+    Validate AVP: Served-Party-IP-Address  127.0.0.1
+    Validate AVP: PDN-Type  ${pdn_type.ipv4}
+    Validate AVP: Service-Selection  sgw.xxx.com
+    Validate AVP: EPS-Subscribed-QoS-Profile
+    Validate AVP: VPLMN-Dynamic-Address-Allowed  ${NOTALLOWED}
+    Validate AVP: MIP6-Agent-Info  255.255.255.255  ${EMPTY}  ${EMPTY}  11
+    Validate AVP: PDN-GW-Allocation-Type  ${STATIC}
+    Validate AVP: 3GPP-Charging-Characteristics  ab
+    Validate AVP: AMBR  2000  1000
+    Validate AVP: Specific-APN-Info  test  127.0.0.1  example.com  example.com  11
+
+Validate AVP: Context-Identifier
+    [Arguments]  ${context_identifier}
+    Validate AVP Code And Flags  ${avp_code.context_identifier}  ${avp_flags.VM}
+    Validate AVP Length  16
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    ${ci-act}=  Read From DAta  4
+    Should Be Equal  ${context_identifier}  ${ci-act}
+
+Validate AVP: Served-Party-IP-Address
+    [Arguments]  ${ip}
+    Validate AVP Code And Flags  ${avp_code.server_party_ip_address}  ${avp_flags.VM}
+    Validate AVP Length  18
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    ${ipaf-act}=  Read From Data  2
+    Should Be Equal  1  ${ipaf-act}  # ipv4 ip address family
+    ${ip-act}=  Read Ip from hex
+    Should Be Equal  ${ip}  ${ip-act}
+    Read Spare Octets  2
+
+Read Spare Octets
+    [Arguments]  ${amount}
+    Read From Data  ${amount}
+
+Validate AVP: PDN-Type
+    [Arguments]  ${pdn_type}
+    Validate AVP Code and Flags  ${avp_code.pdn_type}  ${avp_flags.VM}
+    Validate AVP Length  16
+    Validate AVP Vendor id  ${avp_vendor_id.3gpp}
+    ${pt-act}=  Read From Data  4
+    Should Be Equal  ${pdn_type}  ${pt-act}
+
+Validate AVP: Service-Selection
+    [Arguments]  ${service_selection}
+    Validate AVP Code and Flags  ${avp_code.servire_selection}  ${avp_flags.M}
+    ${length}=  Get Length  ${service_selection}
+    Validate AVP Length  ${length + 8}
+    ${ss-act}=  Read String from data  ${length}
+    Should Be Equal  ${service_selection}  ${ss-act}
+    Read Padding After String Data  ${length}
+
+Validate AVP: EPS-Subscribed-QoS-Profile
+    Validate Avp Code and Flags  ${avp_code.eps_subscribed_qos_profile}  ${avp_flags.VM}
+    Validate AVP Length  88
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Validate EPS-Subscribed-QoS-Profile
+
+Validate EPS-Subscribed-QoS-Profile
+    Validate AVP: Qos-class-identifier  ${QCI_9}
+    Validate AVP: Allocation-Retention-Priority  1  ${PRE_EMPTION_CAPABILITY_ENABLED}  ${PRE_EMPTION_VULNERABILITY_ENABLED}
+
+Validate AVP: Qos-class-identifier
+    [Arguments]  ${qos_class_identifier}
+    Validate AVP Code and Flags  ${avp_code.qos_class_identifier}  ${avp_flags.VM}
+    Validate AVP Length  16
+    Validate Avp vendor id  ${avp_vendor_id.3gpp}
+    ${qci-act}=  Read From Data  4
+    Should Be Equal  ${qos_class_identifier}  ${qci-act}
+
+Validate AVP: Allocation-Retention-Priority
+    [Arguments]  ${priority_level}  ${pre_epmtion_capability}  ${pre_epmtion_vulnerability}
+    Validate AVP Code and Flags  ${avp_code.allocation_retention_priority}  ${avp_flags.VM}
+    Validate AVP Length  60
+    Validate Avp Vendor Id  ${avp_vendor_id.3gpp}
+    Validate Allocation-Retention-Priority  ${priority_level}  ${pre_epmtion_capability}  ${pre_epmtion_vulnerability}
+
+Validate Allocation-Retention-Priority
+    [Arguments]  ${priority_level}  ${pre_emption_capability}  ${pre_emption_vulnerability}
+    Validate AVP: Priority-Level  ${priority_level}
+    Validate AVP: Pre-emption-Capability  ${pre_emption_capability}
+    Validate AVP: Pre-emption-Vulnerability  ${pre_emption_vulnerability}
+
+Validate AVP: Priority-Level
+    [Arguments]  ${priority_level}
+    Validate AVP Code and Flags  ${avp_code.priority_level}  ${avp_flags.VM}
+    Validate Avp Length  16
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    ${pl-act}=  Read From data  4
+    Should Be Equal  ${priority_level}  ${pl-act}
+
+Validate AVP: Pre-emption-Capability
+    [Arguments]  ${pre_emption_capability}
+    Validate AVP code and Flags  ${avp_code.pre_emption_capability}  ${avp_flags.VM}
+    Validate AVP Length  16
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    ${pec-act}=  Read From Data  4
+    Should Be Equal  ${pre_emption_capability}  ${pec-act}
+
+Validate AVP: Pre-emption-Vulnerability
+    [Arguments]  ${pre_emption_vulnerability}
+    Validate AVP code and Flags  ${avp_code.pre_emption_vulnerability}  ${avp_flags.VM}
+    Validate AVP Length  16
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    ${pev-act}=  Read From Data  4
+    Should Be Equal  ${pre_emption_vulnerability}  ${pev-act}
+
+Validate AVP: MIP6-Agent-Info
+    [Arguments]  ${address}  ${realm}  ${host}  ${prefix}
+    Validate AVP Code and Flags  ${avp_code.mip6_agent_info}  ${avp_flags.M}
+    ${length}=  Get Length  ${realm}${host}
+    ${prefix_length}=  Get Length  ${prefix}
+    ${length}=  Evaluate  ${length}+((${prefix_length}/2)+(4-(${prefix_length}/2)%4)%4)
+    Validate AVP Length  ${length + 56}
+    Validate MIP6-Agent-Info  ${address}  ${realm}  ${host}  ${prefix}
+
+Validate MIP6-Agent-Info
+    [Arguments]  ${address}  ${realm}  ${host}  ${prefix}
+    Validate AVP: MIP-Home-Agent-Address  ${address}
+    Validate AVP: MIP-Home-Agent-Host  ${realm}  ${host}
+    Validate AVP: MIP6-Home-Link-Prefix  ${prefix}
+
+Validate AVP: MIP-Home-Agent-Address
+    [Arguments]  ${address}
+    Validate AVP Code and Flags  ${avp_code.mip_home_agent_address}  ${avp_flags.M}
+    Validate AVP Length  14
+    ${ipv4f-act}=  Read From Data  2
+    Should Be Equal  1  ${ipv4f-act}  #ipv4 flag
+    ${address-act}=  Read Ip From Hex
+    Should Be Equal  ${address}  ${address-act}
+    Read Spare Octets  2
+
+Validate AVP: MIP-Home-Agent-Host
+    [Arguments]  ${realm}  ${host}
+    Validate AVP Code and Flags  ${avp_code.mip_home_agent_host}  ${avp_flags.M}
+    ${length}=  Get LEngth  ${realm}${host}
+    ${length}=  Evaluate  ${length}+(4-${length%4})%4
+    Validate AVP Length  ${length + 24}
+    Validate MIP-Home-Agent-Host  ${realm}  ${host}
+
+Validate MIP-Home-Agent-Host
+    [Arguments]  ${realm}  ${host}
+    Validate AVP: Destination-realm  ${realm}
+    Validate AVP: Destination-Host  ${host}
+
+Validate AVP: MIP6-Home-Link-Prefix
+    [Arguments]  ${prefix}
+    Validate AVP Code and Flags  ${avp_code.mip6_home_link_prefix}  ${avp_flags.M}
+    ${length}=  Get Length  ${prefix}
+    Validate AVP Length  ${length/2 + 8}
+    ${prefix-act}=  Read hex data  ${length/2}  no-0x-prefix
+    Should Be Equal  ${prefix}  ${prefix-act}
+    Read Padding After String Data  ${length/2}
+
+Validate AVP: VPLMN-Dynamic-Address-Allowed
+    [Arguments]  ${dynamic_address_allowed}
+    Validate AVP Code and Flags  ${avp_code.vplmn_dynamic_address_allowed}  ${avp_flags.VM}
+    Validate AVP Length  16
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    ${dia-act}=  Read From Data  4
+    Should Be Equal  ${dynamic_address_allowed}  ${dia-act}
+
+Validate AVP: PDN-GW-Allocation-Type
+    [Arguments]  ${allocation_type}
+    Validate AVP Code and Flags  ${avp_code.pdn_gw_allocation_type}  ${avp_flags.VM}
+    Validate AVP Length  16
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    ${at-act}=  Read From Data  4
+    Should Be Equal  ${allocation_type}  ${at-act}
+
+Validate AVP: Specific-APN-Info
+    [Arguments]  ${service_selection}  ${address}  ${realm}  ${host}  ${prefix}
+    Validate AVP Code and flags  ${avp_specific_apn_info}  ${avp_flags.VM}
+    ${length}=  Get Length  ${service_selection}${address}${realm}${host}$
+    ${prefix_length}=  Get Length  ${prefix}
+    ${length}=  Evaluate  ${length}+(${prefix_length}/2)+(4-${prefix_length/2%4})%4
+    Validate AVP Length  ${length + 68}
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    Validate Specific-APN-Info  ${service_selection}  ${address}  ${realm}  ${host}  ${prefix}
+
+Validate Specific-APN-Info
+    [Arguments]  ${service_selection}  ${address}  ${realm}  ${host}  ${prefix}
+    Validate AVP: Service-Selection  ${service_selection}
+    Validate AVP: MIP6-Agent-Info  ${address}  ${realm}  ${host}  ${prefix}
+
+Validate AVP: All-APN-Configurations-Included-Indicator
+    [Arguments]  ${all_apn_configurations_included_indicator}
+    Validate AVP Code And Flags  ${avp_code.all_apn_configurations_included_indicator}  ${avp_flags.VM}
+    Validate AVP Length  16
+    Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
+    ${aacii-act}=  Read From Data  4
+    Should Be Equal  ${all_apn_configurations_included_indicator}  ${aacii-act}
 

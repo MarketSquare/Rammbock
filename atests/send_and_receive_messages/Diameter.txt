@@ -41,6 +41,24 @@ Disconnect-PeerAnswer
     Create And Send Disconnect-PeerAnswer
     Receive And Validate Disconnect-PeerAnswer
 
+Diameter attach-detach?
+    Create And Send Capabilities-ExchangeRequest
+    Receive and Validate Capabilities-ExchangeRequest
+    Respond With Capabilities-ExchangeAnswer
+    Client Receives And Validates Capabilities-ExchangeAnswer
+    Create And Send 3gpp-authentication-informationrequest
+    Receive and validate 3gpp-authentication-informationrequest
+    Respond with 3GPP-Authentication-InformationAnswer
+    Client Receives and Validates 3GPP-Authentication-InformationAnswer
+    Create And Send 3GPP-Update-LocationRequest
+    Receive And Validate 3GPP-Update-LocationRequest
+    Respond With 3GPP-Update-LocationAnswer
+    Client Receives and validates 3GPP-Update-LocationAnswer
+    Create And Send Disconnect-PeerRequest
+    Receive and Validate disconnect-peerRequest
+    Respond with Disconnect-PeerAnswer
+    Client Receives and Validates Disconnect-peerAnswer
+
 *** Keywords ***
 Create And Send Capabilities-ExchangeRequest
     Create Message
@@ -87,6 +105,15 @@ Receive And Validate 3GPP-Update-LocationRequest
     Server Receives Data
     Validate 3GPP-Update-LocationRequest
 
+Create And Send 3GPP-Update-LocationAnswer
+    Create MEssage
+    Set 3GPP-Update-LocationAnswer
+    Client Sends Data
+
+Receive And Validate 3GPP-Update-LocationAnswer
+    Server Receives Data
+    Validate 3GPP-Update-LocationAnswer
+
 Create And Send Disconnect-PeerRequest
     Create Message
     Set Disconnect-PeerRequest
@@ -105,12 +132,39 @@ Receive And Validate Disconnect-PeerAnswer
     Server Receives Data
     Validate Disconnect-PeerAnswer
 
-Create And Send 3GPP-Update-LocationAnswer
-    Create MEssage
-    Set 3GPP-Update-LocationAnswer
-    Client Sends Data
+Respond With Capabilities-ExchangeAnswer
+    Create Message
+    Set Capabilities-ExchangeAnswer
+    Server Sends Data
 
-Receive And Validate 3GPP-Update-LocationAnswer
-    Server Receives Data
-    Validate 3GPP-Update-LocationAnswer
+Client Receives And Validates Capabilities-ExchangeAnswer
+    Client Receives Data
+    Validate Capabilities-ExchangeAnswer
+
+Respond with 3GPP-Authentication-InformationAnswer
+    Create Message
+    Set 3GPP-Authentication-InformationAnswer
+    Server Sends Data
+
+Client Receives and Validates 3GPP-Authentication-InformationAnswer
+    Client Receives Data
+    Validate 3GPP-Authentication-InformationAnswer
+
+Respond With 3GPP-Update-LocationAnswer
+    Create Message
+    Set 3gpp-update-locationanswer
+    Server Sends Data
+
+Client Receives and validates 3GPP-Update-LocationAnswer
+    Client Receives Data
+    Validate 3gpp-update-locationanswer
+
+Respond with Disconnect-PeerAnswer
+    Create Message
+    Set Disconnect-PeerAnswer
+    Server Sends Data
+
+Client Receives and Validates Disconnect-peerAnswer
+    Client Receives Data
+    Validate Disconnect-PeerAnswer
 
