@@ -64,14 +64,14 @@ class Rammbock(object):
         self._servers[name].close()
         del self._servers[name]
 
-    def create_udp_client(self, name=Client.DEFAULT_NAME):
-        self._clients[name] = UDPClient(name)
+    def create_udp_client(self, name=Client.DEFAULT_NAME, ip=None):
+        self._clients[name] = UDPClient(name, ip)
 
-    def create_sctp_client(self, name=Client.DEFAULT_NAME):
-        self._clients[name] = SCTPClient(name)
+    def create_sctp_client(self, name=Client.DEFAULT_NAME, ip=None):
+        self._clients[name] = SCTPClient(name, ip)
 
-    def create_tcp_client(self, name=Client.DEFAULT_NAME):
-        self._clients[name] = TCPClient(name)
+    def create_tcp_client(self, name=Client.DEFAULT_NAME, ip=None):
+        self._clients[name] = TCPClient(name, ip)
 
     def close_client(self, name=Client.DEFAULT_NAME):
         self._clients[name].close()
