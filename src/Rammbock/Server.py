@@ -28,7 +28,7 @@ class _Server(object):
     def server_startup(self, ip, port):
         try:
             self._server_socket.bind((ip, int(port)))
-        except IOError as e :
+        except IOError, e :
             raise IOError("Could not bind socket to ip %s and port %s" % (ip, port), e)
 
     def close(self):
