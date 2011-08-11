@@ -1,35 +1,35 @@
 *** Settings ***
-Library     Rammbock
+Library         Rammbock
 
 *** Variables ***
-${PHYSICAL_INTERFACE}  ${LOOPBACK_DEVICE}
+${LOCALHOST IP}  127.0.0.1
 ${PORT}  3011
 ${HOST}  localhost
 
 *** Keywords ***
 UDP Server and Client are initialized
-    Start UDP Server  ${PHYSICAL_INTERFACE}  ${PORT}
+    Start UDP Server  ${LOCALHOST_IP}  ${PORT}
     Create UDP Client
     Connect to UDP server  ${HOST}  ${PORT}
 
 UDP Server and Client are initialized in port ${desired_port}
-    Start UDP Server  ${PHYSICAL_INTERFACE}  ${desired_port}
+    Start UDP Server  ${LOCALHOST_IP}  ${desired_port}
     Create UDP Client
     Connect to UDP server  ${HOST}  ${desired_port}
 
 TCP Server and Client are Initialized
-    Start TCP Server  ${PHYSICAL_INTERFACE}  ${PORT}
+    Start TCP Server  ${LOCALHOST_IP}  ${PORT}
     Create TCP Client And Connect To Server  ${HOST}  ${PORT}
     accept tcp connection
 
 SCTP client and server are initialized
-    Start SCTP Server  ${PHYSICAL_INTERFACE}  ${PORT}
+    Start SCTP Server  ${LOCALHOST_IP}  ${PORT}
     Create SCTP Client
     Connect to sctp server  ${HOST}  ${PORT}
     accept sctp connection
 
 SCTP client and server are initialized in port ${desired_port}
-    Start SCTP Server  ${PHYSICAL_INTERFACE}  ${desired_port}
+    Start SCTP Server  ${LOCALHOST_IP}  ${desired_port}
     Create SCTP Client
     Connect to sctp server  ${HOST}  ${desired_port}
     accept sctp connection
