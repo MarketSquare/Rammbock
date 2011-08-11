@@ -21,7 +21,7 @@ Create and delete multiple aliases
     Delete first alias
     Delete second alias
 
-Transfer data trough interface aliases
+Transfer data through interface aliases
     [Setup]  Initialize server and client
     Single Client Transfers Data
     Single Server Gets Data
@@ -34,7 +34,7 @@ Transfer data trough interface aliases
 Initialize server and client
     Create first alias to interface '${LOOPBACK_DEVICE}'
     Create second alias to interface '${LOOPBACK_DEVICE}'
-    Start UDP Server  ${1ST_ALIAS_NAME}  ${PORT}  ${1ST_ALIAS_IP}
+    Start UDP Server  ${1ST_ALIAS_IP}  ${PORT}
     Create UDP Client
     connect to UDP server  ${1ST_ALIAS_IP}  ${PORT}  ${2ND_ALIAS_NAME}
 

@@ -20,17 +20,17 @@ Send multiple packets over UDP to both ways
     Client Sends data to server
     Server Sends Modified Data Pack To Client
 
-Try To Bind Server To network interface which does not exist
-    Try to bind server to 'foo' interface
-    Exeception "IOError: cannot bind server to interface: 'foo'" should raise
+Try To Bind Server To Ip-Address which does not exist
+    Try to bind server to "88.88.88.88"
+    Exception "IOError: [Errno Could not bind socket to ip 88.88.88.88 and port 3011]" should raise
 
 *** Keywords ***
-Try To Bind Server To ${interface} interface
-    ${error}=  Run Keyword And Expect Error  *  Start UDP Server  ${interface}  ${PORT}
+Try To Bind Server To "${ip_address}"
+    ${error}=  Run Keyword And Expect Error  *  Start UDP Server  ${ip_address}  ${PORT}
     Set Test Variable  ${EXCEPTION}  ${error}
 
-Exeception "${except}" should raise
-    Should Be Equal  ${EXCEPTION}  ${except}
+Exception "${except}" should raise
+    Should Start With  ${EXCEPTION}  ${except}
 
 Client Sends Data To Server
     Single Client Transfers Data
