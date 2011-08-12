@@ -1,4 +1,5 @@
 *** Settings ***
+Suite Setup		SCTP should be supported
 Test Setup      SCTP client and server are initialized
 Test Teardown   Close Connections
 Default Tags    regression

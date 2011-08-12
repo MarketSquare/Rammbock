@@ -223,3 +223,7 @@ class Rammbock(object):
         string = self._data[:int(length)]
         self._data = self._data[int(length):]
         return string
+
+    def sctp_should_be_supported(self):
+        if not Server.SCTP_ENABLED:
+            raise AssertionError("SCTP not available on this platform.")
