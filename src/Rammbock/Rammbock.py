@@ -217,7 +217,7 @@ class Rammbock(object):
         return number
 
     def read_ip_from_hex(self):
-        return  ".".join(str(self.read_from_data(1)) for _ in range(0, 4))
+        return  ".".join(str(self.read_from_data(1)) for _ in range(4))
 
     def read_string_from_data(self, length):
         string = self._data[:int(length)]
