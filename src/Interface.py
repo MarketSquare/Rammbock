@@ -7,6 +7,7 @@ find_ip_regexp = re.compile(r'.*?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})')
 OSX = ['darwin']
 LINUX = ['linux2', 'linux']
 WINDOWS = ['win32']
+_created_aliases = set()
 
 def get_ip_address(ifname):
     """
@@ -25,6 +26,7 @@ def create_interface_alias(ifname, ip, netmask):
     print "ifconfig", virtual_if_name, ip, "netmask", netmask
     process = _get_ifconfig_cmd("add", virtual_if_name, ip, netmask)
     process.wait()
+    _created_aliases.add((virtual_if_name, ip))
     return virtual_if_name
 
 def check_interface(ifname):
@@ -36,10 +38,15 @@ def check_interface_for_ip(ifname, ip):
     """checks given network interface for given ip address"""
     return ip in _get_ip_addresses_for_ifname(ifname)
 
-def del_alias(ifname, ip):
+def del_alias(if_name, ip):
     """Deletes this interface"""
-    process = _get_ifconfig_cmd("del", ifname, ip)
+    process = _get_ifconfig_cmd("del", if_name, ip)
     process.wait()
+    _created_aliases.remove((if_name, ip))
+
+def del_all_aliases():
+    for if_name, ip in list(_created_aliases):
+        del_alias(if_name, ip)
 
 def _get_ip_addresses_for_ifname(ifname):
     process = _get_ifconfig_cmd("show", ifname)
