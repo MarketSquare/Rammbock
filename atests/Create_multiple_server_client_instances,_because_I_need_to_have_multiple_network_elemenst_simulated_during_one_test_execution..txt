@@ -24,9 +24,9 @@ Create and delete two instances of Clients
     Check Client Existence  ${CLIENT_NAME2}  ${True}
 
 Send data between multiple Client and Server instances
-    Connect to TCP server  ${HOST}  ${DEFAULT_PORT1}  ${False}  ${CLIENT_NAME1}
+    Connect to TCP server  ${HOST}  ${DEFAULT_PORT1}  ${CLIENT_NAME1}
     accept tcp connection  ${SERVER_NAME1}
-    Connect to TCP server  ${HOST}  ${DEFAULT_PORT2}  ${False}  ${CLIENT_NAME2}
+    Connect to TCP server  ${HOST}  ${DEFAULT_PORT2}  ${CLIENT_NAME2}
     accept tcp connection  ${SERVER_NAME2}
     Client Transfers Data  ${CLIENT_NAME1}
     Server Receives packet  ${SERVER_NAME1}

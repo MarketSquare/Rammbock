@@ -37,14 +37,13 @@ Delete all interfaces
     Interface alias should not exist  ${1ST_ALIAS_NAME}  ${1ST_ALIAS_IP}
     Interface alias should not exist  ${2ND_ALIAS_NAME}  ${2ND_ALIAS_IP}
 
-
 *** Keywords ***
 Initialize server and client
     Create first alias to interface '${LOOPBACK_DEVICE}'
     Create second alias to interface '${LOOPBACK_DEVICE}'
     Start UDP Server  ${1ST_ALIAS_IP}  ${PORT}
     Create UDP Client
-    connect to UDP server  ${1ST_ALIAS_IP}  ${PORT}  ${2ND_ALIAS_NAME}
+    connect to UDP server  ${1ST_ALIAS_IP}  ${PORT}
 
 Create first alias to interface '${interface}'
     ${ifname}=  create interface alias  ${interface}  ${1ST_ALIAS_IP}  ${1ST_ALIAS_NETMASK}
@@ -65,12 +64,12 @@ Delete second alias
     Interface alias should not exist  ${2ND_ALIAS_NAME}  ${2ND_ALIAS_IP}
 
 Interface alias should exist
-	[arguments]		${alias name}	${alias ip}
+    [Arguments]  ${alias name}  ${alias ip}
     ${interfacestate}=  check interface for ip  ${alias name}  ${alias ip}
     Should Be Equal  ${interfacestate}  ${True}
 
 Interface alias should not exist
-	[arguments]		${alias name}	${alias ip}
+    [Arguments]  ${alias name}  ${alias ip}
     ${interfacestate}=  check interface for ip  ${alias name}  ${alias ip}
     Should Be Equal  ${interfacestate}  ${False}
 
