@@ -1,6 +1,5 @@
 import subprocess
 import re
-from random import randint
 from sys import platform
 find_ip_regexp = re.compile(r'.*?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})')
 
@@ -29,14 +28,20 @@ def create_interface_alias(ifname, ip, netmask):
     _created_aliases.add((virtual_if_name, ip))
     return virtual_if_name
 
-def check_interface(ifname):
-    """Checks if interface have ip address. Returns False or True"""
-    ipaddress = get_ip_address(ifname)
-    return ipaddress
+def interface_should_have_an_ip_address(ifname):
+    """Verifies that interface has an ip address."""
+    if not get_ip_address(ifname):
+        raise AssertionError("Interface %s does not have an ip address." % ifname)
 
-def check_interface_for_ip(ifname, ip):
-    """checks given network interface for given ip address"""
-    return ip in _get_ip_addresses_for_ifname(ifname)
+def interface_should_have_ip(ifname, ip):
+    """Verifies that given network interface has given ip address"""
+    if ip not in _get_ip_addresses_for_ifname(ifname):
+        raise AssertionError("interface %s does not have ip %s" % (ifname, ip))
+
+def interface_should_not_have_ip(ifname, ip):
+    """Verifies that given network interface does not have given ip address"""
+    if ip in _get_ip_addresses_for_ifname(ifname):
+        raise AssertionError("interface %s has ip %s" % (ifname, ip))
 
 def del_alias(if_name, ip):
     """Deletes this interface"""
@@ -62,10 +67,12 @@ def _get_ip_addresses_for_ifname(ifname):
 def _get_free_interface_alias(ifname):
     if platform in OSX or platform in WINDOWS:
         return ifname
-    while True:
-        virtual_if_name = ifname + ":" + str(randint(1, 10000))
-        if not check_interface(virtual_if_name):
+    for i in range(10000):
+        virtual_if_name = ifname + ":" + str(i)
+        if not get_ip_address(virtual_if_name):
             return virtual_if_name
+    raise AssertionError("No free interface alias in range %s:1 - %s:10000" %
+                         (ifname, ifname))
 
 def _get_ifconfig_cmd(cmd, ifname, ip=None, netmask=None):
     returnable = _get_base_ifcmd()
