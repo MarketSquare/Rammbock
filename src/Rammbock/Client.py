@@ -21,6 +21,7 @@ class _Client(object):
         self._init_socket()
         if ip:
             self._client_socket.bind((ip, 0))
+            print "*DEBUG* Bound to ip %s" % ip
 
     def establish_connection_to_server(self, host, port, interface):
         print 'Connecting to host and port: '+host+':'+port
@@ -37,6 +38,7 @@ class UDPClient(_Client):
 
     def _init_socket(self):
         self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        print "*DEBUG* Created UDP client with name %s" % self._name
 
     def receive_data(self):
         return self._client_socket.recv(UDP_PACKET_MAX_SIZE)
@@ -47,6 +49,7 @@ class TCPClient(_Client):
     def _init_socket(self):
         self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        print "*DEBUG* Created TCP client with name %s" % self._name
 
     def receive_data(self):
         while 1:
@@ -63,3 +66,4 @@ class SCTPClient(TCPClient):
         else:
             self._client_socket = sctpsocket_tcp(socket.AF_INET)
             self._client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            print "*DEBUG* Created SCTP client with name %s" % self._name

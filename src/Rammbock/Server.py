@@ -19,11 +19,13 @@ DEFAULT_IP = '127.0.0.1'
 
 
 class _Server(object):
-    connection = None
+
     transport_protocol = None
 
     def __init__(self, server_name=DEFAULT_NAME): 
         self._server_name = server_name
+        self._connection = None
+        self._client_address = None
 
     def server_startup(self, ip, port):
         try:
@@ -34,19 +36,23 @@ class _Server(object):
     def close(self):
         self._server_socket.close()
 
+    def server_receives_data(self):
+        return self.server_receives_data_and_address()[0]
+
 
 class UDPServer(_Server):
 
     def __init__(self, server_name=DEFAULT_NAME):
         _Server.__init__(self, server_name)
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        print "*DEBUG* Created UDP server with name %s" % server_name
 
-    def server_receives_data(self):
-        data, self._address = self._server_socket.recvfrom(UDP_PACKET_MAX_SIZE)
-        return data
+    def server_receives_data_and_address(self):
+        data, self._client_address = self._server_socket.recvfrom(UDP_PACKET_MAX_SIZE)
+        return data, self._client_address[0]
 
     def send_data(self, packet):
-        self._server_socket.sendto(packet, self._address)
+        self._server_socket.sendto(packet, self._client_address)
 
 
 class TCPServer(_Server):
@@ -55,22 +61,23 @@ class TCPServer(_Server):
         _Server.__init__(self, server_name)
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        print "*DEBUG* Created TCP server with name %s" % server_name
 
     def server_startup(self, ip, port):
         _Server.server_startup(self, ip, port)
         self._server_socket.listen(NUMBER_OF_TCP_CONNECTIONS)
 
     def accept_connection(self):
-        self.connection, _ = self._server_socket.accept()
+        self._connection, self._client_address = self._server_socket.accept()
 
-    def server_receives_data(self):
-        while 1:
-            data = self.connection.recv(TCP_PACKET_MAX_SIZE)
+    def server_receives_data_and_address(self):
+        while True:
+            data = self._connection.recv(TCP_PACKET_MAX_SIZE)
             if not data: break
-            return data
+            return data, self._client_address[0]
 
     def send_data(self, packet):
-        self.connection.send(packet)
+        self._connection.send(packet)
 
 
 class SCTPServer(TCPServer):
@@ -82,4 +89,5 @@ class SCTPServer(TCPServer):
             _Server.__init__(self, server_name)
             self._server_socket = sctpsocket_tcp(socket.AF_INET)
             self._server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            print "*DEBUG* Created SCTP server with name %s" % server_name
 

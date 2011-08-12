@@ -85,9 +85,12 @@ class Rammbock(object):
             print "Data sent:", self._data
 
     def server_receives_data(self, name=Server.DEFAULT_NAME):
-        self._data = self._servers[name].server_receives_data()
-        print "Data received:", self._data
-        return self._data
+        return self.server_receives_data_and_address(name)[0]
+
+    def server_receives_data_and_address(self, name=Server.DEFAULT_NAME):
+        self._data, address = self._servers[name].server_receives_data_and_address()
+        print "Data received from ip %s :%s" % (address, self._data)
+        return self._data, address
 
     def client_receives_data(self, name=Client.DEFAULT_NAME):
         self._data = self._clients[name].receive_data()
