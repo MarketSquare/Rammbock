@@ -26,6 +26,7 @@ Try To Bind Server To Ip-Address which does not exist
     Exception "Could not bind socket to ip 88.88.88.88 and port 3011" should raise
 
 Connect to servers from two different client IP addresses
+    [Tags]  no-ci
     [Setup]
     Start Udp Server  127.0.0.1  57042  server_a
     Start Udp Server  127.0.0.1  57043  server_b
