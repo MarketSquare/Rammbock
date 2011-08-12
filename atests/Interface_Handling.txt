@@ -31,15 +31,11 @@ Transfer data through interface aliases
     [Teardown]  Close Connections and delete interfaces
 
 Delete all interfaces
-    ${ifname}=  create interface alias  ${LOOPBACK_DEVICE}  ${1ST_ALIAS_IP}  ${1ST_ALIAS_NETMASK}
-    ${ifname2}=  create_interface_alias  ${LOOPBACK_DEVICE}  ${2ND_ALIAS_IP}  ${2ND_ALIAS_NETMASK}
-    ${interfacestate}=  check interface for ip  ${ifname}  ${1ST_ALIAS_IP}
-    Should Be Equal  ${interfacestate}  ${True}
+    Create first alias to interface '${LOOPBACK_DEVICE}'
+    Create second alias to interface '${LOOPBACK_DEVICE}'
     Del all aliases
-    ${interfacestate}=  check interface for ip  ${ifname}  ${1ST_ALIAS_IP}
-    Should Be Equal  ${interfacestate}  ${False}
-    ${interfacestate}=  check interface for ip  ${ifname2}  ${2ND_ALIAS_IP}
-    Should Be Equal  ${interfacestate}  ${False}
+    Interface alias should not exist  ${1ST_ALIAS_NAME}  ${1ST_ALIAS_IP}
+    Interface alias should not exist  ${2ND_ALIAS_NAME}  ${2ND_ALIAS_IP}
 
 
 *** Keywords ***
@@ -53,23 +49,29 @@ Initialize server and client
 Create first alias to interface '${interface}'
     ${ifname}=  create interface alias  ${interface}  ${1ST_ALIAS_IP}  ${1ST_ALIAS_NETMASK}
     Set Test Variable  ${1ST_ALIAS_NAME}  ${ifname}
-    ${interfacestate}=  check interface for ip  ${ifname}  ${1ST_ALIAS_IP}
-    Should Be Equal  ${interfacestate}  ${True}
+    Interface alias should exist  ${ifname}  ${1ST_ALIAS_IP}
 
 Create second alias to interface '${interface}'
     ${ifname}=  create_interface_alias  ${interface}  ${2ND_ALIAS_IP}  ${2ND_ALIAS_NETMASK}
     Set Test Variable  ${2ND_ALIAS_NAME}  ${ifname}
-    ${interfacestate}=  check interface for ip  ${ifname}  ${2ND_ALIAS_IP}
-    Should Be Equal  ${interfacestate}  ${True}
+    Interface alias should exist  ${ifname}  ${2ND_ALIAS_IP}
 
 Delete first alias
     Del Alias  ${1ST_ALIAS_NAME}  ${1ST_ALIAS_IP}
-    ${interfacestate}=  check interface for ip  ${1ST_ALIAS_NAME}  ${1ST_ALIAS_IP}
-    Should Be Equal  ${interfacestate}  ${False}
+    Interface alias should not exist  ${1ST_ALIAS_NAME}  ${1ST_ALIAS_IP}
 
 Delete second alias
     Del Alias  ${2ND_ALIAS_NAME}  ${2ND_ALIAS_IP}
-    ${interfacestate}=  check interface for ip  ${2ND_ALIAS_NAME}  ${2ND_ALIAS_IP}
+    Interface alias should not exist  ${2ND_ALIAS_NAME}  ${2ND_ALIAS_IP}
+
+Interface alias should exist
+	[arguments]		${alias name}	${alias ip}
+    ${interfacestate}=  check interface for ip  ${alias name}  ${alias ip}
+    Should Be Equal  ${interfacestate}  ${True}
+
+Interface alias should not exist
+	[arguments]		${alias name}	${alias ip}
+    ${interfacestate}=  check interface for ip  ${alias name}  ${alias ip}
     Should Be Equal  ${interfacestate}  ${False}
 
 Close Connections and delete interfaces
