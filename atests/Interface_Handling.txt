@@ -30,6 +30,18 @@ Transfer data through interface aliases
     Single Client Gets Data
     [Teardown]  Close Connections and delete interfaces
 
+Delete all interfaces
+    ${ifname}=  create interface alias  ${LOOPBACK_DEVICE}  ${1ST_ALIAS_IP}  ${1ST_ALIAS_NETMASK}
+    ${ifname2}=  create_interface_alias  ${LOOPBACK_DEVICE}  ${2ND_ALIAS_IP}  ${2ND_ALIAS_NETMASK}
+    ${interfacestate}=  check interface for ip  ${ifname}  ${1ST_ALIAS_IP}
+    Should Be Equal  ${interfacestate}  ${True}
+    Del all aliases
+    ${interfacestate}=  check interface for ip  ${ifname}  ${1ST_ALIAS_IP}
+    Should Be Equal  ${interfacestate}  ${False}
+    ${interfacestate}=  check interface for ip  ${ifname2}  ${2ND_ALIAS_IP}
+    Should Be Equal  ${interfacestate}  ${False}
+
+
 *** Keywords ***
 Initialize server and client
     Create first alias to interface '${LOOPBACK_DEVICE}'
