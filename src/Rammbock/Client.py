@@ -22,7 +22,7 @@ class _Client(object):
         if ip:
             self._client_socket.bind((ip, 0))
 
-    def establish_connection_to_server(self, host, port, interface):
+    def establish_connection_to_server(self, host, port):
         print 'Connecting to host and port: '+host+':'+port
         self._client_socket.connect((host, int(port)))
 

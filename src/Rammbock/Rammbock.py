@@ -10,7 +10,7 @@ import re
 
 IP_REGEX = re.compile(r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
 
-d2b = lambda d: (not isinstance(d, int) or (d==0)) and '0' \
+d2b = lambda d: (not isinstance(d, int) or (not d)) and '0' \
     or (d2b(d//2)+str(d%2))
 
 
@@ -45,14 +45,14 @@ class Rammbock(object):
     def check_client_status(self, name=Client.DEFAULT_NAME):
         return name in self._clients
 
-    def connect_to_udp_server(self, host, port, ifname=False, client=Client.DEFAULT_NAME):
-        self._clients[client].establish_connection_to_server(host, port, ifname)
+    def connect_to_udp_server(self, host, port, client=Client.DEFAULT_NAME):
+        self._clients[client].establish_connection_to_server(host, port)
 
-    def connect_to_tcp_server(self, host, port, ifname=False, client=Client.DEFAULT_NAME):
-        self._clients[client].establish_connection_to_server(host, port, ifname)
+    def connect_to_tcp_server(self, host, port, client=Client.DEFAULT_NAME):
+        self._clients[client].establish_connection_to_server(host, port)
 
-    def connect_to_sctp_server(self, host, port, ifname=False, client=Client.DEFAULT_NAME):
-        self._clients[client].establish_connection_to_server(host, port, ifname)
+    def connect_to_sctp_server(self, host, port, client=Client.DEFAULT_NAME):
+        self._clients[client].establish_connection_to_server(host, port)
 
     def accept_tcp_connection(self, server=Server.DEFAULT_NAME):
         self._servers[server].accept_connection()
@@ -112,7 +112,7 @@ class Rammbock(object):
         self._data += str(value).rjust(int(length), '\0')
 
     def add_decimal_as_octets(self, value, length):
-        if int(length) == 0:
+        if not int(length):
             return
         data = self._convert_to_hex_and_add_padding(value, length)
         if len(data) > int(length) * 2:
@@ -143,7 +143,7 @@ class Rammbock(object):
         return self._data
 
     def read_from_data(self, length):
-        if int(length) == 0:
+        if not int(length):
             return
         return str(int("".join(self._read_from_data(int(length))), 16))
 
@@ -196,7 +196,7 @@ class Rammbock(object):
         a = ""
         if not no_prefix:
             a += "0x"
-        return a + "".join(hex(int(self.read_from_data(1)))[2:].rjust(2, '0') for _ in range(0, int(length)))
+        return a + "".join(hex(int(self.read_from_data(1)))[2:].rjust(2, '0') for _ in range(int(length)))
 
     def read_tbcd_coded_numbers_from_data(self, amount):
         length = (int(amount)/2)+(int(amount)%2)
