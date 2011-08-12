@@ -74,6 +74,6 @@ Create UDP client '${name}' to ip '${ip}' and connect to localhost:'${server por
     Connect to UDP Server  127.0.0.1  ${server port}  client=${name}
 
 '${server}' gets data from ip '${client ip}'
-    ${data}  ${address}  Server receives data and address  ${server}
+    ${data}  ${address}  ${port}  Server receives data and address  ${server}
     Should be equal  ${address}  ${client ip}
 

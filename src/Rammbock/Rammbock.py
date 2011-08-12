@@ -54,11 +54,11 @@ class Rammbock(object):
     def connect_to_sctp_server(self, host, port, client=Client.DEFAULT_NAME):
         self._clients[client].establish_connection_to_server(host, port)
 
-    def accept_tcp_connection(self, server=Server.DEFAULT_NAME):
-        self._servers[server].accept_connection()
+    def accept_tcp_connection(self, server=Server.DEFAULT_NAME, connection_alias=None):
+        self._servers[server].accept_connection(connection_alias)
 
-    def accept_sctp_connection(self, server=Server.DEFAULT_NAME):
-        self._servers[server].accept_connection()
+    def accept_sctp_connection(self, server=Server.DEFAULT_NAME, connection_alias=None):
+        self._servers[server].accept_connection(connection_alias)
 
     def close_server(self, name=Server.DEFAULT_NAME):
         self._servers[name].close()
@@ -84,13 +84,13 @@ class Rammbock(object):
             self._clients[name].send_packet(self._data)
             print "Data sent:", self._data
 
-    def server_receives_data(self, name=Server.DEFAULT_NAME):
-        return self.server_receives_data_and_address(name)[0]
+    def server_receives_data(self, name=Server.DEFAULT_NAME, connection_alias=None):
+        return self.server_receives_data_and_address(name, connection_alias)[0]
 
-    def server_receives_data_and_address(self, name=Server.DEFAULT_NAME):
-        self._data, address = self._servers[name].server_receives_data_and_address()
-        print "Data received from ip %s :%s" % (address, self._data)
-        return self._data, address
+    def server_receives_data_and_address(self, name=Server.DEFAULT_NAME, connection_alias=None):
+        self._data, ip, port = self._servers[name].server_receives_data_and_address(connection_alias)
+        print "Data received from %s:%s :%s" % (ip, port, self._data)
+        return self._data, ip, port
 
     def client_receives_data(self, name=Client.DEFAULT_NAME):
         self._data = self._clients[name].receive_data()

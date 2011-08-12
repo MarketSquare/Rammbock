@@ -5,6 +5,9 @@ Default Tags    regression
 Resource        resources/data_transfer.txt
 Resource        resources/server_client.txt
 
+*** Variables ***
+${PORT}  57754
+
 *** Test Cases ***
 Send packet from Client to Server
     Single Client Transfers Data
@@ -25,4 +28,23 @@ Send and receive multiple streams over TCP
     Send Packet Stream From Single Server To Single Client
     Send Packet Stream From Single Client To Single Server
     Send Packet Stream From Single Server To Single Client
+
+Server receives connections from two clients
+    [Setup]  Server and two clients are initialized
+    Connect To TCP Server  localhost  ${PORT}  client1
+    Accept TCP Connection  server1  connection1
+    Connect To TCP Server  localhost  ${PORT}  client2
+    Accept TCP Connection  server1  connection2
+    Client sends data  foo  client1
+    Client sends Data  bar  client2
+    ${data1}=  Server Receives data  server1  connection1
+    Should Be Equal  ${data1}  foo
+    ${data2}=  Server Receives data  server1  connection2
+    Should Be Equal  ${data2}  bar
+
+*** Keywords ***
+Server and two clients are initialized
+    start tcp server  127.0.0.1  ${PORT}  server1
+    Create TCP Client  client1
+    Create TCP Client  client2
 
