@@ -4,7 +4,7 @@ Test Teardown   Close Connections
 Default Tags    regression
 Resource        resources/data_transfer.txt
 Resource        resources/server_client.txt
-Library			Interface
+Library         Interface
 
 *** Test Cases ***
 Send and Receive string over UDP using physical interface
@@ -25,8 +25,30 @@ Try To Bind Server To Ip-Address which does not exist
     Try to bind server to "88.88.88.88"
     Exception "Could not bind socket to ip 88.88.88.88 and port 3011" should raise
 
+Connect to servers from two different client IP addresses
+    [Setup]
+    Start Udp Server  127.0.0.1  57042  server_a
+    Start Udp Server  127.0.0.1  57043  server_b
+    Create new ip '88.88.88.1' to loopback
+    Create new ip '88.88.88.2' to loopback
+    Create UDP client 'client_a' to ip '88.88.88.1' and connect to localhost:'57042'
+    Create UDP client 'client_b' to ip '88.88.88.2' and connect to localhost:'57043'
+    'client_a' sends data
+    'server_a' gets data from ip '88.88.88.1'
+    'client_b' sends data
+    'server_b' gets data from ip '88.88.88.2'
+    [Teardown]  Close servers and clients and release interfaces
 
 *** Keywords ***
+Create new ip '${ip}' to loopback
+    Create interface alias  ${LOOPBACK DEVICE}  ${ip}  255.255.255.0
+
+Close servers and clients and release interfaces
+    Close Client  client_a
+    Close Client  client_b
+    Close Server  server_a
+    Del all aliases
+
 Try To Bind Server To "${ip_address}"
     ${error}=  Run Keyword And Expect Error  *  Start UDP Server  ${ip_address}  ${PORT}
     Set Test Variable  ${EXCEPTION}  ${error}
@@ -42,4 +64,15 @@ Server Sends Modified Data Pack To Client
     Server Modifies Data
     Single Server Sends Modified Data
     Single Client Gets Data
+
+'${client}' sends data
+    client sends data  foo  ${client}
+
+Create UDP client '${name}' to ip '${ip}' and connect to localhost:'${server port}'
+    Create UDP Client  ${name}  ${ip}
+    Connect to UDP Server  127.0.0.1  ${server port}  client=${name}
+
+'${server}' gets data from ip '${client ip}'
+    ${data}  ${address}  Server receives data and address  ${server}
+    Should be equal  ${address}  ${client ip}
 
