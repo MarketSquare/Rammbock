@@ -37,12 +37,14 @@ Server receives connections from two clients
     Accept TCP Connection  server1  connection2
     Client sends data  foo  client1
     Client sends Data  bar  client2
-    ${data1}=  Server Receives data  server1  connection1
-    Should Be Equal  ${data1}  foo
-    ${data2}=  Server Receives data  server1  connection2
-    Should Be Equal  ${data2}  bar
+    'server1' receives 'foo' from 'connection1'
+    'server1' receives 'bar' from 'connection2'
 
 *** Keywords ***
+'${server}' receives '${content}' from '${connection alias}'
+	${data}=  Server Receives data  ${server}  ${connection alias}
+	Should Be Equal  ${data}  ${content}	
+
 Server and two clients are initialized
     start tcp server  127.0.0.1  ${PORT}  server1
     Create TCP Client  client1
