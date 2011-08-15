@@ -1,0 +1,4 @@
+*** Variables ***
+${procedure_code.id-S1Setup}  17
+${criticality.reject}  0
+

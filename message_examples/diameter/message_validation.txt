@@ -640,7 +640,7 @@ Validate AVP: MIP-Home-Agent-Address
     Validate AVP Code and Flags  ${avp_code.mip_home_agent_address}  ${avp_flags.M}
     Validate AVP Length  14
     ${ipv4f-act}=  Read From Data  2
-    Should Be Equal  1  ${ipv4f-act}  #ipv4 flag
+    Should Be Equal  1  ${ipv4f-act}  # ipv4 flag
     ${address-act}=  Read Ip From Hex
     Should Be Equal  ${address}  ${address-act}
     Read Spare Octets  2

@@ -1,0 +1,11 @@
+*** Keywords ***
+Add procedureCode
+    [Arguments]  ${pc}
+    Add Decimal As Octets  ${pc}  1
+
+Add Criticality
+    [Arguments]  ${criticality}
+    Add Decimal As Octets  ${criticality}  1
+
+Add value: S1SetupRequest
+

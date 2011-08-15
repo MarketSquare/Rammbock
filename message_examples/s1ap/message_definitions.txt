@@ -1,0 +1,11 @@
+*** Settings ***
+Resource        message_creation.txt
+Resource        variables.txt
+Resource        message_validation.txt
+
+*** Keywords ***
+Set id-S1Setup-initiatingMessage
+    Add procedureCode  ${procedure_code.id-S1Setup}
+    Add Criticality  ${criticality.reject}
+    Add value: S1SetupRequest
+
