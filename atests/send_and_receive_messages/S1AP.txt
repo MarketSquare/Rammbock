@@ -2,6 +2,7 @@
 Test Setup      SCTP client and server are initialized in port ${S1 CONTROL PORT}
 Test Teardown   Close Connections
 Resource        ../resources/server_client.txt
+Resource        ../../message_examples/s1ap/message_definitions.txt
 
 *** Variables ***
 ${S1 CONTROL PORT}  36412

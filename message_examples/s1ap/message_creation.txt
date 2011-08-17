@@ -1,3 +1,9 @@
+*** Settings ***
+Library         Rammbock
+
+*** Variables ***
+${id-Global-ENB-ID}  59
+
 *** Keywords ***
 Add procedureCode
     [Arguments]  ${pc}
@@ -8,4 +14,30 @@ Add Criticality
     Add Decimal As Octets  ${criticality}  1
 
 Add value: S1SetupRequest
+    Start S1SetupRequest
+    Add id-Global-ENB-ID
+    Add id-eNBname
+    Add id-SupportedTAs
+    Add id-DefaultPagingDRX
+
+Start S1SetupRequest
+    [Documentation]  TODO: check what is the meaning of these bytes.
+    Add Hex Data  000004  3
+
+Add id-Global-ENB-ID
+    Add id  ${id-Global-ENB-ID}
+    Add Criticality  0
+    Add ProtocolIE-Field value
+
+Add id
+    [Arguments]  ${id}
+    Add Decimal As Octets  ${id}  2
+
+Add ProtocolIE-Field value
+    Add Global-ENB-ID  62f221  262  12  11d610
+    Add Hex Data  10  1  # TODO: What is the meaning of this byte?
+
+Add Global-ENB-ID
+    [Arguments]  ${pLMNidentity}  ${Mobile Country Code}  ${Mobile Network Code}  ${macroENB-ID}
+    Add Hex Data  00  1
 
