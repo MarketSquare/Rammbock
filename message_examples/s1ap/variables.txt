@@ -10,4 +10,5 @@ ${EBname}  Bonk13
 ${criticality.ignore}  40
 ${MCC.Germany}  262
 ${MNC.Dolphin Telecom}  12
+${PDUtype.initiatingMessage}  00  # CHOICE: initiatingMessage, succesfulOutcome, unsuccesfulOutcome
 

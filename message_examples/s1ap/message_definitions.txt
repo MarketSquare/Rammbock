@@ -5,7 +5,7 @@ Resource        message_validation.txt
 
 *** Keywords ***
 Set id-S1Setup-initiatingMessage
-    Add Hex Data  00  1
+    Start new PDU  ${PDUtype.initiatingMessage}
     Add procedureCode  ${procedure_code.id-S1Setup}
     Add Criticality  ${criticality.reject}
     Add value: S1SetupRequest

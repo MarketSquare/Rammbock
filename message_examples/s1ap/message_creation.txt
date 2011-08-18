@@ -79,3 +79,7 @@ Add PagingDRX: v32
     [Documentation]  TODO: Make this smarter
     Add Hex Data  0100  2
 
+Start new PDU
+    [Arguments]  ${pdu type}
+    Add Hex Data  ${pdu type}  1
+
