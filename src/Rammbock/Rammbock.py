@@ -7,6 +7,7 @@ import Server
 import Client
 import struct
 import re
+import binascii
 
 IP_REGEX = re.compile(r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
 
@@ -230,3 +231,6 @@ class Rammbock(object):
     def sctp_should_be_supported(self):
         if not Server.SCTP_ENABLED:
             raise AssertionError("SCTP not available on this platform.")
+
+    def hexlify(self, text):
+        return binascii.hexlify(text)
