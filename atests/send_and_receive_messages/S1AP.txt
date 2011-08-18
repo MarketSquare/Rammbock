@@ -3,6 +3,7 @@ Test Setup      SCTP client and server are initialized in port ${S1 CONTROL PORT
 Test Teardown   Close Connections
 Resource        ../resources/server_client.txt
 Resource        ../../message_examples/s1ap/message_definitions.txt
+Library         OperatingSystem
 
 *** Variables ***
 ${S1 CONTROL PORT}  36412
@@ -19,6 +20,12 @@ Create and send id-S1Setup-initiatingMessage
     Client Sends Data
 
 Receive and validate id-S1Setup-initiatingMessage
-    Server Receives Data
+    ${message}=  Server Receives Data
+    Hex log  ${message}
     Validate id-S1Setup-initiatingMessage
+
+Hex log
+    [Arguments]  ${message}
+    ${hex} =  hexlify  ${message}
+    Log  ${hex}
 
