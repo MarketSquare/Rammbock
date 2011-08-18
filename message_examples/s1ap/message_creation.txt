@@ -1,9 +1,6 @@
 *** Settings ***
 Library         Rammbock
 
-*** Variables ***
-${id-Global-ENB-ID}  59
-
 *** Keywords ***
 Add procedureCode
     [Arguments]  ${pc}
@@ -27,17 +24,55 @@ Start S1SetupRequest
 Add id-Global-ENB-ID
     Add id  ${id-Global-ENB-ID}
     Add Criticality  0
-    Add ProtocolIE-Field value
+    Add Global-ENB-ID value  262  12  00aad610
 
 Add id
     [Arguments]  ${id}
     Add Decimal As Octets  ${id}  2
 
-Add ProtocolIE-Field value
-    Add Global-ENB-ID  62f221  262  12  11d610
-    Add Hex Data  10  1  # TODO: What is the meaning of this byte?
-
-Add Global-ENB-ID
-    [Arguments]  ${pLMNidentity}  ${Mobile Country Code}  ${Mobile Network Code}  ${macroENB-ID}
+Add Global-ENB-ID value
+    [Arguments]  ${Mobile Country Code}  ${Mobile Network Code}  ${macroENB-ID}
     Add Hex Data  00  1
+    Add PLMNidentitity  ${Mobile Country Code}  ${Mobile Network Code}
+    Add Hex Data  ${macroENB-ID}  4  # TODO: this has internal syntax, basicly a padded bit string. Make this smarter
+
+Add id-eNBname
+    Add id  ${id-eNBname}
+    Add Criticality  1
+    Add id-EBname value  Bonk13
+
+Add id-EBname value
+    [Arguments]  ${ENBname}
+    Add Hex Data  ${eNBnam.extension presen bit: False}  1
+    Add Hex Data  80  1  # TODO: what is the meaning of this? length most likely
+    Add String  ${ENBname}
+
+Add id-SupportedTAs
+    Add id  ${id-SupportedTAs}
+    Add Criticality  0
+    Add Hex Data  19  1  # TODO: hard coded length.
+    Add TA item  000040  262  12
+    Add TA item  000080  262  12
+    Add TA item  0000c0  262  12
+    Add TA item  009500  262  12
+
+Add PLMNidentitity
+    [Arguments]  ${Mobile Country Code}  ${Mobile Network Code}
+    Add Number As Tbcd  ${Mobile Country Code}
+    Add Number As Tbcd  ${Mobile Network Code}
+
+Add TA item
+    [Arguments]  ${tAC}  ${Mobile Country Code}  ${Mobile Network Code}
+    [Documentation]  TODO: tAC should be smarter (now its given as a hex string, should be given as actual value)
+    Add Hex Data  ${tAC}  3
+    Add PLMNidentitity  ${Mobile Country Code}  ${Mobile Network Code}
+
+Add id-DefaultPagingDRX
+    Add id  ${id-DefaultPagingDRX}
+    Add Criticality  1
+    Add PagingDRX: v32
+
+Add PagingDRX: v32
+    [Documentation]  TODO: Make this smarter
+    Add Hex Data  0100  2
 

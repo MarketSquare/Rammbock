@@ -1,4 +1,9 @@
 *** Variables ***
 ${procedure_code.id-S1Setup}  17
 ${criticality.reject}  0
+${id-Global-ENB-ID}  59
+${id-eNBname}  60
+${eNBnam.extension presen bit: False}  02
+${id-DefaultPagingDRX}  137
+${id-SupportedTAs}  64
 
