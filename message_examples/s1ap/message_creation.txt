@@ -2,6 +2,9 @@
 Library         Rammbock
 Resource        variables.txt
 
+*** Variables ***
+${PDUvalue.length}  61
+
 *** Keywords ***
 Add procedureCode
     [Arguments]  ${pc}
@@ -19,8 +22,8 @@ Add value: S1SetupRequest
     Add id-DefaultPagingDRX
 
 Start S1SetupRequest
-    [Documentation]  TODO: check what is the meaning of these bytes.
-    Add Hex Data  3d000004  4
+    Add Decimal As Octets  ${PDUvalue.length}  1
+    Add Hex Data  000004  3  #TODO: check what is the meaning of these bytes.
 
 Add id-Global-ENB-ID
     Add id  ${id-Global-ENB-ID}
