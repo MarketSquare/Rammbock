@@ -5,8 +5,6 @@ Resource        message_validation.txt
 
 *** Keywords ***
 Set id-S1Setup-initiatingMessage
-    Start new PDU  ${PDUtype.initiatingMessage}
-    Add procedureCode  ${procedure_code.id-S1Setup}
-    Add Criticality  ${criticality.reject}
-    Add value: S1SetupRequest
+    ${msg}=  Load S1AP Message Template  S1Setup-initiatingMessage
+    Set Test Variable  ${msg}
 

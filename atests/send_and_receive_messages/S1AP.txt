@@ -17,7 +17,7 @@ id-S1Setup-initiatingMessage
 Create and send id-S1Setup-initiatingMessage
     Create Message
     Set id-S1Setup-initiatingMessage
-    Client Sends Data
+    Client Sends Data  ${msg}
 
 Receive and validate id-S1Setup-initiatingMessage
     ${message}=  Server Receives Data
