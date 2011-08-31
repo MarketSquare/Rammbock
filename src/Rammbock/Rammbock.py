@@ -5,7 +5,7 @@ from Client import UDPClient, TCPClient, SCTPClient
 from Server import UDPServer, TCPServer, SCTPServer
 import Server
 import Client
-import struct
+from struct import pack, unpack
 import re
 import binascii
 
@@ -122,7 +122,7 @@ class Rammbock(object):
         if len(data) > int(length) * 2:
             raise Exception("Value is too big for length")
         while data:
-            self._data += struct.pack('B', int(data[:2], 16))
+            self._data += pack('B', int(data[:2], 16))
             data = data[2:]
 
     def add_decimal_as_bits(self, value, length):
@@ -131,7 +131,7 @@ class Rammbock(object):
             raise Exception("Value is too big for length")
         self._binary += data
         while len(self._binary) >= 8:
-            self._data += struct.pack('B', int(self._binary[:8], 2))
+            self._data += pack('B', int(self._binary[:8], 2))
             self._binary = self._binary[8:]
 
     def _convert_to_hex_and_add_padding(self, value, length):
@@ -153,7 +153,7 @@ class Rammbock(object):
 
     def _read_from_data(self, length):
         for d in self._data[:length]:
-            yield hex((struct.unpack('B', d)[0]))[2:].rjust(2, '0')
+            yield hex((unpack('B', d)[0]))[2:].rjust(2, '0')
         self._data = self._data[int(length):]
 
     def read_binary_from_data(self, length):
@@ -161,7 +161,7 @@ class Rammbock(object):
 
     def _read_binary_from_data(self, length):
         for d in self._data[:length]:
-            yield d2b(int(str(struct.unpack('B', d)[0])))[1:].rjust(8, '0')
+            yield d2b(int(str(unpack('B', d)[0])))[1:].rjust(8, '0')
         self._data = self._data[int(length):]
 
     def read_from_binary(self, length):

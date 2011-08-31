@@ -82,14 +82,13 @@ def _get_ifconfig_cmd(cmd, ifname, ip=None, netmask=None):
         re = returnable + _get_del_cmd(ifname, ip)
     elif cmd == "show":
         re = returnable + _get_show_cmd(ifname)
-    print re
     return subprocess.Popen(re, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def _get_base_ifcmd():
     if platform in OSX:
         return ['/sbin/ifconfig']
     elif platform in WINDOWS:
-        return ['netsh', 'interface', 'ipv4']
+        return ['netsh', 'interface', 'ip']
     else:
         return ['/sbin/ifconfig']
 
