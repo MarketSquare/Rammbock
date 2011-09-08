@@ -1,4 +1,0 @@
-*** Settings ***
-Library         Rammbock
-Resource        variables.txt
-
