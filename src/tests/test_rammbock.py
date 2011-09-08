@@ -1,4 +1,4 @@
-from rammbock import Rammbock
+from Rammbock import Rammbock
 import struct
 import unittest
 from time import time
