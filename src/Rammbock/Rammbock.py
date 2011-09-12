@@ -55,10 +55,12 @@ class Rammbock(object):
         self._servers[name].server_startup(ip, port)
 
     def check_server_status(self, name=Server.DEFAULT_NAME):
-        return name in self._servers
+        if not name in self._servers:
+            raise Exception("Server not set up")
 
     def check_client_status(self, name=Client.DEFAULT_NAME):
-        return name in self._clients
+        if not name in self._clients:
+            raise Exception("Client not set up")
 
     def connect_to_udp_server(self, host, port, client=Client.DEFAULT_NAME):
         self._clients[client].establish_connection_to_server(host, port)
@@ -154,6 +156,9 @@ class Rammbock(object):
             data = data[:-1]
         return data.rjust(int(length)*2, '0')
 
+    def get_data(self):
+        return self.read_until()
+
     def read_until(self, delimiter=None):
         if delimiter:
             i,self._data = self._data.split(str(delimiter),1)
@@ -245,6 +250,3 @@ class Rammbock(object):
     def sctp_should_be_supported(self):
         if not Server.SCTP_ENABLED:
             raise AssertionError("SCTP not available on this platform.")
-
-    def hexlify(self, text):
-        return binascii.hexlify(text)

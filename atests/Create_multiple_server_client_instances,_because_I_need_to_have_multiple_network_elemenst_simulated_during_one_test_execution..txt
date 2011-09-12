@@ -16,12 +16,12 @@ ${CLIENT_NAME2}  testiclient2
 
 *** Test Cases ***
 Create and delete two instances of Servers
-    Check Server Existence  ${SERVER_NAME1}  ${True}
-    Check Server Existence  ${SERVER_NAME2}  ${True}
+    Check Server status  ${SERVER_NAME1}
+    Check server status  ${SERVER_NAME2}
 
 Create and delete two instances of Clients
-    Check Client Existence  ${CLIENT_NAME1}  ${True}
-    Check Client Existence  ${CLIENT_NAME2}  ${True}
+    Check client status  ${CLIENT_NAME1}
+    Check client status  ${CLIENT_NAME2}
 
 Send data between multiple Client and Server instances
     Connect to TCP server  ${HOST}  ${DEFAULT_PORT1}  ${CLIENT_NAME1}
@@ -46,11 +46,11 @@ Create Two TCP Servers And Clients
 
 Delete Two Servers And Clients And Verify Deletion
     Close Server  ${SERVER_NAME1}
-    Check Server Existence  ${SERVER_NAME1}  ${False}
+    Run Keyword And Expect Error  *  Check server status  ${SERVER_NAME1}
     Close Server  ${SERVER_NAME2}
-    Check Server Existence  ${SERVER_NAME2}  ${False}
+    Run Keyword And Expect Error  *  Check server status  ${SERVER_NAME2}
     Close Client  ${CLIENT_NAME1}
-    Check Client Existence  ${CLIENT_NAME1}  ${False}
+    Run Keyword And Expect Error  *  Check client status  ${CLIENT_NAME1}
     Close Client  ${CLIENT_NAME2}
-    Check Client Existence  ${CLIENT_NAME2}  ${False}
+    Run Keyword And Expect Error  *  Check client status  ${CLIENT_NAME2}
 
