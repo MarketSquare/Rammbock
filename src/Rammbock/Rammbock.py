@@ -42,6 +42,10 @@ class Rammbock(object):
         self._binary = ""
         self._tbcd = ""
 
+    # TODO: start server, create client -> consistent naming!
+    # TODO: name=None, if not given start incrementing from one
+    # TODO: change all that take server name to use the latest when not given (instead of server1)
+    # TODO: conffauksen miettiminen. Timeoutit
     def start_udp_server(self, ip, port, name=Server.DEFAULT_NAME):
         self._servers[name] = UDPServer(name)
         self._servers[name].server_startup(ip, port)
@@ -54,6 +58,7 @@ class Rammbock(object):
         self._servers[name] = TCPServer(name)
         self._servers[name].server_startup(ip, port)
 
+    # TODO: check -> should
     def check_server_status(self, name=Server.DEFAULT_NAME):
         if not name in self._servers:
             raise Exception("Server not set up")
@@ -62,6 +67,7 @@ class Rammbock(object):
         if not name in self._clients:
             raise Exception("Client not set up")
 
+    # TODO: client connects to, args: client -> client_name
     def connect_to_udp_server(self, host, port, client=Client.DEFAULT_NAME):
         self._clients[client].establish_connection_to_server(host, port)
 
@@ -74,6 +80,7 @@ class Rammbock(object):
     def accept_tcp_connection(self, server=Server.DEFAULT_NAME, connection_alias=None):
         self._servers[server].accept_connection(connection_alias)
 
+    # TODO: server accepts sctp connection, server_name=None
     def accept_sctp_connection(self, server=Server.DEFAULT_NAME, connection_alias=None):
         self._servers[server].accept_connection(connection_alias)
 
@@ -90,10 +97,12 @@ class Rammbock(object):
     def create_tcp_client(self, name=Client.DEFAULT_NAME, ip=None):
         self._clients[name] = TCPClient(name, ip)
 
+    # TODO: yhdenmukaiset nimet start -stop, create - close?
     def close_client(self, name=Client.DEFAULT_NAME):
         self._clients[name].close()
         del self._clients[name]
 
+    # TODO: name ekaks, packet -> data
     def client_sends_data(self, packet=None, name=Client.DEFAULT_NAME):
         if packet:
             self._clients[name].send_packet(packet)
@@ -109,11 +118,13 @@ class Rammbock(object):
         print "Data received from %s:%s :%s" % (ip, port, self._data)
         return self._data, ip, port
 
+    # TODO: document that returns what ever is at socket at the moment.
     def client_receives_data(self, name=Client.DEFAULT_NAME):
         self._data = self._clients[name].receive_data()
         print "Data received:", self._data
         return self._data
 
+    # TODO: nimi eka.
     def server_sends_data(self, packet=None, name=Server.DEFAULT_NAME):
         if packet:
             self._servers[name].send_data(packet)
@@ -121,16 +132,18 @@ class Rammbock(object):
             self._servers[name].send_data(self._data)
             print "Data sent:", self._data
 
+    # TODO: reset_message
     def create_message(self):
         self._data = ""
         self._binary = ""
 
-
+    # TODO: add encoding argument
     def add_string(self, value, length=None):
         if not length:
             length = len(value)
         self._data += str(value).rjust(int(length), '\0')
 
+    # TODO: add octets and add bits. both support several bases.
     def add_decimal_as_octets(self, value, length):
         if not int(length):
             return
@@ -141,6 +154,7 @@ class Rammbock(object):
             self._data += pack('B', int(data[:2], 16))
             data = data[2:]
 
+    # TODO: add as bits. b1010111 kuinka base annetaan robotissa?
     def add_decimal_as_bits(self, value, length):
         data = d2b(int(value))[1:].rjust(int(length), '0')
         if len(data) > int(length):
@@ -156,14 +170,20 @@ class Rammbock(object):
             data = data[:-1]
         return data.rjust(int(length)*2, '0')
 
+    # TODO: get_message
     def get_data(self):
         return self.read_until()
 
+    # TODO: def set_message
+
+    # TODO: def log_message & log message as hex & log message to file
+    # TODO: combine to read_string
     def read_until(self, delimiter=None):
         if delimiter:
             i,self._data = self._data.split(str(delimiter),1)
             return i
         return self._data
+
 
     def read_from_data(self, length):
         if not int(length):
@@ -175,6 +195,8 @@ class Rammbock(object):
             yield hex((unpack('B', d)[0]))[2:].rjust(2, '0')
         self._data = self._data[int(length):]
 
+    # TODO: onko erillinen binary bufferi tarpeen?
+    # Eiko testaajalle olisi helpomaa vaa hakea suoraan bitteja?
     def read_binary_from_data(self, length):
         self._binary += "".join(self._read_binary_from_data(int(length)))
 
@@ -191,6 +213,7 @@ class Rammbock(object):
         self._binary = self._binary[length:]
         return str(int(value,2))
 
+    # TODO: rename to add_tbcd, *args -> *numbers
     def add_number_as_tbcd(self, *args):
         nmbr = "".join(args)
         while len(nmbr) > 1:
@@ -201,6 +224,7 @@ class Rammbock(object):
             self.add_decimal_as_bits(15, 4)
             self.add_decimal_as_bits(int(nmbr[0]), 4)
 
+    # TODO: add_ip
     def add_ip_as_hex(self, address):
         if not IP_REGEX.match(address):
             raise Exception("Not a valid ip Address")
@@ -215,12 +239,14 @@ class Rammbock(object):
         except ValueError:
             raise Exception("Value is not valid hex")
 
+    # TODO: only have these methods: read_octets(len, base) and read_binary(len) and read_string(len, encoding)
     def read_hex_data(self, length, no_prefix=None):
         a = ""
         if not no_prefix:
             a += "0x"
         return a + "".join(hex(int(self.read_from_data(1)))[2:].rjust(2, '0') for _ in range(int(length)))
 
+    # TODO: combina read_From_tbcd and this?
     def read_tbcd_coded_numbers_from_data(self, amount):
         length = (int(amount)/2)+(int(amount)%2)
         self.read_binary_from_data(length)
@@ -234,11 +260,13 @@ class Rammbock(object):
         if int(a) < 10:
             self._tbcd += str(a)
 
+    # TODO: read tbcd
     def read_from_tbcd(self, length):
         number = self._tbcd[:int(length)]
         self._tbcd = self._tbcd[int(length):]
         return number
 
+    # TODO: read hex
     def read_ip_from_hex(self):
         return  ".".join(str(self.read_from_data(1)) for _ in range(4))
 
