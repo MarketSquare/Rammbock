@@ -32,9 +32,9 @@ Send and receive multiple streams over TCP
 Server receives connections from two clients
     [Setup]  Server and two clients are initialized
     Client Connects to TCP server  localhost  ${PORT}  client1
-    Accept TCP Connection  server1  connection1
+    Server Accepts TCP Connection  server1  connection1
     Client Connects to TCP server  localhost  ${PORT}  client2
-    Accept TCP Connection  server1  connection2
+    Server Accepts TCP Connection  server1  connection2
     Client sends data  foo  client1
     Client sends Data  bar  client2
     'server1' receives 'foo' from 'connection1'

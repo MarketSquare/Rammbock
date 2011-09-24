@@ -74,11 +74,11 @@ class Rammbock(object):
     def client_connects_to_sctp_server(self, host, port, client_name=Client.DEFAULT_NAME):
         self._clients[client_name].establish_connection_to_server(host, port)
 
-    def accept_tcp_connection(self, server=Server.DEFAULT_NAME, connection_alias=None):
+    def server_accepts_tcp_connection(self, server=Server.DEFAULT_NAME, connection_alias=None):
         self._servers[server].accept_connection(connection_alias)
 
     # TODO: server accepts sctp connection, server_name=None
-    def accept_sctp_connection(self, server=Server.DEFAULT_NAME, connection_alias=None):
+    def server_accepts_sctp_connection(self, server=Server.DEFAULT_NAME, connection_alias=None):
         self._servers[server].accept_connection(connection_alias)
 
     def close_server(self, name=Server.DEFAULT_NAME):
