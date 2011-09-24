@@ -380,7 +380,7 @@ Add AVP: MSISDN
     Add AVP Code and Flags  ${avp_code.msisdn}  ${avp_flags.VM}
     Add AVP Length  20
     Add Decimal As Octets  ${avp_vendor_id.3gpp}  4
-    Add Number As TBCD  ${country_code}  ${address_digits}
+    Add Tbcd  ${country_code}  ${address_digits}
 
 Add AVP: Access-Restriction-Data
     [Arguments]  ${access_restriction_data}

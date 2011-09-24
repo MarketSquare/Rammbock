@@ -1,5 +1,5 @@
 *** Settings ***
-Library     Rammbock
+Library         Rammbock
 
 *** Keywords ***
 Add Flags
@@ -36,14 +36,14 @@ Add International Mobile Subscriber Identity (IMSI)
     Add Decimal as Octets  ${ie_type.imsi}  1
     Add Decimal as Octets  8  2  # IE Length: 8
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Number as TBCD  ${imsi}  ${EMPTY}  # IMSI(International Mobile Subscriber Identity number): 262120000000001
+    Add Tbcd  ${imsi}  ${EMPTY}  # IMSI(International Mobile Subscriber Identity number): 262120000000001
 
 Add MSISDN
     [Arguments]  ${country_code}  ${address_digits}
     Add Ie type and length  ${ie_type.msisdn}  8
     Add Spare Bits  4
     Add Decimal as Bits  0  4  # Instance: 0
-    Add Number As TBCD  ${country_code}  ${address_digits}
+    Add Tbcd  ${country_code}  ${address_digits}
 
 Add User Location Info (ULI)
     [Arguments]  ${mcc}  ${mnc}
@@ -62,22 +62,22 @@ Add Spare Bits
 
 Add Tracking Area Identity(TAI)
     [Arguments]  ${mcc}  ${mnc}
-    add number as tbcd  ${mcc}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
-    Add Number as tbcd  ${mnc}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
+    Add Tbcd  ${mcc}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
+    Add Tbcd  ${mnc}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
     Add Decimal as Octets  1  2  # Tracking Area Code: 1
 
 Add E-UTRAN Cell Global Identifier (ECGI)
     [Arguments]  ${mcc}  ${mnc}
-    Add Number as tbcd  ${mcc}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
-    Add Number as tbcd  ${mnc}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
+    Add Tbcd  ${mcc}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
+    Add Tbcd  ${mnc}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
     Add Decimal as Octets  234  4  # Spare: 0, ECI (E-UTRAN Cell Identifier): 234
 
 Add Serving Network
     [Arguments]  ${mcc}  ${mnc}
     Add Ie type and length  ${ie_type.serving_network}  3
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Number as tbcd  ${mcc}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
-    Add Number as tbcd  ${mnc}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
+    Add Tbcd  ${mcc}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
+    Add Tbcd  ${mnc}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
 
 Add RAT Type
     [Arguments]  ${rat_type}

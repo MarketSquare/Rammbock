@@ -208,9 +208,8 @@ class Rammbock(object):
         self._binary = self._binary[length:]
         return str(int(value,2))
 
-    # TODO: rename to add_tbcd, *args -> *numbers
-    def add_number_as_tbcd(self, *args):
-        nmbr = "".join(args)
+    def add_tbcd(self, *numbers):
+        nmbr = "".join(numbers)
         while len(nmbr) > 1:
             self.add_decimal_as_bits(int(nmbr[1]), 4)
             self.add_decimal_as_bits(int(nmbr[0]), 4)

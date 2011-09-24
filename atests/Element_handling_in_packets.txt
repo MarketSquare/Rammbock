@@ -236,7 +236,7 @@ Create and Send Message With Multiple String Fields
 Create and send Message with TBCD number
     [Arguments]  ${no1}  ${no2}
     Reset Message
-    Add Number As TBCD  ${no1}  ${no2}
+    Add Tbcd  ${no1}  ${no2}
     Client Sends Data
 
 Receive and validate message with TBCD number
