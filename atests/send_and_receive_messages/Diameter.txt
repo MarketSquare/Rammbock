@@ -1,5 +1,5 @@
 *** Settings ***
-Suite Setup		SCTP should be supported
+Suite Setup     SCTP should be supported
 Test Setup      SCTP client and server are initialized in port ${DIAMETER_PORT}
 Test Teardown   Close Connections
 Default Tags    no-ci  linux-only
@@ -62,7 +62,7 @@ Diameter attach-detach?
 
 *** Keywords ***
 Create And Send Capabilities-ExchangeRequest
-    Create Message
+    Reset Message
     Set Capabilities-ExchangeRequest
     Client Sends Data
 
@@ -71,7 +71,7 @@ Receive And Validate Capabilities-ExchangeRequest
     Validate Capabilities-ExchangeRequest
 
 Create And Send Capabilities-ExchangeAnswer
-    Create Message
+    Reset Message
     Set Capabilities-ExchangeAnswer
     Client Sends Data
 
@@ -80,7 +80,7 @@ Receive And Validate Capabilities-ExchangeAnswer
     Validate Capabilities-ExchangeAnswer
 
 Create And Send 3GPP-Authentication-InformationRequest
-    Create Message
+    Reset Message
     Set 3GPP-Authentication-InformationRequest
     Client Sends Data
 
@@ -89,7 +89,7 @@ Receive And Validate 3GPP-Authentication-InformationRequest
     Validate 3GPP-Authentication-InformationRequest
 
 Create And Send 3GPP-Authentication-InformationAnswer
-    Create Message
+    Reset Message
     Set 3GPP-Authentication-InformationAnswer
     Client Sends Data
 
@@ -98,7 +98,7 @@ Receive And Validate 3GPP-Authentication-InformationAnswer
     Validate 3GPP-Authentication-InformationAnswer
 
 Create And Send 3GPP-Update-LocationRequest
-    Create Message
+    Reset Message
     Set 3GPP-Update-LocationRequest
     Client Sends Data
 
@@ -107,7 +107,7 @@ Receive And Validate 3GPP-Update-LocationRequest
     Validate 3GPP-Update-LocationRequest
 
 Create And Send 3GPP-Update-LocationAnswer
-    Create MEssage
+    Reset Message
     Set 3GPP-Update-LocationAnswer
     Client Sends Data
 
@@ -116,7 +116,7 @@ Receive And Validate 3GPP-Update-LocationAnswer
     Validate 3GPP-Update-LocationAnswer
 
 Create And Send Disconnect-PeerRequest
-    Create Message
+    Reset Message
     Set Disconnect-PeerRequest
     Client Sends Data
 
@@ -125,7 +125,7 @@ Receive And Validate Disconnect-PeerRequest
     Validate Disconnect-PeerRequest
 
 Create And Send Disconnect-PeerAnswer
-    Create Message
+    Reset Message
     Set Disconnect-PeerAnswer
     Client Sends Data
 
@@ -134,7 +134,7 @@ Receive And Validate Disconnect-PeerAnswer
     Validate Disconnect-PeerAnswer
 
 Respond With Capabilities-ExchangeAnswer
-    Create Message
+    Reset Message
     Set Capabilities-ExchangeAnswer
     Server Sends Data
 
@@ -143,7 +143,7 @@ Client Receives And Validates Capabilities-ExchangeAnswer
     Validate Capabilities-ExchangeAnswer
 
 Respond with 3GPP-Authentication-InformationAnswer
-    Create Message
+    Reset Message
     Set 3GPP-Authentication-InformationAnswer
     Server Sends Data
 
@@ -152,7 +152,7 @@ Client Receives and Validates 3GPP-Authentication-InformationAnswer
     Validate 3GPP-Authentication-InformationAnswer
 
 Respond With 3GPP-Update-LocationAnswer
-    Create Message
+    Reset Message
     Set 3gpp-update-locationanswer
     Server Sends Data
 
@@ -161,7 +161,7 @@ Client Receives and validates 3GPP-Update-LocationAnswer
     Validate 3gpp-update-locationanswer
 
 Respond with Disconnect-PeerAnswer
-    Create Message
+    Reset Message
     Set Disconnect-PeerAnswer
     Server Sends Data
 

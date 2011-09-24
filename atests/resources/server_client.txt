@@ -35,8 +35,8 @@ SCTP client and server are initialized in port ${desired_port}
     Server Accepts SCTP Connection
 
 Close Connections
-    Close Client
-    Close Server
+    Delete Client
+    Delete Server
 
 Check Server Existence
     [Arguments]  ${servername}  ${boolean}

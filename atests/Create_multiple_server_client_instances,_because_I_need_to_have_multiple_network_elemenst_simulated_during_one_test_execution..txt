@@ -45,12 +45,12 @@ Create Two TCP Servers And Clients
     Create TCP Client  ${CLIENT_NAME2}
 
 Delete Two Servers And Clients And Verify Deletion
-    Close Server  ${SERVER_NAME1}
+    Delete Server  ${SERVER_NAME1}
     Run Keyword And Expect Error  *  Server Should Be Running  ${SERVER_NAME1}
-    Close Server  ${SERVER_NAME2}
+    Delete Server  ${SERVER_NAME2}
     Run Keyword And Expect Error  *  Server Should Be Running  ${SERVER_NAME2}
-    Close Client  ${CLIENT_NAME1}
+    Delete Client  ${CLIENT_NAME1}
     Run Keyword And Expect Error  *  Server Should Be Running  ${CLIENT_NAME1}
-    Close Client  ${CLIENT_NAME2}
+    Delete Client  ${CLIENT_NAME2}
     Run Keyword And Expect Error  *  Server Should Be Running  ${CLIENT_NAME2}
 

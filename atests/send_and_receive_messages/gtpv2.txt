@@ -46,7 +46,7 @@ gtpv2 attach-detach
 
 *** Keywords ***
 Create and send Create Session Request
-    Create Message
+    Reset Message
     Set Create Session Request
     Client Sends Data
 
@@ -55,7 +55,7 @@ Received and Validate Create Session Request
     Validate Create Session Request
 
 Create And Send Create Session Response
-    Create Message
+    Reset Message
     Set Create Session Response
     Client Sends Data
 
@@ -64,7 +64,7 @@ Receive and Validate Create Session Response
     Validate Create Session Response
 
 Create And Send Modify Bearer Request
-    Create Message
+    Reset Message
     Set Modify Bearer Request
     Client Sends Data
 
@@ -73,7 +73,7 @@ Receive And Validate Modify Bearer Request
     Validate Modify Bearer Request
 
 Create And Send Modify Bearer Response
-    Create MEssage
+    Reset Message
     Set Modify Bearer Response
     Client Sends Data
 
@@ -82,7 +82,7 @@ Receive And Validate Modify Bearer Response
     Validate Modify Bearer Response
 
 Create And Send Delete Session Request
-    Create Message
+    Reset Message
     Set Delete Session REquest
     Client Sends Data
 
@@ -91,7 +91,7 @@ Receive And Validate Delete Session Request
     Validate Delete Session REquest
 
 Create And Send Delete Session Response
-    Create Message
+    Reset Message
     Set Delete Session Response
     Client Sends Data
 
@@ -102,7 +102,7 @@ Receive And Validate Delete Session Response
 Respond with Create Session Response
     Server Receives Data
     Validate Create Session Request
-    Create Message
+    Reset Message
     Set Create Session REsponse
     Server Sends Data
 
@@ -113,7 +113,7 @@ Client Receives And Validates Create Session Response
 Respond with Modify Bearer Response
     Server Receives Data
     Validate Modify Bearer Request
-    Create Message
+    Reset Message
     Set Modify Bearer Response
     Server Sends Data
 
@@ -124,7 +124,7 @@ Client Receives And Validates Modify Bearer Response
 Responsd with Delete Session REsponse
     Server Receives Data
     Validate Delete Session Request
-    Create Message
+    Reset Message
     Set Delete Session REsponse
     Server Sends Data
 

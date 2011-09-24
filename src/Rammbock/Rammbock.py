@@ -81,7 +81,7 @@ class Rammbock(object):
     def server_accepts_sctp_connection(self, server_name=Server.DEFAULT_NAME, connection_alias=None):
         self._servers[server_name].accept_connection(connection_alias)
 
-    def close_server(self, name=Server.DEFAULT_NAME):
+    def delete_server(self, name=Server.DEFAULT_NAME):
         self._servers[name].close()
         del self._servers[name]
 
@@ -94,8 +94,7 @@ class Rammbock(object):
     def create_tcp_client(self, name=Client.DEFAULT_NAME, ip=None):
         self._clients[name] = TCPClient(name, ip)
 
-    # TODO: yhdenmukaiset nimet start -stop, create - close?
-    def close_client(self, name=Client.DEFAULT_NAME):
+    def delete_client(self, name=Client.DEFAULT_NAME):
         self._clients[name].close()
         del self._clients[name]
 
@@ -129,8 +128,7 @@ class Rammbock(object):
             self._servers[name].send_data(self._data)
             print "Data sent:", self._data
 
-    # TODO: reset_message
-    def create_message(self):
+    def reset_message(self):
         self._data = ""
         self._binary = ""
 

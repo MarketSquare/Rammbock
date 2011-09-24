@@ -45,9 +45,9 @@ Create new ip '${ip}' to loopback
     Create interface alias  ${LOOPBACK DEVICE}  ${ip}  255.255.255.0
 
 Close servers and clients and release interfaces
-    Close Client  client_a
-    Close Client  client_b
-    Close Server  server_a
+    Delete Client  client_a
+    Delete Client  client_b
+    Delete Server  server_a
     Del all aliases
 
 Try To Bind Server To "${ip_address}"

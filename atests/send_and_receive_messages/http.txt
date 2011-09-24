@@ -12,7 +12,7 @@ Send HTTP Get Message And Acquire Response
     [Setup]  Create TCP Client And Connect To server  www.nokiasiemensnetworks.com  80
     Client Sends HTTP GET
     Client gets Resp
-    [Teardown]  Close Client
+    [Teardown]  Delete Client
 
 Send and receive GET message and verify data
     Client Sends HTTP GET
@@ -36,7 +36,7 @@ Servers Receive and verify data
     Should Be Equal  ${message}  GET / HTTP/1.1 \r\nHost: www.nokiasiemensnetworks.com\r\nConnection: keep-alive\r\nCache-control: max-age=0\r\nUser-agent: rammbock\r\nAccept: text/html\r\n\r\n
 
 Client gets Resp
-    Create Message
+    Reset Message
     Client Receives Data
     ${request version}=  Read Until  ${SPACE}
     ${response code}=  Read Until  ${SPACE}
@@ -44,12 +44,12 @@ Client gets Resp
     Should Be True  100 <= ${response code} < 600
 
 Client Sends HTTP GET
-    Create Message
+    Reset Message
     Set HTTP GET send
     Client Sends Data
 
 Server Receives HTTP GET
-    Create Message
+    Reset Message
     Server Receives Data
     Set HTTP GET rcv
 
@@ -76,17 +76,17 @@ Server Sends Response so Client
     Client Receives Response
 
 Server Creates Response and sends it To Client
-    Create Message
+    Reset Message
     Set HTTP Response send
     Server Sends Data
 
 Client Receives Response
-    Create Message
+    Reset Message
     Client Receives HTTP Response
     Verify That Response is Correct
 
 Client Receives HTTP Response
-    Create Message
+    Reset Message
     Client Receives data
     Set HTTP Response rcv
 

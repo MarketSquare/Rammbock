@@ -31,11 +31,11 @@ Encode Message with multiple data fields containing bits
     Receive data and checks it exists
 
 Try Encode too long decimal data as octets
-    Create Message
+    Reset Message
     Run Keyword And Expect Error  Value is too big for length  Add Decimal As Octets  300  1
 
 Try to encode too long decimal as bits
-    Create Message
+    Reset Message
     Run Keyword And Expect Error  Value is too big for length  Add Decimal As Bits  256  1
 
 Decode octets from message to single decimal
@@ -84,7 +84,7 @@ Decode message with TBCD coded Odd Number
     Receive and validate message with TBCD number  17  3  14  61000000000001
 
 Encode and Decode message with ip-address
-    Create Message
+    Reset Message
     Add IP as hex  10.10.10.10
     Client Sends Data
     Server Receives Data
@@ -92,7 +92,7 @@ Encode and Decode message with ip-address
     Should Be Equal  ${ip}  10.10.10.10
 
 Try To Read Too Many Bits From Bitstream Data
-    Create Message
+    Reset Message
     Add Decimal As Bits  255  8
     Client Sends Data
     Server Receives Data
@@ -100,7 +100,7 @@ Try To Read Too Many Bits From Bitstream Data
     Run keyword and expect error  Not enough bits to read  Read From Binary  9
 
 Encode And Decode Message with raw hex data
-    Create Message
+    Reset Message
     Add hex data  0xe36006e2  4
     Client Sends Data
     Server Receives Data
@@ -108,36 +108,36 @@ Encode And Decode Message with raw hex data
     Should Be Equal  ${value}  0xe36006e2
 
 Try to add Too big hex data
-    Create Message
+    Reset Message
     Run keyword and expect error  Value is too big for length  Add hex data  0xe36006e2  3
 
 Try to add hex with wrong format
-    Create Message
+    Reset Message
     Run keyword and expect error  Value is not valid hex  Add hex data  GGGGG  4
 
 *** Keywords ***
 Create Message and add two decimals as octets
-    Create Message
+    Reset Message
     Add Decimal as Octets  72  1
     Add Decimal as Octets  216  2
 
 Create Message And Add Bitstream data
-    Create Message
+    Reset Message
     Add decimal as bits  255  8
     Client Sends Data
 
 Create Message And Add Multiple bitstream fields
-    Create Message
+    Reset Message
     Add Decimal As Bits  32  6
     Add Decimal As Bits  40  6
     Add Decimal As Bits  15  4
 
 Create Message and Add Decimal as octets
-    Create Message
+    Reset Message
     Add Decimal as Octets  72  1
 
 Create Message And Add Strings and Decimals and Binary as octets
-    Create Message
+    Reset Message
     Add Decimal as Octets  255  1
     Add Decimal as Octets  4  2
     Add Decimal As Bits  63  6
@@ -221,12 +221,12 @@ Receive and validate Message with single String field
     Should Be Equal  ${test field}  Test
 
 Create And Send Message with single String field
-    Create Message
+    Reset Message
     Add String  Test
     Client Sends Data
 
 Create and Send Message With Multiple String Fields
-    Create Message
+    Reset Message
     Add String  field1
     Add String  ${SPACE}
     Add String  field2
@@ -235,7 +235,7 @@ Create and Send Message With Multiple String Fields
 
 Create and send Message with TBCD number
     [Arguments]  ${no1}  ${no2}
-    Create Message
+    Reset Message
     Add Number As TBCD  ${no1}  ${no2}
     Client Sends Data
 
