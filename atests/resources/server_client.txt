@@ -40,12 +40,12 @@ Close Connections
 
 Check Server Existence
     [Arguments]  ${servername}  ${boolean}
-    ${status}=  Check Server Status  ${servername}
+    ${status}=  Server Should Be Running  ${servername}
     Should Be Equal  ${status}  ${boolean}
 
 Check Client Existence
     [Arguments]  ${clientname}  ${boolean}
-    ${status}=  Check Client Status  ${clientname}
+    ${status}=  Server Should Be Running  ${clientname}
     Should Be Equal  ${status}  ${boolean}
 
 Create TCP Client And Connect To Server

@@ -57,12 +57,11 @@ class Rammbock(object):
         self._servers[name] = TCPServer(name)
         self._servers[name].server_startup(ip, port)
 
-    # TODO: check -> should
-    def check_server_status(self, name=Server.DEFAULT_NAME):
+    def server_should_be_running(self, name=Server.DEFAULT_NAME):
         if not name in self._servers:
             raise Exception("Server not set up")
 
-    def check_client_status(self, name=Client.DEFAULT_NAME):
+    def client_should_be_running(self, name=Client.DEFAULT_NAME):
         if not name in self._clients:
             raise Exception("Client not set up")
 
