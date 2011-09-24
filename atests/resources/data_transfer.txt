@@ -1,5 +1,5 @@
 *** Settings ***
-Library     Rammbock
+Library         Rammbock
 
 *** Variables ***
 ${EXPECTED_STRING}  ismo_rulettaa

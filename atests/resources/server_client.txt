@@ -8,28 +8,28 @@ ${HOST}  localhost
 
 *** Keywords ***
 UDP Server and Client are initialized
-    Start UDP Server  ${LOCALHOST_IP}  ${PORT}
+    Create UDP Server  ${LOCALHOST_IP}  ${PORT}
     Create UDP Client
     Connect to UDP server  ${HOST}  ${PORT}
 
 UDP Server and Client are initialized in port ${desired_port}
-    Start UDP Server  ${LOCALHOST_IP}  ${desired_port}
+    Create UDP Server  ${LOCALHOST_IP}  ${desired_port}
     Create UDP Client
     Connect to UDP server  ${HOST}  ${desired_port}
 
 TCP Server and Client are Initialized
-    Start TCP Server  ${LOCALHOST_IP}  ${PORT}
+    Create TCP Server  ${LOCALHOST_IP}  ${PORT}
     Create TCP Client And Connect To Server  ${HOST}  ${PORT}
     accept tcp connection
 
 SCTP client and server are initialized
-    Start SCTP Server  ${LOCALHOST_IP}  ${PORT}
+    Create SCTP Server  ${LOCALHOST_IP}  ${PORT}
     Create SCTP Client
     Connect to sctp server  ${HOST}  ${PORT}
     accept sctp connection
 
 SCTP client and server are initialized in port ${desired_port}
-    Start SCTP Server  ${LOCALHOST_IP}  ${desired_port}
+    Create SCTP Server  ${LOCALHOST_IP}  ${desired_port}
     Create SCTP Client
     Connect to sctp server  ${HOST}  ${desired_port}
     accept sctp connection

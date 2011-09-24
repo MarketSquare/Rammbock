@@ -42,19 +42,18 @@ class Rammbock(object):
         self._binary = ""
         self._tbcd = ""
 
-    # TODO: start server, create client -> consistent naming!
     # TODO: name=None, if not given start incrementing from one
     # TODO: change all that take server name to use the latest when not given (instead of server1)
     # TODO: conffauksen miettiminen. Timeoutit
-    def start_udp_server(self, ip, port, name=Server.DEFAULT_NAME):
+    def create_udp_server(self, ip, port, name=Server.DEFAULT_NAME):
         self._servers[name] = UDPServer(name)
         self._servers[name].server_startup(ip, port)
 
-    def start_sctp_server(self, ip, port, name=Server.DEFAULT_NAME):
+    def create_sctp_server(self, ip, port, name=Server.DEFAULT_NAME):
         self._servers[name] = SCTPServer(name)
         self._servers[name].server_startup(ip, port)
 
-    def start_tcp_server(self, ip, port, name=Server.DEFAULT_NAME):
+    def create_tcp_server(self, ip, port, name=Server.DEFAULT_NAME):
         self._servers[name] = TCPServer(name)
         self._servers[name].server_startup(ip, port)
 

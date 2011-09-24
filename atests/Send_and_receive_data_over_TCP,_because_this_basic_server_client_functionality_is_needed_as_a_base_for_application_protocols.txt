@@ -42,11 +42,11 @@ Server receives connections from two clients
 
 *** Keywords ***
 '${server}' receives '${content}' from '${connection alias}'
-	${data}=  Server Receives data  ${server}  ${connection alias}
-	Should Be Equal  ${data}  ${content}	
+    ${data}=  Server Receives data  ${server}  ${connection alias}
+    Should Be Equal  ${data}  ${content}
 
 Server and two clients are initialized
-    start tcp server  127.0.0.1  ${PORT}  server1
+    Create tcp server  127.0.0.1  ${PORT}  server1
     Create TCP Client  client1
     Create TCP Client  client2
 

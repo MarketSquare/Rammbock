@@ -41,7 +41,7 @@ Delete all interfaces
 Initialize server and client
     Create first alias to interface '${LOOPBACK_DEVICE}'
     Create second alias to interface '${LOOPBACK_DEVICE}'
-    Start UDP Server  ${1ST_ALIAS_IP}  ${PORT}
+    Create UDP Server  ${1ST_ALIAS_IP}  ${PORT}
     Create UDP Client
     connect to UDP server  ${1ST_ALIAS_IP}  ${PORT}
 

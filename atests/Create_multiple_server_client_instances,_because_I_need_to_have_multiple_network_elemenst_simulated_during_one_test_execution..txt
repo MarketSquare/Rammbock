@@ -39,8 +39,8 @@ Send data between multiple Client and Server instances
 
 *** Keywords ***
 Create Two TCP Servers And Clients
-    Start TCP Server  ${LOCALHOST_IP}  ${DEFAULT_PORT1}  ${SERVER_NAME1}
-    Start TCP Server  ${LOCALHOST_IP}  ${DEFAULT_PORT2}  ${SERVER_NAME2}
+    Create TCP Server  ${LOCALHOST_IP}  ${DEFAULT_PORT1}  ${SERVER_NAME1}
+    Create TCP Server  ${LOCALHOST_IP}  ${DEFAULT_PORT2}  ${SERVER_NAME2}
     Create TCP Client  ${CLIENT_NAME1}
     Create TCP Client  ${CLIENT_NAME2}
 
