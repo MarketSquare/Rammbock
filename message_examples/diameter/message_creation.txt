@@ -86,7 +86,7 @@ Add AVP: Host-IP-Address
 Add Host Ip Address
     [Arguments]  ${family}  ${ip}
     Add Decimal As Octets  ${family}  2
-    Add Ip As Hex  ${ip}
+    Add Ip  ${ip}
 
 Add AVP: Vendor-Id
     [Arguments]  ${id}
@@ -494,7 +494,7 @@ Add AVP: Served-Party-IP-Address
     Add AVP Length  18
     Add AVP Vendor Id  ${avp_vendor_id.3gpp}
     Add Decimal As Octets  1  2  # ipv4 ip address family
-    Add Ip As Hex  ${ip}
+    Add Ip  ${ip}
     Add Spare Octets  2
 
 Add AVP: PDN-Type
@@ -597,7 +597,7 @@ Add AVP: MIP-Home-Agent-Address
     Add AVP Code and Flags  ${avp_code.mip_home_agent_address}  ${avp_flags.M}
     Add AVP Length  14
     Add Decimal As Octets  1  2
-    Add Ip As Hex  ${address}
+    Add Ip  ${address}
     Add Spare Octets  2
 
 Add AVP: MIP6-Home-Link-Prefix

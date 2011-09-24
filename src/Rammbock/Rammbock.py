@@ -214,8 +214,7 @@ class Rammbock(object):
             self.add_decimal_as_bits(15, 4)
             self.add_decimal_as_bits(int(nmbr[0]), 4)
 
-    # TODO: add_ip
-    def add_ip_as_hex(self, address):
+    def add_ip(self, address):
         if not IP_REGEX.match(address):
             raise Exception("Not a valid ip Address")
         for a in address.split('.'):

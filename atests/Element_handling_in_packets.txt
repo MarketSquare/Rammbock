@@ -85,7 +85,7 @@ Decode message with TBCD coded Odd Number
 
 Encode and Decode message with ip-address
     Reset Message
-    Add IP as hex  10.10.10.10
+    Add Ip  10.10.10.10
     Client Sends Data
     Server Receives Data
     ${ip}=  Read IP from Hex

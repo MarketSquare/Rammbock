@@ -97,7 +97,7 @@ Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  ${flags}  1  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
     Add Decimal as Octets  ${teidgre}  4  # TEID/GRE Key: 50331665
-    Add Ip As Hex  ${ip}
+    Add Ip  ${ip}
 
 Add Access Point Name (APN)
     [Arguments]  ${apn}
@@ -121,7 +121,7 @@ Add PDN Address Allocation (PAA)
     Add Ie Type And Length  ${ie_type.paa}  5
     Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Decimal as Octets  1  1  # .... .001 = PDN Type: IPv4 (1)
-    Add Ip As Hex  ${ip}
+    Add Ip  ${ip}
 
 Add APN Restriction
     Add Ie Type And Length  ${ie_type.apn_restriction}  1
@@ -208,7 +208,7 @@ Add Ip Address
     [Arguments]  ${ip}
     Add ie type and length  ${ie_type.ip_address}  4
     Add Decimal As Octets  0  1  # cr-flags and instance
-    Add Ip As Hex  ${ip}
+    Add Ip  ${ip}
 
 Add ie type and length
     [Arguments]  ${iet}  ${iel}
