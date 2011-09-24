@@ -243,8 +243,8 @@ Receive and validate message with TBCD number
     [Arguments]  ${length}  ${length1}  ${length2}  ${expected-add-digits}
     Server Receives Data
     Read TBCD coded numbers From Data  ${length}
-    ${country-code}=  Read from TBCD  ${length1}
-    ${address-digits}=  Read from TBCD  ${length2}
+    ${country-code}=  read tbcd  ${length1}
+    ${address-digits}=  read tbcd  ${length2}
     Should Be Equal  ${country-code}  ${COUNTRY CODE}
     Should Be Equal  ${address-digits}  ${expected-add-digits}
 

@@ -1,5 +1,5 @@
 *** Settings ***
-Library     Rammbock
+Library         Rammbock
 
 *** Keywords ***
 Validate ie type And length
@@ -17,10 +17,10 @@ Validate cr-flags and instance
 Validate mcc and mnc
     [Arguments]  ${mcc}  ${mnc}
     read tbcd coded numbers from data  3
-    ${mcc-act}  read from tbcd  3
+    ${mcc-act}  read tbcd  3
     read tbcd coded numbers from data  2
     Should be equal  ${mcc}  ${mcc-act}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
-    ${mnc-act}  read from tbcd  2
+    ${mnc-act}  read tbcd  2
     Should Be Equal  ${mnc}  ${mnc-act}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
 
 Validate Flags
@@ -53,7 +53,7 @@ Validate International Mobile Subscriber Identity (IMSI)
     Validate ie type and length  ${ie_type.imsi}  8
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Read TBCD Coded Numbers From Data  15
-    ${actual}=  Read From TBCD  15  # IMSI(International Mobile Subscriber Identity number): 262120000000001
+    ${actual}=  read tbcd  15  # IMSI(International Mobile Subscriber Identity number): 262120000000001
     Should Be Equal  ${actual}  ${expected}
 
 Validate MSISDN
@@ -61,8 +61,8 @@ Validate MSISDN
     Validate ie type And length  ${ie_type.msisdn}  8
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     read tbcd coded numbers from data  16
-    ${cc}=  Read From TBCD  3
-    ${ad}=  Read From TBCD  13
+    ${cc}=  read tbcd  3
+    ${ad}=  read tbcd  13
     Should Be Equal  ${cc}  ${country_code}
     Should Be Equal  ${ad}  ${address_digits}
 

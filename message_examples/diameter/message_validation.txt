@@ -414,10 +414,10 @@ Validate AVP: MSISDN
     ${len}=  Get Length  ${country_code}${address_digits}
     Read TBCD coded Numbers From Data  ${len}
     ${len}=  Get Length  ${country_code}
-    ${country_code-act}=  Read From TBCD  ${len}
+    ${country_code-act}=  read tbcd  ${len}
     Should Be Equal  ${country_code}  ${country_code-act}
     ${len}=  Get Length  ${address_digits}
-    ${address_digits-act}  Read From TBCD  ${len}
+    ${address_digits-act}  read tbcd  ${len}
     Should Be Equal  ${address_digits}  ${address_digits-act}
 
 Validate AVP Vendor Id

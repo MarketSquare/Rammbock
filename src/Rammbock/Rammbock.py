@@ -249,8 +249,7 @@ class Rammbock(object):
         if int(a) < 10:
             self._tbcd += str(a)
 
-    # TODO: read tbcd
-    def read_from_tbcd(self, length):
+    def read_tbcd(self, length):
         number = self._tbcd[:int(length)]
         self._tbcd = self._tbcd[int(length):]
         return number
