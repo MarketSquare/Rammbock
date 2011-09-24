@@ -165,10 +165,6 @@ class Rammbock(object):
             data = data[:-1]
         return data.rjust(int(length)*2, '0')
 
-    # TODO: get_message
-    def get_data(self):
-        return self.read_until()
-
     # TODO: def set_message
 
     # TODO: def log_message & log message as hex & log message to file
