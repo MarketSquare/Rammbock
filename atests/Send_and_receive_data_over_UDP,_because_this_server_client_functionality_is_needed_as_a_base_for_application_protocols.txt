@@ -71,7 +71,7 @@ Server Sends Modified Data Pack To Client
 
 Create UDP client '${name}' to ip '${ip}' and connect to localhost:'${server port}'
     Create UDP Client  ${name}  ${ip}
-    Connect to UDP Server  127.0.0.1  ${server port}  client=${name}
+    Client Connects to UDP server  127.0.0.1  ${server port}  client=${name}
 
 '${server}' gets data from ip '${client ip}'
     ${data}  ${address}  ${port}  Server receives data and address  ${server}

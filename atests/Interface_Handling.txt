@@ -43,7 +43,7 @@ Initialize server and client
     Create second alias to interface '${LOOPBACK_DEVICE}'
     Create UDP Server  ${1ST_ALIAS_IP}  ${PORT}
     Create UDP Client
-    connect to UDP server  ${1ST_ALIAS_IP}  ${PORT}
+    Client Connects to UDP server  ${1ST_ALIAS_IP}  ${PORT}
 
 Create first alias to interface '${interface}'
     ${ifname}=  create interface alias  ${interface}  ${1ST_ALIAS_IP}  ${1ST_ALIAS_NETMASK}

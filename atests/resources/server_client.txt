@@ -10,12 +10,12 @@ ${HOST}  localhost
 UDP Server and Client are initialized
     Create UDP Server  ${LOCALHOST_IP}  ${PORT}
     Create UDP Client
-    Connect to UDP server  ${HOST}  ${PORT}
+    Client Connects to UDP server  ${HOST}  ${PORT}
 
 UDP Server and Client are initialized in port ${desired_port}
     Create UDP Server  ${LOCALHOST_IP}  ${desired_port}
     Create UDP Client
-    Connect to UDP server  ${HOST}  ${desired_port}
+    Client Connects to UDP server  ${HOST}  ${desired_port}
 
 TCP Server and Client are Initialized
     Create TCP Server  ${LOCALHOST_IP}  ${PORT}
@@ -25,13 +25,13 @@ TCP Server and Client are Initialized
 SCTP client and server are initialized
     Create SCTP Server  ${LOCALHOST_IP}  ${PORT}
     Create SCTP Client
-    Connect to sctp server  ${HOST}  ${PORT}
+    Client Connects to sctp server  ${HOST}  ${PORT}
     accept sctp connection
 
 SCTP client and server are initialized in port ${desired_port}
     Create SCTP Server  ${LOCALHOST_IP}  ${desired_port}
     Create SCTP Client
-    Connect to sctp server  ${HOST}  ${desired_port}
+    Client Connects to sctp server  ${HOST}  ${desired_port}
     accept sctp connection
 
 Close Connections
@@ -51,5 +51,5 @@ Check Client Existence
 Create TCP Client And Connect To Server
     [Arguments]  ${host}  ${port}
     Create TCP Client
-    Connect to TCP server  ${host}  ${port}
+    Client Connects to TCP server  ${host}  ${port}
 
