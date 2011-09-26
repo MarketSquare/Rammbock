@@ -77,11 +77,11 @@ Encode message with TBCD coded number.
 
 Decode message with TBCD coded Even Number
     Create and send Message with TBCD number  358  6100000000001
-    Receive and validate message with TBCD number  16  3  13  6100000000001
+    Receive and validate message with TBCD number  16  358  6100000000001
 
 Decode message with TBCD coded Odd Number
     Create and send Message with TBCD number  358  61000000000001
-    Receive and validate message with TBCD number  17  3  14  61000000000001
+    Receive and validate message with TBCD number  17  358  61000000000001
 
 Encode and Decode message with ip-address
     Reset Message
@@ -240,11 +240,9 @@ Create and send Message with TBCD number
     Client Sends Data
 
 Receive and validate message with TBCD number
-    [Arguments]  ${length}  ${length1}  ${length2}  ${expected-add-digits}
+    [Arguments]  ${length}  ${country code}  ${digits}
     Server Receives Data
-    Read TBCD coded numbers From Data  ${length}
-    ${country-code}=  read tbcd  ${length1}
-    ${address-digits}=  read tbcd  ${length2}
-    Should Be Equal  ${country-code}  ${COUNTRY CODE}
-    Should Be Equal  ${address-digits}  ${expected-add-digits}
+    ${tbcd}=  read tbcd  ${length}
+    Should start with  ${tbcd}  ${country code}
+    Should end with  ${tbcd}  ${digits}
 

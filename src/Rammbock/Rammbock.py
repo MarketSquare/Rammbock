@@ -165,7 +165,8 @@ class Rammbock(object):
             data = data[:-1]
         return data.rjust(int(length)*2, '0')
 
-    # TODO: def set_message
+    def set_message(self, message):
+        self.message = message
 
     # TODO: def log_message & log message as hex & log message to file
     # TODO: combine to read_string
@@ -174,7 +175,6 @@ class Rammbock(object):
             i,self._data = self._data.split(str(delimiter),1)
             return i
         return self._data
-
 
     def read_from_data(self, length):
         if not int(length):
@@ -235,24 +235,20 @@ class Rammbock(object):
             a += "0x"
         return a + "".join(hex(int(self.read_from_data(1)))[2:].rjust(2, '0') for _ in range(int(length)))
 
-    # TODO: combina read_From_tbcd and this?
-    def read_tbcd_coded_numbers_from_data(self, amount):
+    def read_tbcd(self, amount):
+        tbcd = ""
         length = (int(amount)/2)+(int(amount)%2)
         self.read_binary_from_data(length)
         while len(self._binary) > 8:
             a = self.read_from_binary(4)
             b = self.read_from_binary(4)
-            self._tbcd += str(b) + str(a)
+            tbcd += str(b) + str(a)
         a = self.read_from_binary(4)
         b = self.read_from_binary(4)
-        self._tbcd += str(b)
+        tbcd += str(b)
         if int(a) < 10:
-            self._tbcd += str(a)
-
-    def read_tbcd(self, length):
-        number = self._tbcd[:int(length)]
-        self._tbcd = self._tbcd[int(length):]
-        return number
+            tbcd += str(a)
+        return tbcd
 
     # TODO: read hex
     def read_ip_from_hex(self):

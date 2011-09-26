@@ -412,13 +412,9 @@ Validate AVP: MSISDN
     Validate AVP Length  20
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
     ${len}=  Get Length  ${country_code}${address_digits}
-    Read TBCD coded Numbers From Data  ${len}
-    ${len}=  Get Length  ${country_code}
-    ${country_code-act}=  read tbcd  ${len}
-    Should Be Equal  ${country_code}  ${country_code-act}
-    ${len}=  Get Length  ${address_digits}
-    ${address_digits-act}  read tbcd  ${len}
-    Should Be Equal  ${address_digits}  ${address_digits-act}
+    ${tbcd}=  Read tbcd  ${len}
+    Should start with  ${tbcd}  ${country_code}
+    Should end with  ${tbcd}  ${address_digits}
 
 Validate AVP Vendor Id
     [Arguments]  ${vendor_id}
