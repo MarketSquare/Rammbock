@@ -47,29 +47,25 @@ class Rammbock(object):
     # TODO: change all that take server name to use the latest when not given (instead of server1)
     # TODO: conffauksen miettiminen. Timeoutit
     def create_udp_server(self, ip, port, name=Server.DEFAULT_NAME):
-        if name not in self._servers:
-            self._servers[name] = UDPServer(name)
-            self._servers[name].server_startup(ip, port)
-            self.last_created_server = name
-        else:
+        if name in self._servers:
             raise Exception("There is already one UDP Server created. You need to specify a unique name for a new server")
+        self._servers[name] = UDPServer(name)
+        self._servers[name].server_startup(ip, port)
+        self.last_created_server = name
 
     def create_sctp_server(self, ip, port, name=Server.DEFAULT_NAME):
-
-        if name not in self._servers:
-            self._servers[name] = SCTPServer(name)
-            self._servers[name].server_startup(ip, port)
-            self.last_created_server = name
-        else:
+        if name in self._servers:
             raise Exception("There is already one SCTP Server created. You need to specify a unique name for a new server")
+        self._servers[name] = SCTPServer(name)
+        self._servers[name].server_startup(ip, port)
+        self.last_created_server = name
 
     def create_tcp_server(self, ip, port, name=Server.DEFAULT_NAME):
-        if name not in self._servers:
-            self._servers[name] = TCPServer(name)
-            self._servers[name].server_startup(ip, port)
-            self.last_created_server = name
-        else:
+        if name in self._servers:
             raise Exception("There is already one TCP Server created. You need to specify a unique name for a new server")
+        self._servers[name] = TCPServer(name)
+        self._servers[name].server_startup(ip, port)
+        self.last_created_server = name
 
     def server_should_be_running(self, name=Server.DEFAULT_NAME):
         if not name in self._servers:
@@ -81,7 +77,7 @@ class Rammbock(object):
 
     def client_connects_to_udp_server(self, host, port, client_name=Client.DEFAULT_NAME):
         if not self._clients[client_name]:
-            raise Exception("FDSAFDSAFDSA")
+            raise Exception("No such client %s", (client_name,))
         self._clients[client_name].establish_connection_to_server(host, port)
 
     def client_connects_to_tcp_server(self, host, port, client_name=Client.DEFAULT_NAME):
