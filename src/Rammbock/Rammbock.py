@@ -21,7 +21,6 @@ import Server
 import Client
 from struct import pack, unpack
 import re
-import binascii
 
 IP_REGEX = re.compile(r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
 
@@ -66,6 +65,8 @@ class Rammbock(object):
             raise Exception("Client not set up")
 
     def client_connects_to_udp_server(self, host, port, client_name=Client.DEFAULT_NAME):
+        if not self._clients[client_name]:
+            raise Exception("FDSAFDSAFDSA")
         self._clients[client_name].establish_connection_to_server(host, port)
 
     def client_connects_to_tcp_server(self, host, port, client_name=Client.DEFAULT_NAME):
