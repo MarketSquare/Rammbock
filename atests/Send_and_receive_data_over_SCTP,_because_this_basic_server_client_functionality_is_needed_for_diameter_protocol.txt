@@ -8,12 +8,12 @@ Resource        resources/data_transfer.txt
 
 *** Test Cases ***
 Send packet from Client to Server
-    [Tags]  no-ci
+    [Tags]  no-ci  linux-only
     Client Creates Message And Sends It to Server
     Server Receives message and validates it
 
 Send packet from Client to Server and return it back
-    [Tags]  no-ci
+    [Tags]  no-ci  linux-only
     Client creates Message And Sends It To Server
     Server Receives Message and Sends It Back to Client
     Client Receives message and validates It

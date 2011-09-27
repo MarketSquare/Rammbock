@@ -51,8 +51,12 @@ class Rammbock(object):
             raise Exception("There is already one UDP Server created. You need to specify a unique name for a new server")
 
     def create_sctp_server(self, ip, port, name=Server.DEFAULT_NAME):
-        self._servers[name] = SCTPServer(name)
-        self._servers[name].server_startup(ip, port)
+
+        if name not in self._servers:
+            self._servers[name] = SCTPServer(name)
+            self._servers[name].server_startup(ip, port)
+        else:
+            raise Exception("There is already one SCTP Server created. You need to specify a unique name for a new server")
 
     def create_tcp_server(self, ip, port, name=Server.DEFAULT_NAME):
         if name not in self._servers:

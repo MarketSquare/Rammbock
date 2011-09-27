@@ -41,13 +41,20 @@ Create Two UDP Server Instances without name
     [Setup]
     Create First UDP Server
     Create Second UDP Server and Expect Error
-    [Teardown]
+    [Teardown]  Delete Server
 
 Create Two TCP Server Instances without name
     [Setup]
     Create First TCP Server
     Create Second TCP Server and Expect Error
-    [Teardown]
+    [Teardown]  Delete Server
+
+Create Two SCTP Server Instances without name
+    [Tags]  no-ci  linux-only
+    [Setup]
+    Create First SCTP Server
+    Create Second SCTP Server and Expect Error
+    [Teardown]  Delete Server
 
 Create Two Client instances without names
     [Tags]  ${EMPTY}
@@ -82,8 +89,14 @@ Create Second UDP Server and Expect Error
     Run Keyword And Expect Error  There is already one UDP Server created. You need to specify a unique name for a new server  Create UDP Server  ${LOCALHOST_IP}  ${DEFAULT_PORT2}
 
 Create First TCP Server
-    Create UDP Server  ${LOCALHOST_IP}  ${DEFAULT_PORT1}
+    Create TCP Server  ${LOCALHOST_IP}  ${DEFAULT_PORT1}
 
 Create Second TCP Server and Expect Error
     Run Keyword And Expect Error  There is already one TCP Server created. You need to specify a unique name for a new server  Create TCP Server  ${LOCALHOST_IP}  ${DEFAULT_PORT2}
+
+Create First SCTP Server
+    Create SCTP Server  ${LOCALHOST_IP}  ${DEFAULT_PORT1}
+
+Create Second SCTP Server and Expect Error
+    Run Keyword And Expect Error  There is already one SCTP Server created. You need to specify a unique name for a new server  Create SCTP Server  ${LOCALHOST_IP}  ${DEFAULT_PORT2}
 
