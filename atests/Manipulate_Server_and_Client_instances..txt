@@ -38,10 +38,15 @@ Send data between multiple Client and Server instances
     Client Receives Packet  ${CLIENT_NAME2}
 
 Create Two UDP Server Instances without name
-    [Tags]  ${EMPTY}
     [Setup]
     Create First UDP Server
     Create Second UDP Server and Expect Error
+    [Teardown]
+
+Create Two TCP Server Instances without name
+    [Setup]
+    Create First TCP Server
+    Create Second TCP Server and Expect Error
     [Teardown]
 
 Create Two Client instances without names
@@ -71,8 +76,14 @@ Delete Two Servers And Clients And Verify Deletion
     Run Keyword And Expect Error  *  Server Should Be Running  ${CLIENT_NAME2}
 
 Create First UDP Server
-    Create UDP Server  127.0.0.1  65534
+    Create UDP Server  ${LOCALHOST_IP}  ${DEFAULT_PORT1}
 
 Create Second UDP Server and Expect Error
-    Run Keyword And Expect Error  There is already one UDP Server created. You need to specify a unique name for a new server  Create UDP Server  127.0.0.1  65535
+    Run Keyword And Expect Error  There is already one UDP Server created. You need to specify a unique name for a new server  Create UDP Server  ${LOCALHOST_IP}  ${DEFAULT_PORT2}
+
+Create First TCP Server
+    Create UDP Server  ${LOCALHOST_IP}  ${DEFAULT_PORT1}
+
+Create Second TCP Server and Expect Error
+    Run Keyword And Expect Error  There is already one TCP Server created. You need to specify a unique name for a new server  Create TCP Server  ${LOCALHOST_IP}  ${DEFAULT_PORT2}
 

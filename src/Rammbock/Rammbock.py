@@ -44,9 +44,7 @@ class Rammbock(object):
     # TODO: change all that take server name to use the latest when not given (instead of server1)
     # TODO: conffauksen miettiminen. Timeoutit
     def create_udp_server(self, ip, port, name=Server.DEFAULT_NAME):
-        try:
-            self._servers[name]
-        except KeyError:
+        if name not in self._servers:
             self._servers[name] = UDPServer(name)
             self._servers[name].server_startup(ip, port)
         else:
@@ -57,8 +55,11 @@ class Rammbock(object):
         self._servers[name].server_startup(ip, port)
 
     def create_tcp_server(self, ip, port, name=Server.DEFAULT_NAME):
-        self._servers[name] = TCPServer(name)
-        self._servers[name].server_startup(ip, port)
+        if name not in self._servers:
+            self._servers[name] = TCPServer(name)
+            self._servers[name].server_startup(ip, port)
+        else:
+            raise Exception("There is already one TCP Server created. You need to specify a unique name for a new server")
 
     def server_should_be_running(self, name=Server.DEFAULT_NAME):
         if not name in self._servers:
