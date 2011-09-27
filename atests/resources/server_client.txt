@@ -53,8 +53,3 @@ Create TCP Client And Connect To Server
     Create TCP Client
     Client Connects to TCP server  ${host}  ${port}
 
-Close Connections With Two Clients and Servers
-    Delete Client  client1
-    Delete Client  client2
-    Delete Server  server1
-

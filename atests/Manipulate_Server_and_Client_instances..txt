@@ -37,6 +37,18 @@ Send data between multiple Client and Server instances
     Server Sends packet  ${SERVER_NAME2}
     Client Receives Packet  ${CLIENT_NAME2}
 
+Create Two Server Instances without name
+    [Tags]  ${EMPTY}
+
+Create Two Client instances without names
+    [Tags]  ${EMPTY}
+
+Send message from last created client
+    [Tags]  ${EMPTY}
+
+Receive Message from last created Server
+    [Tags]  ${EMPTY}
+
 *** Keywords ***
 Create Two TCP Servers And Clients
     Create TCP Server  ${LOCALHOST_IP}  ${DEFAULT_PORT1}  ${SERVER_NAME1}

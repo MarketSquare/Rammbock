@@ -41,7 +41,6 @@ class Rammbock(object):
         self._binary = ""
         self._tbcd = ""
 
-    # TODO: name=None, if not given start incrementing from one
     # TODO: change all that take server name to use the latest when not given (instead of server1)
     # TODO: conffauksen miettiminen. Timeoutit
     def create_udp_server(self, ip, port, name=Server.DEFAULT_NAME):
