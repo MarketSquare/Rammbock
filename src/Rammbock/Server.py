@@ -27,7 +27,7 @@ except ImportError:
 UDP_PACKET_MAX_SIZE = 1024
 TCP_PACKET_MAX_SIZE = 1000000
 NUMBER_OF_TCP_CONNECTIONS = 1
-DEFAULT_NAME = 'server1' 
+DEFAULT_NAME = 'server'
 DEFAULT_IP = '127.0.0.1'
 
 
@@ -51,7 +51,7 @@ class _Server(object):
 
 
 class UDPServer(_Server):
-
+        
     def __init__(self, server_name=DEFAULT_NAME):
         _Server.__init__(self, server_name)
         self._latest_client_address = None

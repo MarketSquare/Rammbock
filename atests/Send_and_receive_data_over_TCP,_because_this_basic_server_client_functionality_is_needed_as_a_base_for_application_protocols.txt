@@ -39,6 +39,7 @@ Server receives connections from two clients
     Client sends Data  bar  client2
     'server1' receives 'foo' from 'connection1'
     'server1' receives 'bar' from 'connection2'
+    [Teardown]  Server and two clients are closed
 
 *** Keywords ***
 '${server}' receives '${content}' from '${connection alias}'
@@ -49,4 +50,9 @@ Server and two clients are initialized
     Create tcp server  127.0.0.1  ${PORT}  server1
     Create TCP Client  client1
     Create TCP Client  client2
+
+Server and two clients are closed
+    Delete Client  client1
+    Delete Client  client2
+    Delete Server  server1
 

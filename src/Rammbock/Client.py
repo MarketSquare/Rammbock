@@ -25,7 +25,7 @@ except ImportError:
 
 UDP_PACKET_MAX_SIZE = 1024
 TCP_PACKET_MAX_SIZE = 1000000
-DEFAULT_NAME = 'client1'
+DEFAULT_NAME = 'client'
 
 
 class _Client(object):
