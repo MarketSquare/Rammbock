@@ -22,8 +22,10 @@ Send multiple packets over UDP to both ways
     Server Sends Modified Data Pack To Client
 
 Try To Bind Server To Ip-Address which does not exist
+    [Setup]
     Try to bind server to "88.88.88.88"
     Exception "Could not bind socket to ip 88.88.88.88 and port 3011" should raise
+    [Teardown]  Delete Server
 
 Connect to servers from two different client IP addresses
     [Tags]  no-ci
