@@ -34,6 +34,9 @@ class Rammbock(object):
     HEADER_NOT_FOUND = "Header does not exist: '%s'"
     BINARY_NOT_FOUND = "Header does not exist: '%s'"
 
+    last_created_server = None
+    last_created_client = None
+
     def __init__(self):
         self._data = ""
         self._servers = {}
@@ -47,6 +50,7 @@ class Rammbock(object):
         if name not in self._servers:
             self._servers[name] = UDPServer(name)
             self._servers[name].server_startup(ip, port)
+            self.last_created_server = name
         else:
             raise Exception("There is already one UDP Server created. You need to specify a unique name for a new server")
 
@@ -55,6 +59,7 @@ class Rammbock(object):
         if name not in self._servers:
             self._servers[name] = SCTPServer(name)
             self._servers[name].server_startup(ip, port)
+            self.last_created_server = name
         else:
             raise Exception("There is already one SCTP Server created. You need to specify a unique name for a new server")
 
@@ -62,6 +67,7 @@ class Rammbock(object):
         if name not in self._servers:
             self._servers[name] = TCPServer(name)
             self._servers[name].server_startup(ip, port)
+            self.last_created_server = name
         else:
             raise Exception("There is already one TCP Server created. You need to specify a unique name for a new server")
 

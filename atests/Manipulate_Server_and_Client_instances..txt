@@ -56,7 +56,13 @@ Create Two SCTP Server Instances without name
     Create Second SCTP Server and Expect Error
     [Teardown]  Delete Server
 
-Create Two Client instances without names
+Create Two UDP Client instances without names
+    [Tags]  ${EMPTY}
+
+Create Two TCP Client instances without names
+    [Tags]  ${EMPTY}
+
+Create Two SCTP Client instances without names
     [Tags]  ${EMPTY}
 
 Send message from last created client
@@ -65,9 +71,21 @@ Send message from last created client
 Receive Message from last created Server
     [Tags]  ${EMPTY}
 
-Latest servers and client are used when sending data
+Latest UDP servers and client are used when sending data
     [Tags]  ${EMPTY}
-    Create Two Servers and Clients
+    Create Two UDP Servers and Clients
+    Send Data from the client to the server
+    last created server and client are used
+
+Latest TCP servers and client are used when sending data
+    [Tags]
+    Create Two TCP Servers and Clients
+    Send Data from the client to the server
+    last created server and client are used
+
+Latest SCTP servers and client are used when sending data
+    [Tags]
+    Create Two SCTP Servers and Clients
     Send Data from the client to the server
     last created server and client are used
 
