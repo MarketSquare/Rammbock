@@ -65,6 +65,12 @@ Send message from last created client
 Receive Message from last created Server
     [Tags]  ${EMPTY}
 
+Latest servers and client are used when sending data
+    [Tags]  ${EMPTY}
+    Create Two Servers and Clients
+    Send Data from the client to the server
+    last created server and client are used
+
 *** Keywords ***
 Create Two TCP Servers And Clients
     Create TCP Server  ${LOCALHOST_IP}  ${DEFAULT_PORT1}  ${SERVER_NAME1}
