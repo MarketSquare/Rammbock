@@ -110,10 +110,10 @@ class Rammbock(object):
         self._clients[name].close()
         del self._clients[name]
 
-    # TODO: name ekaks, packet -> data
-    def client_sends_data(self, packet=None, name=Client.DEFAULT_NAME):
-        if packet:
-            self._clients[name].send_packet(packet)
+    # TODO: server_name=None, 
+    def client_sends_data(self, data=None, name=Client.DEFAULT_NAME):
+        if data:
+            self._clients[name].send_packet(data)
         else:
             self._clients[name].send_packet(self._data)
             print "Data sent:", self._data
@@ -126,16 +126,17 @@ class Rammbock(object):
         print "Data received from %s:%s :%s" % (ip, port, self._data)
         return self._data, ip, port
 
-    # TODO: document that returns what ever is at socket at the moment.
     def client_receives_data(self, name=Client.DEFAULT_NAME):
+        """This method will return anything that is currently in the socket at the moment. 
+        There is no packet length checking currently implemented. """
         self._data = self._clients[name].receive_data()
         print "Data received:", self._data
         return self._data
 
     # TODO: nimi eka.
-    def server_sends_data(self, packet=None, name=Server.DEFAULT_NAME):
-        if packet:
-            self._servers[name].send_data(packet)
+    def server_sends_data(self, data=None, name=Server.DEFAULT_NAME):
+        if data:
+            self._servers[name].send_data(data)
         else:
             self._servers[name].send_data(self._data)
             print "Data sent:", self._data
