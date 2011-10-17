@@ -115,6 +115,13 @@ Try to add hex with wrong format
     Reset Message
     Run keyword and expect error  Value is not valid hex  Add hex data  GGGGG  4
 
+Read Binary
+    Add Decimal As Bits  255  8
+    ${bin}=  Read binary  4
+    Should Be Equal As Numbers  ${bin}  15
+    ${bin}=  Read binary  4
+    Should Be Equal As Numbers  ${bin}  15
+
 *** Keywords ***
 Create Message and add two decimals as octets
     Reset Message

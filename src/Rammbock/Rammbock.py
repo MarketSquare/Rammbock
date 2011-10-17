@@ -229,8 +229,13 @@ class Rammbock(object):
             yield hex((unpack('B', d)[0]))[2:].rjust(2, '0')
         self._data = self._data[int(length):]
 
-    # TODO: onko erillinen binary bufferi tarpeen?
-    # Eiko testaajalle olisi helpomaa vaa hakea suoraan bitteja?
+    def read_binary(self, length):
+        if len(self._binary) < int(length):
+            real_length = (((int(length) - len(self._binary)) - 1) / 8) + 1
+            self.read_binary_from_data(real_length)
+        return self.read_from_binary(length)
+
+    #TODO: make this method private and replace it with read binary in test material
     def read_binary_from_data(self, length):
         self._binary += "".join(self._read_binary_from_data(int(length)))
 
@@ -239,6 +244,7 @@ class Rammbock(object):
             yield d2b(int(str(unpack('B', d)[0])))[1:].rjust(8, '0')
         self._data = self._data[int(length):]
 
+    #TODO: make this method private and replace it with read binary in test material
     def read_from_binary(self, length):
         length = int(length)
         if len(self._binary) < length:
