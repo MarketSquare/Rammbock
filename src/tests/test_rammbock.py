@@ -66,7 +66,7 @@ class TestSpeed():
         rammbock._data = ""
         rammbock._binary = ""
 
-    def test_speed_of_read_from_date(self):
+    def test_speed_of_read_from_data(self):
         a = "a" * 10000
         rammbock._data = a
         s = time()

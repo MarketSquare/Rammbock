@@ -67,14 +67,12 @@ class Rammbock(object):
             raise Exception(SERVER_ALREADY_CREATED % (protocol,))
 
     def server_should_be_running(self, name=None):
-        if not name:
-            name = self.last_created_server
+        name = self._use_latest_server_name_if_name_not_present(name)
         if not name in self._servers:
-            raise Exception("Server not set up")
+            raise Exception("Server %s not set up" % (name,))
 
     def client_should_be_running(self, name=None):
-        if not name:
-            name = self.last_created_client
+        name = self._use_latest_client_name_if_name_not_present(name)
         if not name in self._clients:
             raise Exception("Client %s not set up" % (name,))
 
@@ -84,17 +82,14 @@ class Rammbock(object):
 
     def client_connects_to_udp_server(self, host, port, client_name=None):
         client_name = self._use_latest_client_name_if_name_not_present(client_name)
-        self.client_should_be_running(client_name)
         self._clients[client_name].establish_connection_to_server(host, port)
 
     def client_connects_to_tcp_server(self, host, port, client_name=None):
         client_name = self._use_latest_client_name_if_name_not_present(client_name)
-        self.client_should_be_running(client_name)
         self._clients[client_name].establish_connection_to_server(host, port)
 
     def client_connects_to_sctp_server(self, host, port, client_name=None):
         client_name = self._use_latest_client_name_if_name_not_present(client_name)
-        self.client_should_be_running(client_name)
         self._clients[client_name].establish_connection_to_server(host, port)
 
     def _use_latest_client_name_if_name_not_present(self, name):
@@ -117,7 +112,6 @@ class Rammbock(object):
 
     def delete_server(self, name=None):
         name = self._use_latest_server_name_if_name_not_present(name)
-        self.server_should_be_running(name)
         self._servers[name].close()
         del self._servers[name]
 
@@ -138,7 +132,6 @@ class Rammbock(object):
 
     def delete_client(self, name=None):
         name = self._use_latest_client_name_if_name_not_present(name)
-        self.client_should_be_running(name)
         self._clients[name].close()
         del self._clients[name]
 
@@ -153,12 +146,10 @@ class Rammbock(object):
 
     def server_receives_data(self, name=None, connection_alias=None):
         name = self._use_latest_server_name_if_name_not_present(name)
-        self.server_should_be_running(name)
         return self.server_receives_data_and_address(name, connection_alias)[0]
 
     def server_receives_data_and_address(self, name=None, connection_alias=None):
         name = self._use_latest_server_name_if_name_not_present(name)
-        self.server_should_be_running(name)
         self._data, ip, port = self._servers[name].server_receives_data_and_address(connection_alias)
         print "Data received from %s:%s :%s" % (ip, port, self._data)
         return self._data, ip, port
