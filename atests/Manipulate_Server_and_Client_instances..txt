@@ -57,12 +57,10 @@ Create Two SCTP Server Instances without name
     [Teardown]  Delete Server
 
 Create Two UDP Client instances without names
-    [Tags]  ${EMPTY}
     Create First UDP Client
     Create Second UDP Client and Expect Error
 
 Create Two TCP Client instances without names
-    [Tags]  ${EMPTY}
     Create TCP Client  ip=${LOCALHOST_IP}
     Run Keyword And Expect Error  There is already one TCP Client created. You need to specify a unique name for a new clients  Create TCP Client  ip=${LOCALHOST_IP}
 

@@ -83,8 +83,7 @@ class Rammbock(object):
             raise Exception(CLIENT_ALREADY_CREATED % (protocol,))
 
     def client_connects_to_udp_server(self, host, port, client_name=Client.DEFAULT_NAME):
-        if not self._clients[client_name]:
-            raise Exception("No such client %s", (client_name,))
+        self.client_should_be_running(client_name)
         self._clients[client_name].establish_connection_to_server(host, port)
 
     def client_connects_to_tcp_server(self, host, port, client_name=Client.DEFAULT_NAME):
