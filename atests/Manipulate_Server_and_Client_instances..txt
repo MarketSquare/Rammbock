@@ -59,18 +59,27 @@ Create Two SCTP Server Instances without name
 Create Two UDP Client instances without names
     Create First UDP Client
     Create Second UDP Client and Expect Error
+    [Teardown]  Delete Client
 
 Create Two TCP Client instances without names
     Create TCP Client  ip=${LOCALHOST_IP}
     Run Keyword And Expect Error  There is already one TCP Client created. You need to specify a unique name for a new clients  Create TCP Client  ip=${LOCALHOST_IP}
+    [Teardown]  Delete Client
 
 Create Two SCTP Client instances without names
     [Tags]  no-ci  linux-only
     Create Sctp Client  ip=${LOCALHOST_IP}
     Run keyword and expect error  There is already one SCTP Client created. You need to specify a unique name for a new clients  Create SCTP Client  ip=${LOCALHOST_IP}
+    [Teardown]  Delete Client
 
 Send message from last created client
-    [Tags]  ${EMPTY}
+    [Setup]  Create First UDP Server
+    Create UDP Client  some random name for client  ${LOCALHOST_IP}
+    Client Connects To Udp Server  ${LOCALHOST_IP}  ${DEFAULT_PORT1}
+    Client Sends Data  foobar
+    ${data}=  Server Receives Data
+    Should Be Equal As Strings  ${data}  foobar
+    [Teardown]  Delete server and client
 
 Receive Message from last created Server
     [Tags]  ${EMPTY}
@@ -133,4 +142,8 @@ Create First UDP Client
 
 Create Second UDP Client and Expect Error
     Run Keyword And Expect Error  There is already one UDP Client created. You need to specify a unique name for a new clients  Create Udp Client  ip=${LOCALHOST_IP}
+
+Delete server and client
+    Delete server
+    Delete client
 

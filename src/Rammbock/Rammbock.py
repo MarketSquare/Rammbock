@@ -76,21 +76,31 @@ class Rammbock(object):
         if not name:
             name = self.last_created_client
         if not name in self._clients:
-            raise Exception("Client not set up")
+            raise Exception("Client %s not set up" % (name,))
 
     def client_should_not_be_running(self, name, protocol):
         if name in self._clients:
             raise Exception(CLIENT_ALREADY_CREATED % (protocol,))
 
-    def client_connects_to_udp_server(self, host, port, client_name=Client.DEFAULT_NAME):
+    def client_connects_to_udp_server(self, host, port, client_name=None):
+        client_name = self._use_latest_client_name_if_name_not_present(client_name)
         self.client_should_be_running(client_name)
         self._clients[client_name].establish_connection_to_server(host, port)
 
-    def client_connects_to_tcp_server(self, host, port, client_name=Client.DEFAULT_NAME):
+    def client_connects_to_tcp_server(self, host, port, client_name=None):
+        client_name = self._use_latest_client_name_if_name_not_present(client_name)
+        self.client_should_be_running(client_name)
         self._clients[client_name].establish_connection_to_server(host, port)
 
-    def client_connects_to_sctp_server(self, host, port, client_name=Client.DEFAULT_NAME):
+    def client_connects_to_sctp_server(self, host, port, client_name=None):
+        client_name = self._use_latest_client_name_if_name_not_present(client_name)
+        self.client_should_be_running(client_name)
         self._clients[client_name].establish_connection_to_server(host, port)
+
+    def _use_latest_client_name_if_name_not_present(self, name):
+        if not name:
+            return self.last_created_client
+        return name
 
     def server_accepts_tcp_connection(self, server_name=Server.DEFAULT_NAME, connection_alias=None):
         self._servers[server_name].accept_connection(connection_alias)
@@ -107,25 +117,32 @@ class Rammbock(object):
     def create_udp_client(self, name=Client.DEFAULT_NAME, ip=None):
         self.client_should_not_be_running(name, "UDP")
         self._clients[name] = UDPClient(name, ip)
+        self.last_created_client = name
 
     def create_sctp_client(self, name=Client.DEFAULT_NAME, ip=None):
         self.client_should_not_be_running(name, "SCTP")
         self._clients[name] = SCTPClient(name, ip)
+        self.last_created_client = name
 
     def create_tcp_client(self, name=Client.DEFAULT_NAME, ip=None):
         self.client_should_not_be_running(name, "TCP")
         self._clients[name] = TCPClient(name, ip)
+        self.last_created_client = name
 
-    def delete_client(self, name=Client.DEFAULT_NAME):
+    def delete_client(self, name=None):
+        name = self._use_latest_client_name_if_name_not_present(name)
+        self.client_should_be_running(name)
         self._clients[name].close()
         del self._clients[name]
 
-    # TODO: server_name=None, 
-    def client_sends_data(self, data=None, name=Client.DEFAULT_NAME):
+    # TODO: client_name=None, 
+    def client_sends_data(self, data=None, client_name=None):
+        client_name = self._use_latest_client_name_if_name_not_present(client_name)
+        self.client_should_be_running(client_name)
         if data:
-            self._clients[name].send_packet(data)
+            self._clients[client_name].send_packet(data)
         else:
-            self._clients[name].send_packet(self._data)
+            self._clients[client_name].send_packet(self._data)
             print "Data sent:", self._data
 
     def server_receives_data(self, name=Server.DEFAULT_NAME, connection_alias=None):
