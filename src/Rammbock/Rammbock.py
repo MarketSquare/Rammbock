@@ -27,12 +27,9 @@ IP_REGEX = re.compile(r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4
 d2b = lambda d: (not isinstance(d, int) or (not d)) and '0' \
     or (d2b(d//2)+str(d%2))
 
+SERVER_ALREADY_CREATED = "There is already one %s Server created. You need to specify a unique name for a new server"
 
 class Rammbock(object):
-
-    IE_NOT_FOUND = "Information Element does not exist: '%s'"
-    HEADER_NOT_FOUND = "Header does not exist: '%s'"
-    BINARY_NOT_FOUND = "Header does not exist: '%s'"
 
     last_created_server = None
     last_created_client = None
@@ -47,31 +44,36 @@ class Rammbock(object):
     # TODO: change all that take server name to use the latest when not given (instead of server1)
     # TODO: conffauksen miettiminen. Timeoutit
     def create_udp_server(self, ip, port, name=Server.DEFAULT_NAME):
-        if name in self._servers:
-            raise Exception("There is already one UDP Server created. You need to specify a unique name for a new server")
+        self.server_should_not_be_running(name, "UDP")
         self._servers[name] = UDPServer(name)
         self._servers[name].server_startup(ip, port)
         self.last_created_server = name
 
     def create_sctp_server(self, ip, port, name=Server.DEFAULT_NAME):
-        if name in self._servers:
-            raise Exception("There is already one SCTP Server created. You need to specify a unique name for a new server")
+        self.server_should_not_be_running(name, "SCTP")
         self._servers[name] = SCTPServer(name)
         self._servers[name].server_startup(ip, port)
         self.last_created_server = name
 
     def create_tcp_server(self, ip, port, name=Server.DEFAULT_NAME):
-        if name in self._servers:
-            raise Exception("There is already one TCP Server created. You need to specify a unique name for a new server")
+        self.server_should_not_be_running(name, "TCP")
         self._servers[name] = TCPServer(name)
         self._servers[name].server_startup(ip, port)
         self.last_created_server = name
 
-    def server_should_be_running(self, name=Server.DEFAULT_NAME):
+    def server_should_not_be_running(self, name, protocol):
+        if name in self._servers:
+            raise Exception(SERVER_ALREADY_CREATED % (protocol,))
+
+    def server_should_be_running(self, name=None):
+        if not name:
+            name = self.last_created_server
         if not name in self._servers:
             raise Exception("Server not set up")
 
-    def client_should_be_running(self, name=Client.DEFAULT_NAME):
+    def client_should_be_running(self, name=None):
+        if not name:
+            name = self.last_created_client
         if not name in self._clients:
             raise Exception("Client not set up")
 
@@ -89,8 +91,9 @@ class Rammbock(object):
     def server_accepts_tcp_connection(self, server_name=Server.DEFAULT_NAME, connection_alias=None):
         self._servers[server_name].accept_connection(connection_alias)
 
-    # TODO: server_name=None
-    def server_accepts_sctp_connection(self, server_name=Server.DEFAULT_NAME, connection_alias=None):
+    def server_accepts_sctp_connection(self, server_name=None, connection_alias=None):
+        if not server_name:
+            server_name=self.last_created_server
         self._servers[server_name].accept_connection(connection_alias)
 
     def delete_server(self, name=Server.DEFAULT_NAME):
