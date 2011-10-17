@@ -102,15 +102,22 @@ class Rammbock(object):
             return self.last_created_client
         return name
 
-    def server_accepts_tcp_connection(self, server_name=Server.DEFAULT_NAME, connection_alias=None):
+    def _use_latest_server_name_if_name_not_present(self, name):
+        if not name:
+            return self.last_created_server
+        return name
+
+    def server_accepts_tcp_connection(self, server_name=None, connection_alias=None):
+        server_name = self._use_latest_server_name_if_name_not_present(server_name)
         self._servers[server_name].accept_connection(connection_alias)
 
     def server_accepts_sctp_connection(self, server_name=None, connection_alias=None):
-        if not server_name:
-            server_name=self.last_created_server
+        server_name = self._use_latest_server_name_if_name_not_present(server_name)
         self._servers[server_name].accept_connection(connection_alias)
 
-    def delete_server(self, name=Server.DEFAULT_NAME):
+    def delete_server(self, name=None):
+        name = self._use_latest_server_name_if_name_not_present(name)
+        self.server_should_be_running(name)
         self._servers[name].close()
         del self._servers[name]
 
@@ -135,7 +142,6 @@ class Rammbock(object):
         self._clients[name].close()
         del self._clients[name]
 
-    # TODO: client_name=None, 
     def client_sends_data(self, data=None, client_name=None):
         client_name = self._use_latest_client_name_if_name_not_present(client_name)
         self.client_should_be_running(client_name)
@@ -145,10 +151,14 @@ class Rammbock(object):
             self._clients[client_name].send_packet(self._data)
             print "Data sent:", self._data
 
-    def server_receives_data(self, name=Server.DEFAULT_NAME, connection_alias=None):
+    def server_receives_data(self, name=None, connection_alias=None):
+        name = self._use_latest_server_name_if_name_not_present(name)
+        self.server_should_be_running(name)
         return self.server_receives_data_and_address(name, connection_alias)[0]
 
-    def server_receives_data_and_address(self, name=Server.DEFAULT_NAME, connection_alias=None):
+    def server_receives_data_and_address(self, name=None, connection_alias=None):
+        name = self._use_latest_server_name_if_name_not_present(name)
+        self.server_should_be_running(name)
         self._data, ip, port = self._servers[name].server_receives_data_and_address(connection_alias)
         print "Data received from %s:%s :%s" % (ip, port, self._data)
         return self._data, ip, port
@@ -161,7 +171,9 @@ class Rammbock(object):
         return self._data
 
     # TODO: nimi eka.
-    def server_sends_data(self, data=None, name=Server.DEFAULT_NAME):
+    def server_sends_data(self, data=None, name=None):
+        name = self._use_latest_server_name_if_name_not_present(name)
+        self.server_should_be_running(name)
         if data:
             self._servers[name].send_data(data)
         else:

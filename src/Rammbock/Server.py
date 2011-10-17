@@ -51,7 +51,7 @@ class _Server(object):
 
 
 class UDPServer(_Server):
-        
+
     def __init__(self, server_name=DEFAULT_NAME):
         _Server.__init__(self, server_name)
         self._latest_client_address = None

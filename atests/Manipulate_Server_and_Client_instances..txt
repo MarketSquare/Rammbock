@@ -83,6 +83,15 @@ Send message from last created client
 
 Receive Message from last created Server
     [Tags]  ${EMPTY}
+    [Setup]  Create first UDP Client
+    Create UDP SERVER  ${LOCALHOST_IP}  ${DEFAULT_PORT1}  some random name
+    Client Connects To Udp Server  ${LOCALHOST_IP}  ${DEFAULT_PORT1}
+    client sends data  foobar
+    server receives data
+    Server Sends Data  foobar
+    ${data}=  Client Receives Data
+    Should Be Equal As Strings  ${data}  foobar
+    [Teardown]  Delete server and client
 
 Latest UDP servers and client are used when sending data
     [Tags]  ${EMPTY}
