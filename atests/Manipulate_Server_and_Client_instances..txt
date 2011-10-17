@@ -58,12 +58,18 @@ Create Two SCTP Server Instances without name
 
 Create Two UDP Client instances without names
     [Tags]  ${EMPTY}
+    Create First UDP Client
+    Create Second UDP Client and Expect Error
 
 Create Two TCP Client instances without names
     [Tags]  ${EMPTY}
+    Create TCP Client  ip=${LOCALHOST_IP}
+    Run Keyword And Expect Error  There is already one TCP Client created. You need to specify a unique name for a new clients  Create TCP Client  ip=${LOCALHOST_IP}
 
 Create Two SCTP Client instances without names
-    [Tags]  ${EMPTY}
+    [Tags]  no-ci  linux-only
+    Create Sctp Client  ip=${LOCALHOST_IP}
+    Run keyword and expect error  There is already one SCTP Client created. You need to specify a unique name for a new clients  Create SCTP Client  ip=${LOCALHOST_IP}
 
 Send message from last created client
     [Tags]  ${EMPTY}
@@ -123,4 +129,10 @@ Create First SCTP Server
 
 Create Second SCTP Server and Expect Error
     Run Keyword And Expect Error  There is already one SCTP Server created. You need to specify a unique name for a new server  Create SCTP Server  ${LOCALHOST_IP}  ${DEFAULT_PORT2}
+
+Create First UDP Client
+    Create Udp Client  ip=${LOCALHOST_IP}
+
+Create Second UDP Client and Expect Error
+    Run Keyword And Expect Error  There is already one UDP Client created. You need to specify a unique name for a new clients  Create Udp Client  ip=${LOCALHOST_IP}
 

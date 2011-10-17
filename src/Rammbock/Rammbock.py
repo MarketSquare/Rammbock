@@ -28,6 +28,7 @@ d2b = lambda d: (not isinstance(d, int) or (not d)) and '0' \
     or (d2b(d//2)+str(d%2))
 
 SERVER_ALREADY_CREATED = "There is already one %s Server created. You need to specify a unique name for a new server"
+CLIENT_ALREADY_CREATED = "There is already one %s Client created. You need to specify a unique name for a new clients"
 
 class Rammbock(object):
 
@@ -77,6 +78,10 @@ class Rammbock(object):
         if not name in self._clients:
             raise Exception("Client not set up")
 
+    def client_should_not_be_running(self, name, protocol):
+        if name in self._clients:
+            raise Exception(CLIENT_ALREADY_CREATED % (protocol,))
+
     def client_connects_to_udp_server(self, host, port, client_name=Client.DEFAULT_NAME):
         if not self._clients[client_name]:
             raise Exception("No such client %s", (client_name,))
@@ -101,6 +106,7 @@ class Rammbock(object):
         del self._servers[name]
 
     def create_udp_client(self, name=Client.DEFAULT_NAME, ip=None):
+        self.client_should_not_be_running(name, "UDP")
         self._clients[name] = UDPClient(name, ip)
 
     def create_sctp_client(self, name=Client.DEFAULT_NAME, ip=None):
