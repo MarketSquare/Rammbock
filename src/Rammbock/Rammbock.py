@@ -110,9 +110,11 @@ class Rammbock(object):
         self._clients[name] = UDPClient(name, ip)
 
     def create_sctp_client(self, name=Client.DEFAULT_NAME, ip=None):
+        self.client_should_not_be_running(name, "SCTP")
         self._clients[name] = SCTPClient(name, ip)
 
     def create_tcp_client(self, name=Client.DEFAULT_NAME, ip=None):
+        self.client_should_not_be_running(name, "TCP")
         self._clients[name] = TCPClient(name, ip)
 
     def delete_client(self, name=Client.DEFAULT_NAME):
