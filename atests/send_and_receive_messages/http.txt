@@ -38,8 +38,8 @@ Servers Receive and verify data
 Client gets Resp
     Reset Message
     Client Receives Data
-    ${request version}=  Read Until  ${SPACE}
-    ${response code}=  Read Until  ${SPACE}
+    ${request version}=  Read String  delimiter=${SPACE}
+    ${response code}=  Read String  delimiter=${SPACE}
     Should Be Equal  ${request version}  HTTP/1.1
     Should Be True  100 <= ${response code} < 600
 

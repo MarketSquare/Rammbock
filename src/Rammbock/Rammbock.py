@@ -207,14 +207,16 @@ class Rammbock(object):
         return data.rjust(int(length)*2, '0')
 
     def set_message(self, message):
-        self.message = message
+        self._data = message
+
+    def get_message(self):
+        return self._data
 
     def log_message(self, level="INFO"):
-        print '*' + level + '*', self.message
+        print '*' + level + '*', self._data
 
     # TODO: log message as hex & log message to file
-    # TODO: combine to read_string
-    def read_until(self, delimiter=None):
+    def _read_until(self, delimiter=None):
         if delimiter:
             i,self._data = self._data.split(str(delimiter),1)
             return i
@@ -244,7 +246,6 @@ class Rammbock(object):
             yield d2b(int(str(unpack('B', d)[0])))[1:].rjust(8, '0')
         self._data = self._data[int(length):]
 
-    #TODO: make this method private and replace it with read binary in test material
     def _read_from_binary(self, length):
         length = int(length)
         if len(self._binary) < length:
@@ -303,7 +304,9 @@ class Rammbock(object):
     def read_ip_from_hex(self):
         return  ".".join(str(self.read_from_data(1)) for _ in range(4))
 
-    def read_string(self, length):
+    def read_string(self, length=None, delimiter=""):
+        if delimiter:
+            return self._read_until(delimiter)
         string = self._data[:int(length)]
         self._data = self._data[int(length):]
         return string

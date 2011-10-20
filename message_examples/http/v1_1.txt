@@ -30,27 +30,27 @@ Set HTTP GET send
 
 Set HTTP GET rcv
     # Headers
-    ${request method}  Read until  ${SPACE}
+    ${request method}  Read String  delimiter=${SPACE}
     Set Test Variable  ${request method}
-    ${request uri}  Read until  ${SPACE}
+    ${request uri}  Read String  delimiter=${SPACE}
     Set Test Variable  ${request uri}
-    ${request version}  Read Until  ${SPACE}
+    ${request version}  Read String  delimiter=${SPACE}
     Set Test Variable  ${request version}
     # Information Elements
-    Read Until  ${SPACE}
-    ${host}  Read Until  \r\n
+    Read String  delimiter=${SPACE}
+    ${host}  Read String  delimiter=\r\n
     Set Test Variable  ${host}
-    Read Until  ${SPACE}
-    ${connection}  Read Until  \r\n
+    Read String  delimiter=${SPACE}
+    ${connection}  Read String  delimiter=\r\n
     Set Test Variable  ${connection}
-    Read Until  ${SPACE}
-    ${cache control}  Read Until  \r\n
+    Read String  delimiter=${SPACE}
+    ${cache control}  Read String  delimiter=\r\n
     Set Test Variable  ${cache control}
-    Read Until  ${SPACE}
-    ${user agent}  Read Until  \r\n
+    Read String  delimiter=${SPACE}
+    ${user agent}  Read String  delimiter=\r\n
     Set Test Variable  ${user agent}
-    Read Until  ${SPACE}
-    ${accept}  Read Until  \r\n
+    Read String  delimiter=${SPACE}
+    ${accept}  Read String  delimiter=\r\n
     Set Test Variable  ${accept}
 
 Set HTTP Response send
@@ -69,15 +69,15 @@ Set HTTP Response send
 
 Set HTTP Response rcv
     # Headers
-    ${request version}=  Read until  ${SPACE}
+    ${request version}=  Read String  delimiter=${SPACE}
     Set Test Variable  ${request version}
-    ${response code}=  Read until  ${SPACE}
+    ${response code}=  Read String  delimiter=${SPACE}
     Set Test Variable  ${response code}
     # Information Elements
-    Read Until  ${SPACE}
-    ${connection}=  Read Until  \r\n
+    Read String  delimiter=${SPACE}
+    ${connection}=  Read String  delimiter=\r\n
     Set Test Variable  ${connection}
-    Read Until  ${SPACE}
-    ${content-lenght}=  Read Until  \r\n
+    Read String  delimiter=${SPACE}
+    ${content-lenght}=  Read String  delimiter=\r\n
     Set Test Variable  ${content-lenght}
 

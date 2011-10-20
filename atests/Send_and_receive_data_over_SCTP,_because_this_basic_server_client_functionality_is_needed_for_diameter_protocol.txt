@@ -26,7 +26,7 @@ Client Creates Message And Sends It to Server
 
 Server Receives message and validates it
     Server Receives Data
-    ${value}=  Read Until
+    ${value}=  Get Message
     Should Be Equal  ${value}  sctp control message
     set test variable  ${value}
 
@@ -38,6 +38,6 @@ Server Receives Message and Sends It Back to Client
 
 Client Receives message and validates it
     Client Receives Data
-    ${value}=  Read Until
+    ${value}=  Get Message
     Should Be Equal  ${value}  sctp control message
 
