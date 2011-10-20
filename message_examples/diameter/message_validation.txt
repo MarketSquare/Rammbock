@@ -42,7 +42,7 @@ Validate AVP: Origin-Host
     ${length}=  Get Length  ${host}
     Validate AVP Code And Flags  ${avp_code.origin_host}  0x40
     Validate AVP Length  ${length + 8}
-    ${host-act}=  Read String From Data  ${length}
+    ${host-act}=  Read String  ${length}
     Should Be Equal  ${host}  ${host-act}
     Read Padding After String Data  ${length}
 
@@ -71,7 +71,7 @@ Validate AVP: Origin-Realm
     ${length}=  Get Length  ${realm}
     Validate AVP Code And Flags  ${avp_code.origin_realm}  0x40
     Validate AVP Length  ${length + 8}
-    ${realm-act}=  Read String From DAta  ${length}
+    ${realm-act}=  Read String  ${length}
     Should Be Equal  ${realm}  ${realm-act}
     Read Padding After String Data  ${length}
 
@@ -105,7 +105,7 @@ Validate AVP: Product-Name
     Validate AVP Code And FLags  ${avp_code.product_name}  0x00
     ${length}=  Get Length  ${product_name}
     Validate AVP Length  ${length + 8}
-    ${pn-act}=  Read String From DAta  ${length}
+    ${pn-act}=  Read String  ${length}
     Should Be Equal  ${product_name}  ${pn-act}
     Read Padding After String Data  ${length}
 
@@ -182,7 +182,7 @@ Validate AVP: Session-ID
     Validate AVP Code And Flags  ${avp_code.session_id}  0x40
     ${length}=  Get Length  ${session_id}
     Validate AVP Length  ${length + 8}
-    ${session_id-act}=  Read String From Data  ${length}
+    ${session_id-act}=  Read String  ${length}
     Should be equal  ${session_id}  ${session_id-act}
     Read Padding After String Data  ${length}
 
@@ -198,7 +198,7 @@ Validate AVP: Destination-Host
     Validate AVP Code And Flags  ${avp_code.destination_host}  0x40
     ${length}=  Get Length  ${destination_host}
     Validate AVP Length  ${length + 8}
-    ${destination_host-act}=  Read String From Data  ${length}
+    ${destination_host-act}=  Read String  ${length}
     Should Be Equal  ${destination_host}  ${destination_host-act}
     Read Padding after String Data  ${length}
 
@@ -207,7 +207,7 @@ Validate AVP: Destination-realm
     Validate AVP Code And Flags  ${avp_code.destination_realm}  0x40
     ${length}=  Get Length  ${destination_realm}
     Validate Avp Length  ${length + 8}
-    ${destination_realm-act}=  Read String From Data  ${length}
+    ${destination_realm-act}=  Read String  ${length}
     Should Be Equal  ${destination_realm}  ${destination_realm-act}
     Read Padding After String Data  ${length}
 
@@ -216,7 +216,7 @@ Validate AVP: User-Name
     Validate AVP Code And Flags  ${avp_code.user_name}  0x40
     ${length}=  Get Length  ${user_name}
     Validate AVP Length  ${length + 8}
-    ${user_name-act}=  Read String From Data  ${length}
+    ${user_name-act}=  Read String  ${length}
     Should be equal  ${user_name}  ${user_name-act}
     Read Padding After String Data  ${length}
 
@@ -296,7 +296,7 @@ Validate AVP: Route-Record
     Validate AVP Code And Flags  ${avp_code.route_record}  0x40
     ${length}=  Get Length  ${route_record}
     Validate AVP Length  ${length + 8}
-    ${route_record-act}=  Read String From Data  ${length}
+    ${route_record-act}=  Read String  ${length}
     Should Be Equal  ${route_record}  ${route_record-act}
     read Padding After String Data  ${length}
 
@@ -441,7 +441,7 @@ Validate AVP: APN-OI-Replacement
     ${length}=  Get Length  ${apn_oi_replacement}
     Validate Avp Length  ${length + 12}
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
-    ${aor-act}=  Read String from data  ${length}
+    ${aor-act}=  Read String  ${length}
     Should Be Equal  ${apn_oi_replacement}  ${aor-act}
     Read Padding after string data  ${length}
 
@@ -451,7 +451,7 @@ Validate AVP: 3gpp-charging-characteristics
     ${length}=  Get Length  ${charging_characteristics}
     Validate AVP Length  ${length + 12}
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
-    ${3gpp_cc-act}=  Read String from data  ${length}
+    ${3gpp_cc-act}=  Read String  ${length}
     Should Be Equal  ${avp_code.3gpp_charging_characteristics}  ${3gpp_cc-act}
     Read Padding After String Data  ${length}
 
@@ -557,7 +557,7 @@ Validate AVP: Service-Selection
     Validate AVP Code and Flags  ${avp_code.servire_selection}  ${avp_flags.M}
     ${length}=  Get Length  ${service_selection}
     Validate AVP Length  ${length + 8}
-    ${ss-act}=  Read String from data  ${length}
+    ${ss-act}=  Read String  ${length}
     Should Be Equal  ${service_selection}  ${ss-act}
     Read Padding After String Data  ${length}
 

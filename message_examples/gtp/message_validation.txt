@@ -65,9 +65,8 @@ Validate User Location Info (ULI)
     [Arguments]  ${mcc}  ${mnc}
     Validate ie type and length  ${ie_type.uli}  13
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Read Binary From Data  1
-    Read From Binary  3  # spare bits
-    ${flags}=  Read From Binary  5
+    Read Binary  3  # spare bits
+    ${flags}=  Read Binary  5
     Should Be Equal  ${flags}  24  # ...1 .... = ECGI Present Flag): True, .... 1... = TAI Present Flag): True, .... .0.. = RAI Present Flag): False, .... ..0. = SAI Present Flag): False, .... ...0 = CGI Present Flag): False
     Validate Tracking Area Identity(TAI)  ${mcc}  ${mnc}
     Validate E-UTRAN Cell Global Identifier (ECGI)  ${mcc}  ${mnc}
@@ -119,7 +118,7 @@ Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)
 Validate Access Point Name (APN)
     Validate ie type and length  ${ie_type.apn}  30
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    ${string}=  Read String From Data  30
+    ${string}=  Read String  30
     Should Be Equal  sgw.nsn.com.mnc012.mcc262.gprs  ${string}  # APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
 
 Validate Selection Mode
@@ -213,8 +212,7 @@ Validate Cause
     validate cr-flags and instance  0
     ${cause}=  Read From Data  1
     Should Be Equal  ${expected}  ${cause}  # cause: Request Accepted
-    Read Binary From Data  1
-    ${spare-and-dec}=  Read from binary  8
+    ${spare-and-dec}=  Read Binary  8
     Should Be Equal  0  ${spare-and-dec}
 
 Validate Bearer Context with EBI, Cause, F-TEID and CI
@@ -238,7 +236,7 @@ Validate Fully Qualified Domain Name (FQDN)
     ${length}=  Get Length  ${domain}
     Validate ie type and length  ${ie_type.fqdn}  ${length}
     Validate cr-flags and instance  0
-    ${domain-actual}=  Read String from Data  ${length}
+    ${domain-actual}=  Read String  ${length}
     Should Be Equal  ${domain}  ${domain-actual}
 
 Validate Ip Address

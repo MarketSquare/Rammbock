@@ -96,8 +96,7 @@ Try To Read Too Many Bits From Bitstream Data
     Add Decimal As Bits  255  8
     Client Sends Data
     Server Receives Data
-    Read Binary From Data  1
-    Run keyword and expect error  Not enough bits to read  Read From Binary  9
+    Run keyword and expect error  Not enough bits to read  Read Binary  9
 
 Encode And Decode Message with raw hex data
     Reset Message
@@ -176,16 +175,14 @@ Receive And Validate message with multiple decimals
 
 Receive And Validate Message With single binary decimal
     Server Receives Data
-    read binary from data  1
-    ${value}=  Read From binary  8
+    ${value}=  Read Binary  8
     Should Be Equal  ${value}  255
 
 Receive And Validate Message With multiple binary decimals
     Server Receives Data
-    Read Binary From Data  2
-    ${value1}=  Read From Binary  6
-    ${value2}=  Read From Binary  6
-    ${value3}=  Read From Binary  4
+    ${value1}=  Read Binary  6
+    ${value2}=  Read Binary  6
+    ${value3}=  Read Binary  4
     Should Be Equal  ${value1}  32
     Should Be Equal  ${value2}  40
     Should Be Equal  ${value3}  15
@@ -196,10 +193,9 @@ Receive And Validate Message With Strings and Decimals and Binary As Octets
     ${value2}=  Read From Data  2
     Should Be Equal  ${value1}  255
     Should Be Equal  ${value2}  4
-    Read Binary From Data  2
-    ${value1}=  Read From Binary  6
-    ${value2}=  Read From Binary  6
-    ${value3}=  Read From Binary  4
+    ${value1}=  Read Binary  6
+    ${value2}=  Read Binary  6
+    ${value3}=  Read Binary  4
     Should Be Equal  ${value1}  63
     Should Be Equal  ${value2}  3
     Should Be Equal  ${value3}  10
@@ -207,10 +203,9 @@ Receive And Validate Message With Strings and Decimals and Binary As Octets
     ${field2}=  Read Until  \r\n
     Should Be Equal  ${field1}  value
     Should Be Equal  ${field2}  key
-    Read Binary From Data  2
-    ${value1}=  Read From Binary  6
-    ${value2}=  Read From Binary  6
-    ${value3}=  Read From Binary  4
+    ${value1}=  Read Binary  6
+    ${value2}=  Read Binary  6
+    ${value3}=  Read Binary  4
     Should Be Equal  ${value1}  63
     Should Be Equal  ${value2}  3
     Should Be Equal  ${value3}  10

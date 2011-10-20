@@ -32,17 +32,16 @@ CLIENT_ALREADY_CREATED = "There is already one %s Client created. You need to sp
 
 class Rammbock(object):
 
-    last_created_server = None
-    last_created_client = None
-
     def __init__(self):
         self._data = ""
         self._servers = {}
         self._clients = {}
         self._binary = ""
         self._tbcd = ""
+        last_created_server = None
+        last_created_client = None
 
-    # TODO: change all that take server name to use the latest when not given (instead of server1)
+    # TODO: change all that take server name except creation to use the latest when not given (instead of server1)
     # TODO: conffauksen miettiminen. Timeoutit
     def create_udp_server(self, ip, port, name=Server.DEFAULT_NAME):
         self.server_should_not_be_running(name, "UDP")
@@ -62,7 +61,7 @@ class Rammbock(object):
         self._servers[name].server_startup(ip, port)
         self.last_created_server = name
 
-    def server_should_not_be_running(self, name, protocol):
+    def server_should_not_be_running(self, name, protocol=""):
         if name in self._servers:
             raise Exception(SERVER_ALREADY_CREATED % (protocol,))
 
@@ -76,7 +75,7 @@ class Rammbock(object):
         if not name in self._clients:
             raise Exception("Client %s not set up" % (name,))
 
-    def client_should_not_be_running(self, name, protocol):
+    def client_should_not_be_running(self, name, protocol=""):
         if name in self._clients:
             raise Exception(CLIENT_ALREADY_CREATED % (protocol,))
 
@@ -161,15 +160,14 @@ class Rammbock(object):
         print "Data received:", self._data
         return self._data
 
-    # TODO: nimi eka.
     def server_sends_data(self, data=None, name=None):
         name = self._use_latest_server_name_if_name_not_present(name)
-        self.server_should_be_running(name)
         if data:
-            self._servers[name].send_data(data)
+            data_to_send = data
         else:
-            self._servers[name].send_data(self._data)
-            print "Data sent:", self._data
+            data_to_send = self._data
+        self._servers[name].send_data(data_to_send)
+        print "Data sent:", data_to_send
 
     def reset_message(self):
         self._data = ""
@@ -211,7 +209,10 @@ class Rammbock(object):
     def set_message(self, message):
         self.message = message
 
-    # TODO: def log_message & log message as hex & log message to file
+    def log_message(self, level="INFO"):
+        print '*' + level + '*', self.message
+
+    # TODO: log message as hex & log message to file
     # TODO: combine to read_string
     def read_until(self, delimiter=None):
         if delimiter:
@@ -232,20 +233,19 @@ class Rammbock(object):
     def read_binary(self, length):
         if len(self._binary) < int(length):
             real_length = (((int(length) - len(self._binary)) - 1) / 8) + 1
-            self.read_binary_from_data(real_length)
-        return self.read_from_binary(length)
-
-    #TODO: make this method private and replace it with read binary in test material
-    def read_binary_from_data(self, length):
-        self._binary += "".join(self._read_binary_from_data(int(length)))
+            self._read_binary_from_data(real_length)
+        return self._read_from_binary(length)
 
     def _read_binary_from_data(self, length):
+        self._binary += "".join(self._get_binary_from_data(int(length)))
+
+    def _get_binary_from_data(self, length):
         for d in self._data[:length]:
             yield d2b(int(str(unpack('B', d)[0])))[1:].rjust(8, '0')
         self._data = self._data[int(length):]
 
     #TODO: make this method private and replace it with read binary in test material
-    def read_from_binary(self, length):
+    def _read_from_binary(self, length):
         length = int(length)
         if len(self._binary) < length:
             raise Exception("Not enough bits to read")
@@ -287,13 +287,13 @@ class Rammbock(object):
     def read_tbcd(self, amount):
         tbcd = ""
         length = (int(amount)/2)+(int(amount)%2)
-        self.read_binary_from_data(length)
+        self._read_binary_from_data(length)
         while len(self._binary) > 8:
-            a = self.read_from_binary(4)
-            b = self.read_from_binary(4)
+            a = self._read_from_binary(4)
+            b = self._read_from_binary(4)
             tbcd += str(b) + str(a)
-        a = self.read_from_binary(4)
-        b = self.read_from_binary(4)
+        a = self._read_from_binary(4)
+        b = self._read_from_binary(4)
         tbcd += str(b)
         if int(a) < 10:
             tbcd += str(a)
@@ -303,7 +303,7 @@ class Rammbock(object):
     def read_ip_from_hex(self):
         return  ".".join(str(self.read_from_data(1)) for _ in range(4))
 
-    def read_string_from_data(self, length):
+    def read_string(self, length):
         string = self._data[:int(length)]
         self._data = self._data[int(length):]
         return string
