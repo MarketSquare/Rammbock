@@ -307,11 +307,20 @@ class Rammbock(object):
         print "Data sent:", data_to_send
 
     def reset_message(self):
+        """ Empties message.
+        """
         self._data = ""
         self._binary = ""
 
     # TODO: add encoding argument
     def add_string(self, value, length=None, encoding='utf-8'):
+        """
+        Add string to the message. 'value' is string, 'length' adds possible padding to end of the string. 'encoding' sets encoding, utf-8 is default.
+
+        Examples:
+        | Add String | Host: www.nokiasiemensnetworks.com | 25 | unicode | # add string of length 25 in unicode |
+        | Add String | Host: www.nokiasiemensnetworks.com | encoding=unicode | | # add string in unicode |
+        """
         value = value.encode(encoding)
         if not length:
             length = len(value)
