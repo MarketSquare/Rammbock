@@ -47,8 +47,8 @@ class Rammbock(object):
         'ip' and 'port' are telling which ip-address and port server is going to be bind. Optionally server name can be stated, usually used when multiple servers are needed
 
         Examples:
-        | Create UDP Server | 10.10.10.2 | 53 | DNS_Server1 |"""
-        
+        | Create UDP Server | 10.10.10.2 | 53 | DNS_Server1 |
+        """
         self.server_should_not_be_running(name, "UDP")
         self._servers[name] = UDPServer(name)
         self._servers[name].server_startup(ip, port)
@@ -60,8 +60,8 @@ class Rammbock(object):
         'ip' and 'port' are telling which ip-address and port server is going to be bind. Optionally server name can be stated, usually used when multiple servers are needed
 
         Examples:
-        | Create SCTP Server | 10.10.10.2 | 3868 | Diameter_Server1 |"""
-
+        | Create SCTP Server | 10.10.10.2 | 3868 | Diameter_Server1 |
+        """
         self.server_should_not_be_running(name, "SCTP")
         self._servers[name] = SCTPServer(name)
         self._servers[name].server_startup(ip, port)
@@ -73,8 +73,8 @@ class Rammbock(object):
         'ip' and 'port' are telling which ip-address and port server is going to be bind. Optionally server name can be stated, usually used when multiple servers are needed
 
         Examples:
-        | Create SCTP Server | 10.10.10.2 | 80 | HTTP_Server1 |"""
-
+        | Create SCTP Server | 10.10.10.2 | 80 | HTTP_Server1 |
+        """
         self.server_should_not_be_running(name, "TCP")
         self._servers[name] = TCPServer(name)
         self._servers[name].server_startup(ip, port)
@@ -105,7 +105,6 @@ class Rammbock(object):
         Example:
         | Server Should be Running | DNS_Client1 |
         """
-
         name = self._use_latest_client_name_if_name_not_present(name)
         if not name in self._clients:
             raise Exception("Client %s not set up" % (name,))
@@ -116,19 +115,36 @@ class Rammbock(object):
         Example:
         | Server Should Not be Running | DNS_Server1 |
         """
-
         if name in self._clients:
             raise Exception(CLIENT_ALREADY_CREATED % (protocol,))
 
     def client_connects_to_udp_server(self, host, port, client_name=None):
+        """ Given UDP client connects to server. Server IP-address and port need to be given. If no client stated, last created client is used.
+
+        Examples:
+        | Client Connects to UDP Server | 10.10.10.2 | DNS_Client1 | #Client name is stated |
+        | Client Connects to UDP Server | 10.10.10.2 | | # Last created client is used |
+        """
         client_name = self._use_latest_client_name_if_name_not_present(client_name)
         self._clients[client_name].establish_connection_to_server(host, port)
 
     def client_connects_to_tcp_server(self, host, port, client_name=None):
+        """ Given TCP client connects to server. Server IP-address and port need to be given. If no client stated, last created client is used.
+
+        Examples:
+        | Client Connects to TCP Server | 10.10.10.2 | HTTP_Client1 | #Client name is stated |
+        | Client Connects to TCP Server | 10.10.10.2 | | # Last created client is used |
+        """
         client_name = self._use_latest_client_name_if_name_not_present(client_name)
         self._clients[client_name].establish_connection_to_server(host, port)
 
     def client_connects_to_sctp_server(self, host, port, client_name=None):
+        """ Given SCTP client connects to server. Server IP-address and port need to be given. If no client stated, last created client is used.
+
+        Examples:
+        | Client Connects to SCTP Server | 10.10.10.2 | Diameter_Client1 | #Client name is stated |
+        | Client Connects to SCTP Server | 10.10.10.2 | | # Last created client is used |
+        """
         client_name = self._use_latest_client_name_if_name_not_present(client_name)
         self._clients[client_name].establish_connection_to_server(host, port)
 
