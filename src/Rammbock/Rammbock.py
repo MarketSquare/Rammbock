@@ -318,8 +318,9 @@ class Rammbock(object):
         Add string to the message. 'value' is string, 'length' adds possible padding to end of the string. 'encoding' sets encoding, utf-8 is default.
 
         Examples:
-        | Add String | Host: www.nokiasiemensnetworks.com | 25 | unicode | # add string of length 25 in unicode |
+        | Add String | Host: www.nokiasiemensnetworks.com | | | # add string |
         | Add String | Host: www.nokiasiemensnetworks.com | encoding=unicode | | # add string in unicode |
+        | Add String | Host: www.nokiasiemensnetworks.com | 25 | unicode | # add string of length 25 in unicode |
         """
         value = value.encode(encoding)
         if not length:
@@ -328,6 +329,7 @@ class Rammbock(object):
 
     # TODO: add octets and add bits. both support several bases.
     def add_decimal_as_octets(self, value, length):
+        value = str(value)
         if not int(length):
             return
         data = self._convert_to_hex_and_add_padding(value, length)
@@ -348,7 +350,8 @@ class Rammbock(object):
             self._binary = self._binary[8:]
 
     def _convert_to_hex_and_add_padding(self, value, length):
-        data = hex(int(value))[2:]
+        "TODO: we are injecting with eval"
+        data = hex(int(eval(value)))[2:]
         if data.endswith('L'):
             data = data[:-1]
         return data.rjust(int(length)*2, '0')
@@ -418,7 +421,7 @@ class Rammbock(object):
         if not IP_REGEX.match(address):
             raise Exception("Not a valid ip Address")
         for a in address.split('.'):
-            self.add_decimal_as_octets(int(a), 1)
+            self.add_decimal_as_octets(a, 1)
 
     def add_hex_data(self, data, length):
         if int(length) < len(data[2:])/2:

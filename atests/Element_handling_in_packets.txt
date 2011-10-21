@@ -125,6 +125,11 @@ add string with different encodings
     test scandinavian string with encoding  ääööåå  utf-8
     test scandinavian string with encoding  ääööåå  utf-8
 
+Add Number with Hex Prefix
+    Add Decimal As Octets  0xff  1
+    ${data}=  Read From Data  1
+    Should Be Equal As Integers  255  ${data}
+
 *** Keywords ***
 Create Message and add two decimals as octets
     Reset Message
