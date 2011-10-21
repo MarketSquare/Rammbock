@@ -42,18 +42,39 @@ class Rammbock(object):
         last_created_client = None
 
     def create_udp_server(self, ip, port, name=Server.DEFAULT_NAME):
+        """Creates Server which expects UDP as a transport layer protocol
+
+        'ip' and 'port' are telling which ip-address and port server is going to be bind. Optionally server name can be stated, usually used when multiple servers are needed
+
+        Examples:
+        | Create UDP Server | 10.10.10.2 | 53 | DNS_Server1 |"""
+        
         self.server_should_not_be_running(name, "UDP")
         self._servers[name] = UDPServer(name)
         self._servers[name].server_startup(ip, port)
         self.last_created_server = name
 
     def create_sctp_server(self, ip, port, name=Server.DEFAULT_NAME):
+        """Creates Server which expects SCTP as a transport layer protocol
+
+        'ip' and 'port' are telling which ip-address and port server is going to be bind. Optionally server name can be stated, usually used when multiple servers are needed
+
+        Examples:
+        | Create SCTP Server | 10.10.10.2 | 3868 | Diameter_Server1 |"""
+
         self.server_should_not_be_running(name, "SCTP")
         self._servers[name] = SCTPServer(name)
         self._servers[name].server_startup(ip, port)
         self.last_created_server = name
 
     def create_tcp_server(self, ip, port, name=Server.DEFAULT_NAME):
+        """Creates Server which expects TCP as a transport layer protocol
+
+        'ip' and 'port' are telling which ip-address and port server is going to be bind. Optionally server name can be stated, usually used when multiple servers are needed
+
+        Examples:
+        | Create SCTP Server | 10.10.10.2 | 80 | HTTP_Server1 |"""
+
         self.server_should_not_be_running(name, "TCP")
         self._servers[name] = TCPServer(name)
         self._servers[name].server_startup(ip, port)
