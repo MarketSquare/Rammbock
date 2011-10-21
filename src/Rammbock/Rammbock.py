@@ -162,10 +162,22 @@ class Rammbock(object):
         return name
 
     def server_accepts_tcp_connection(self, server_name=None, connection_alias=None):
+        """ Accepts TCP connection from client. Server name can be given optionally
+
+        Examples:
+        | Server Accepts TCP Connection | | # last created server is used |
+        | Server Accepts TCP connection | HTTP_Server1 | # Given TCP Server is used |
+        """
         server_name = self._use_latest_server_name_if_name_not_present(server_name)
         self._servers[server_name].accept_connection(connection_alias)
 
     def server_accepts_sctp_connection(self, server_name=None, connection_alias=None):
+        """ Accepts TCP connection from client. Server name can be given optionally
+
+        Examples:
+        | Server Accepts TCP Connection | | # last created server is used |
+        | Server Accepts TCP Connection | HTTP_Server1 | # Given TCP Server is used |
+        """
         server_name = self._use_latest_server_name_if_name_not_present(server_name)
         self._servers[server_name].accept_connection(connection_alias)
 
