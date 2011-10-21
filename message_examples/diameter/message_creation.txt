@@ -201,7 +201,7 @@ Add AVP: Destination-realm
     Add AVP Code and Flags  ${avp_code.destination_realm}  ${avp_flags.M}
     ${length}=  Get Length  ${destination_realm}
     Add AVP Length  ${length + 8}
-    Add String  ${destination_realm}
+    Add String  ${destination_realm}  encoding=ascii
     Add Padding After String Data  ${length}
 
 Add AVP: User-Name

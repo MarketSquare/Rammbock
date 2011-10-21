@@ -121,6 +121,10 @@ Read Binary
     ${bin}=  Read binary  4
     Should Be Equal As Numbers  ${bin}  15
 
+add string with different encodings
+    test scandinavian string with encoding  ääööåå  utf-8
+    test scandinavian string with encoding  ääööåå  utf-8
+
 *** Keywords ***
 Create Message and add two decimals as octets
     Reset Message
@@ -247,4 +251,11 @@ Receive and validate message with TBCD number
     ${tbcd}=  read tbcd  ${length}
     Should start with  ${tbcd}  ${country code}
     Should end with  ${tbcd}  ${digits}
+
+test scandinavian string with encoding
+    [Arguments]  ${string}  ${encoding}
+    reset message
+    Add string  ${string}  encoding=${encoding}
+    ${data}=  Read String  encoding=${encoding}
+    Should Be Equal As Strings  ${data}  ${string}
 

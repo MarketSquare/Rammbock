@@ -207,7 +207,7 @@ Validate AVP: Destination-realm
     Validate AVP Code And Flags  ${avp_code.destination_realm}  0x40
     ${length}=  Get Length  ${destination_realm}
     Validate Avp Length  ${length + 8}
-    ${destination_realm-act}=  Read String  ${length}
+    ${destination_realm-act}=  Read String  ${length}  encoding=ascii
     Should Be Equal  ${destination_realm}  ${destination_realm-act}
     Read Padding After String Data  ${length}
 

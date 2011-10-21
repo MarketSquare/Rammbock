@@ -311,10 +311,11 @@ class Rammbock(object):
         self._binary = ""
 
     # TODO: add encoding argument
-    def add_string(self, value, length=None):
+    def add_string(self, value, length=None, encoding='utf-8'):
+        value = value.encode(encoding)
         if not length:
             length = len(value)
-        self._data += str(value).rjust(int(length), '\0')
+        self._data += value.rjust(int(length), '\0')
 
     # TODO: add octets and add bits. both support several bases.
     def add_decimal_as_octets(self, value, length):
@@ -356,11 +357,11 @@ class Rammbock(object):
         with open(file,'w') as writeable:
             writeable.write(self._data)
 
-    def _read_until(self, delimiter=None):
+    def _read_until(self, delimiter=None, encoding='utf-8'):
         if delimiter:
             i,self._data = self._data.split(str(delimiter),1)
-            return i
-        return self._data
+            return i.decode(encoding)
+        return self._data.decode(encoding)
 
     def read_from_data(self, length):
         if not int(length):
@@ -444,12 +445,14 @@ class Rammbock(object):
     def read_ip_from_hex(self):
         return  ".".join(str(self.read_from_data(1)) for _ in range(4))
 
-    def read_string(self, length=None, delimiter=None):
+    def read_string(self, length=None, delimiter=None, encoding='utf-8'):
+        if not delimiter and not length:
+            return self._read_until(None, encoding)
         if delimiter:
-            return self._read_until(delimiter)
+            return self._read_until(delimiter, encoding)
         string = self._data[:int(length)]
         self._data = self._data[int(length):]
-        return string
+        return string.decode(encoding)
 
     def sctp_should_be_supported(self):
         if not Server.SCTP_ENABLED:
