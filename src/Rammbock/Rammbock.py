@@ -21,6 +21,7 @@ import Server
 import Client
 from struct import pack, unpack
 import re
+from __future__ import with_statemen
 
 IP_REGEX = re.compile(r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
 
@@ -215,7 +216,7 @@ class Rammbock(object):
 
     def log_message_to_file(self, file):
         with open(file,'w') as writeable:
-            input.write(self._data)
+            writeable.write(self._data)
 
     def _read_until(self, delimiter=None):
         if delimiter:
