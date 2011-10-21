@@ -41,8 +41,6 @@ class Rammbock(object):
         last_created_server = None
         last_created_client = None
 
-    # TODO: change all that take server name except creation to use the latest when not given (instead of server1)
-    # TODO: conffauksen miettiminen. Timeoutit
     def create_udp_server(self, ip, port, name=Server.DEFAULT_NAME):
         self.server_should_not_be_running(name, "UDP")
         self._servers[name] = UDPServer(name)
@@ -215,7 +213,10 @@ class Rammbock(object):
     def log_message(self, level="INFO"):
         print '*' + level + '*', self._data
 
-    # TODO: log message as hex & log message to file
+    def log_message_to_file(self, file):
+        with open(file,'w') as writeable:
+            input.write(self._data)
+
     def _read_until(self, delimiter=None):
         if delimiter:
             i,self._data = self._data.split(str(delimiter),1)
@@ -304,7 +305,7 @@ class Rammbock(object):
     def read_ip_from_hex(self):
         return  ".".join(str(self.read_from_data(1)) for _ in range(4))
 
-    def read_string(self, length=None, delimiter=""):
+    def read_string(self, length=None, delimiter=None):
         if delimiter:
             return self._read_until(delimiter)
         string = self._data[:int(length)]
