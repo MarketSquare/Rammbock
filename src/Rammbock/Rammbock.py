@@ -241,6 +241,14 @@ class Rammbock(object):
         del self._clients[name]
 
     def client_sends_data(self, data=None, client_name=None):
+        """Client Send Data which have been created to the message or string can be set as 'data'. Used client can be stated.
+
+        Examples:
+        | Client Sends Data | | |
+        | Client Sends Data | FooBar | |
+        | Client Sends Data | FooBar | HTTP_Client1 |
+        """
+
         client_name = self._use_latest_client_name_if_name_not_present(client_name)
         self.client_should_be_running(client_name)
         if data:
@@ -250,23 +258,46 @@ class Rammbock(object):
             print "Data sent:", self._data
 
     def server_receives_data(self, name=None, connection_alias=None):
+        """ Server receives data from client. Name and connection alias can be stated.
+
+        Examples:
+        |Server Receives Data | | |
+        |Server Receives Data| HTTP_Server1 | Connection1 |
+        """
         name = self._use_latest_server_name_if_name_not_present(name)
         return self.server_receives_data_and_address(name, connection_alias)[0]
 
     def server_receives_data_and_address(self, name=None, connection_alias=None):
+        """ Server return data, Client IP-address and port. Server name and connection alias can be also set
+
+        Examples:
+        | ${data} | ${ip} | ${port} = | Server Receives Data and Address  | HTTP_Server1 | Connection1 | #Receives data from certain Server and connection |
+        | ${data} | ${ip} | ${port} = | Server Receives Data and Address  | | | #Receives data from last created Server |
+        """
         name = self._use_latest_server_name_if_name_not_present(name)
         self._data, ip, port = self._servers[name].server_receives_data_and_address(connection_alias)
         print "Data received from %s:%s :%s" % (ip, port, self._data)
         return self._data, ip, port
 
     def client_receives_data(self, name=Client.DEFAULT_NAME):
-        """This method will return anything that is currently in the socket at the moment. 
-        There is no packet length checking currently implemented. """
+        """Return anything that is currently in the socket at the moment. Client name can be given.
+
+        Examples:
+        | Client Receives Data | |
+        | Client Receives Data | HTTP_Client |
+        """
         self._data = self._clients[name].receive_data()
         print "Data received:", self._data
         return self._data
 
     def server_sends_data(self, data=None, name=None):
+        """Server Send Data which have been created to the message or string can be set as 'data'. Used server can be stated.
+
+        Examples:
+        | Server Sends Data | | |
+        | Server Sends Data | FooBar | |
+        | Server Sends Data | FooBar | HTTP_Client1 |
+        """
         name = self._use_latest_server_name_if_name_not_present(name)
         if data:
             data_to_send = data
