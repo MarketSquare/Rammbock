@@ -182,26 +182,60 @@ class Rammbock(object):
         self._servers[server_name].accept_connection(connection_alias)
 
     def delete_server(self, name=None):
+        """ Deletes given server. If no server name stated, deletes last created.
+
+        Examples:
+        | Delete Server | DNS_Server1 | #Deletes given server |
+        | Delete Server | | #Deletes last created server |
+        """
         name = self._use_latest_server_name_if_name_not_present(name)
         self._servers[name].close()
         del self._servers[name]
 
     def create_udp_client(self, name=Client.DEFAULT_NAME, ip=None):
+        """ Creates UDP Client. Name and IP-address of the client can be given
+
+        Examples:
+        | Create UDP Client | DNS_Client1 | 10.10.10.2 | # Name and IP are given |
+        | Create UDP Client | DNS_Client1 |  | # Name is given |
+        | Create UDP Client | | | |
+        """
+
         self.client_should_not_be_running(name, "UDP")
         self._clients[name] = UDPClient(name, ip)
         self.last_created_client = name
 
     def create_sctp_client(self, name=Client.DEFAULT_NAME, ip=None):
+        """ Creates SCTP Client. Name and IP-address of the client can be given
+
+        Examples:
+        | Create SCTP Client | Diameter_Client1 | 10.10.10.2 | # Name and IP are given |
+        | Create SCTP Client | Diameter_Client1 |  | # Name is given |
+        | Create SCTP Client | | | |
+        """
         self.client_should_not_be_running(name, "SCTP")
         self._clients[name] = SCTPClient(name, ip)
         self.last_created_client = name
 
     def create_tcp_client(self, name=Client.DEFAULT_NAME, ip=None):
+        """ Creates TCP Client. Name and IP-address of the client can be given
+
+        Examples:
+        | Create TCP Client | DNS_Client1 | 10.10.10.2 | # Name and IP are given |
+        | Create TCP Client | DNS_Client1 |  | # Name is given |
+        | Create TCP Client | | | |
+        """
         self.client_should_not_be_running(name, "TCP")
         self._clients[name] = TCPClient(name, ip)
         self.last_created_client = name
 
     def delete_client(self, name=None):
+        """ Deletes given client. If no client name stated, deletes last created.
+
+        Examples:
+        | Delete Client | DNS_Client1 | #Deletes given client |
+        | Delete Client | | #Deletes last created client |
+        """
         name = self._use_latest_client_name_if_name_not_present(name)
         self._clients[name].close()
         del self._clients[name]
