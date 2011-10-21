@@ -15,12 +15,15 @@
 #!/usr/bin/python
 #-*- coding: iso-8859-15 -*-
 #
+from __future__ import with_statement
+
 from Client import UDPClient, TCPClient, SCTPClient
 from Server import UDPServer, TCPServer, SCTPServer
 import Server
 import Client
 from struct import pack, unpack
 import re
+
 
 IP_REGEX = re.compile(r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
 
@@ -274,7 +277,7 @@ class Rammbock(object):
 
     def log_message_to_file(self, file):
         with open(file,'w') as writeable:
-            input.write(self._data)
+            writeable.write(self._data)
 
     def _read_until(self, delimiter=None):
         if delimiter:
