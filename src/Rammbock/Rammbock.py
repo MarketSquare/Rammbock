@@ -81,20 +81,42 @@ class Rammbock(object):
         self.last_created_server = name
 
     def server_should_not_be_running(self, name, protocol=""):
+        """Raises exception if given server exist
+
+        Example:
+        | Server Should Not be Running | DNS_Server1 |
+        """
         if name in self._servers:
             raise Exception(SERVER_ALREADY_CREATED % (protocol,))
 
     def server_should_be_running(self, name=None):
+        """Raises exception if given server does not exist
+
+        Example:
+        | Server Should be Running | DNS_Server1 |
+        """
         name = self._use_latest_server_name_if_name_not_present(name)
         if not name in self._servers:
             raise Exception("Server %s not set up" % (name,))
 
     def client_should_be_running(self, name=None):
+        """Raises exception if given client does not exist
+
+        Example:
+        | Server Should be Running | DNS_Client1 |
+        """
+
         name = self._use_latest_client_name_if_name_not_present(name)
         if not name in self._clients:
             raise Exception("Client %s not set up" % (name,))
 
     def client_should_not_be_running(self, name, protocol=""):
+        """Raises exception if given server exist
+
+        Example:
+        | Server Should Not be Running | DNS_Server1 |
+        """
+
         if name in self._clients:
             raise Exception(CLIENT_ALREADY_CREATED % (protocol,))
 
