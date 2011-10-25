@@ -453,6 +453,12 @@ class Rammbock(object):
         return a + "".join(hex(int(self.read_from_data(1)))[2:].rjust(2, '0') for _ in range(int(length)))
 
     def read_tbcd(self, amount):
+        """
+        Reads TBCD number from message and returns it as integer. 'amount' of numbers which are read from data can be stated.
+
+        Examples:
+        | Read TBCD | 7 |
+        """
         tbcd = ""
         length = (int(amount)/2)+(int(amount)%2)
         self._read_binary_from_data(length)
