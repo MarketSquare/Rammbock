@@ -325,7 +325,7 @@ class Rammbock(object):
 
     def add_integer_as_octets(self, value, length, base=10):
         """
-        Adds decimal number as octets. Length as octest can be give. Python base prefixes can be used.
+        Adds decimal number as octets. Length as octest can be give. base can be stated as an argument.
 
         Examples:
         | Add Decimal as Octets | 42 | 1 | |#Adds number 42 as one octet to message. |
@@ -345,6 +345,12 @@ class Rammbock(object):
             data = data[2:]
 
     def add_integer_as_bits(self, value, length):
+        """
+        Adds integer as bits. Length how many bits is used, can be given.
+
+        Examples:
+        |Add Integer as Bits | 42 | 6 |
+        """
         data = d2b(int(value))[1:].rjust(int(length), '0')
         if len(data) > int(length):
             raise Exception("Value is too big for length")
