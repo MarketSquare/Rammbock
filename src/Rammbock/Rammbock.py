@@ -469,5 +469,13 @@ class Rammbock(object):
         return read
 
     def sctp_should_be_supported(self):
+        """
+        Checks if SCTP support is available in this platform. Fails if SCTP support is not available
+
+        Examples:
+        | SCTP should be supported | # keyword will pass if SCTP support is enabled |
+        | SCTP should be supported | # keyword will fail if SCTP support is not enabled |
+
+        """
         if not Server.SCTP_ENABLED:
             raise AssertionError("SCTP not available on this platform.")
