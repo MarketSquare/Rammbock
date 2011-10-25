@@ -96,7 +96,7 @@ Try To Read Too Many Bits From Bitstream Data
     Add Integer as Bits  255  8
     Client Sends Data
     Server Receives Data
-    Run keyword and expect error  Not enough bits to read  Read Binary  9
+    Run keyword and expect error  Not enough bits to read  Read Integer From Bits  9
 
 Encode And Decode Message with raw hex data
     Reset Message
@@ -116,9 +116,9 @@ Try to add hex with wrong format
 
 Read Binary
     Add Integer as Bits  255  8
-    ${bin}=  Read binary  4
+    ${bin}=  Read Integer From Bits  4
     Should Be Equal As Numbers  ${bin}  15
-    ${bin}=  Read binary  4
+    ${bin}=  Read Integer From Bits  4
     Should Be Equal As Numbers  ${bin}  15
 
 add string with different encodings
@@ -198,14 +198,14 @@ Receive And Validate message with multiple decimals
 
 Receive And Validate Message With single binary decimal
     Server Receives Data
-    ${value}=  Read Binary  8
+    ${value}=  Read Integer From Bits  8
     Should Be Equal  ${value}  255
 
 Receive And Validate Message With multiple binary decimals
     Server Receives Data
-    ${value1}=  Read Binary  6
-    ${value2}=  Read Binary  6
-    ${value3}=  Read Binary  4
+    ${value1}=  Read Integer From Bits  6
+    ${value2}=  Read Integer From Bits  6
+    ${value3}=  Read Integer From Bits  4
     Should Be Equal  ${value1}  32
     Should Be Equal  ${value2}  40
     Should Be Equal  ${value3}  15
@@ -216,9 +216,9 @@ Receive And Validate Message With Strings and Decimals and Binary As Octets
     ${value2}=  Read Integer From Octets  2
     Should Be Equal  ${value1}  255
     Should Be Equal  ${value2}  4
-    ${value1}=  Read Binary  6
-    ${value2}=  Read Binary  6
-    ${value3}=  Read Binary  4
+    ${value1}=  Read Integer From Bits  6
+    ${value2}=  Read Integer From Bits  6
+    ${value3}=  Read Integer From Bits  4
     Should Be Equal  ${value1}  63
     Should Be Equal  ${value2}  3
     Should Be Equal  ${value3}  10
@@ -226,9 +226,9 @@ Receive And Validate Message With Strings and Decimals and Binary As Octets
     ${field2}=  Read String  delimiter=\r\n
     Should Be Equal  ${field1}  value
     Should Be Equal  ${field2}  key
-    ${value1}=  Read Binary  6
-    ${value2}=  Read Binary  6
-    ${value3}=  Read Binary  4
+    ${value1}=  Read Integer From Bits  6
+    ${value2}=  Read Integer From Bits  6
+    ${value3}=  Read Integer From Bits  4
     Should Be Equal  ${value1}  63
     Should Be Equal  ${value2}  3
     Should Be Equal  ${value3}  10
