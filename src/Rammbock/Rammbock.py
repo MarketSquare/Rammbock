@@ -453,6 +453,12 @@ class Rammbock(object):
         return str(int(value,2))
 
     def add_tbcd(self, *numbers):
+        """"
+        Add telephone binary coded decimal (TBCD).
+
+        Example:
+        | Add TBCD | 358600064644 |
+        """
         nmbr = "".join(numbers)
         while len(nmbr) > 1:
             self.add_integer_as_bits(int(nmbr[1]), 4)
@@ -465,7 +471,6 @@ class Rammbock(object):
     def add_ip(self, address):
         """
         Add ip 'address' as hex. Every ip-number field is expressed as two number hexadecimal.
-
 
         Example:
         | Add Ip | 10.0.0.1 |
