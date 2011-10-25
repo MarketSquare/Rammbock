@@ -312,7 +312,6 @@ class Rammbock(object):
         self._data = ""
         self._binary = ""
 
-    # TODO: add encoding argument
     def add_string(self, value, length=None, encoding=None):
         """
         Add string to the message. 'value' is string, 'length' adds possible padding to end of the string. 'encoding' sets encoding, utf-8 is default.
@@ -470,7 +469,7 @@ class Rammbock(object):
         elif length:
             if length == "*":
                 read = self._data
-                self._date = ""
+                self._data = ""
             else:
                 read = self._data[:int(length)]
                 self._data = self._data[int(length):]
