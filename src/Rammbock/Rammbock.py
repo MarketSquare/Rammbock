@@ -501,13 +501,6 @@ class Rammbock(object):
         for a in address.split('.'):
             self.add_integer_as_octets(a, 1)
 
-    # TODO: only have these methods: read_octets(len, base) and read_binary(len) and read_string(len, encoding)
-    def read_hex_data(self, length, no_prefix=None):
-        a = ""
-        if not no_prefix:
-            a += "0x"
-        return a + "".join(hex(int(self.read_integer_from_octets(1)))[2:].rjust(2, '0') for _ in range(int(length)))
-
     def read_tbcd(self, amount):
         """
         Reads TBCD number from message and returns it as integer. 'amount' of numbers which are read from data can be stated.

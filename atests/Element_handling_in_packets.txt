@@ -103,7 +103,7 @@ Encode And Decode Message with raw hex data
     Add Integer As Octets  e36006e2  4  16
     Client Sends Data
     Server Receives Data
-    ${value}=  read hex data  4
+    ${value}=  Read Integer From Octets  4  16
     Should Be Equal  ${value}  0xe36006e2
 
 Try to add Too big hex data
