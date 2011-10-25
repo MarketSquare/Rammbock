@@ -375,6 +375,12 @@ class Rammbock(object):
         self._data = message
 
     def get_message(self):
+        """
+        Returns the current message as hex stream.
+
+        Examples:
+        | Get Message |
+        """
         return self._data
 
     def log_message(self, level="INFO"):
