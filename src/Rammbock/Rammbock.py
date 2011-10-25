@@ -32,6 +32,7 @@ d2b = lambda d: (not isinstance(d, int) or (not d)) and '0' \
 
 SERVER_ALREADY_CREATED = "There is already one %s Server created. You need to specify a unique name for a new server"
 CLIENT_ALREADY_CREATED = "There is already one %s Client created. You need to specify a unique name for a new clients"
+POSSIBLE_LOG_LEVELS = ["WARN", "INFO", "DEBUG", "TRACE"]
 
 class Rammbock(object):
 
@@ -384,6 +385,18 @@ class Rammbock(object):
         return self._data
 
     def log_message(self, level="INFO"):
+        """
+        Logs the current message. Uses given level parameter as log level or INFO as DEFAULT_NAME
+
+        Possible log levels are:
+        WARN, INFO, DEBUG, TRACE
+
+        Examples
+        | Log Message |
+        | Log Message | DEBUG | # uses DEBUG log level
+        """
+        if level not in POSSIBLE_LOG_LEVELS:
+            raise Exception("Unknown log level! Possible levels are %s" % (POSSIBLE_LOG_LEVELS,))
         print '*' + level + '*', self._data
 
     def log_message_to_file(self, file):

@@ -10,6 +10,9 @@ log message to file
     log message to file and check it exists  tempfile
     [Teardown]  remove file  tempfile
 
+unknown log level gives error in log message
+    run keyword and expect error  Unknown log level!*  Log Message  fDSAFDSAFDSA
+
 *** Keywords ***
 log message to file and check it exists
     [Arguments]  ${file}
