@@ -100,7 +100,7 @@ Try To Read Too Many Bits From Bitstream Data
 
 Encode And Decode Message with raw hex data
     Reset Message
-    Add Integer As Octets  0xe36006e2  4
+    Add Integer As Octets  e36006e2  4  16
     Client Sends Data
     Server Receives Data
     ${value}=  read hex data  4
@@ -108,11 +108,11 @@ Encode And Decode Message with raw hex data
 
 Try to add Too big hex data
     Reset Message
-    Run keyword and expect error  Value is too big for length  Add Integer as Octets  0xe36006e2  3
+    Run keyword and expect error  Value is too big for length  Add Integer as Octets  e36006e2  3  16
 
 Try to add hex with wrong format
     Reset Message
-    Run keyword and expect error  Value is not valid hex  Add Integer as Octets  GGGGG  4
+    Run keyword and expect error  ValueError: invalid literal for int() with base 16: 'GGGGG'  Add Integer as Octets  GGGGG  4  16
 
 Read Binary
     Add Decimal As Bits  255  8
@@ -126,7 +126,7 @@ add string with different encodings
     test scandinavian string with encoding  ääööåå  utf-8
 
 Add Number with Hex Prefix
-    Add Integer as Octets  0xff  1
+    Add Integer as Octets  ff  1  16
     ${data}=  Read From Data  1
     Should Be Equal As Integers  255  ${data}
 

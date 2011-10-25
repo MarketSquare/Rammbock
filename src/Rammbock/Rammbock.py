@@ -327,7 +327,7 @@ class Rammbock(object):
             length = len(value)
         self._data += value.rjust(int(length), '\0')
 
-    def add_integer_as_octets(self, value, length):
+    def add_integer_as_octets(self, value, length, base=10):
         """
         Adds decimal number as octets. Length as octest can be give. Python base prefixes can be used.
 
@@ -338,7 +338,7 @@ class Rammbock(object):
         | Add Decimal as Octets | 0B00101010 | 1 | #Adds number 42 presented as bit in one octet to message. |
         | Add Decimal as Octets | 0O52 | 1 | #Adds number 42 presented as octal in one octet to message. |
         """
-        value = str(value)
+        value = str(int(str(value), int(base)))
         if not int(length):
             return
         data = self._convert_to_hex_and_add_padding(value, length)
@@ -361,10 +361,7 @@ class Rammbock(object):
 
     def _convert_to_hex_and_add_padding(self, value, length):
     # TODO: we are injecting with eval
-        try:
-            data = hex(int(eval(value)))[2:]
-        except NameError:
-            raise Exception('Value is not valid hex')
+        data = hex(int(eval(value)))[2:]
         if data.endswith('L'):
             data = data[:-1]
         return data.rjust(int(length)*2, '0')
