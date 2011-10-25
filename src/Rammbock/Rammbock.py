@@ -437,6 +437,12 @@ class Rammbock(object):
         self._data = self._data[int(length):]
 
     def read_integer_from_bits(self, length):
+        """
+        Read integer from given amount bits.
+
+        Examples:
+        | ${flags} = | Read Integer From Bits | 7 |
+        """
         if len(self._binary) < int(length):
             real_length = (((int(length) - len(self._binary)) - 1) / 8) + 1
             self._read_binary_from_data(real_length)
