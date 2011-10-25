@@ -65,8 +65,8 @@ Validate User Location Info (ULI)
     [Arguments]  ${mcc}  ${mnc}
     Validate ie type and length  ${ie_type.uli}  13
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Read Binary  3  # spare bits
-    ${flags}=  Read Binary  5
+    Read Integer From Bits  3  # spare bits
+    ${flags}=  Read Integer From Bits  5
     Should Be Equal  ${flags}  24  # ...1 .... = ECGI Present Flag): True, .... 1... = TAI Present Flag): True, .... .0.. = RAI Present Flag): False, .... ..0. = SAI Present Flag): False, .... ...0 = CGI Present Flag): False
     Validate Tracking Area Identity(TAI)  ${mcc}  ${mnc}
     Validate E-UTRAN Cell Global Identifier (ECGI)  ${mcc}  ${mnc}
@@ -212,7 +212,7 @@ Validate Cause
     validate cr-flags and instance  0
     ${cause}=  Read Integer From Octets  1
     Should Be Equal  ${expected}  ${cause}  # cause: Request Accepted
-    ${spare-and-dec}=  Read Binary  8
+    ${spare-and-dec}=  Read Integer From Bits  8
     Should Be Equal  0  ${spare-and-dec}
 
 Validate Bearer Context with EBI, Cause, F-TEID and CI
