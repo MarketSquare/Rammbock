@@ -125,6 +125,10 @@ add string with different encodings
     test scandinavian string with encoding  ääööåå  utf-8
     test scandinavian string with encoding  ääööåå  utf-8
 
+read empty string
+    ${data}=  Read string  0
+    Should be equal as strings  ${data}  ${EMPTY}
+
 Add Number with Hex Prefix
     Add Integer as Octets  ff  1  16
     ${data}=  Read From Data  1
@@ -271,6 +275,6 @@ test scandinavian string with encoding
     [Arguments]  ${string}  ${encoding}
     reset message
     Add string  ${string}  encoding=${encoding}
-    ${data}=  Read String  encoding=${encoding}
+    ${data}=  Read String  encoding=${encoding}  length=*
     Should Be Equal As Strings  ${data}  ${string}
 
