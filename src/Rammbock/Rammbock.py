@@ -436,7 +436,7 @@ class Rammbock(object):
             yield hex((unpack('B', d)[0]))[2:].rjust(2, '0')
         self._data = self._data[int(length):]
 
-    def read_binary(self, length):
+    def read_integer_from_bits(self, length):
         if len(self._binary) < int(length):
             real_length = (((int(length) - len(self._binary)) - 1) / 8) + 1
             self._read_binary_from_data(real_length)
