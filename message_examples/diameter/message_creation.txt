@@ -17,7 +17,7 @@ ${STATIC}  0
 *** Keywords ***
 Add Message Version
     [Arguments]  ${version}
-    Add Hex Data  ${version}  1
+    Add Integer As Octets  ${version}  1  16
 
 Add Message Length
     [Arguments]  ${length}
@@ -25,7 +25,7 @@ Add Message Length
 
 Add Message Flags
     [Arguments]  ${flags}
-    Add Hex Data  ${flags}  1
+    Add Integer As Octets  ${flags}  1  16
 
 Add Command Code
     [Arguments]  ${cc}
@@ -37,11 +37,11 @@ Add Application Id
 
 Add Hop-By-Hop Identifier
     [Arguments]  ${hbhi}
-    Add Hex Data  ${hbhi}  4
+    Add Integer As Octets  ${hbhi}  4  16
 
 Add End-To-End Identifier
     [Arguments]  ${e2ei}
-    Add Hex Data  ${e2ei}  4
+    Add Integer As Octets  ${e2ei}  4  16
 
 Add AVP: Origin-Host
     [Arguments]  ${host}
@@ -57,7 +57,7 @@ Add AVP Code
 
 Add AVP Flags
     [Arguments]  ${flags}
-    Add Hex Data  ${flags}  1
+    Add Integer As Octets  ${flags}  1  16
 
 Add AVP Code And Flags
     [Arguments]  ${code}  ${flags}
@@ -249,7 +249,7 @@ Add AVP: Visited-PLMN-Id
 Add visited-plmn-id
     [Arguments]  ${visited_plmn_id}
     ${length}=  Get Length  ${visited_plmn_id}
-    Add Hex Data  ${visited_plmn_id}  ${length/2}
+    Add Integer As Octets  ${visited_plmn_id}  ${length/2}  16
     Add Padding After String Data  ${length/2}
 
 Add AVP: Route-Record
@@ -295,7 +295,7 @@ Add AVP: RAND
     ${length}=  Get Length  ${rand}
     Add AVP Length  ${length/2 + 12}
     Add Integer as Octets  ${avp_vendor_id.3gpp}  4
-    Add Hex Data  ${rand}  ${length/2}
+    Add Integer As Octets  ${rand}  ${length/2}  16
     Add Padding After String Data  ${length/2}
 
 Add AVP: XRES
@@ -304,7 +304,7 @@ Add AVP: XRES
     ${length}=  Get Length  ${xres}
     Add AVP Length  ${length/2 + 12}
     Add Integer as Octets  ${avp_vendor_id.3gpp}  4
-    Add Hex Data  ${xres}  ${length/2}
+    Add Integer As Octets  ${xres}  ${length/2}  16
     Add Padding After String Data  ${length/2}
 
 Add AVP: AUTN
@@ -313,7 +313,7 @@ Add AVP: AUTN
     ${length}=  Get Length  ${autn}
     Add AVP Length  ${length/2 + 12}
     Add Integer as Octets  ${avp_vendor_id.3gpp}  4
-    Add Hex Data  ${autn}  ${length/2}
+    Add Integer As Octets  ${autn}  ${length/2}  16
     Add Padding After String Data  ${length/2}
 
 Add AVP: KASME
@@ -322,7 +322,7 @@ Add AVP: KASME
     ${length}=  Get Length  ${kasme}
     Add AVP Length  ${length/2 + 12}
     Add Integer as Octets  ${avp_vendor_id.3gpp}  4
-    Add Hex Data  ${kasme}  ${length/2}
+    Add Integer As Octets  ${kasme}  ${length/2}  16
     Add Padding After String Data  ${length/2}
 
 Add AVP: URL-Flags
@@ -605,7 +605,7 @@ Add AVP: MIP6-Home-Link-Prefix
     Add AVP Code and Flags  ${avp_code.mip6_home_link_prefix}  ${avp_flags.M}
     ${length}=  Get Length  ${prefix}
     Add AVP Length  ${length/2 + 8}
-    Add Hex Data  ${prefix}  1
+    Add Integer As Octets  ${prefix}  1  16
     Add Padding After String Data  ${length/2}
 
 Add AVP: MIP-Home-Agent-Host
