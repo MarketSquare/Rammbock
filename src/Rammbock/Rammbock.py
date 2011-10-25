@@ -363,6 +363,12 @@ class Rammbock(object):
         return data.rjust(int(length)*2, '0')
 
     def set_message(self, message):
+        """
+        Set string to the message, which can be send.
+
+        Example:
+        | Set Message | FooBar |
+        """
         self._data = message
 
     def get_message(self):
