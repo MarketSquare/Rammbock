@@ -41,8 +41,8 @@ class Rammbock(object):
         self._clients = {}
         self._binary = ""
         self._tbcd = ""
-        last_created_server = None
-        last_created_client = None
+        self._last_created_server = None
+        self._last_created_client = None
 
     def create_udp_server(self, ip, port, name=Server.DEFAULT_NAME):
         """Creates Server which expects UDP as a transport layer protocol
@@ -55,7 +55,7 @@ class Rammbock(object):
         self.server_should_not_be_running(name, "UDP")
         self._servers[name] = UDPServer(name)
         self._servers[name].server_startup(ip, port)
-        self.last_created_server = name
+        self._last_created_server = name
 
     def create_sctp_server(self, ip, port, name=Server.DEFAULT_NAME):
         """Creates Server which expects SCTP as a transport layer protocol
@@ -68,7 +68,7 @@ class Rammbock(object):
         self.server_should_not_be_running(name, "SCTP")
         self._servers[name] = SCTPServer(name)
         self._servers[name].server_startup(ip, port)
-        self.last_created_server = name
+        self._last_created_server = name
 
     def create_tcp_server(self, ip, port, name=Server.DEFAULT_NAME):
         """Creates Server which expects TCP as a transport layer protocol
@@ -81,7 +81,7 @@ class Rammbock(object):
         self.server_should_not_be_running(name, "TCP")
         self._servers[name] = TCPServer(name)
         self._servers[name].server_startup(ip, port)
-        self.last_created_server = name
+        self._last_created_server = name
 
     def server_should_not_be_running(self, name, protocol=""):
         """Raises exception if given server exist
@@ -153,12 +153,12 @@ class Rammbock(object):
 
     def _use_latest_client_name_if_name_not_present(self, name):
         if not name:
-            return self.last_created_client
+            return self._last_created_client
         return name
 
     def _use_latest_server_name_if_name_not_present(self, name):
         if not name:
-            return self.last_created_server
+            return self._last_created_server
         return name
 
     def server_accepts_tcp_connection(self, server_name=None, connection_alias=None):
@@ -203,7 +203,7 @@ class Rammbock(object):
 
         self.client_should_not_be_running(name, "UDP")
         self._clients[name] = UDPClient(name, ip)
-        self.last_created_client = name
+        self._last_created_client = name
 
     def create_sctp_client(self, name=Client.DEFAULT_NAME, ip=None):
         """ Creates SCTP Client. Name and IP-address of the client can be given
@@ -215,7 +215,7 @@ class Rammbock(object):
         """
         self.client_should_not_be_running(name, "SCTP")
         self._clients[name] = SCTPClient(name, ip)
-        self.last_created_client = name
+        self._last_created_client = name
 
     def create_tcp_client(self, name=Client.DEFAULT_NAME, ip=None):
         """ Creates TCP Client. Name and IP-address of the client can be given
@@ -227,7 +227,7 @@ class Rammbock(object):
         """
         self.client_should_not_be_running(name, "TCP")
         self._clients[name] = TCPClient(name, ip)
-        self.last_created_client = name
+        self._last_created_client = name
 
     def delete_client(self, name=None):
         """ Deletes given client. If no client name stated, deletes last created.
