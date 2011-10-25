@@ -428,6 +428,13 @@ class Rammbock(object):
             self.add_decimal_as_bits(int(nmbr[0]), 4)
 
     def add_ip(self, address):
+        """
+        Add ip 'address' as hex. Every ip-number field is expressed as two number hexadecimal.
+
+
+        Example:
+        | Add Ip | 10.0.0.1 |
+        """
         if not IP_REGEX.match(address):
             raise Exception("Not a valid ip Address")
         for a in address.split('.'):
