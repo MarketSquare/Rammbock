@@ -327,7 +327,7 @@ class Rammbock(object):
             length = len(value)
         self._data += value.rjust(int(length), '\0')
 
-    def add_decimal_as_octets(self, value, length):
+    def add_integer_as_octets(self, value, length):
         """
         Adds decimal number as octets. Length as octest can be give. Python base prefixes can be used.
 
@@ -361,7 +361,10 @@ class Rammbock(object):
 
     def _convert_to_hex_and_add_padding(self, value, length):
     # TODO: we are injecting with eval
-        data = hex(int(eval(value)))[2:]
+        try:
+            data = hex(int(eval(value)))[2:]
+        except NameError:
+            raise Exception('Value is not valid hex')
         if data.endswith('L'):
             data = data[:-1]
         return data.rjust(int(length)*2, '0')
@@ -431,7 +434,7 @@ class Rammbock(object):
         if not IP_REGEX.match(address):
             raise Exception("Not a valid ip Address")
         for a in address.split('.'):
-            self.add_decimal_as_octets(a, 1)
+            self.add_integer_as_octets(a, 1)
 
     def add_hex_data(self, data, length):
         if int(length) < len(data[2:])/2:

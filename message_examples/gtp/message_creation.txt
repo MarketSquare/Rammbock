@@ -4,11 +4,11 @@ Library         Rammbock
 *** Keywords ***
 Add Flags
     [Arguments]  ${flags}
-    Add Decimal as Octets  ${flags}  1
+    Add Integer as Octets  ${flags}  1
 
 Add Message Type
     [Arguments]  ${type}
-    Add Decimal as Octets  ${type}  1
+    Add Integer as Octets  ${type}  1
 
 Add Message Type And Length
     [Arguments]  ${type}  ${length}
@@ -17,25 +17,25 @@ Add Message Type And Length
 
 Add Message Length
     [Arguments]  ${length}
-    Add Decimal as Octets  ${length}  2
+    Add Integer as Octets  ${length}  2
 
 Add Tunnel Endpoint Identifier
     [Arguments]  ${id}
-    Add Decimal as Octets  ${id}  4
+    Add Integer as Octets  ${id}  4
 
 Add Sequence Number
     [Arguments]  ${no}
-    Add Decimal as Octets  ${no}  3
+    Add Integer as Octets  ${no}  3
 
 Add Spare Octets
     [Arguments]  ${amount}
-    Add Decimal as Octets  0  ${amount}
+    Add Integer as Octets  0  ${amount}
 
 Add International Mobile Subscriber Identity (IMSI)
     [Arguments]  ${imsi}
-    Add Decimal as Octets  ${ie_type.imsi}  1
-    Add Decimal as Octets  8  2  # IE Length: 8
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Integer as Octets  ${ie_type.imsi}  1
+    Add Integer as Octets  8  2  # IE Length: 8
+    Add Integer as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Tbcd  ${imsi}  ${EMPTY}  # IMSI(International Mobile Subscriber Identity number): 262120000000001
 
 Add MSISDN
@@ -64,85 +64,85 @@ Add Tracking Area Identity(TAI)
     [Arguments]  ${mcc}  ${mnc}
     Add Tbcd  ${mcc}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
     Add Tbcd  ${mnc}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
-    Add Decimal as Octets  1  2  # Tracking Area Code: 1
+    Add Integer as Octets  1  2  # Tracking Area Code: 1
 
 Add E-UTRAN Cell Global Identifier (ECGI)
     [Arguments]  ${mcc}  ${mnc}
     Add Tbcd  ${mcc}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
     Add Tbcd  ${mnc}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
-    Add Decimal as Octets  234  4  # Spare: 0, ECI (E-UTRAN Cell Identifier): 234
+    Add Integer as Octets  234  4  # Spare: 0, ECI (E-UTRAN Cell Identifier): 234
 
 Add Serving Network
     [Arguments]  ${mcc}  ${mnc}
     Add Ie type and length  ${ie_type.serving_network}  3
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Integer as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add Tbcd  ${mcc}  # Mobile Country Code (MCC): Germany (Federal Republic of) (262)
     Add Tbcd  ${mnc}  # Mobile Network Code (MNC): Dolphin Telecom (Deutschland) GmbH (12)
 
 Add RAT Type
     [Arguments]  ${rat_type}
     Add Ie type and length  ${ie_type.rat_type}  1
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  ${rat_type}  1  # RAT Type: EUTRAN (6)
+    Add Integer as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Integer as Octets  ${rat_type}  1  # RAT Type: EUTRAN (6)
 
 Add Indication
     Add Ie type and length  ${ie_type.indication}  2
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  0  1  # 0... .... = DAF (Dual Address Bearer Flag): False, .0.. .... = DTF (Direct Tunnel Flag): False, ..0. .... = HI (Handover Indication): False, ...0 .... = DFI (Direct Forwarding Indication): False, .... 0... = OI (Operation Indication): False, .... .0.. = ISRSI (Idle mode Signalling Reduction Supported Indication): False, .... ..0. = ISRAI (Idle mode Signalling Reduction Activation Indication): False, .... ...0 = SGWCI (SGW Change Indication): False
-    Add Decimal as Octets  0  1  # .... 0... = PT (Protocol Type): False, .... .0.. = TDI (Teardown Indication): False, .... ..0. = SI (Scope Indication): False, .... ...0 = MSV (MS Validated): False
+    Add Integer as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Integer as Octets  0  1  # 0... .... = DAF (Dual Address Bearer Flag): False, .0.. .... = DTF (Direct Tunnel Flag): False, ..0. .... = HI (Handover Indication): False, ...0 .... = DFI (Direct Forwarding Indication): False, .... 0... = OI (Operation Indication): False, .... .0.. = ISRSI (Idle mode Signalling Reduction Supported Indication): False, .... ..0. = ISRAI (Idle mode Signalling Reduction Activation Indication): False, .... ...0 = SGWCI (SGW Change Indication): False
+    Add Integer as Octets  0  1  # .... 0... = PT (Protocol Type): False, .... .0.. = TDI (Teardown Indication): False, .... ..0. = SI (Scope Indication): False, .... ...0 = MSV (MS Validated): False
 
 Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)
     [Arguments]  ${teidgre}  ${ip}  ${flags}
     Add Ie Type And Length  ${ie_type.fteid}  9
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  ${flags}  1  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
-    Add Decimal as Octets  ${teidgre}  4  # TEID/GRE Key: 50331665
+    Add Integer as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Integer as Octets  ${flags}  1  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
+    Add Integer as Octets  ${teidgre}  4  # TEID/GRE Key: 50331665
     Add Ip  ${ip}
 
 Add Access Point Name (APN)
     [Arguments]  ${apn}
     ${length}=  Get Length  ${apn}
     Add Ie type and length  ${ie_type.apn}  ${length}
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Integer as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add String  ${apn}  ${EMPTY}  # APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs
 
 Add Selection Mode
     Add ie type and length  ${ie_type.selection_mode}  1
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  252  1  # .... ..00 = Selection Mode: MS or network provided APN, subscribed verified (0)
+    Add Integer as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Integer as Octets  252  1  # .... ..00 = Selection Mode: MS or network provided APN, subscribed verified (0)
 
 Add PDN Type
     Add ie type and length  ${ie_type.pdn_type}  1
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  1  1  # .... .001 = PDN Type: IPv4 (1)
+    Add Integer as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Integer as Octets  1  1  # .... .001 = PDN Type: IPv4 (1)
 
 Add PDN Address Allocation (PAA)
     [Arguments]  ${ip}
     Add Ie Type And Length  ${ie_type.paa}  5
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  1  1  # .... .001 = PDN Type: IPv4 (1)
+    Add Integer as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Integer as Octets  1  1  # .... .001 = PDN Type: IPv4 (1)
     Add Ip  ${ip}
 
 Add APN Restriction
     Add Ie Type And Length  ${ie_type.apn_restriction}  1
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  0  1  # APN Restriction: 0
+    Add Integer as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Integer as Octets  0  1  # APN Restriction: 0
 
 Add Aggregate Maximum Bit Rate (AMBR)
     Add ie type and length  ${ie_type.ambr}  8
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  2  4  # AMBR Uplink (Aggregate Maximum Bit Rate for Uplink): 2
-    Add Decimal as Octets  1  4  # AMBR Downlink(Aggregate Maximum Bit Rate for Downlink): 1
+    Add Integer as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Integer as Octets  2  4  # AMBR Uplink (Aggregate Maximum Bit Rate for Uplink): 2
+    Add Integer as Octets  1  4  # AMBR Downlink(Aggregate Maximum Bit Rate for Downlink): 1
 
 Add Bearer Context with EBI and Bearer qos
     Add ie type and length  ${ie_type.bearer_context}  31
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Integer as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     Add EPS Bearer ID (EBI)  5
     Add Bearer Level Quality of Service (Bearer QoS)
 
 Add Bearer Context with EBI, Cause, F-TEID and CI
     Add ie type and length  ${ie_type.bearer_context}  45
-    Add Decimal As Octets  0  1  # cr-flags and instance
+    Add Integer as Octets  0  1  # cr-flags and instance
     Add EPS Bearer ID (EBI)  5
     Add Cause  ${cause.request_accepted}
     Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  12345  10.102.10.11  129
@@ -152,48 +152,48 @@ Add Bearer Context with EBI, Cause, F-TEID and CI
 Add EPS Bearer ID (EBI)
     [Arguments]  ${id}
     Add ie type and length  ${ie_type.ebi}  1
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  ${id}  1  # .... 0101 = EPS Bearer ID (EBI): 5
+    Add Integer as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Integer as Octets  ${id}  1  # .... 0101 = EPS Bearer ID (EBI): 5
 
 Add Bearer Context With EBI, Cause and F-TEID
     add ie type and length  ${ie_type.bearer_context}  24
-    Add decimal As Octets  0  1  # cr-flag and instance
+    Add Integer as Octets  0  1  # cr-flag and instance
     Add EPS Bearer ID (EBI)  5
     Add Cause  ${cause.request_accepted}
     Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  12345  10.102.10.11  129
 
 Add Bearer Level Quality of Service (Bearer QoS)
     Add Ie Type And length  ${ie_type.bearer_qos}  22
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  4  1  # .... ...0 = PVI (Pre-emption Vulnerability): False, ..00 01.. = PL (Priority Level): 1, .0.. .... = PCI (Pre-emption Capability): False
-    Add Decimal as Octets  9  1  # Label (QCI): 9
-    Add Decimal as Octets  0  5  # Maximum Bit Rate For Uplink: 0
-    Add Decimal as Octets  0  5  # Maximum Bit Rate For Downlink: 0
-    Add Decimal as Octets  0  5  # Guaranteed Bit Rate For Uplink: 0
-    Add Decimal as Octets  0  5  # Guaranteed Bit Rate For Downlink: 0
+    Add Integer as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Integer as Octets  4  1  # .... ...0 = PVI (Pre-emption Vulnerability): False, ..00 01.. = PL (Priority Level): 1, .0.. .... = PCI (Pre-emption Capability): False
+    Add Integer as Octets  9  1  # Label (QCI): 9
+    Add Integer as Octets  0  5  # Maximum Bit Rate For Uplink: 0
+    Add Integer as Octets  0  5  # Maximum Bit Rate For Downlink: 0
+    Add Integer as Octets  0  5  # Guaranteed Bit Rate For Uplink: 0
+    Add Integer as Octets  0  5  # Guaranteed Bit Rate For Downlink: 0
 
 Add Recovery (Restart Counter)
     [Arguments]  ${value}
     Add Ie Type And length  ${ie_type.recovery_restart_counter}  1
-    Add decimal as octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  ${value}  1  # Restart Counter: 1
+    Add Integer as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Integer as Octets  ${value}  1  # Restart Counter: 1
 
 Add UE Time Zone
     Add ie type and length  ${ie_type.ue_time_zone}  2
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  8  1  # Time Zone: 8
-    Add Decimal as Octets  0  1  # .... ..00 = Daylight Saving Time: No Adjustments for Daylight Saving Time (0)
+    Add Integer as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Integer as Octets  8  1  # Time Zone: 8
+    Add Integer as Octets  0  1  # .... ..00 = Daylight Saving Time: No Adjustments for Daylight Saving Time (0)
 
 Add Charging Characteristics
     Add Ie type and length  ${ie_type.charging_characteristics}  2
-    Add Decimal as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
-    Add Decimal as Octets  12800  2  # Charging Characteristic: 12800
+    Add Integer as Octets  0  1  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
+    Add Integer as Octets  12800  2  # Charging Characteristic: 12800
 
 Add Cause
     [Arguments]  ${cause}
     Add ie type and length  ${ie_type.cause}  2
-    Add Decimal as Octets  0  1  # cr-flags and instance
-    Add Decimal As Octets  ${cause}  1
+    Add Integer as Octets  0  1  # cr-flags and instance
+    Add Integer as Octets  ${cause}  1
     Add spare bits  5
     add decimal as bits  0  3
 
@@ -201,29 +201,29 @@ Add Fully Qualified Domain Name (FQDN)
     [Arguments]  ${domain}
     ${length}=  Get Length  ${domain}
     Add ie type and length  ${ie_type.fqdn}  ${length}
-    Add Decimal As Octets  0  1  # cr-flags and instance
+    Add Integer as Octets  0  1  # cr-flags and instance
     Add String  ${domain}
 
 Add Ip Address
     [Arguments]  ${ip}
     Add ie type and length  ${ie_type.ip_address}  4
-    Add Decimal As Octets  0  1  # cr-flags and instance
+    Add Integer as Octets  0  1  # cr-flags and instance
     Add Ip  ${ip}
 
 Add ie type and length
     [Arguments]  ${iet}  ${iel}
-    Add Decimal As Octets  ${iet}  1
-    Add Decimal As Octets  ${iel}  2
+    Add Integer as Octets  ${iet}  1
+    Add Integer as Octets  ${iel}  2
 
 Add Charging Id
     [Arguments]  ${cid}
     Add Ie Type And length  ${ie_type.charging_id}  4
-    Add Decimal As Octets  0  1  # cr-flags and instance
-    Add Decimal As Octets  ${cid}  4  # charging id
+    Add Integer as Octets  0  1  # cr-flags and instance
+    Add Integer as Octets  ${cid}  4  # charging id
 
 Add Bearer Context With EBI and F-TEID
     Add Ie Type And Length  ${ie_type.bearer_context}  18
-    add Decimal As Octets  0  1  # cr-flags and instance
+    Add Integer as Octets  0  1  # cr-flags and instance
     Add EPS Bearer ID (EBI)  5
     Add Fully Qualified Tunnel Endpoint Identifier (F-TEID)  12345  10.140.67.93  128
 

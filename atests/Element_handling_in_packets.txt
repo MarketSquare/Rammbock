@@ -32,7 +32,7 @@ Encode Message with multiple data fields containing bits
 
 Try Encode too long decimal data as octets
     Reset Message
-    Run Keyword And Expect Error  Value is too big for length  Add Decimal As Octets  300  1
+    Run Keyword And Expect Error  Value is too big for length  Add Integer as Octets  300  1
 
 Try to encode too long decimal as bits
     Reset Message
@@ -100,7 +100,7 @@ Try To Read Too Many Bits From Bitstream Data
 
 Encode And Decode Message with raw hex data
     Reset Message
-    Add hex data  0xe36006e2  4
+    Add Integer As Octets  0xe36006e2  4
     Client Sends Data
     Server Receives Data
     ${value}=  read hex data  4
@@ -108,11 +108,11 @@ Encode And Decode Message with raw hex data
 
 Try to add Too big hex data
     Reset Message
-    Run keyword and expect error  Value is too big for length  Add hex data  0xe36006e2  3
+    Run keyword and expect error  Value is too big for length  Add Integer as Octets  0xe36006e2  3
 
 Try to add hex with wrong format
     Reset Message
-    Run keyword and expect error  Value is not valid hex  Add hex data  GGGGG  4
+    Run keyword and expect error  Value is not valid hex  Add Integer as Octets  GGGGG  4
 
 Read Binary
     Add Decimal As Bits  255  8
@@ -126,25 +126,25 @@ add string with different encodings
     test scandinavian string with encoding  ääööåå  utf-8
 
 Add Number with Hex Prefix
-    Add Decimal As Octets  0xff  1
+    Add Integer as Octets  0xff  1
     ${data}=  Read From Data  1
     Should Be Equal As Integers  255  ${data}
 
 Add Number wit Bit Prefix
-    Add Decimal As Octets  0B11111111  1
+    Add Integer as Octets  0B11111111  1
     ${data}=  Read From Data  1
     Should Be Equal As Integers  255  ${data}
 
 Add Number wit Octal Prefix
-    Add Decimal As Octets  0O377  1
+    Add Integer as Octets  0O377  1
     ${data}=  Read From Data  1
     Should Be Equal As Integers  255  ${data}
 
 *** Keywords ***
 Create Message and add two decimals as octets
     Reset Message
-    Add Decimal as Octets  72  1
-    Add Decimal as Octets  216  2
+    Add Integer as Octets  72  1
+    Add Integer as Octets  216  2
 
 Create Message And Add Bitstream data
     Reset Message
@@ -159,12 +159,12 @@ Create Message And Add Multiple bitstream fields
 
 Create Message and Add Decimal as octets
     Reset Message
-    Add Decimal as Octets  72  1
+    Add Integer as Octets  72  1
 
 Create Message And Add Strings and Decimals and Binary as octets
     Reset Message
-    Add Decimal as Octets  255  1
-    Add Decimal as Octets  4  2
+    Add Integer as Octets  255  1
+    Add Integer as Octets  4  2
     Add Decimal As Bits  63  6
     Add Decimal As Bits  3  6
     Add Decimal As Bits  10  4
