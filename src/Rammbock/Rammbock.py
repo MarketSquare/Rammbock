@@ -344,8 +344,6 @@ class Rammbock(object):
             self._data += pack('B', int(data[:2], 16))
             data = data[2:]
 
-    # TODO: add octets and add bits. both support several bases
-    # TODO: add as bits. b1010111 kuinka base annetaan robotissa?
     def add_decimal_as_bits(self, value, length):
         data = d2b(int(value))[1:].rjust(int(length), '0')
         if len(data) > int(length):
