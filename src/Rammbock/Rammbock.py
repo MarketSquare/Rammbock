@@ -408,6 +408,12 @@ class Rammbock(object):
         return self._data.decode(encoding)
 
     def read_integer_from_octets(self, length):
+        """
+        Reads integer from message. 'lenght' how many octets are read can be stated.
+
+        Examples:
+        | ${ie_1} | Read Integer From Octets | 2 |
+        """
         if not int(length):
             return
         return str(int("".join(self._read_from_data(int(length))), 16))
