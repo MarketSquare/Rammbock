@@ -311,11 +311,12 @@ class Rammbock(object):
         self._binary = ""
 
     # TODO: add encoding argument
-    def add_string(self, value, length=None, encoding='utf-8'):
-        value = value.encode(encoding)
+    def add_string(self, value, length=None, encoding=None):
+        if encoding:
+            value = value.encode(encoding)
         if not length:
             length = len(value)
-        self._data += value.rjust(int(length), '\0')
+        self._data += str(value).rjust(int(length), '\0')
 
     # TODO: add octets and add bits. both support several bases.
     def add_decimal_as_octets(self, value, length):
@@ -357,11 +358,11 @@ class Rammbock(object):
         with open(file,'w') as writeable:
             writeable.write(self._data)
 
-    def _read_until(self, delimiter=None, encoding='utf-8'):
+    def _read_until(self, delimiter=None):
         if delimiter:
             i,self._data = self._data.split(str(delimiter),1)
-            return i.decode(encoding)
-        return self._data.decode(encoding)
+            return i
+        return self._data
 
     def read_from_data(self, length):
         if not int(length):
@@ -445,14 +446,20 @@ class Rammbock(object):
     def read_ip_from_hex(self):
         return  ".".join(str(self.read_from_data(1)) for _ in range(4))
 
-    def read_string(self, length=None, delimiter=None, encoding='utf-8'):
-        if not delimiter and not length:
-            return self._read_until(None, encoding)
+    def read_string(self, length=None, delimiter=None, encoding=None):
+        read = ""
         if delimiter:
-            return self._read_until(delimiter, encoding)
-        string = self._data[:int(length)]
-        self._data = self._data[int(length):]
-        return string.decode(encoding)
+            read = self._read_until(delimiter)
+        elif length:
+            if length == "*":
+                read = self._data
+                self._date = ""
+            else:
+                read = self._data[:int(length)]
+                self._data = self._data[int(length):]
+        if encoding:
+            return read.decode(encoding)
+        return read
 
     def sctp_should_be_supported(self):
         if not Server.SCTP_ENABLED:
