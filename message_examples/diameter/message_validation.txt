@@ -199,7 +199,7 @@ Validate AVP: Destination-Host
     ${length}=  Get Length  ${destination_host}
     Validate AVP Length  ${length + 8}
     ${destination_host-act}=  Read String  ${length}
-    Should Be Equal  ${destination_host}  ${destination_host-act}
+    should be equal as strings  ${destination_host}  ${destination_host-act}
     Read Padding after String Data  ${length}
 
 Validate AVP: Destination-realm
@@ -207,8 +207,9 @@ Validate AVP: Destination-realm
     Validate AVP Code And Flags  ${avp_code.destination_realm}  0x40
     ${length}=  Get Length  ${destination_realm}
     Validate Avp Length  ${length + 8}
-    ${destination_realm-act}=  Read String  ${length}  encoding=ascii
-    Should Be Equal  ${destination_realm}  ${destination_realm-act}
+    Log  ${length}
+    ${destination_realm-act}=  Read String  ${length}
+    Should Be Equal As Strings  ${destination_realm}  ${destination_realm-act}
     Read Padding After String Data  ${length}
 
 Validate AVP: User-Name

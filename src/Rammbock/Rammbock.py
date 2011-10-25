@@ -313,7 +313,7 @@ class Rammbock(object):
         self._binary = ""
 
     # TODO: add encoding argument
-    def add_string(self, value, length=None, encoding='utf-8'):
+    def add_string(self, value, length=None, encoding=None):
         """
         Add string to the message. 'value' is string, 'length' adds possible padding to end of the string. 'encoding' sets encoding, utf-8 is default.
 
@@ -322,10 +322,11 @@ class Rammbock(object):
         | Add String | Host: www.nokiasiemensnetworks.com | encoding=unicode | | # add string in unicode |
         | Add String | Host: www.nokiasiemensnetworks.com | 25 | unicode | # add string of length 25 in unicode |
         """
-        value = value.encode(encoding)
+        if encoding:
+            value = value.encode(encoding)
         if not length:
             length = len(value)
-        self._data += value.rjust(int(length), '\0')
+        self._data += str(value).rjust(int(length), '\0')
 
     def add_integer_as_octets(self, value, length):
         """
@@ -462,14 +463,20 @@ class Rammbock(object):
     def read_ip_from_hex(self):
         return  ".".join(str(self.read_from_data(1)) for _ in range(4))
 
-    def read_string(self, length=None, delimiter=None, encoding='utf-8'):
-        if not delimiter and not length:
-            return self._read_until(None, encoding)
+    def read_string(self, length=None, delimiter=None, encoding=None):
+        read = ""
         if delimiter:
-            return self._read_until(delimiter, encoding)
-        string = self._data[:int(length)]
-        self._data = self._data[int(length):]
-        return string.decode(encoding)
+            read = self._read_until(delimiter)
+        elif length:
+            if length == "*":
+                read = self._data
+                self._date = ""
+            else:
+                read = self._data[:int(length)]
+                self._data = self._data[int(length):]
+        if encoding:
+            return read.decode(encoding)
+        return read
 
     def sctp_should_be_supported(self):
         if not Server.SCTP_ENABLED:
