@@ -135,6 +135,11 @@ Add Number wit Bit Prefix
     ${data}=  Read From Data  1
     Should Be Equal As Integers  255  ${data}
 
+Add Number wit Octal Prefix
+    Add Decimal As Octets  0O377  1
+    ${data}=  Read From Data  1
+    Should Be Equal As Integers  255  ${data}
+
 *** Keywords ***
 Create Message and add two decimals as octets
     Reset Message
