@@ -525,6 +525,19 @@ class Rammbock(object):
         return  ".".join(str(self.read_integer_from_octets(1)) for _ in range(4))
 
     def read_string(self, length=None, delimiter=None, encoding=None):
+        """
+        Reads string of text from message. 
+        If delimiter is given, tries to read untitil given delimiter is found. 
+        If length is given reads the amount of bytes and converts it to string.
+        If encoding parameter is given converts the string to given encoding.
+        Note that if we read utf-8 characters like &ouml; or &auml; the character length
+        is more than 1 byte
+
+        Examples:
+        | Read String | length=10 |
+        | Read String | delimiter=\\n |
+        | Read String | length=10 | encoding=utf-8 |
+        """
         read = ""
         if delimiter:
             read = self._read_until(delimiter)
