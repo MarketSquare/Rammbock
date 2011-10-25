@@ -41,7 +41,7 @@ Validate Create Session Request
     Validate Message Length  216
     Validate Tunnel Endpoint Identifier  0
     Validate Sequence Number  48
-    Read From Data  1  # Read spare octets
+    Read Integer From Octets  1  # Read spare octets
     Validate International Mobile Subscriber Identity (IMSI)  262120000000001
     Validate MSISDN  358  6100000000001
     Validate User Location Info (ULI)  ${MCC}  ${MNC}
@@ -84,7 +84,7 @@ Validate Create Session Response
     Validate Message Length  136
     Validate Tunnel Endpoint Identifier  50331665
     Validate Sequence Number  48
-    Read From Data  1  # spare
+    Read Integer From Octets  1  # spare
     Validate Cause  ${cause.request_accepted}
     Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  123564  10.102.250.95  139
     Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  789889  10.102.185.69  135
@@ -112,7 +112,7 @@ Validate Modify Bearer Request
     Validate Message Length  55
     Validate Tunnel Endpoint Identifier  126534
     Validate Sequence Number  49
-    Read From Data  1  # spare
+    Read Integer From Octets  1  # spare
     Validate Indication
     Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)  50331665  192.168.112.10  138
     Validate Bearer Context With EBI and F-TEID
@@ -134,7 +134,7 @@ Validate Modify Bearer Response
     Validate Message Length  47
     Validate Tunnel Endpoint Identifier  50331665
     Validate Sequence Number  49
-    Read From Data  1  # spare
+    Read Integer From Octets  1  # spare
     Validate Cause  ${cause.request_accepted}
     Validate Bearer Context With EBI, Cause and F-TEID
     Validate Recovery (Restart Counter)  13
@@ -154,7 +154,7 @@ Validate Delete Session Request
     Validate Message Type And Length  ${message_type.delete_session_request}  36
     Validate Tunnel Endpoint Identifier  126534
     Validate Sequence Number  50
-    Read From Data  1  # spare
+    Read Integer From Octets  1  # spare
     Validate EPS Bearer ID (EBI)  5
     Validate User Location Info (ULI)  ${MCC}  ${MNC}
     Validate Indication
@@ -174,7 +174,7 @@ Validate Delete Session Response
     Validate Message Length  19
     Validate Tunnel Endpoint Identifier  50331665
     Validate Sequence Number  50
-    Read From Data  1  # read spare
+    Read Integer From Octets  1  # read spare
     Validate Cause  ${cause.request_accepted}
     Validate Recovery (Restart Counter)  13
 

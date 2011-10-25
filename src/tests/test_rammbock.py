@@ -56,7 +56,7 @@ class TestNumberFormatting(unittest.TestCase):
 
     def test_read_from_data(self):
         rammbock.add_integer_as_octets(50331665,4)
-        a = rammbock.read_from_data(4)
+        a = rammbock.read_integer_from_octets(4)
         print a
         assert a == "50331665"
 
@@ -70,7 +70,7 @@ class TestSpeed():
         a = "a" * 10000
         rammbock._data = a
         s = time()
-        rammbock.read_from_data(len(a))
+        rammbock.read_integer_from_octets(len(a))
         b = time()
         print b-s
         assert b-s < 0.5
