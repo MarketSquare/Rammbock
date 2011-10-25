@@ -327,8 +327,16 @@ class Rammbock(object):
             length = len(value)
         self._data += value.rjust(int(length), '\0')
 
-    # TODO: add octets and add bits. both support several bases.
     def add_decimal_as_octets(self, value, length):
+        """
+        Adds decimal number as octets. Length as octest can be give. Base prefixes can be used.
+
+        Examples:
+        | Add Decimal as Octets | 42 | 1 | #Adds number 42 as one octet to message. |
+        | Add Decimal as Octets | 42 | 2 | #Adds number 42 as two octets to message. Padding is added |
+        | Add Decimal as Octets | 0x2A | 1 | #Adds number 42 presented as hexadecimal as one octet to message. |
+        | Add Decimal as Octets | 0B00101010 | 1 | #Adds number 42 as one octet to message. |
+        """
         value = str(value)
         if not int(length):
             return
@@ -339,6 +347,7 @@ class Rammbock(object):
             self._data += pack('B', int(data[:2], 16))
             data = data[2:]
 
+    # TODO: add octets and add bits. both support several bases
     # TODO: add as bits. b1010111 kuinka base annetaan robotissa?
     def add_decimal_as_bits(self, value, length):
         data = d2b(int(value))[1:].rjust(int(length), '0')
