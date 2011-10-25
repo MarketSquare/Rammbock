@@ -326,14 +326,14 @@ class Rammbock(object):
 
     def add_integer_as_octets(self, value, length, base=10):
         """
-        Adds decimal number as octets. Length as octest can be give. base can be stated as an argument.
+        Adds decimal number as octets. Length as octets can be give. base can be stated as an argument.
 
         Examples:
         | Add Decimal as Octets | 42 | 1 | |#Adds number 42 as one octet to message. |
         | Add Decimal as Octets | 42 | 2 | |#Adds number 42 as two octets to message. Padding is added |
         | Add Decimal as Octets | 2A | 1 | 16 |#Adds number 42 presented as hexadecimal in one octet to message. |
-        | Add Decimal as Octets | 0B00101010 | 1 | 2 | #Adds number 42 presented as bit in one octet to message. |
-        | Add Decimal as Octets | 0O52 | 1 | 8|  #Adds number 42 presented as octal in one octet to message. |
+        | Add Decimal as Octets | 00101010 | 1 | 2 | #Adds number 42 presented as bit in one octet to message. |
+        | Add Decimal as Octets | 52 | 1 | 8|  #Adds number 42 presented as octal in one octet to message. |
         """
         value = str(int(str(value), int(base)))
         if not int(length):
