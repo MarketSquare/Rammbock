@@ -40,7 +40,6 @@ class Rammbock(object):
         self._servers = {}
         self._clients = {}
         self._binary = ""
-        self._tbcd = ""
         self._last_created_server = None
         self._last_created_client = None
 
@@ -200,7 +199,6 @@ class Rammbock(object):
         | Create UDP Client | DNS_Client1 |  | # Name is given |
         | Create UDP Client | | | |
         """
-
         self.client_should_not_be_running(name, "UDP")
         self._clients[name] = UDPClient(name, ip)
         self._last_created_client = name
@@ -248,14 +246,12 @@ class Rammbock(object):
         | Client Sends Data | FooBar | |
         | Client Sends Data | FooBar | HTTP_Client1 |
         """
-
         client_name = self._use_latest_client_name_if_name_not_present(client_name)
         self.client_should_be_running(client_name)
         if data:
             self._clients[client_name].send_packet(data)
         else:
             self._clients[client_name].send_packet(self._data)
-            print "Data sent:", self._data
 
     def server_receives_data(self, name=None, connection_alias=None):
         """ Server receives data from client. Name and connection alias can be stated.
