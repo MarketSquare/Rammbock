@@ -1,0 +1,18 @@
+*** Settings ***
+Default Tags    regression
+Library         OperatingSystem
+Resource        resources/server_client.txt
+
+*** Test Cases ***
+log message to file
+    [Setup]  file should not exist  tempfile
+    Set message  fdsafdsafdsafdsa
+    log message to file and check it exists  tempfile
+    [Teardown]  remove file  tempfile
+
+*** Keywords ***
+log message to file and check it exists
+    [Arguments]  ${file}
+    log message to file  ${file}
+    file should exist  ${file}
+

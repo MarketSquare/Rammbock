@@ -375,12 +375,29 @@ class Rammbock(object):
         self._data = message
 
     def get_message(self):
+        """
+        Returns the current message as hex stream.
+
+        Examples:
+        | Get Message |
+        """
         return self._data
 
     def log_message(self, level="INFO"):
         print '*' + level + '*', self._data
 
     def log_message_to_file(self, file):
+        """
+        Logs current message into a file. If file given as parameter is present, 
+        this keyword will overwrite it. File will be created to working directory
+        if full path is not given.
+
+        Examples:
+        | Log Message To File | foo | # logs current message to file called foo to working directory|
+        | Log Message To File | /tmp/foo | # logs current message to file called foo in /tmp/ directory |
+        | Log Message To File | C:\temp\foo | # logs current message to file called foo in  C:\temp\ directory |
+
+        """
         with open(file,'w') as writeable:
             writeable.write(self._data)
 
