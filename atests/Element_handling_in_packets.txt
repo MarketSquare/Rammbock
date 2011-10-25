@@ -131,14 +131,12 @@ Add Number with Hex Prefix
     Should Be Equal As Integers  255  ${data}
 
 Add Number wit Bit Prefix
-    [Tags]  ${EMPTY}
-    Add Integer as Octets  0b11111111  1
+    Add Integer as Octets  11111111  1  2
     ${data}=  Read From Data  1
     Should Be Equal As Integers  255  ${data}
 
 Add Number wit Octal Prefix
-    [Tags]  ${EMPTY}
-    Add Integer as Octets  0o377  1
+    Add Integer as Octets  377  1  8
     ${data}=  Read From Data  1
     Should Be Equal As Integers  255  ${data}
 
