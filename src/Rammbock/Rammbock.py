@@ -420,7 +420,13 @@ class Rammbock(object):
             return i.decode(encoding)
         return self._data.decode(encoding)
 
-    def read_from_data(self, length):
+    def read_integer_from_octets(self, length):
+        """
+        Reads integer from message. 'lenght' how many octets are read can be stated.
+
+        Examples:
+        | ${ie_1} | Read Integer From Octets | 2 |
+        """
         if not int(length):
             return
         return str(int("".join(self._read_from_data(int(length))), 16))
@@ -485,7 +491,7 @@ class Rammbock(object):
         a = ""
         if not no_prefix:
             a += "0x"
-        return a + "".join(hex(int(self.read_from_data(1)))[2:].rjust(2, '0') for _ in range(int(length)))
+        return a + "".join(hex(int(self.read_integer_from_octets(1)))[2:].rjust(2, '0') for _ in range(int(length)))
 
     def read_tbcd(self, amount):
         """
@@ -516,7 +522,7 @@ class Rammbock(object):
         Examples:
         | ${ip_address}= | Read IP |
         """
-        return  ".".join(str(self.read_from_data(1)) for _ in range(4))
+        return  ".".join(str(self.read_integer_from_octets(1)) for _ in range(4))
 
     def read_string(self, length=None, delimiter=None, encoding=None):
         read = ""

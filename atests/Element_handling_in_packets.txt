@@ -131,17 +131,17 @@ read empty string
 
 Add Number with Hex Prefix
     Add Integer as Octets  ff  1  16
-    ${data}=  Read From Data  1
+    ${data}=  Read Integer From Octets  1
     Should Be Equal As Integers  255  ${data}
 
 Add Number wit Bit Prefix
     Add Integer as Octets  11111111  1  2
-    ${data}=  Read From Data  1
+    ${data}=  Read Integer From Octets  1
     Should Be Equal As Integers  255  ${data}
 
 Add Number wit Octal Prefix
     Add Integer as Octets  377  1  8
-    ${data}=  Read From Data  1
+    ${data}=  Read Integer From Octets  1
     Should Be Equal As Integers  255  ${data}
 
 *** Keywords ***
@@ -186,13 +186,13 @@ Receive data and checks it exists
 
 receive and validate message with single decimal
     Server Receives Data
-    ${flags}=  Read From Data  1
+    ${flags}=  Read Integer From Octets  1
     Should Be Equal  ${flags}  72
 
 Receive And Validate message with multiple decimals
     Server Receives Data
-    ${flags}=  Read From Data  1
-    ${message_length}=  Read From Data  2
+    ${flags}=  Read Integer From Octets  1
+    ${message_length}=  Read Integer From Octets  2
     Should Be Equal  ${flags}  72
     Should Be Equal  ${message_length}  216
 
@@ -212,8 +212,8 @@ Receive And Validate Message With multiple binary decimals
 
 Receive And Validate Message With Strings and Decimals and Binary As Octets
     Server Receives Data
-    ${value1}=  Read From Data  1
-    ${value2}=  Read From Data  2
+    ${value1}=  Read Integer From Octets  1
+    ${value2}=  Read Integer From Octets  2
     Should Be Equal  ${value1}  255
     Should Be Equal  ${value2}  4
     ${value1}=  Read Binary  6
