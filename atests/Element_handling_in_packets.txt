@@ -36,7 +36,7 @@ Try Encode too long decimal data as octets
 
 Try to encode too long decimal as bits
     Reset Message
-    Run Keyword And Expect Error  Value is too big for length  Add Decimal As Bits  256  1
+    Run Keyword And Expect Error  Value is too big for length  Add Integer as Bits  256  1
 
 Decode octets from message to single decimal
     Create Message and Add Decimal as octets
@@ -93,7 +93,7 @@ Encode and Decode message with ip-address
 
 Try To Read Too Many Bits From Bitstream Data
     Reset Message
-    Add Decimal As Bits  255  8
+    Add Integer as Bits  255  8
     Client Sends Data
     Server Receives Data
     Run keyword and expect error  Not enough bits to read  Read Binary  9
@@ -115,7 +115,7 @@ Try to add hex with wrong format
     Run keyword and expect error  ValueError: invalid literal for int() with base 16: 'GGGGG'  Add Integer as Octets  GGGGG  4  16
 
 Read Binary
-    Add Decimal As Bits  255  8
+    Add Integer as Bits  255  8
     ${bin}=  Read binary  4
     Should Be Equal As Numbers  ${bin}  15
     ${bin}=  Read binary  4
@@ -152,14 +152,14 @@ Create Message and add two decimals as octets
 
 Create Message And Add Bitstream data
     Reset Message
-    Add decimal as bits  255  8
+    Add Integer as Bits  255  8
     Client Sends Data
 
 Create Message And Add Multiple bitstream fields
     Reset Message
-    Add Decimal As Bits  32  6
-    Add Decimal As Bits  40  6
-    Add Decimal As Bits  15  4
+    Add Integer as Bits  32  6
+    Add Integer as Bits  40  6
+    Add Integer as Bits  15  4
 
 Create Message and Add Decimal as octets
     Reset Message
@@ -169,16 +169,16 @@ Create Message And Add Strings and Decimals and Binary as octets
     Reset Message
     Add Integer as Octets  255  1
     Add Integer as Octets  4  2
-    Add Decimal As Bits  63  6
-    Add Decimal As Bits  3  6
-    Add Decimal As Bits  10  4
+    Add Integer as Bits  63  6
+    Add Integer as Bits  3  6
+    Add Integer as Bits  10  4
     Add String  value
     Add String  ${SPACE}
     Add String  key
     Add String  \r\n
-    Add Decimal As Bits  63  6
-    Add Decimal As Bits  3  6
-    Add Decimal As Bits  10  4
+    Add Integer as Bits  63  6
+    Add Integer as Bits  3  6
+    Add Integer as Bits  10  4
 
 Receive data and checks it exists
     ${message}=  Server Receives Data

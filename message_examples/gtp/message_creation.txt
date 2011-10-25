@@ -42,23 +42,23 @@ Add MSISDN
     [Arguments]  ${country_code}  ${address_digits}
     Add Ie type and length  ${ie_type.msisdn}  8
     Add Spare Bits  4
-    Add Decimal as Bits  0  4  # Instance: 0
+    Add Integer as Bits  0  4  # Instance: 0
     Add Tbcd  ${country_code}  ${address_digits}
 
 Add User Location Info (ULI)
     [Arguments]  ${mcc}  ${mnc}
     Add Ie type and length  ${ie_type.uli}  13
-    Add Decimal as Bits  0  3  # 000. .... = CR flag
+    Add Integer as Bits  0  3  # 000. .... = CR flag
     Add Spare Bits  1
-    Add Decimal As Bits  0  4  # .... 0000 = Instance: 0
+    Add Integer as Bits  0  4  # .... 0000 = Instance: 0
     Add Spare Bits  3
-    Add Decimal as Bits  24  5  # ...1 .... = ECGI Present Flag): True, .... 1... = TAI Present Flag): True, .... .0.. = RAI Present Flag): False, .... ..0. = SAI Present Flag): False, .... ...0 = CGI Present Flag): False
+    Add Integer as Bits  24  5  # ...1 .... = ECGI Present Flag): True, .... 1... = TAI Present Flag): True, .... .0.. = RAI Present Flag): False, .... ..0. = SAI Present Flag): False, .... ...0 = CGI Present Flag): False
     Add Tracking Area Identity(TAI)  ${mcc}  ${mnc}
     Add E-UTRAN Cell Global Identifier (ECGI)  ${mcc}  ${mnc}
 
 Add Spare Bits
     [Arguments]  ${length}
-    Add Decimal as Bits  0  ${length}
+    Add Integer as Bits  0  ${length}
 
 Add Tracking Area Identity(TAI)
     [Arguments]  ${mcc}  ${mnc}
@@ -195,7 +195,7 @@ Add Cause
     Add Integer as Octets  0  1  # cr-flags and instance
     Add Integer as Octets  ${cause}  1
     Add spare bits  5
-    add decimal as bits  0  3
+    Add Integer as Bits  0  3
 
 Add Fully Qualified Domain Name (FQDN)
     [Arguments]  ${domain}

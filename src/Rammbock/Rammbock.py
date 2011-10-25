@@ -344,7 +344,7 @@ class Rammbock(object):
             self._data += pack('B', int(data[:2], 16))
             data = data[2:]
 
-    def add_decimal_as_bits(self, value, length):
+    def add_integer_as_bits(self, value, length):
         data = d2b(int(value))[1:].rjust(int(length), '0')
         if len(data) > int(length):
             raise Exception("Value is too big for length")
@@ -419,12 +419,12 @@ class Rammbock(object):
     def add_tbcd(self, *numbers):
         nmbr = "".join(numbers)
         while len(nmbr) > 1:
-            self.add_decimal_as_bits(int(nmbr[1]), 4)
-            self.add_decimal_as_bits(int(nmbr[0]), 4)
+            self.add_integer_as_bits(int(nmbr[1]), 4)
+            self.add_integer_as_bits(int(nmbr[0]), 4)
             nmbr = nmbr[2:]
         if nmbr:
-            self.add_decimal_as_bits(15, 4)
-            self.add_decimal_as_bits(int(nmbr[0]), 4)
+            self.add_integer_as_bits(15, 4)
+            self.add_integer_as_bits(int(nmbr[0]), 4)
 
     def add_ip(self, address):
         """
