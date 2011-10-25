@@ -144,6 +144,15 @@ Add Number wit Octal Prefix
     ${data}=  Read Integer From Octets  1
     Should Be Equal As Integers  255  ${data}
 
+Add Integer and read it as hex
+    Add Integer as Octets  42  1
+    ${data}=  Read Integer From Octets  1  16
+    Should Be Equal  0x2a  ${data}
+
+Add Integer and read it as wrong base
+    Add Integer as Octets  42  1
+    Run Keyword And Expect Error  Given base '18' is unknown  Read Integer From Octets  1  18
+
 *** Keywords ***
 Create Message and add two decimals as octets
     Reset Message

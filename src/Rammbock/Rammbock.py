@@ -420,7 +420,7 @@ class Rammbock(object):
             return i.decode(encoding)
         return self._data.decode(encoding)
 
-    def read_integer_from_octets(self, length):
+    def read_integer_from_octets(self, length, base = '10'):
         """
         Reads integer from message. 'lenght' how many octets are read can be stated.
 
@@ -429,7 +429,16 @@ class Rammbock(object):
         """
         if not int(length):
             return
-        return str(int("".join(self._read_from_data(int(length))), 16))
+        value = int("".join(self._read_from_data(int(length))), 16)
+        return str(self._transform_from_integer_to_given_base(value, base))
+
+    def _transform_from_integer_to_given_base(self, value, base):
+        if base == '10':
+            return value
+        elif base == '16':
+            return hex(value)
+        else:
+            raise AssertionError("Given base '%s' is unknown" % (base))
 
     def _read_from_data(self, length):
         for d in self._data[:length]:
