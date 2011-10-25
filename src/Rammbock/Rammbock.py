@@ -436,14 +436,6 @@ class Rammbock(object):
         for a in address.split('.'):
             self.add_integer_as_octets(a, 1)
 
-    def add_hex_data(self, data, length):
-        if int(length) < len(data[2:])/2:
-            raise Exception("Value is too big for length")
-        try:
-            self.add_decimal_as_octets(str(int(data,16)),length)
-        except ValueError:
-            raise Exception("Value is not valid hex")
-
     # TODO: only have these methods: read_octets(len, base) and read_binary(len) and read_string(len, encoding)
     def read_hex_data(self, length, no_prefix=None):
         a = ""
