@@ -86,7 +86,7 @@ Validate Host Ip Address
     [Arguments]  ${family}  ${ip}
     ${family-act}=  Read From Data  2
     Should Be Equal  ${family}  ${family-act}
-    ${ip-act}=  Read Ip From Hex
+    ${ip-act}=  Read Ip
     Should Be Equal  ${ip}  ${ip-act}
 
 Validate AVP: Vendor-Id
@@ -537,7 +537,7 @@ Validate AVP: Served-Party-IP-Address
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
     ${ipaf-act}=  Read From Data  2
     Should Be Equal  1  ${ipaf-act}  # ipv4 ip address family
-    ${ip-act}=  Read Ip from hex
+    ${ip-act}=  Read Ip
     Should Be Equal  ${ip}  ${ip-act}
     Read Spare Octets  2
 
@@ -638,7 +638,7 @@ Validate AVP: MIP-Home-Agent-Address
     Validate AVP Length  14
     ${ipv4f-act}=  Read From Data  2
     Should Be Equal  1  ${ipv4f-act}  # ipv4 flag
-    ${address-act}=  Read Ip From Hex
+    ${address-act}=  Read Ip
     Should Be Equal  ${address}  ${address-act}
     Read Spare Octets  2
 

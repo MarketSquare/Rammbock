@@ -504,7 +504,13 @@ class Rammbock(object):
         return tbcd
 
     # TODO: read hex
-    def read_ip_from_hex(self):
+    def read_ip(self):
+        """
+        Read Ip from hexadecimal presentation.
+
+        Examples:
+        | ${ip_address}= | Read IP |
+        """
         return  ".".join(str(self.read_from_data(1)) for _ in range(4))
 
     def read_string(self, length=None, delimiter=None, encoding=None):

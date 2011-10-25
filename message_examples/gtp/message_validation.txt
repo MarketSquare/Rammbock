@@ -112,7 +112,7 @@ Validate Fully Qualified Tunnel Endpoint Identifier (F-TEID)
     Should Be Equal  ${flags}  ${flags-act}  # 1... .... = V4 (True-IPV4 address field Exists,False-Doesn't Exist in F-TEID): True, .0.. .... = V6 (True-IPV6 address field Exists,False-Doesn't Exist in F-TEID): False, ...0 1010 = Interface Type: S11 MME GTP-C interface (10)
     ${teidgre-act}=  Read From Data  4
     Should Be Equal  ${teidgre}  ${teidgre-act}  # TEID/GRE Key: 50331665
-    ${ip-act}=  Read Ip From Hex
+    ${ip-act}=  Read Ip
     Should Be Equal  ${ip}  ${ip-act}  # F-TEID IPv4: 192.168.112.10 (192.168.112.10)
 
 Validate Access Point Name (APN)
@@ -139,7 +139,7 @@ Validate PDN Address Allocation (PAA)
     Validate cr-flags and instance  0  # 000. .... = CR flag: 0, .... 0000 = Instance: 0
     ${pdnt}=  Read From Data  1
     Should Be Equal  1  ${pdnt}  # .... .001 = PDN Type: IPv4 (1)
-    ${ip}=  Read Ip From Hex
+    ${ip}=  Read Ip
     Should Be Equal  ${expected-ip}  ${ip}  # PDN IPv4: 0.0.0.0 (0.0.0.0)
 
 Validate APN Restriction
@@ -243,7 +243,7 @@ Validate Ip Address
     [Arguments]  ${ip}
     Validate ie type and length  ${ie_type.ip_address}  4
     Validate cr-flags and instance  0
-    ${ip-act}=  Read Ip From hex
+    ${ip-act}=  Read Ip
     Should Be Equal  ${ip}  ${ip-act}
 
 Validate Bearer Context With EBI and F-TEID

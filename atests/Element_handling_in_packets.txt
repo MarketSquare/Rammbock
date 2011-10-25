@@ -88,7 +88,7 @@ Encode and Decode message with ip-address
     Add Ip  10.10.10.10
     Client Sends Data
     Server Receives Data
-    ${ip}=  Read IP from Hex
+    ${ip}=  Read Ip
     Should Be Equal  ${ip}  10.10.10.10
 
 Try To Read Too Many Bits From Bitstream Data
