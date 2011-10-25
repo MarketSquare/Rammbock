@@ -354,8 +354,7 @@ class Rammbock(object):
             self._binary = self._binary[8:]
 
     def _convert_to_hex_and_add_padding(self, value, length):
-    # TODO: we are injecting with eval
-        data = hex(int(eval(value)))[2:]
+        data = hex(int(value))[2:]
         if data.endswith('L'):
             data = data[:-1]
         return data.rjust(int(length)*2, '0')
