@@ -1,0 +1,5 @@
+Generic network protocol test library for Robot Framework, which offers easy way to specify network packets and inspect the results of sent / received packets. Library will offer Domain Specific Language for packet specification.
+
+Introduction how to execute Acceptance Tests: HowToExecuteAcceptanceTests
+
+Continuous Integration: http://robot.radiaatto.ri.fi/job/Rammbock/
