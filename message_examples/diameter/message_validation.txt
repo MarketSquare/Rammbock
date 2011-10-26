@@ -4,46 +4,46 @@ Library         Rammbock
 *** Keywords ***
 Validate Message Version
     [Arguments]  ${version}
-    ${version-act}  Read Hex Data  1
-    Should Be Equal  ${version}  ${version-act}
+    ${version_act}  Read Integer From Octets  1  16
+    Should Be Equal  ${version}  ${version_act}
 
 Validate Message Length
     [Arguments]  ${length}
-    ${length-act}=  Read Integer From Octets  3
-    Should Be Equal  ${length}  ${length-act}
+    ${length_act}=  Read Integer From Octets  3
+    Should Be Equal  ${length}  ${length_act}
 
 Validate Message Flags
     [Arguments]  ${flags}
-    ${flags-act}=  Read Hex data  1
-    Should Be Equal  ${flags}  ${flags-act}
+    ${flags_act}=  Read Integer From Octets  1  16
+    Should Be Equal  ${flags}  ${flags_act}
 
 Validate Command Code
     [Arguments]  ${cc}
-    ${cc-act}=  Read Integer From Octets  3
-    Should Be Equal  ${cc}  ${cc-act}
+    ${cc_act}=  Read Integer From Octets  3
+    Should Be Equal  ${cc}  ${cc_act}
 
 Validate Application Id
     [Arguments]  ${ai}
-    ${ai-act}=  Read Integer From Octets  4
-    Should Be Equal  ${ai}  ${ai-act}
+    ${ai_act}=  Read Integer From Octets  4
+    Should Be Equal  ${ai}  ${ai_act}
 
 Validate Hop-By-Hop Identifier
     [Arguments]  ${hbhi}
-    ${hbhi-act}=  Read Hex Data  4
-    Should Be Equal  ${hbhi}  ${hbhi-act}
+    ${hbhi_act}=  Read Integer From Octets  4  16
+    Should Be Equal  ${hbhi}  ${hbhi_act}
 
 Validate End-To-End Identifier
     [Arguments]  ${e2ei}
-    ${e2ei-act}=  Read Hex Data  4
-    Should Be Equal  ${e2ei}  ${e2ei-act}
+    ${e2ei_act}=  Read Integer From Octets  4  16
+    Should Be Equal  ${e2ei}  ${e2ei_act}
 
 Validate AVP: Origin-Host
     [Arguments]  ${host}
     ${length}=  Get Length  ${host}
     Validate AVP Code And Flags  ${avp_code.origin_host}  0x40
     Validate AVP Length  ${length + 8}
-    ${host-act}=  Read String  ${length}
-    Should Be Equal  ${host}  ${host-act}
+    ${host_act}=  Read String  ${length}
+    Should Be Equal  ${host}  ${host_act}
     Read Padding After String Data  ${length}
 
 Validate AVP Code And Flags
@@ -53,26 +53,26 @@ Validate AVP Code And Flags
 
 Validate AVP Code
     [Arguments]  ${avp_code}
-    ${avp_code-act}=  Read Integer From Octets  4
-    Should Be Equal  ${avp_code-act}  ${avp_code}
+    ${avp_code_act}=  Read Integer From Octets  4
+    Should Be Equal  ${avp_code_act}  ${avp_code}
 
 Validate AVP Flags
     [Arguments]  ${flags}
-    ${flags-act}=  Read Hex Data  1
-    Should Be Equal  ${flags}  ${flags-act}
+    ${flags_act}=  Read Integer From Octets  1  16
+    Should Be Equal  ${flags}  ${flags_act}
 
 Validate AVP Length
     [Arguments]  ${length}
-    ${length-act}  Read Integer From Octets  3
-    Should Be Equal As Strings  ${length}  ${length-act}
+    ${length_act}  Read Integer From Octets  3
+    Should Be Equal As Strings  ${length}  ${length_act}
 
 Validate AVP: Origin-Realm
     [Arguments]  ${realm}
     ${length}=  Get Length  ${realm}
     Validate AVP Code And Flags  ${avp_code.origin_realm}  0x40
     Validate AVP Length  ${length + 8}
-    ${realm-act}=  Read String  ${length}
-    Should Be Equal  ${realm}  ${realm-act}
+    ${realm_act}=  Read String  ${length}
+    Should Be Equal  ${realm}  ${realm_act}
     Read Padding After String Data  ${length}
 
 Validate AVP: Host-IP-Address
@@ -84,10 +84,10 @@ Validate AVP: Host-IP-Address
 
 Validate Host Ip Address
     [Arguments]  ${family}  ${ip}
-    ${family-act}=  Read Integer From Octets  2
-    Should Be Equal  ${family}  ${family-act}
-    ${ip-act}=  Read Ip
-    Should Be Equal  ${ip}  ${ip-act}
+    ${family_act}=  Read Integer From Octets  2
+    Should Be Equal  ${family}  ${family_act}
+    ${ip_act}=  Read Ip
+    Should Be Equal  ${ip}  ${ip_act}
 
 Validate AVP: Vendor-Id
     [Arguments]  ${id}
@@ -97,16 +97,16 @@ Validate AVP: Vendor-Id
 
 Validate Vendor-Id
     [Arguments]  ${id}
-    ${id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${id}  ${id-act}
+    ${id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${id}  ${id_act}
 
 Validate AVP: Product-Name
     [Arguments]  ${product_name}
     Validate AVP Code And FLags  ${avp_code.product_name}  0x00
     ${length}=  Get Length  ${product_name}
     Validate AVP Length  ${length + 8}
-    ${pn-act}=  Read String  ${length}
-    Should Be Equal  ${product_name}  ${pn-act}
+    ${pn_act}=  Read String  ${length}
+    Should Be Equal  ${product_name}  ${pn_act}
     Read Padding After String Data  ${length}
 
 Validate AVP: Supported-Vendor-Id
@@ -117,8 +117,8 @@ Validate AVP: Supported-Vendor-Id
 
 Validate Supported-Vendor-Id
     [Arguments]  ${id}
-    ${id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${id}  ${id-act}
+    ${id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${id}  ${id_act}
 
 Validate AVP: Vendor-Specific-Application-Id
     [Arguments]  ${avp_vendor_id}  ${auth_application_id}
@@ -135,8 +135,8 @@ Validate AVP: Auth-Application-Id
 
 Validate Auth-Application-Id
     [Arguments]  ${id}
-    ${id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${id}  ${id-act}
+    ${id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${id}  ${id_act}
 
 Validate AVP: Inband-Security-Id
     [Arguments]  ${id}
@@ -146,8 +146,8 @@ Validate AVP: Inband-Security-Id
 
 Validate Inband-Security-Id
     [Arguments]  ${id}
-    ${id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${id}  ${id-act}
+    ${id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${id}  ${id_act}
 
 Validate AVP: Firmware-Revision
     [Arguments]  ${fw_rev}
@@ -157,8 +157,8 @@ Validate AVP: Firmware-Revision
 
 Validate Firmware-Revision
     [Arguments]  ${fw_rev}
-    ${fw_rev-act}  Read Integer From Octets  4
-    Should Be Equal  ${fw_rev}  ${fw_rev-act}
+    ${fw_rev_act}  Read Integer From Octets  4
+    Should Be Equal  ${fw_rev}  ${fw_rev_act}
 
 Validate AVP: Result-Code
     [Arguments]  ${code}
@@ -168,8 +168,8 @@ Validate AVP: Result-Code
 
 Validate Result-Code
     [Arguments]  ${code}
-    ${code-act}=  Read Integer From Octets  4
-    Should Be Equal  ${code}  ${code-act}
+    ${code_act}=  Read Integer From Octets  4
+    Should Be Equal  ${code}  ${code_act}
 
 Read Padding After String Data
     [Arguments]  ${length}  # length of string which is followed by padding
@@ -182,24 +182,24 @@ Validate AVP: Session-ID
     Validate AVP Code And Flags  ${avp_code.session_id}  0x40
     ${length}=  Get Length  ${session_id}
     Validate AVP Length  ${length + 8}
-    ${session_id-act}=  Read String  ${length}
-    Should be equal  ${session_id}  ${session_id-act}
+    ${session_id_act}=  Read String  ${length}
+    Should be equal  ${session_id}  ${session_id_act}
     Read Padding After String Data  ${length}
 
 Validate AVP: Auth-Session-State
     [Arguments]  ${session_state}
     Validate AVP Code and Flags  ${avp_code.auth_session_state}  0x40
     Validate AVP Length  12
-    ${session_state-act}  Read Integer From Octets  4
-    Should Be Equal  ${session_state}  ${session_state-act}
+    ${session_state_act}  Read Integer From Octets  4
+    Should Be Equal  ${session_state}  ${session_state_act}
 
 Validate AVP: Destination-Host
     [Arguments]  ${destination_host}
     Validate AVP Code And Flags  ${avp_code.destination_host}  0x40
     ${length}=  Get Length  ${destination_host}
     Validate AVP Length  ${length + 8}
-    ${destination_host-act}=  Read String  ${length}
-    should be equal as strings  ${destination_host}  ${destination_host-act}
+    ${destination_host_act}=  Read String  ${length}
+    should be equal as strings  ${destination_host}  ${destination_host_act}
     Read Padding after String Data  ${length}
 
 Validate AVP: Destination-realm
@@ -208,8 +208,8 @@ Validate AVP: Destination-realm
     ${length}=  Get Length  ${destination_realm}
     Validate Avp Length  ${length + 8}
     Log  ${length}
-    ${destination_realm-act}=  Read String  ${length}
-    Should Be Equal As Strings  ${destination_realm}  ${destination_realm-act}
+    ${destination_realm_act}=  Read String  ${length}
+    Should Be Equal As Strings  ${destination_realm}  ${destination_realm_act}
     Read Padding After String Data  ${length}
 
 Validate AVP: User-Name
@@ -217,16 +217,16 @@ Validate AVP: User-Name
     Validate AVP Code And Flags  ${avp_code.user_name}  0x40
     ${length}=  Get Length  ${user_name}
     Validate AVP Length  ${length + 8}
-    ${user_name-act}=  Read String  ${length}
-    Should be equal  ${user_name}  ${user_name-act}
+    ${user_name_act}=  Read String  ${length}
+    Should be equal  ${user_name}  ${user_name_act}
     Read Padding After String Data  ${length}
 
 Validate AVP: Requested-EUTRAN-Authentication-Info
     [Arguments]  ${number_of_requested_vectors}  ${immediate_response}
     Validate AVP Code And Flags  ${avp_code.requested_eutran_authentication_info}  0xc0
     Validate AVP Length  44
-    ${avp_vendor_id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
+    ${avp_vendor_id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id_act}
     Validate Requested-EUTRAN-Authentication-info  ${number_of_requested_vectors}  ${immediate_response}
 
 Validate Requested-EUTRAN-Authentication-info
@@ -238,41 +238,41 @@ Validate AVP: Number-Of-Requested-Vectors
     [Arguments]  ${number_of_requested_vectors}
     Validate AVP Code And Flags  ${avp_code.number_of_requested_vectors}  0xc0
     Validate AVP Length  16
-    ${avp_vendor_id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
-    ${number_of_requested_vectors-act}=  Read Integer From Octets  4
-    Should Be Equal  ${number_of_requested_vectors}  ${number_of_requested_vectors-act}
+    ${avp_vendor_id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id_act}
+    ${number_of_requested_vectors_act}=  Read Integer From Octets  4
+    Should Be Equal  ${number_of_requested_vectors}  ${number_of_requested_vectors_act}
 
 Validate AVP: Immediate-Response-Preferred
     [Arguments]  ${immediate_response_preferred}
     Validate AVP Code And Flags  ${avp_code.immediate_response_preferred}  0xc0
     Validate AVP Length  16
-    ${avp_vendor_id.3gpp-act}=  Read Integer From Octets  4
-    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id.3gpp-act}
-    ${immediate_response_preferred-act}=  Read Integer From Octets  4
-    Should Be Equal  ${immediate_response_preferred}  ${immediate_response_preferred-act}
+    ${avp_vendor_id.3gpp_act}=  Read Integer From Octets  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id.3gpp_act}
+    ${immediate_response_preferred_act}=  Read Integer From Octets  4
+    Should Be Equal  ${immediate_response_preferred}  ${immediate_response_preferred_act}
 
 Validate AVP: Visited-PLMN-Id
     [Arguments]  ${visited_plmn_id}
     Validate AVP Code and Flags  ${avp_code.visited_plmn_id}  0xc0
     ${length}=  Get Length  ${visited_plmn_id}
     Validate AVP Length  ${length/2 + 12}
-    ${avp_vendor_id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
+    ${avp_vendor_id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id_act}
     Validate visited-plmn-id  ${visited_plmn_id}
 
 Validate visited-plmn-id
     [Arguments]  ${visited_plmn_id}
     ${length}=  Get Length  ${visited_plmn_id}
-    ${visited_plmn_id-act}=  Read Hex Data  ${length/2}  NO_PREFIX
-    Should Be Equal  ${visited_plmn_id}  ${visited_plmn_id-act}
+    ${visited_plmn_id_act}=  Read Integer From Octets  ${length/2}  16
+    Should Be Equal  ${visited_plmn_id}  ${visited_plmn_id_act[2:]}
     Read Padding After String Data  ${length/2}
 
 Validate AVP: Authentication-Info
     Validate AVP Code and Flags  ${avp_code.authentication_info}  0xc0
     Validate AVP Length  168
-    ${avp_vendor_id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
+    ${avp_vendor_id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id_act}
     Validate Authentication-Info
 
 Validate Authentication-Info
@@ -288,8 +288,8 @@ Validate E-UTRAN-Vector
 Validate AVP: E-UTRAN-Vector
     Validate AVP Code And Flags  ${avp_code.e_utran_vector}  0xc0
     Validate Avp Length  156
-    ${avp_vendor_id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
+    ${avp_vendor_id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id_act}
     Validate E-UTRAN-Vector
 
 Validate AVP: Route-Record
@@ -297,28 +297,28 @@ Validate AVP: Route-Record
     Validate AVP Code And Flags  ${avp_code.route_record}  0x40
     ${length}=  Get Length  ${route_record}
     Validate AVP Length  ${length + 8}
-    ${route_record-act}=  Read String  ${length}
-    Should Be Equal  ${route_record}  ${route_record-act}
+    ${route_record_act}=  Read String  ${length}
+    Should Be Equal  ${route_record}  ${route_record_act}
     read Padding After String Data  ${length}
 
 Validate AVP: Item-Number
     [Arguments]  ${item_number}
     Validate AVP Code and Flags  ${avp_code.item_number}  0xc0
     Validate AVP Length  16
-    ${avp_vendor_id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
-    ${item_number-act}=  Read Integer From Octets  4
-    Should Be Equal  ${item_number}  ${item_number-act}
+    ${avp_vendor_id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id_act}
+    ${item_number_act}=  Read Integer From Octets  4
+    Should Be Equal  ${item_number}  ${item_number_act}
 
 Validate AVP: KASME
     [Arguments]  ${kasme}
     Validate AVP Code and Flags  ${avp_code.kasme}  0xc0
     ${length}=  Get Length  ${kasme}
     Validate AVP Length  ${length/2 + 12}
-    ${avp_vendor_id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
-    ${kasme-act}=  Read Hex Data  ${length/2}  NO_0x
-    Should Be Equal  ${kasme}  ${kasme-act}
+    ${avp_vendor_id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id_act}
+    ${kasme_act}=  Read Integer From Octets  ${length/2}  16
+    Should Be Equal  ${kasme}  ${kasme_act[2:]}
     Read Padding After String Data  ${length/2}
 
 Validate AVP: AUTN
@@ -326,10 +326,10 @@ Validate AVP: AUTN
     Validate AVP Code and Flags  ${avp_code.autn}  0xc0
     ${length}=  Get Length  ${autn}
     Validate AVP Length  ${length/2 + 12}
-    ${avp_vendor_id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
-    ${autn-act}=  Read Hex Data  ${length/2}  NO_0x
-    Should Be Equal  ${autn}  ${autn-act}
+    ${avp_vendor_id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id_act}
+    ${autn_act}=  Read Integer From Octets  ${length/2}  16
+    Should Be Equal  ${autn}  ${autn_act[2:]}
     Read Padding After String Data  ${length/2}
 
 Validate AVP: XRES
@@ -337,10 +337,10 @@ Validate AVP: XRES
     Validate AVP Code and Flags  ${avp_code.xres}  0xc0
     ${length}=  Get Length  ${xres}
     Validate AVP Length  ${length/2 + 12}
-    ${avp_vendor_id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
-    ${xres-act}=  Read Hex Data  ${length/2}  NO_0x
-    Should Be Equal  ${xres}  ${xres-act}
+    ${avp_vendor_id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id_act}
+    ${xres_act}=  Read Integer From Octets  ${length/2}  16
+    Should Be Equal  ${xres}  ${xres_act[2:]}
     Read Padding After String Data  ${length/2}
 
 Validate AVP: RAND
@@ -348,45 +348,45 @@ Validate AVP: RAND
     Validate AVP Code and Flags  ${avp_code.rand}  0xc0
     ${length}=  Get Length  ${rand}
     Validate AVP Length  ${length/2 + 12}
-    ${avp_vendor_id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
-    ${rand-act}=  Read Hex Data  ${length/2}  NO_0x
-    Should Be Equal  ${rand}  ${rand-act}
+    ${avp_vendor_id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id_act}
+    ${rand_act}=  Read Integer From Octets  ${length/2}  16
+    Should Be Equal  ${rand}  ${rand_act[2:]}
     Read Padding After String Data  ${length/2}
 
 Validate AVP: URL-Flags
     [Arguments]  ${flags}
     Validate AVP Code and Flags  ${avp_code.url_flags}  0xc0
     Validate AVP Length  16
-    ${avp_vendor_id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
-    ${flags-act}=  Read Integer From Octets  4
-    Should Be Equal  ${flags}  ${flags-act}
+    ${avp_vendor_id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id_act}
+    ${flags_act}=  Read Integer From Octets  4
+    Should Be Equal  ${flags}  ${flags_act}
 
 Validate AVP: RAT-Type
     [Arguments]  ${rat_type}
     Validate AVP Code and Flags  ${avp_code.rat_type}  0x80
     Validate AVP Length  16
-    ${avp_vendor_id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
-    ${rat_type-act}=  Read Integer From Octets  4
-    Should Be Equal  ${rat_type}  ${rat_type-act}
+    ${avp_vendor_id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id_act}
+    ${rat_type_act}=  Read Integer From Octets  4
+    Should Be Equal  ${rat_type}  ${rat_type_act}
 
 Validate AVP: Disconnect-Cause
     [Arguments]  ${cause}
     Validate AVP Code and Flags  ${avp_code.disconnect_cause}  0x40
     Validate AVP Length  12
-    ${cause-act}=  Read Integer From Octets  4
-    Should Be Equal  ${cause}  ${cause-act}
+    ${cause_act}=  Read Integer From Octets  4
+    Should Be Equal  ${cause}  ${cause_act}
 
 Validate AVP: ULA-Flags
     [Arguments]  ${flags}
     Validate AVP Code and Flags  ${avp_code.ula_flags}  0xc0
     Validate AVP Length  16
-    ${avp_vendor_id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
-    ${flags-act}=  Read Integer From Octets  4
-    Should Be Equal  ${flags}  ${flags-act}
+    ${avp_vendor_id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id_act}
+    ${flags_act}=  Read Integer From Octets  4
+    Should Be Equal  ${flags}  ${flags_act}
 
 Validate Subscription Data
     Validate AVP: Subscriber-Status  ${SERVICE_GRANTED}
@@ -402,10 +402,10 @@ Validate AVP: Subscriber-Status
     [Arguments]  ${subscriber_status}
     Validate AVP Code and Flags  ${avp_code.subscriber_status}  0xc0
     Validate AVP Length  16
-    ${avp_vendor_id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id-act}
-    ${subscriber_status-act}=  Read Integer From Octets  4
-    Should Be Equal  ${subscriber_status}  ${subscriber_status-act}
+    ${avp_vendor_id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${avp_vendor_id.3gpp}  ${avp_vendor_id_act}
+    ${subscriber_status_act}=  Read Integer From Octets  4
+    Should Be Equal  ${subscriber_status}  ${subscriber_status_act}
 
 Validate AVP: MSISDN
     [Arguments]  ${country_code}  ${address_digits}
@@ -419,8 +419,8 @@ Validate AVP: MSISDN
 
 Validate AVP Vendor Id
     [Arguments]  ${vendor_id}
-    ${vendor_id-act}=  Read Integer From Octets  4
-    Should Be Equal  ${vendor_id}  ${vendor_id-act}
+    ${vendor_id_act}=  Read Integer From Octets  4
+    Should Be Equal  ${vendor_id}  ${vendor_id_act}
 
 Validate AVP: Subscription-Data
     Validate Avp Code And Flags  ${avp_code.subscription_data}  ${avp_flags.VM}
@@ -433,8 +433,8 @@ Validate AVP: Access-Restriction-Data
     Validate AVP Code And Flags  ${avp_code.access_restriction_data}  ${avp_flags.VM}
     Validate AVP Length  16
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
-    ${ard-act}=  Read Integer From Octets  4
-    Should Be Equal  ${access_restriction_data}  ${ard-act}
+    ${ard_act}=  Read Integer From Octets  4
+    Should Be Equal  ${access_restriction_data}  ${ard_act}
 
 Validate AVP: APN-OI-Replacement
     [Arguments]  ${apn_oi_replacement}
@@ -442,8 +442,8 @@ Validate AVP: APN-OI-Replacement
     ${length}=  Get Length  ${apn_oi_replacement}
     Validate Avp Length  ${length + 12}
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
-    ${aor-act}=  Read String  ${length}
-    Should Be Equal  ${apn_oi_replacement}  ${aor-act}
+    ${aor_act}=  Read String  ${length}
+    Should Be Equal  ${apn_oi_replacement}  ${aor_act}
     Read Padding after string data  ${length}
 
 Validate AVP: 3gpp-charging-characteristics
@@ -452,8 +452,8 @@ Validate AVP: 3gpp-charging-characteristics
     ${length}=  Get Length  ${charging_characteristics}
     Validate AVP Length  ${length + 12}
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
-    ${3gpp_cc-act}=  Read String  ${length}
-    Should Be Equal  ${avp_code.3gpp_charging_characteristics}  ${3gpp_cc-act}
+    ${3gpp_cc_act}=  Read String  ${length}
+    Should Be Equal  ${avp_code.3gpp_charging_characteristics}  ${3gpp_cc_act}
     Read Padding After String Data  ${length}
 
 Validate AVP: AMBR
@@ -473,24 +473,24 @@ Validate AVP: Max-Requested-Bandwidth-UL
     Validate AVP Code And Flags  ${avp_code.max_requested_bandwith_ul}  ${avp_flags.VM}
     Validate AVP Length  16
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
-    ${ul-act}=  Read Integer From Octets  4
-    Should Be Equal  ${ul}  ${ul-act}
+    ${ul_act}=  Read Integer From Octets  4
+    Should Be Equal  ${ul}  ${ul_act}
 
 Validate AVP: Max-Requested-Bandwidth-DL
     [Arguments]  ${dl}
     Validate AVP Code And Flags  ${avp_code.max_requested_bandwith_dl}  ${avp_flags.VM}
     Validate AVP Length  16
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
-    ${dl-act}=  Read Integer From Octets  4
-    Should Be Equal  ${dl}  ${dl-act}
+    ${dl_act}=  Read Integer From Octets  4
+    Should Be Equal  ${dl}  ${dl_act}
 
 Validate AVP: Rat-Frequency-Selection-Priority-Id
     [Arguments]  ${priority_id}
     Validate AVP code And Flags  ${avp_code.rat_frequency_selection_priority_id}  ${avp_flags.VM}
     Validate AVP Length  16
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
-    ${pi-act}=  Read Integer From Octets  4
-    Should Be Equal  ${priority_id}  ${pi-act}
+    ${pi_act}=  Read Integer From Octets  4
+    Should Be Equal  ${priority_id}  ${pi_act}
 
 Validate AVP: APN-Configuration-Profile
     Validate AVP Code And Flags  ${avp_code.apn_configuration_profile}  ${avp_flags.VM}
@@ -527,18 +527,18 @@ Validate AVP: Context-Identifier
     Validate AVP Code And Flags  ${avp_code.context_identifier}  ${avp_flags.VM}
     Validate AVP Length  16
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
-    ${ci-act}=  Read Integer From Octets  4
-    Should Be Equal  ${context_identifier}  ${ci-act}
+    ${ci_act}=  Read Integer From Octets  4
+    Should Be Equal  ${context_identifier}  ${ci_act}
 
 Validate AVP: Served-Party-IP-Address
     [Arguments]  ${ip}
     Validate AVP Code And Flags  ${avp_code.server_party_ip_address}  ${avp_flags.VM}
     Validate AVP Length  18
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
-    ${ipaf-act}=  Read Integer From Octets  2
-    Should Be Equal  1  ${ipaf-act}  # ipv4 ip address family
-    ${ip-act}=  Read Ip
-    Should Be Equal  ${ip}  ${ip-act}
+    ${ipaf_act}=  Read Integer From Octets  2
+    Should Be Equal  1  ${ipaf_act}  # ipv4 ip address family
+    ${ip_act}=  Read Ip
+    Should Be Equal  ${ip}  ${ip_act}
     Read Spare Octets  2
 
 Read Spare Octets
@@ -550,16 +550,16 @@ Validate AVP: PDN-Type
     Validate AVP Code and Flags  ${avp_code.pdn_type}  ${avp_flags.VM}
     Validate AVP Length  16
     Validate AVP Vendor id  ${avp_vendor_id.3gpp}
-    ${pt-act}=  Read Integer From Octets  4
-    Should Be Equal  ${pdn_type}  ${pt-act}
+    ${pt_act}=  Read Integer From Octets  4
+    Should Be Equal  ${pdn_type}  ${pt_act}
 
 Validate AVP: Service-Selection
     [Arguments]  ${service_selection}
     Validate AVP Code and Flags  ${avp_code.servire_selection}  ${avp_flags.M}
     ${length}=  Get Length  ${service_selection}
     Validate AVP Length  ${length + 8}
-    ${ss-act}=  Read String  ${length}
-    Should Be Equal  ${service_selection}  ${ss-act}
+    ${ss_act}=  Read String  ${length}
+    Should Be Equal  ${service_selection}  ${ss_act}
     Read Padding After String Data  ${length}
 
 Validate AVP: EPS-Subscribed-QoS-Profile
@@ -577,8 +577,8 @@ Validate AVP: Qos-class-identifier
     Validate AVP Code and Flags  ${avp_code.qos_class_identifier}  ${avp_flags.VM}
     Validate AVP Length  16
     Validate Avp vendor id  ${avp_vendor_id.3gpp}
-    ${qci-act}=  Read Integer From Octets  4
-    Should Be Equal  ${qos_class_identifier}  ${qci-act}
+    ${qci_act}=  Read Integer From Octets  4
+    Should Be Equal  ${qos_class_identifier}  ${qci_act}
 
 Validate AVP: Allocation-Retention-Priority
     [Arguments]  ${priority_level}  ${pre_epmtion_capability}  ${pre_epmtion_vulnerability}
@@ -598,24 +598,24 @@ Validate AVP: Priority-Level
     Validate AVP Code and Flags  ${avp_code.priority_level}  ${avp_flags.VM}
     Validate Avp Length  16
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
-    ${pl-act}=  Read Integer From Octets  4
-    Should Be Equal  ${priority_level}  ${pl-act}
+    ${pl_act}=  Read Integer From Octets  4
+    Should Be Equal  ${priority_level}  ${pl_act}
 
 Validate AVP: Pre-emption-Capability
     [Arguments]  ${pre_emption_capability}
     Validate AVP code and Flags  ${avp_code.pre_emption_capability}  ${avp_flags.VM}
     Validate AVP Length  16
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
-    ${pec-act}=  Read Integer From Octets  4
-    Should Be Equal  ${pre_emption_capability}  ${pec-act}
+    ${pec_act}=  Read Integer From Octets  4
+    Should Be Equal  ${pre_emption_capability}  ${pec_act}
 
 Validate AVP: Pre-emption-Vulnerability
     [Arguments]  ${pre_emption_vulnerability}
     Validate AVP code and Flags  ${avp_code.pre_emption_vulnerability}  ${avp_flags.VM}
     Validate AVP Length  16
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
-    ${pev-act}=  Read Integer From Octets  4
-    Should Be Equal  ${pre_emption_vulnerability}  ${pev-act}
+    ${pev_act}=  Read Integer From Octets  4
+    Should Be Equal  ${pre_emption_vulnerability}  ${pev_act}
 
 Validate AVP: MIP6-Agent-Info
     [Arguments]  ${address}  ${realm}  ${host}  ${prefix}
@@ -636,10 +636,10 @@ Validate AVP: MIP-Home-Agent-Address
     [Arguments]  ${address}
     Validate AVP Code and Flags  ${avp_code.mip_home_agent_address}  ${avp_flags.M}
     Validate AVP Length  14
-    ${ipv4f-act}=  Read Integer From Octets  2
-    Should Be Equal  1  ${ipv4f-act}  # ipv4 flag
-    ${address-act}=  Read Ip
-    Should Be Equal  ${address}  ${address-act}
+    ${ipv4f_act}=  Read Integer From Octets  2
+    Should Be Equal  1  ${ipv4f_act}  # ipv4 flag
+    ${address_act}=  Read Ip
+    Should Be Equal  ${address}  ${address_act}
     Read Spare Octets  2
 
 Validate AVP: MIP-Home-Agent-Host
@@ -660,8 +660,8 @@ Validate AVP: MIP6-Home-Link-Prefix
     Validate AVP Code and Flags  ${avp_code.mip6_home_link_prefix}  ${avp_flags.M}
     ${length}=  Get Length  ${prefix}
     Validate AVP Length  ${length/2 + 8}
-    ${prefix-act}=  Read hex data  ${length/2}  no-0x-prefix
-    Should Be Equal  ${prefix}  ${prefix-act}
+    ${prefix_act}=  Read Integer From Octets  ${length/2}  16
+    Should Be Equal  ${prefix}  ${prefix_act[2:]}
     Read Padding After String Data  ${length/2}
 
 Validate AVP: VPLMN-Dynamic-Address-Allowed
@@ -669,16 +669,16 @@ Validate AVP: VPLMN-Dynamic-Address-Allowed
     Validate AVP Code and Flags  ${avp_code.vplmn_dynamic_address_allowed}  ${avp_flags.VM}
     Validate AVP Length  16
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
-    ${dia-act}=  Read Integer From Octets  4
-    Should Be Equal  ${dynamic_address_allowed}  ${dia-act}
+    ${dia_act}=  Read Integer From Octets  4
+    Should Be Equal  ${dynamic_address_allowed}  ${dia_act}
 
 Validate AVP: PDN-GW-Allocation-Type
     [Arguments]  ${allocation_type}
     Validate AVP Code and Flags  ${avp_code.pdn_gw_allocation_type}  ${avp_flags.VM}
     Validate AVP Length  16
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
-    ${at-act}=  Read Integer From Octets  4
-    Should Be Equal  ${allocation_type}  ${at-act}
+    ${at_act}=  Read Integer From Octets  4
+    Should Be Equal  ${allocation_type}  ${at_act}
 
 Validate AVP: Specific-APN-Info
     [Arguments]  ${service_selection}  ${address}  ${realm}  ${host}  ${prefix}
@@ -700,6 +700,6 @@ Validate AVP: All-APN-Configurations-Included-Indicator
     Validate AVP Code And Flags  ${avp_code.all_apn_configurations_included_indicator}  ${avp_flags.VM}
     Validate AVP Length  16
     Validate AVP Vendor Id  ${avp_vendor_id.3gpp}
-    ${aacii-act}=  Read Integer From Octets  4
-    Should Be Equal  ${all_apn_configurations_included_indicator}  ${aacii-act}
+    ${aacii_act}=  Read Integer From Octets  4
+    Should Be Equal  ${all_apn_configurations_included_indicator}  ${aacii_act}
 

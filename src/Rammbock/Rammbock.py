@@ -430,16 +430,16 @@ class Rammbock(object):
         if not int(length):
             return
         value = int("".join(self._read_from_data(int(length))), 16)
-        return str(self._transform_from_integer_to_given_base(value, base))
+        return str(self._transform_from_integer_to_given_base(value, base, length))
 
-    def _transform_from_integer_to_given_base(self, value, base):
+    def _transform_from_integer_to_given_base(self, value, base, length):
         if base == '10':
             return value
         elif base == '16':
             ret = str(hex(value))
             if ret.endswith('L'):
-                return ret[:-1]
-            return ret
+                ret = ret[:-1]
+            return '0x' + ret[2:].rjust((int(length) * 2), '0')
         raise AssertionError("Given base '%s' is unknown" % (base))
 
     def _read_from_data(self, length):
