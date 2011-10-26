@@ -1,5 +1,12 @@
 Generic network protocol test library for Robot Framework, which offers easy way to specify network packets and inspect the results of sent / received packets. Library will offer Domain Specific Language for packet specification.
 
+install with python setup.py install
+
+SCTP functionality requires pysctp https://github.com/philpraxis/pysctp and its
+requirements (in OSX you need SCTP KNE http://sctp.fh-muenster.de/sctp-nke.html
+On debian based systems you need SCTP aware kernel and install the following packages
+libsctp-dev libsctp1 lksctp-tools
+
 Introduction how to execute Acceptance Tests: HowToExecuteAcceptanceTests
 
 Continuous Integration: http://robot.radiaatto.ri.fi/job/Rammbock/
