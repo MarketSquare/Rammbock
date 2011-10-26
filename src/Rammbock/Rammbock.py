@@ -364,7 +364,7 @@ class Rammbock(object):
         data = hex(int(value))[2:]
         if data.endswith('L'):
             data = data[:-1]
-        return data.rjust(int(length)*2, '0')
+        return data.rjust(int(length) * 2, '0')
 
     def set_message(self, message):
         """
@@ -436,10 +436,7 @@ class Rammbock(object):
         if base == '10':
             return value
         elif base == '16':
-            ret = str(hex(value))
-            if ret.endswith('L'):
-                ret = ret[:-1]
-            return '0x' + ret[2:].rjust((int(length) * 2), '0')
+            return '0x' + self._convert_to_hex_and_add_padding(value, length)
         raise AssertionError("Given base '%s' is unknown" % (base))
 
     def _read_from_data(self, length):
