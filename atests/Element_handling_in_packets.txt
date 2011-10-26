@@ -98,7 +98,7 @@ Try To Read Too Many Bits From Bitstream Data
     Server Receives Data
     Run keyword and expect error  Not enough bits to read  Read Integer From Bits  9
 
-Encode And Decode Message with raw hex data
+Encode And Decode Message with long raw hex data
     Reset Message
     Add Integer As Octets  e36006e2  4  16
     Client Sends Data
@@ -152,6 +152,14 @@ Add Integer and read it as hex
 Add Integer and read it as wrong base
     Add Integer as Octets  42  1
     Run Keyword And Expect Error  Given base '18' is unknown  Read Integer From Octets  1  18
+
+Encode And Decode Message with short raw hex data
+    Reset Message
+    Add Integer As Octets  ff  2  16
+    Client Sends Data
+    Server Receives Data
+    ${value}=  Read Integer From Octets  2  16
+    Should Be Equal  ${value}  0xff
 
 *** Keywords ***
 Create Message and add two decimals as octets

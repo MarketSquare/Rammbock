@@ -436,9 +436,11 @@ class Rammbock(object):
         if base == '10':
             return value
         elif base == '16':
-            return hex(value)
-        else:
-            raise AssertionError("Given base '%s' is unknown" % (base))
+            ret = str(hex(value))
+            if ret.endswith('L'):
+                return ret[:-1]
+            return ret
+        raise AssertionError("Given base '%s' is unknown" % (base))
 
     def _read_from_data(self, length):
         for d in self._data[:length]:
