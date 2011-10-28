@@ -31,6 +31,9 @@ HTTP V1.1
 GTPv2
 Diameter
 
+Examples can be found from our Acceptance Test Cases:
+https://github.com/robotframework/Rammbock/tree/master/atests/send_and_receive_messages
+
 3. Introduction how to execute Acceptance Tests:
 There are three scripts to execute regression tests and they are in the Rammbock's root folder.
 
