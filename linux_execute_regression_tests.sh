@@ -5,4 +5,4 @@ if [ -z "$*" ]
     then
       default_target="$base/atests"
 fi
-pybot -c regression -L debug --variablefile "$base/linux_vars.py" --pythonpath "$base/src/" $default_target "$@"
+pybot -c regression -L debug --variablefile "$base/config/linux_vars.py" -d "$base/reports/" --pythonpath "$base/src/" $default_target "$@"

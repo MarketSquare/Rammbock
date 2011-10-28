@@ -329,11 +329,11 @@ class Rammbock(object):
         Adds decimal number as octets. Length as octets can be give. base can be stated as an argument.
 
         Examples:
-        | Add Decimal as Octets | 42 | 1 | |#Adds number 42 as one octet to message. |
-        | Add Decimal as Octets | 42 | 2 | |#Adds number 42 as two octets to message. Padding is added |
-        | Add Decimal as Octets | 2A | 1 | 16 |#Adds number 42 presented as hexadecimal in one octet to message. |
+        | Add Decimal as Octets | 42 | 1 | | #Adds number 42 as one octet to message. |
+        | Add Decimal as Octets | 42 | 2 | | #Adds number 42 as two octets to message. Padding is added |
+        | Add Decimal as Octets | 2A | 1 | 16 | #Adds number 42 presented as hexadecimal in one octet to message. |
         | Add Decimal as Octets | 00101010 | 1 | 2 | #Adds number 42 presented as bit in one octet to message. |
-        | Add Decimal as Octets | 52 | 1 | 8|  #Adds number 42 presented as octal in one octet to message. |
+        | Add Decimal as Octets | 52 | 1 | 8 | #Adds number 42 presented as octal in one octet to message. |
         """
         value = str(int(str(value), int(base)))
         if not int(length):
@@ -392,8 +392,8 @@ class Rammbock(object):
         WARN, INFO, DEBUG, TRACE
 
         Examples
-        | Log Message |
-        | Log Message | DEBUG | # uses DEBUG log level
+        | Log Message |       |                        |
+        | Log Message | DEBUG | # uses DEBUG log level |
         """
         if level not in POSSIBLE_LOG_LEVELS:
             raise Exception("Unknown log level! Possible levels are %s" % (POSSIBLE_LOG_LEVELS,))
@@ -406,9 +406,9 @@ class Rammbock(object):
         if full path is not given.
 
         Examples:
-        | Log Message To File | foo | # logs current message to file called foo to working directory|
+        | Log Message To File | foo | # logs current message to file called foo to working directory |
         | Log Message To File | /tmp/foo | # logs current message to file called foo in /tmp/ directory |
-        | Log Message To File | C:\temp\foo | # logs current message to file called foo in  C:\temp\ directory |
+        | Log Message To File | C:\\temp\\foo | # logs current message to file called foo in  C:\\temp\\ directory |
 
         """
         with open(file,'w') as writeable:
@@ -566,7 +566,6 @@ class Rammbock(object):
         Examples:
         | SCTP should be supported | # keyword will pass if SCTP support is enabled |
         | SCTP should be supported | # keyword will fail if SCTP support is not enabled |
-
         """
         if not Server.SCTP_ENABLED:
             raise AssertionError("SCTP not available on this platform.")
