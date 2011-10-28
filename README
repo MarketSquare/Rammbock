@@ -16,6 +16,13 @@ requirements (in OSX you need SCTP KNE http://sctp.fh-muenster.de/sctp-nke.html
 On debian based systems you need SCTP aware kernel and install the following packages
 libsctp-dev libsctp1 lksctp-tools
 
-Introduction how to execute Acceptance Tests: HowToExecuteAcceptanceTests
+Introduction how to execute Acceptance Tests:
+You need to have Robot Framework installed as a precondition.
+
+There are three scripts to execute regression tests and they are in the Rammbock's root folder.
+
+Linux: linux_execute_regression_tests.sh
+Mac OS X: osx_execute_regression_tests.sh
+Windows: win_execute_regression_tests.bat
 
 Continuous Integration: http://robot.radiaatto.ri.fi/job/Rammbock/
