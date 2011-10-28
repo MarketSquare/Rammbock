@@ -1,5 +1,9 @@
 Generic network protocol test library for Robot Framework, which offers easy way to specify network packets and inspect the results of sent / received packets. Library will offer Domain Specific Language for packet specification.
 
+Usin pip installer:
+pip install robotframework-rammbock
+
+Using setup.py
 install with python setup.py install
 
 We have examples from following protocols:
