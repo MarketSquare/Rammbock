@@ -1,12 +1,36 @@
 Generic network protocol test library for Robot Framework, which offers easy way to specify network packets and inspect the results of sent / received packets. Library will offer Domain Specific Language for packet specification.
 
-install with python setup.py install
+1. Installation instructions:
 
+1.1 Precondiditons
+You need to have Robot Framework installed as a precondition.
+
+1.2 Installation
+Download and extract .zip or .tar.gz
+Excute command in extracted folder
+
+1.2.1 Linux and OSX
+sudo python setup.py install
+
+1.2.2 Windows:
+python setup.py install
+
+1.3 Optional for SCTP support:
 SCTP functionality requires pysctp https://github.com/philpraxis/pysctp and its
 requirements (in OSX you need SCTP KNE http://sctp.fh-muenster.de/sctp-nke.html
 On debian based systems you need SCTP aware kernel and install the following packages
 libsctp-dev libsctp1 lksctp-tools
 
-Introduction how to execute Acceptance Tests: HowToExecuteAcceptanceTests
+2. We have examples from following protocols:
+HTTP V1.1
+GTPv2
+Diameter
 
-Continuous Integration: http://robot.radiaatto.ri.fi/job/Rammbock/
+3. Introduction how to execute Acceptance Tests:
+There are three scripts to execute regression tests and they are in the Rammbock's root folder.
+
+Linux: linux_execute_regression_tests.sh
+Mac OS X: osx_execute_regression_tests.sh
+Windows: win_execute_regression_tests.bat
+
+4. Continuous Integration: http://robot.radiaatto.ri.fi/job/Rammbock/
