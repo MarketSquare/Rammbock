@@ -2,6 +2,11 @@ Generic network protocol test library for Robot Framework, which offers easy way
 
 install with python setup.py install
 
+We have examples from following protocols:
+HTTP V1.1
+GTPv2
+Diameter
+
 SCTP functionality requires pysctp https://github.com/philpraxis/pysctp and its
 requirements (in OSX you need SCTP KNE http://sctp.fh-muenster.de/sctp-nke.html
 On debian based systems you need SCTP aware kernel and install the following packages
