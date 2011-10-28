@@ -350,7 +350,7 @@ class Rammbock(object):
         Adds integer as bits. Length how many bits is used, can be given.
 
         Examples:
-        |Add Integer as Bits | 42 | 6 |
+        | Add Integer as Bits | 42 | 6 |
         """
         data = d2b(int(value))[1:].rjust(int(length), '0')
         if len(data) > int(length):
