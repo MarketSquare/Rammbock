@@ -6,7 +6,7 @@ setup(name         = 'robotframework-rammbock',
       description  = 'Protocol testing library for Robot Framework',
       author       = 'Robot Framework Developers',
       author_email = 'robotframework-users@googlegroups.com',
-      url          = 'http://code.google.com/p/rammbock',
+      url          = 'http://github.com/robotframework/Rammbock/',
       package_dir  = {'' : 'src'},
       packages     = ['Rammbock']
       )
