@@ -1,0 +1,87 @@
+*** Settings ***
+Library        Rammbock
+Test setup     Setup protocol, server, and client
+
+*** Variables ***
+${SERVER} =         127.0.0.1
+${SERVER PORT} =    54321
+
+*** Test Cases ***
+Client uses protocol and sends
+    Use protocol                Example    version=0x01   _client=ExampleClient     
+    Send simple request         value=0xcafebabe   _client=ExampleClient
+    Verify server gets          0x 01 00 dddd 0c ffff cafebabe   
+
+Server uses protocol and receives
+    Use protocol                Example    _server=ExampleServer
+    Send hex                    0x 01 00 dddd 0c 0000 cafebabe     _client=ExampleClient
+    ${msg} =                    Receive simple request          value=0xcafebabe   _server=ExampleServer
+    Should be equal             ${msg.value.hex}      0xcafebabe
+
+Server uses protocol and value validation fails
+    Use protocol                Example    _server=ExampleServer
+    Send hex                    0x 01 00 dddd 0c 0000 cafebabe     _client=ExampleClient
+    Run keyword and expect error  *  Receive simple request  value=0xffffff  _server=ExampleServer
+    
+
+Server uses protocol and messages arrive out of order
+    Use protocol                Example    _server=ExampleServer
+    Send hex                    0x 01 00 aaaa 0c 0000 deadbeef     _client=ExampleClient
+    Send hex                    0x 01 00 dddd 0c 0000 cafebabe     _client=ExampleClient
+    ${msg dddd} =               Receive simple request             _server=ExampleServer
+    Should be equal             ${msg dddd._header.messageType.hex}    0xdddd
+
+Message field type conversions
+    Use protocol                Example    _server=ExampleServer
+    Send hex                    0x 01 00 dddd 0c 0000 000000ff     _client=ExampleClient
+    ${msg} =                    Receive simple request          value=0xcafebabe   _server=ExampleServer
+    Should be equal             ${msg.value.hex}      0x000000ff
+    Should be equal as integers  ${msg.value.int}      255
+    Should be equal             ${msg.value.bytes}    \x00\x00\x00\xff
+
+Access header
+    Use protocol                Example    _server=ExampleServer
+    Send hex                    0x 01 00 dddd 0c 0000 000000ff     _client=ExampleClient
+    ${msg} =                    Receive simple request          value=0xcafebabe   _server=ExampleServer
+    Should be equal             ${msg._header.version.hex}      0x01
+    Should be equal as integers  ${msg._header.length.int}      12
+
+*** Keywords ***
+Setup protocol, server, and client
+    Define example protocol
+    Start udp server            ${SERVER}     ${SERVER PORT}    _server=ExampleServer
+    Start udp client            _client=ExampleClient
+    Connect                     ${SERVER}    ${SERVER PORT}   _client=ExampleClient
+
+Define example protocol
+     New Protocol                  Example
+     u8                            version       0x00
+     u8                            reserved     0x00
+     u16                           messageType
+     u16                           length
+     u16                           flags           0x0000
+     pdu                           length-8
+     End protocol
+
+Send hex
+    [Arguments]                 ${hex}        @{params}
+    ${binary} =                 Hex to bin    ${hex}
+    Send binary                 ${binary}     @{params}
+
+Send simple request
+    [arguments]    @{params}
+    New pdu        messageType=0xdddd     flags=0xffff
+    u32            value           0xdeadbeef
+    Send pdu       @{params}
+
+Receive simple request
+    [arguments]    @{params}
+    New pdu        messageType=0xdddd     flags=0xffff
+    u32            value
+    ${msg} =       Receive pdu       @{params}
+
+Verify server gets
+    [arguments]            ${expected hex}
+    ${msg} =               Receive binary   _server=ExampleServer
+    ${expected binary} =   Hex to bin    ${expected hex}
+    Should be equal        ${msg}        ${expected binary}
