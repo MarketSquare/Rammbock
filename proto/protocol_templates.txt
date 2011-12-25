@@ -1,5 +1,5 @@
 *** Settings ***
-Library        Rammbock
+Library        Rammbock.py
 Test setup     Setup protocol, server, and client
 
 *** Variables ***
