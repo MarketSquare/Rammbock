@@ -18,12 +18,6 @@ Server uses protocol and receives a dynamic message
     Should be equal    ${msg.pair[2].first.hex}    0xd0
 
 *** Keywords ***
-Setup protocol, server, and client
-    Define example protocol
-    Start udp server    ${SERVER}    ${SERVER PORT}    _server=ExampleServer
-    Start udp client    _client=ExampleClient
-    Connect    ${SERVER}    ${SERVER PORT}    _client=ExampleClient
-
 Send hex
     [Arguments]    ${hex}    @{params}
     ${binary} =    Hex to bin    ${hex}

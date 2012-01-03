@@ -9,3 +9,9 @@ Define example protocol
     pdu    length-8
     End protocol description
 
+Setup protocol, server, and client
+    Define example protocol
+    Start udp server    ${SERVER}    ${SERVER PORT}    _server=ExampleServer
+    Start udp client    _client=ExampleClient
+    Connect    ${SERVER}    ${SERVER PORT}    _client=ExampleClient
+
