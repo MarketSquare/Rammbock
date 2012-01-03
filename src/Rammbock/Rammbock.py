@@ -545,11 +545,9 @@ class Rammbock(object):
             read = self._read_until(delimiter)
         elif length:
             if length == "*":
-                read = self._data
-                self._data = ""
+                read, self._data = self._data, ""
             else:
-                read = self._data[:int(length)]
-                self._data = self._data[int(length):]
+                read, self._data = self._data[:int(length)], self._data[int(length):]
         if encoding:
             return read.decode(encoding)
         return read
