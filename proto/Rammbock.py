@@ -5,11 +5,11 @@ class Rammbock(object):
 
     All messages sent and received from a connection after calling 'Use protocol' have to use the same protocol template. Protocol template fields can be used to search messages from buffer.
     """
-    def new_protocol(self, protocol):
+    def start_protocol_description(self, protocol):
         raise Exception('Not yet done')
 
     """End protocol definition."""
-    def end_protocol(self):
+    def end_protocol_description(self):
         raise Exception('Not yet done')
 
     def start_udp_server(self, host, ip, _server=None):

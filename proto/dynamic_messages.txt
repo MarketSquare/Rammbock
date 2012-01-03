@@ -1,6 +1,7 @@
 *** Settings ***
 Test Setup        Setup protocol, server, and client
 Library           Rammbock.py
+Resource          Protocols.txt
 
 *** Variables ***
 ${SERVER}    127.0.0.1
@@ -22,16 +23,6 @@ Setup protocol, server, and client
     Start udp server    ${SERVER}    ${SERVER PORT}    _server=ExampleServer
     Start udp client    _client=ExampleClient
     Connect    ${SERVER}    ${SERVER PORT}    _client=ExampleClient
-
-Define example protocol
-    New Protocol    Example
-    u8    version    0x00
-    u8    reserved    0x00
-    u16    messageType
-    u16    length
-    u16    flags    0x0000
-    pdu    length-8
-    End protocol
 
 Send hex
     [Arguments]    ${hex}    @{params}
