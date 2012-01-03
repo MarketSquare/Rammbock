@@ -1,0 +1,50 @@
+*** Settings ***
+Library        Rammbock
+Test setup     Setup protocol, server, and client
+
+*** Variables ***
+${SERVER} =         127.0.0.1
+${SERVER PORT} =    54321
+
+*** Test Cases ***
+Server uses protocol and receives a dynamic message
+    Use protocol                Example    _server=ExampleServer
+    Send hex                    0x 01 00 aaaa 0e 0000 03 cafebabe d00d     _client=ExampleClient
+    ${msg} =                    Receive dynamic request     _server=ExampleServer
+    Should be equal             ${msg.pair.first.hex}         0xca
+    Should be equal             ${msg.pair[0].first.hex}      0xca
+    Should be equal             ${msg.pair[0].second.hex}     0xfe
+    Should be equal             ${msg.pair[2].first.hex}      0xd0
+
+*** Keywords ***
+Setup protocol, server, and client
+    Define example protocol
+    Start udp server            ${SERVER}     ${SERVER PORT}    _server=ExampleServer
+    Start udp client            _client=ExampleClient
+    Connect                     ${SERVER}    ${SERVER PORT}   _client=ExampleClient
+
+Define example protocol
+     New Protocol                  Example
+     u8                            version       0x00
+     u8                            reserved     0x00
+     u16                           messageType
+     u16                           length
+     u16                           flags           0x0000
+     pdu                           length-8
+     End protocol
+
+Send hex
+    [Arguments]                 ${hex}        @{params}
+    ${binary} =                 Hex to bin    ${hex}
+    Send binary                 ${binary}     @{params}
+
+Receive dynamic request
+    [arguments]    @{params}
+    New pdu        messageType=0xaaaa
+    u8             numberOfPairs
+    Struct    numberOfPairs    pair
+      u8             first
+      u8             second
+    End struct   pair
+    ${msg} =       Receive pdu       @{params}
+
