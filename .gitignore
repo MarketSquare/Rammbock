@@ -3,4 +3,4 @@ report.html
 output.xml
 *pyc
 .svn
-
+.DS_Store
