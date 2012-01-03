@@ -249,10 +249,8 @@ class Rammbock(object):
         """
         client_name = self._use_latest_client_name_if_name_not_present(client_name)
         self.client_should_be_running(client_name)
-        if data:
-            self._clients[client_name].send_packet(data)
-        else:
-            self._clients[client_name].send_packet(self._data)
+        data_to_send = data if data else self._data
+        self._clients[client_name].send_packet(data_to_send)
 
     def server_receives_data(self, name=None, connection_alias=None):
         """ Server receives data from client. Name and connection alias can be stated.
@@ -296,10 +294,7 @@ class Rammbock(object):
         | Server Sends Data | FooBar | HTTP_Client1 |
         """
         name = self._use_latest_server_name_if_name_not_present(name)
-        if data:
-            data_to_send = data
-        else:
-            data_to_send = self._data
+        data_to_send = data if data else self._data
         self._servers[name].send_data(data_to_send)
         print "Data sent:", data_to_send
 
