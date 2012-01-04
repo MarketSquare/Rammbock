@@ -30,11 +30,11 @@ DEFAULT_NAME = 'client'
 
 class _Client(object):
 
-    def __init__(self, client_name=DEFAULT_NAME, ip=None):
+    def __init__(self, client_name=DEFAULT_NAME, ip=None, port=None):
         self._name = client_name
         self._init_socket()
         if ip:
-            self._client_socket.bind((ip, 0))
+            self._client_socket.bind((ip, 0)) if not port else self._client_socket.bind((ip, port))
             print "*DEBUG* Bound to ip %s" % ip
 
     def establish_connection_to_server(self, host, port):
