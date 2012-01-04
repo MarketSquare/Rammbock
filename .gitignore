@@ -2,5 +2,7 @@ log.html
 report.html
 output.xml
 *pyc
+*swp
+*swo
 .svn
 .DS_Store
