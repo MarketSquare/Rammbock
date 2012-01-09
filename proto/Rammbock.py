@@ -51,11 +51,11 @@ class Rammbock(object):
         self._default_server = _server
 
     """Send raw binary data."""
-    def send_binary(self, message, _server=None, _client=None, *params):
+    def send_binary(self, message, _server=None, _client=None):
         raise Exception('Not yet done')
 
     """Receive raw binary data."""
-    def receive_binary(self, _server=None, _client=None, *params):
+    def receive_binary(self, _server=None, _client=None):
         raise Exception('Not yet done')
 
     """Define a new message pdu template.
@@ -68,14 +68,14 @@ class Rammbock(object):
 
     Parameters have to be pdu fields."""
     def send_pdu(self, *params):
-        msg = self._create_binary_to_send(parameters)
+        msg = self.create_binary_to_send(params)
+        self.send_binary(msg, default_server, default_client)
 
-    def _create_binary_to_send(self, parameters):
+    def create_binary_to_send(self, parameters):
         self._current_protocol.add_parameters(parameters)
         msg = self._current_protocol.encode()
         self._log_msg('DEBUG', repr(msg))
         return msg._raw
-
 
     """Receive a message object.
 
