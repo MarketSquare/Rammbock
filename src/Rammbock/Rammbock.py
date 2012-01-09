@@ -152,14 +152,10 @@ class Rammbock(object):
         self._clients[client_name].establish_connection_to_server(host, port)
 
     def _use_latest_client_name_if_name_not_present(self, name):
-        if not name:
-            return self._last_created_client
-        return name
+        return self._last_created_client if not name else name
 
     def _use_latest_server_name_if_name_not_present(self, name):
-        if not name:
-            return self._last_created_server
-        return name
+        return self._last_created_server if not name else name
 
     def server_accepts_tcp_connection(self, server_name=None, connection_alias=None):
         """ Accepts TCP connection from client. Server name can be given optionally
@@ -313,10 +309,8 @@ class Rammbock(object):
         | Add String | Host: www.nokiasiemensnetworks.com | encoding=unicode | | # add string in unicode |
         | Add String | Host: www.nokiasiemensnetworks.com | 25 | unicode | # add string of length 25 in unicode |
         """
-        if encoding:
-            value = value.encode(encoding)
-        if not length:
-            length = len(value)
+        value = value.encode(encoding) if encoding else value
+        length = len(value) if not length else length
         self._data += str(value).rjust(int(length), '\0')
 
     def add_integer_as_octets(self, value, length, base=10):
