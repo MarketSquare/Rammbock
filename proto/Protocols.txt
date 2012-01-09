@@ -15,3 +15,8 @@ Setup protocol, server, and client
     Start udp client    _client=ExampleClient
     Connect    ${SERVER}    ${SERVER PORT}    _client=ExampleClient
 
+Send hex
+    [Arguments]    ${hex}    @{params}
+    ${binary} =    Hex to bin    ${hex}
+    Send binary    ${binary}    @{params}
+
