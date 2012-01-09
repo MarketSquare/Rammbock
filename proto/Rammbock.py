@@ -62,7 +62,7 @@ class Rammbock(object):
 
     Parameters have to be header fields."""
     def new_pdu(self, *params):
-        raise Exception('Not yet done')
+        self._current_protocol.reset_message()
 
     """Send a pdu.
 
@@ -103,16 +103,19 @@ class Protocol(object):
     def __init__(self):
         self.ready = False
         self._protocol_template = _Template()
-        self._message_template = _Template()
+        self._message_template = None
         self.header_format = None
 
     def add(self, field):
         self._add_to_protocol_template(field) if not self.ready else self._add_to_message_template(field)
 
+    def reset_message(self):
+        self._message_template = _Template()
+
     def _add_to_protocol_template(self, field):
         self._protocol_template.add(field)
 
-    def _add_to_message_templte(self, field):
+    def _add_to_message_template(self, field):
         self._message_template.add(field)
 
     def parse_protocol_header(self):
