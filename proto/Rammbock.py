@@ -68,7 +68,14 @@ class Rammbock(object):
 
     Parameters have to be pdu fields."""
     def send_pdu(self, *params):
-        raise Exception('Not yet done')
+        msg = self._create_binary_to_send(parameters)
+
+    def _create_binary_to_send(self, parameters):
+        self._current_protocol.add_parameters(parameters)
+        msg = self._current_protocol.encode()
+        self._log_msg('DEBUG', repr(msg))
+        return msg._raw
+
 
     """Receive a message object.
 
@@ -105,12 +112,23 @@ class Protocol(object):
         self._protocol_template = _Template()
         self._message_template = None
         self.header_format = None
+        self._parameters = None
 
     def add(self, field):
         self._add_to_protocol_template(field) if not self.ready else self._add_to_message_template(field)
 
     def reset_message(self):
         self._message_template = _Template()
+
+    def encode(self):
+        raise Exception("Not implemented yet")
+
+    def add_parameters(self, parameters):
+        result = {}
+        for parameter in parameters:
+            index = parameter.find('=')
+            result[parameter[:index].strip()] = parameter[index + 1:].strip()
+        self._parameters = result
 
     def _add_to_protocol_template(self, field):
         self._protocol_template.add(field)
