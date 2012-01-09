@@ -4,7 +4,7 @@ Library           Rammbock.py
 Resource          Protocols.txt
 
 *** Variables ***
-${SERVER}    127.0.0.1
+${SERVER}         127.0.0.1
 ${SERVER PORT}    54321
 
 *** Test Cases ***
