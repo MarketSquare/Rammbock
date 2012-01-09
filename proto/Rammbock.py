@@ -99,7 +99,7 @@ class Rammbock(object):
 
     Length must be the name of a previous field in template definition."""
     def pdu(self, length):
-        self._current_protocol.add(_PDUField(length))
+        self._current_protocol.add(_PDUField(0, "pdu", "placeholder"))
 
     def hex_to_bin(self, hex_value):
         raise Exception('Not yet done')
@@ -109,7 +109,7 @@ class Protocol(object):
 
     def __init__(self):
         self.ready = False
-        self._protocol_fields = []
+        self._header_fields = []
         self._message_fields = None
         self.header_format = None
         self._parameters = None
@@ -121,7 +121,14 @@ class Protocol(object):
         self._message_fields = []
 
     def encode(self):
-        raise Exception("Not implemented yet")
+        self._verify_params_in_msg()
+        return self._encode_header_and_message_fields()
+
+    def _verify_params_in_msg(self):
+        fields = set([field.name for field in self._header_fields + self._message_fields])
+        params = set(self._parameters.keys())
+        if not params.issubset(fields):
+            raise AssertionError("Message does not have field(s) %s." % (' '.join(params.difference(fields))))
 
     def add_parameters(self, parameters):
         result = {}
@@ -131,13 +138,13 @@ class Protocol(object):
         self._parameters = result
 
     def _add_to_protocol_template(self, field):
-        self._protocol_fields.append(field)
+        self._header_fields.append(field)
 
     def _add_to_message_template(self, field):
         self._message_fields.append(field)
 
     def parse_protocol_header(self):
-        self.header_format = Struct("".join(str(x.length) + x.struct_code for x in self._protocol_fields if x.struct_code != 'N/A'))
+        self.header_format = Struct("".join(str(x.length) + x.struct_code for x in self._header_fields if x.struct_code != 'N/A'))
 
 
 class _TemplateField(object):
@@ -214,10 +221,7 @@ class _StringField(_TemplateField):
     def _encode_binary_value(self, value):
         return value.ljust(self.length, '\x00')
 
-class _PDUField(object):
+class _PDUField(_TemplateField):
 
     struct_code = 'N/A'
-
-    def __init__(self, length):
-        self.length = length
 
