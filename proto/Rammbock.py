@@ -109,8 +109,8 @@ class Protocol(object):
 
     def __init__(self):
         self.ready = False
-        self._protocol_template = _Template()
-        self._message_template = None
+        self._protocol_fields = []
+        self._message_fields = None
         self.header_format = None
         self._parameters = None
 
@@ -118,7 +118,7 @@ class Protocol(object):
         self._add_to_protocol_template(field) if not self.ready else self._add_to_message_template(field)
 
     def reset_message(self):
-        self._message_template = _Template()
+        self._message_fields = []
 
     def encode(self):
         raise Exception("Not implemented yet")
@@ -131,21 +131,13 @@ class Protocol(object):
         self._parameters = result
 
     def _add_to_protocol_template(self, field):
-        self._protocol_template.add(field)
+        self._protocol_fields.append(field)
 
     def _add_to_message_template(self, field):
-        self._message_template.add(field)
+        self._message_fields.append(field)
 
     def parse_protocol_header(self):
-        self.header_format = Struct("".join(str(x.length) + x.struct_code for x in self._protocol_template.fields if x.struct_code != 'N/A'))
-
-class _Template(object):
-
-    def __init__(self):
-        self.fields = []
-
-    def add(self, to_add):
-        self.fields.append(to_add)
+        self.header_format = Struct("".join(str(x.length) + x.struct_code for x in self._protocol_fields if x.struct_code != 'N/A'))
 
 
 class _TemplateField(object):
