@@ -1,5 +1,8 @@
 # API prototype
 
+from struct import Struct
+from Network import UDPServer, UDPClient, _NamedCache
+
 class Rammbock(object):
 
     def __init__(self):
@@ -7,6 +10,8 @@ class Rammbock(object):
         self._protocols = {}
         self._default_client = None
         self._default_server = None
+        self._servers = _NamedCache('server')
+        self._clients = _NamedCache('clients')
 
     """Start defining a new protocol template.
 
@@ -19,17 +24,23 @@ class Rammbock(object):
     """End protocol definition."""
     def end_protocol_description(self):
         self._current_protocol.ready = True
+        self._current_protocol.parse_protocol_header()
         self._current_protocol = None
 
-    def start_udp_server(self, host, ip, _server=None):
-        raise Exception('Not yet done')
+    def start_udp_server(self, ip, port, name=None, timeout=None):
+        server = UDPServer(ip, port, timeout)
+        self._servers.add(server, name)
+        return server
 
     def start_udp_client(self, ip=None, port=None, _client=None):
-        raise Exception('Not yet done')
+        client = UDPClient()
+        self._clients.add(client, _client)
+        return client
 
     """Connect a client to certain host and port."""
     def connect(self, host, port, _client=None):
-        raise Exception('Not yet done')
+        client = self._clients.get(_client) if _client else self._clients.get()
+        client.connect_to(host, port)
 
     """Take a certain protocol into use in server or client.
 
@@ -93,6 +104,7 @@ class Protocol(object):
         self.ready = False
         self._protocol_template = _Template()
         self._message_template = _Template()
+        self.header_format = None
 
     def add(self, field):
         self._add_to_protocol_template(field) if not self.ready else self._add_to_message_template(field)
@@ -103,14 +115,16 @@ class Protocol(object):
     def _add_to_message_templte(self, field):
         self._message_template.add(field)
 
+    def parse_protocol_header(self):
+        self.header_format = Struct("".join(str(x.length) + x.struct_code for x in self._protocol_template.fields if x.struct_code != 'N/A'))
 
 class _Template(object):
 
     def __init__(self):
-        self._fields = []
+        self.fields = []
 
     def add(self, to_add):
-        self._fields.append(to_add)
+        self.fields.append(to_add)
 
 
 class _TemplateField(object):
@@ -168,6 +182,8 @@ class _TemplateField(object):
 
 class _UField(_TemplateField):
 
+    struct_code = 'c'
+
     def _receive_field(self, value, big_endian):
         return self._convert_value_byte_order(value, big_endian)
 
@@ -180,10 +196,14 @@ class _UField(_TemplateField):
 
 class _StringField(_TemplateField):
 
+    struct_code = 's'
+
     def _encode_binary_value(self, value):
         return value.ljust(self.length, '\x00')
 
 class _PDUField(object):
+
+    struct_code = 'N/A'
 
     def __init__(self, length):
         self.length = length
