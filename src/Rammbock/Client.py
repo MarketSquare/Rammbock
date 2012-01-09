@@ -78,7 +78,6 @@ class SCTPClient(TCPClient):
     def _init_socket(self):
         if not SCTP_ENABLED:
             raise Exception("SCTP Not enabled")
-        else:
-            self._client_socket = sctpsocket_tcp(socket.AF_INET)
-            self._client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            print "*DEBUG* Created SCTP client with name %s" % self._name
+        self._client_socket = sctpsocket_tcp(socket.AF_INET)
+        self._client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        print "*DEBUG* Created SCTP client with name %s" % self._name

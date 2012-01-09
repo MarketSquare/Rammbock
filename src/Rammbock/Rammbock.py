@@ -330,9 +330,9 @@ class Rammbock(object):
         | Add Decimal as Octets | 00101010 | 1 | 2 | #Adds number 42 presented as bit in one octet to message. |
         | Add Decimal as Octets | 52 | 1 | 8 | #Adds number 42 presented as octal in one octet to message. |
         """
-        value = str(int(str(value), int(base)))
         if not int(length):
             return
+        value = str(int(str(value), int(base)))
         data = self._convert_to_hex_and_add_padding(value, length)
         if len(data) > int(length) * 2:
             raise Exception("Value is too big for length")
@@ -544,13 +544,9 @@ class Rammbock(object):
         if delimiter:
             read = self._read_until(delimiter)
         elif length:
-            if length == "*":
-                read, self._data = self._data, ""
-            else:
-                read, self._data = self._data[:int(length)], self._data[int(length):]
-        if encoding:
-            return read.decode(encoding)
-        return read
+            read, self._data = self._data, "" if length == "*" else self._data[:int(length)], self._data[int(length):]
+        ret = read.decode(encoding) if encoding else read
+        return ret
 
     def sctp_should_be_supported(self):
         """
