@@ -4,7 +4,7 @@ Library           Rammbock.py
 Resource          Protocols.txt
 
 *** Variables ***
-${SERVER}    127.0.0.1
+${SERVER}         127.0.0.1
 ${SERVER PORT}    54321
 
 *** Test Cases ***
@@ -47,11 +47,6 @@ Access header
     Should be equal as integers    ${msg._header.length.int}    12
 
 *** Keywords ***
-Send hex
-    [Arguments]    ${hex}    @{params}
-    ${binary} =    Hex to bin    ${hex}
-    Send binary    ${binary}    @{params}
-
 Send simple request
     [Arguments]    @{params}
     New pdu    messageType=0xdddd    flags=0xffff

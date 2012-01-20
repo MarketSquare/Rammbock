@@ -3,6 +3,7 @@
 from struct import Struct
 from Network import UDPServer, UDPClient, _NamedCache
 
+
 class Rammbock(object):
 
     def __init__(self):
@@ -51,24 +52,35 @@ class Rammbock(object):
         self._default_server = _server
 
     """Send raw binary data."""
-    def send_binary(self, message, _server=None, _client=None, *params):
-        raise Exception('Not yet done')
+    def send_binary(self, message, _server=None, _client=None):
+        server = _server if _server else self._default_server
+        client = _client if _client else self._default_client
+        client.send(message)
 
     """Receive raw binary data."""
-    def receive_binary(self, _server=None, _client=None, *params):
+    def receive_binary(self, _server=None, _client=None):
         raise Exception('Not yet done')
 
     """Define a new message pdu template.
 
     Parameters have to be header fields."""
     def new_pdu(self, *params):
-        raise Exception('Not yet done')
+        self._current_protocol.reset_message()
 
     """Send a pdu.
 
     Parameters have to be pdu fields."""
     def send_pdu(self, *params):
-        raise Exception('Not yet done')
+        self.add_parameters(params)
+        server = self._parameters.pop("_server", self._default_server)
+        client = self._parameters.pop("_client", self._default_client)
+        msg = self.create_binary_to_send(self._parameters)
+        self.send_binary(msg, server, client)
+
+    def create_binary_to_send(self, parameters):
+        msg = self._current_protocol.encode(self._parameters)
+        self._log_msg('DEBUG', repr(msg))
+        return msg._raw
 
     """Receive a message object.
 
@@ -92,40 +104,66 @@ class Rammbock(object):
 
     Length must be the name of a previous field in template definition."""
     def pdu(self, length):
-        self._current_protocol.add(_PDUField(length))
+        self._current_protocol.add(_PDUField(0, "pdu", "placeholder"))
 
     def hex_to_bin(self, hex_value):
         raise Exception('Not yet done')
+
+    def add_parameters(self, parameters):
+        result = {}
+        for parameter in parameters:
+            index = parameter.find('=')
+            result[parameter[:index].strip()] = parameter[index + 1:].strip()
+        self._parameters = result
 
 
 class Protocol(object):
 
     def __init__(self):
         self.ready = False
-        self._protocol_template = _Template()
-        self._message_template = _Template()
-        self.header_format = None
+        self._header_fields = []
+        self._message_fields = None
+        self._header_format = None
+        self._message_format = None
+        self._parameters = None
 
     def add(self, field):
         self._add_to_protocol_template(field) if not self.ready else self._add_to_message_template(field)
 
-    def _add_to_protocol_template(self, field):
-        self._protocol_template.add(field)
+    def reset_message(self):
+        self._message_fields = []
 
-    def _add_to_message_templte(self, field):
-        self._message_template.add(field)
+    def encode(self, parameters):
+        self._parameters = parameters
+        self._verify_params_in_msg()
+        return self._encode_header_and_message_fields()
+
+    def _encode_header_and_message_fields(self):
+        self._parse_message_format()
+        message_values = [a.value for a in self._header_fields + self._message_fields if a.struct_code != 'N/A']
+        print len(self._message_format)/2 == len(message_values)
+        Struct(self._message_format).pack(*message_values)
+
+    def _parse_message_format(self):
+        self._message_format = self._header_format + self._get_struct_from_fields(self._message_fields)
+
+    def _verify_params_in_msg(self):
+        fields = set([field.name for field in self._header_fields + self._message_fields])
+        params = set(self._parameters.keys())
+        if not params.issubset(fields):
+            raise AssertionError("Message does not have field(s) %s." % (' '.join(params.difference(fields))))
+
+    def _add_to_protocol_template(self, field):
+        self._header_fields.append(field)
+
+    def _add_to_message_template(self, field):
+        self._message_fields.append(field)
 
     def parse_protocol_header(self):
-        self.header_format = Struct("".join(str(x.length) + x.struct_code for x in self._protocol_template.fields if x.struct_code != 'N/A'))
+        self._header_format = self._get_struct_from_fields(self._header_fields)
 
-class _Template(object):
-
-    def __init__(self):
-        self.fields = []
-
-    def add(self, to_add):
-        self.fields.append(to_add)
-
+    def _get_struct_from_fields(self, fields):
+        return "".join(str(x.length) + x.struct_code for x in fields if x.struct_code != 'N/A')
 
 class _TemplateField(object):
 
@@ -201,10 +239,7 @@ class _StringField(_TemplateField):
     def _encode_binary_value(self, value):
         return value.ljust(self.length, '\x00')
 
-class _PDUField(object):
+class _PDUField(_TemplateField):
 
     struct_code = 'N/A'
-
-    def __init__(self, length):
-        self.length = length
 
