@@ -165,6 +165,7 @@ class Protocol(object):
     def _get_struct_from_fields(self, fields):
         return "".join(str(x.length) + x.struct_code for x in fields if x.struct_code != 'N/A')
 
+
 class _TemplateField(object):
 
     def __init__(self, length, name, value):
@@ -208,8 +209,8 @@ class _TemplateField(object):
                 (self.name, to_hex(value), forced_pattern)]
 
     def _is_match(self, name, length, forced_value, value):
-        forced_binary_val = to_bin_of_length(length, forced_value)
-        return forced_binary_val == value
+        expected_binary_val = to_bin_of_length(length, forced_value)
+        return expected_binary_val == value
 
     def _validate_exact_match(self, forced_value, value):
         if not self._is_match(self.name, self.length, forced_value, value):
@@ -239,7 +240,14 @@ class _StringField(_TemplateField):
     def _encode_binary_value(self, value):
         return value.ljust(self.length, '\x00')
 
+
 class _PDUField(_TemplateField):
 
     struct_code = 'N/A'
+
+    def __init__(self, length, name, value):
+        self.name = name
+        self.length_field_name = length
+        self.set_value(value)
+
 
