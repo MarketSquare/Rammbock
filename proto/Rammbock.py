@@ -2,7 +2,7 @@
 
 from struct import Struct
 from Network import UDPServer, UDPClient, _NamedCache
-
+from binary_conversions import to_0xhex, to_bin, to_bin_of_length, to_hex
 
 class Rammbock(object):
 
@@ -107,7 +107,7 @@ class Rammbock(object):
         self._current_protocol.add(_PDUField(0, "pdu", "placeholder"))
 
     def hex_to_bin(self, hex_value):
-        raise Exception('Not yet done')
+        return to_bin(hex_value)
 
     def add_parameters(self, parameters):
         result = {}
