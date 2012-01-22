@@ -1,6 +1,6 @@
 # API prototype
+import time
 
-from struct import Struct
 from Network import UDPServer, UDPClient, _NamedCache
 from binary_conversions import to_0xhex, to_bin, to_bin_of_length, to_hex
 
@@ -57,7 +57,7 @@ class Rammbock(object):
     """Receive raw binary data."""
     def receive_binary(self, _server=None, _client=None):
         server = self._servers.get(_server)
-        return server.receive()[0]
+        return server.read()
 
     """Define a new message pdu template.
 
@@ -164,6 +164,28 @@ class Protocol(object):
         if field.pdu_field:
             self._pdu_length_field, self._pdu_length_minus = field.length_field_name, field.length_minus
 
+    def receive(self, connection, paramdict):
+        # FIXME: build a support for a message stream tokenized by the protocol
+        timeout = float(paramdict.get('_timeout', self._default_timeout))
+        cutoff = time.time() + timeout
+        while time.time() < cutoff:
+            bytes = connection.read()
+            raise Exception('Not ready')
+
+    def _receive_fields(self, bytes, paramdict):
+        msg = _EncodedMsg('TODO: name', None)
+        i = 0
+        errors_list = []
+        for field in self._header_fields:
+            # FIXME: handle the length field as a special case...
+            value = bytes[i:i + field.length]
+            msg[field.name], errors = field.receive_field_and_validate(value, paramdict)
+            errors_list.extend(errors)
+            i += field.length
+        if i != len(bytes):
+            errors_list.append('Error in response %s. Length did not match expected. Expected length %d, received %d' %
+                               (self.name, i, len(bytes)))
+        return msg, errors_list
 
 class PDU(object):
 
@@ -281,6 +303,9 @@ class _PDUField(_TemplateField):
 
     def _encode_binary_value(self, value):
         return ''
+
+    def receive_field_and_validate(self, value, paramdict, big_endian=True):
+        raise Exception('Not ready yet, sh')
 
 
 class _Encoded(object):
