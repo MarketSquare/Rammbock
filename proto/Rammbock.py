@@ -10,8 +10,6 @@ class Rammbock(object):
         self._current_protocol = None
         self._protocols = {}
         self._message_pdu = None
-        self._default_client = None
-        self._default_server = None
         self._servers = _NamedCache('server')
         self._clients = _NamedCache('clients')
 
@@ -27,9 +25,9 @@ class Rammbock(object):
     def end_protocol_description(self):
         self._current_protocol.ready = True
 
-    def start_udp_server(self, ip, port, name=None, timeout=None):
+    def start_udp_server(self, ip, port, _server=None, timeout=None):
         server = UDPServer(ip, port, timeout)
-        self._servers.add(server, name)
+        self._servers.add(server, _server)
         return server
 
     def start_udp_client(self, ip=None, port=None, _client=None):
@@ -44,21 +42,22 @@ class Rammbock(object):
 
     """Take a certain protocol into use in server or client.
 
-    From this moment on (until another protocol is taken into use) all messages received and sent have to confirm to this protocol template."""
+    From this moment on (until another protocol is taken into use) all messages
+     received and sent have to confirm to this protocol template.
+     
+     TODO: In future it should be possible to set and override default values for protocol fields here."""
     def use_protocol(self, protocol, _server=None, _client=None):
         self._current_protocol = self._protocols[protocol]
-        self._default_client = _client
-        self._default_server = _server
 
     """Send raw binary data."""
     def send_binary(self, message, _server=None, _client=None):
-        server = _server if _server else self._default_server
-        client = _client if _client else self._default_client
+        client = self._clients.get(_client)
         client.send(message)
 
     """Receive raw binary data."""
     def receive_binary(self, _server=None, _client=None):
-        raise Exception('Not yet done')
+        server = self._servers.get(_server)
+        return server.receive()[0]
 
     """Define a new message pdu template.
 
@@ -71,8 +70,8 @@ class Rammbock(object):
     Parameters have to be pdu fields."""
     def send_pdu(self, *params):
         paramsdict = self._parse_parameters(params)
-        server = paramsdict.pop("_server", self._default_server)
-        client = paramsdict.pop("_client", self._default_client)
+        server = paramsdict.pop("_server", None)
+        client = paramsdict.pop("_client", None)
         msg = self.create_binary_to_send(paramsdict)
         self.send_binary(msg, server, client)
 
@@ -109,10 +108,13 @@ class Rammbock(object):
 
     Length must be the name of a previous field in template definition."""
     def pdu(self, length):
-        self._current_protocol.add(_PDUField(0, "pdu", "placeholder"))
+        self._current_protocol.add(_PDUField(length, "pdu", "placeholder"))
 
     def hex_to_bin(self, hex_value):
         return to_bin(hex_value)
+
+    def bin_to_hex(self, bin_value):
+        return to_0xhex(bin_value)
 
     def _parse_parameters(self, parameters):
         result = {}
@@ -120,6 +122,9 @@ class Rammbock(object):
             index = parameter.find('=')
             result[parameter[:index].strip()] = parameter[index + 1:].strip()
         return result
+
+    def _log_msg(self, loglevel, log_msg):
+        print '*%s* %s' % (loglevel, log_msg)
 
 
 class Protocol(object):
@@ -129,6 +134,7 @@ class Protocol(object):
         self._header_fields = []
         self._header_format = None
         self._parameters = None
+        self._pdu_length_field = None
 
     def add(self, field):
         if self.ready:
@@ -142,6 +148,7 @@ class Protocol(object):
         header_params = pdu.get_header_params()
         self._verify_params_in_header(header_params)
         encoded_pdu = pdu.encode(pdu_parameters)
+        header_params[self._pdu_length_field] = len(encoded_pdu._raw) + self._pdu_length_minus
         msg = _EncodedMsg('TODO: name', encoded_pdu)
         for field in self._header_fields:
             msg[field.name] = field.encode_field(header_params)
@@ -154,6 +161,8 @@ class Protocol(object):
 
     def _add_to_protocol_template(self, field):
         self._header_fields.append(field)
+        if field.pdu_field:
+            self._pdu_length_field, self._pdu_length_minus = field.length_field_name, field.length_minus
 
 
 class PDU(object):
@@ -176,6 +185,8 @@ class PDU(object):
 
 
 class _TemplateField(object):
+
+    pdu_field = False
 
     def __init__(self, length, name, value):
         self.name = name
@@ -256,22 +267,32 @@ class _PDUField(_TemplateField):
 
     struct_code = 'N/A'
 
+    pdu_field = True
+
     def __init__(self, length, name, value):
         self.name = name
-        self.length_field_name = length
+        self.length_field_name, self.length_minus = self._parse_length_field(length)
         self.set_value(value)
+
+    # TODO: major rework needed
+    def _parse_length_field(self, length):
+        field,minus = length.split('-')
+        return field.strip(), int(minus)
+
+    def _encode_binary_value(self, value):
+        return ''
 
 
 class _Encoded(object):
 
     def __init__(self):
-        self.__fields = []
+        self._fields = []
 
     def __setitem__(self, name, value):
-        self.__fields.append(_EncodedField(name, value))
+        self._fields.append(_EncodedField(name, value))
 
     def __getitem__(self, name):
-        for field in self.__fields:
+        for field in self._fields:
             if field.name == name:
                 return field
         raise KeyError(name)
@@ -279,21 +300,21 @@ class _Encoded(object):
     def __getattr__(self, name):
         return self[name]
 
-    def __raw(self):
-        return ''.join([field.bytes for field in self.__fields])
+    def _get_raw(self):
+        return ''.join([field.bytes for field in self._fields])
 
 
 class _EncodedPDU(_Encoded):
 
     def __str__(self):
         result = ''
-        for field in self.__fields:
+        for field in self._fields:
             result +='  %s\n' % repr(field)
         return result
 
     @property
     def _raw(self):
-        return self.__raw()
+        return self._get_raw()
 
 
 class _EncodedMsg(_Encoded):
@@ -307,13 +328,13 @@ class _EncodedMsg(_Encoded):
         return 'Message %s' % self.__name
 
     def __repr__(self):
-        result = 'Message %s header: %s \n' % (self.__name, ' '.join([repr(field for field in self.__fields)]))
+        result = 'Message %s header: %s \n' % (self.__name, ' '.join([repr(field for field in self._fields)]))
         result += str(self.__pdu)
         return result
 
     @property
     def _raw(self):
-        return self.__header._raw + self.__raw()
+        return self._get_raw() + self.__pdu._raw
 
 
 class _EncodedField(object):

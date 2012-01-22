@@ -4,6 +4,7 @@ import struct
 LONGLONG = struct.Struct('>Q')
 
 def to_bin(string_value):
+    string_value = str(string_value)
     if string_value.startswith('0x'):
         value = string_value.replace('0x','').replace(' ','')
         if len(value)%2==1:
