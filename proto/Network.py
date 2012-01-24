@@ -45,18 +45,22 @@ class UDPServer(_Server):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._bind_socket()
 
-    def receive(self, timeout=None):
+    def receive_from(self, timeout=None):
         timeout = self._get_timeout(timeout)
         try:
             self._socket.settimeout(timeout)
             return self._socket.recvfrom(BUFFER_SIZE)
-        # This hack is needed on windows. Sending udplog to a closed port causes
-        # subsequent receive from the socket to make an exception on Windows if
-        # the server responds with 'Port unreachable ICMP message'
+        # If we are sending to a machine that wont listen, then reading 
+        # becomes impossible from this socket on windows.
+        # On linux sending to a port that is not listening causes following
+        # send operations to fail.
         except socket.error:
             self._init_socket()
             self._socket.settimeout(timeout)
             return self._socket.recvfrom(BUFFER_SIZE)
+
+    def read(self, timeout=None):
+        return self.receive_from(timeout)[0]
 
     def send_to(self, msg, ip, port):
         self._socket.sendto(msg, (ip,int(port)))
@@ -72,7 +76,10 @@ class TCPServer(_Server):
         self._socket.listen(1)
         self._connections = _NamedCache('connection')
 
-    def receive(self, timeout=None, alias=None):
+    def read(self, timeout=None):
+        return self.receive_from(timeout)[0]
+
+    def receive_from(self, timeout=None, alias=None):
         connection = self._connections.get(alias)[0]
         timeout = self._get_timeout(timeout)
         connection.settimeout(timeout)

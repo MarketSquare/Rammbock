@@ -1,16 +1,15 @@
 # API prototype
+import time
 
-from struct import Struct
 from Network import UDPServer, UDPClient, _NamedCache
-
+from binary_conversions import to_0xhex, to_bin, to_bin_of_length, to_hex
 
 class Rammbock(object):
 
     def __init__(self):
         self._current_protocol = None
         self._protocols = {}
-        self._default_client = None
-        self._default_server = None
+        self._message_pdu = None
         self._servers = _NamedCache('server')
         self._clients = _NamedCache('clients')
 
@@ -25,12 +24,10 @@ class Rammbock(object):
     """End protocol definition."""
     def end_protocol_description(self):
         self._current_protocol.ready = True
-        self._current_protocol.parse_protocol_header()
-        self._current_protocol = None
 
-    def start_udp_server(self, ip, port, name=None, timeout=None):
+    def start_udp_server(self, ip, port, _server=None, timeout=None):
         server = UDPServer(ip, port, timeout)
-        self._servers.add(server, name)
+        self._servers.add(server, _server)
         return server
 
     def start_udp_client(self, ip=None, port=None, _client=None):
@@ -45,40 +42,41 @@ class Rammbock(object):
 
     """Take a certain protocol into use in server or client.
 
-    From this moment on (until another protocol is taken into use) all messages received and sent have to confirm to this protocol template."""
+    From this moment on (until another protocol is taken into use) all messages
+     received and sent have to confirm to this protocol template.
+     
+     TODO: In future it should be possible to set and override default values for protocol fields here."""
     def use_protocol(self, protocol, _server=None, _client=None):
         self._current_protocol = self._protocols[protocol]
-        self._default_client = _client
-        self._default_server = _server
 
     """Send raw binary data."""
     def send_binary(self, message, _server=None, _client=None):
-        server = _server if _server else self._default_server
-        client = _client if _client else self._default_client
+        client = self._clients.get(_client)
         client.send(message)
 
     """Receive raw binary data."""
     def receive_binary(self, _server=None, _client=None):
-        raise Exception('Not yet done')
+        server = self._servers.get(_server)
+        return server.read()
 
     """Define a new message pdu template.
 
     Parameters have to be header fields."""
-    def new_pdu(self, *params):
-        self._current_protocol.reset_message()
+    def new_pdu(self, *parameters):
+        self._message_pdu = PDU(self._parse_parameters(parameters))
 
     """Send a pdu.
 
     Parameters have to be pdu fields."""
     def send_pdu(self, *params):
-        self.add_parameters(params)
-        server = self._parameters.pop("_server", self._default_server)
-        client = self._parameters.pop("_client", self._default_client)
-        msg = self.create_binary_to_send(self._parameters)
+        paramsdict = self._parse_parameters(params)
+        server = paramsdict.pop("_server", None)
+        client = paramsdict.pop("_client", None)
+        msg = self.create_binary_to_send(paramsdict)
         self.send_binary(msg, server, client)
 
-    def create_binary_to_send(self, parameters):
-        msg = self._current_protocol.encode(self._parameters)
+    def create_binary_to_send(self, paramsdict):
+        msg = self._current_protocol.encode(self._message_pdu, paramsdict)
         self._log_msg('DEBUG', repr(msg))
         return msg._raw
 
@@ -89,7 +87,13 @@ class Rammbock(object):
         raise Exception('Not yet done')
 
     def add_number(self, length, name, value):
-        self._current_protocol.add(_UField(length, name, value))
+        field = _UField(length, name, value)
+        if self._message_pdu:
+            self._message_pdu.add(field)
+        elif not self._current_protocol.ready:
+            self._current_protocol.add(field)
+        else:
+            raise Exception('Fields have to be added in protocol definition or in message template.')
 
     def u8(self, name, default_value=None):
         self.add_number(1, name, default_value)
@@ -104,17 +108,23 @@ class Rammbock(object):
 
     Length must be the name of a previous field in template definition."""
     def pdu(self, length):
-        self._current_protocol.add(_PDUField(0, "pdu", "placeholder"))
+        self._current_protocol.add(_PDUField(length, "pdu", "placeholder"))
 
     def hex_to_bin(self, hex_value):
-        raise Exception('Not yet done')
+        return to_bin(hex_value)
 
-    def add_parameters(self, parameters):
+    def bin_to_hex(self, bin_value):
+        return to_0xhex(bin_value)
+
+    def _parse_parameters(self, parameters):
         result = {}
         for parameter in parameters:
             index = parameter.find('=')
             result[parameter[:index].strip()] = parameter[index + 1:].strip()
-        self._parameters = result
+        return result
+
+    def _log_msg(self, loglevel, log_msg):
+        print '*%s* %s' % (loglevel, log_msg)
 
 
 class Protocol(object):
@@ -122,50 +132,83 @@ class Protocol(object):
     def __init__(self):
         self.ready = False
         self._header_fields = []
-        self._message_fields = None
         self._header_format = None
-        self._message_format = None
         self._parameters = None
+        self._pdu_length_field = None
 
     def add(self, field):
-        self._add_to_protocol_template(field) if not self.ready else self._add_to_message_template(field)
+        if self.ready:
+            raise Exception('Protocol already defined')
+        self._add_to_protocol_template(field) 
 
     def reset_message(self):
         self._message_fields = []
 
-    def encode(self, parameters):
-        self._parameters = parameters
-        self._verify_params_in_msg()
-        return self._encode_header_and_message_fields()
+    def encode(self, pdu, pdu_parameters):
+        header_params = pdu.get_header_params()
+        self._verify_params_in_header(header_params)
+        encoded_pdu = pdu.encode(pdu_parameters)
+        header_params[self._pdu_length_field] = len(encoded_pdu._raw) + self._pdu_length_minus
+        msg = _EncodedMsg('TODO: name', encoded_pdu)
+        for field in self._header_fields:
+            msg[field.name] = field.encode_field(header_params)
+        return msg
 
-    def _encode_header_and_message_fields(self):
-        self._parse_message_format()
-        message_values = [a.value for a in self._header_fields + self._message_fields if a.struct_code != 'N/A']
-        print len(self._message_format)/2 == len(message_values)
-        Struct(self._message_format).pack(*message_values)
-
-    def _parse_message_format(self):
-        self._message_format = self._header_format + self._get_struct_from_fields(self._message_fields)
-
-    def _verify_params_in_msg(self):
-        fields = set([field.name for field in self._header_fields + self._message_fields])
-        params = set(self._parameters.keys())
-        if not params.issubset(fields):
-            raise AssertionError("Message does not have field(s) %s." % (' '.join(params.difference(fields))))
+    def _verify_params_in_header(self, paramdict):
+        params = set(paramdict.keys())
+        if not params.issubset(set([field.name for field in self._header_fields])):
+            raise AssertionError("Message does not have field(s) %s." % (' '.join(params.difference(self._header_fields))))
 
     def _add_to_protocol_template(self, field):
         self._header_fields.append(field)
+        if field.pdu_field:
+            self._pdu_length_field, self._pdu_length_minus = field.length_field_name, field.length_minus
 
-    def _add_to_message_template(self, field):
-        self._message_fields.append(field)
+    def receive(self, connection, paramdict):
+        # FIXME: build a support for a message stream tokenized by the protocol
+        timeout = float(paramdict.get('_timeout', self._default_timeout))
+        cutoff = time.time() + timeout
+        while time.time() < cutoff:
+            bytes = connection.read()
+            raise Exception('Not ready')
 
-    def parse_protocol_header(self):
-        self._header_format = self._get_struct_from_fields(self._header_fields)
+    def _receive_fields(self, bytes, paramdict):
+        msg = _EncodedMsg('TODO: name', None)
+        i = 0
+        errors_list = []
+        for field in self._header_fields:
+            # FIXME: handle the length field as a special case...
+            value = bytes[i:i + field.length]
+            msg[field.name], errors = field.receive_field_and_validate(value, paramdict)
+            errors_list.extend(errors)
+            i += field.length
+        if i != len(bytes):
+            errors_list.append('Error in response %s. Length did not match expected. Expected length %d, received %d' %
+                               (self.name, i, len(bytes)))
+        return msg, errors_list
 
-    def _get_struct_from_fields(self, fields):
-        return "".join(str(x.length) + x.struct_code for x in fields if x.struct_code != 'N/A')
+class PDU(object):
+
+    def __init__(self, header_parameters):
+        self._fields = []
+        self._header_parameters = header_parameters
+
+    def add(self, field):
+        self._fields.append(field)
+
+    def get_header_params(self):
+        return self._header_parameters
+
+    def encode(self, pdu_params):
+        msg = _EncodedPDU()
+        for field in self._fields:
+            msg[field.name] = field.encode_field(pdu_params)
+        return msg
+
 
 class _TemplateField(object):
+
+    pdu_field = False
 
     def __init__(self, length, name, value):
         self.name = name
@@ -182,6 +225,8 @@ class _TemplateField(object):
 
     def encode_field(self, paramdict):
         value = self._get_element_value(paramdict)
+        if value is None:
+            raise Exception('Value of %s is not set.' % self.name)
         return self._encode_binary_value(value)
 
     def _receive_field(self, value, big_endian):
@@ -208,8 +253,8 @@ class _TemplateField(object):
                 (self.name, to_hex(value), forced_pattern)]
 
     def _is_match(self, name, length, forced_value, value):
-        forced_binary_val = to_bin_of_length(length, forced_value)
-        return forced_binary_val == value
+        expected_binary_val = to_bin_of_length(length, forced_value)
+        return expected_binary_val == value
 
     def _validate_exact_match(self, forced_value, value):
         if not self._is_match(self.name, self.length, forced_value, value):
@@ -239,7 +284,114 @@ class _StringField(_TemplateField):
     def _encode_binary_value(self, value):
         return value.ljust(self.length, '\x00')
 
+
 class _PDUField(_TemplateField):
 
     struct_code = 'N/A'
 
+    pdu_field = True
+
+    def __init__(self, length, name, value):
+        self.name = name
+        self.length_field_name, self.length_minus = self._parse_length_field(length)
+        self.set_value(value)
+
+    # TODO: major rework needed
+    def _parse_length_field(self, length):
+        field,minus = length.split('-')
+        return field.strip(), int(minus)
+
+    def _encode_binary_value(self, value):
+        return ''
+
+    def receive_field_and_validate(self, value, paramdict, big_endian=True):
+        raise Exception('Not ready yet, sh')
+
+
+class _Encoded(object):
+
+    def __init__(self):
+        self._fields = []
+
+    def __setitem__(self, name, value):
+        self._fields.append(_EncodedField(name, value))
+
+    def __getitem__(self, name):
+        for field in self._fields:
+            if field.name == name:
+                return field
+        raise KeyError(name)
+
+    def __getattr__(self, name):
+        return self[name]
+
+    def _get_raw(self):
+        return ''.join([field.bytes for field in self._fields])
+
+
+class _EncodedPDU(_Encoded):
+
+    def __str__(self):
+        result = ''
+        for field in self._fields:
+            result +='  %s\n' % repr(field)
+        return result
+
+    @property
+    def _raw(self):
+        return self._get_raw()
+
+
+class _EncodedMsg(_Encoded):
+
+    def __init__(self, name, pdu):
+        self.__name = name
+        self.__pdu = pdu
+        _Encoded.__init__(self)
+
+    def __str__(self):
+        return 'Message %s' % self.__name
+
+    def __repr__(self):
+        result = 'Message %s header: %s \n' % (self.__name, ' '.join([repr(field for field in self._fields)]))
+        result += str(self.__pdu)
+        return result
+
+    @property
+    def _raw(self):
+        return self._get_raw() + self.__pdu._raw
+
+
+class _EncodedField(object):
+
+    def __init__(self, name, value):
+        self._name = name
+        self._value = value
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def int(self):
+        return int(self)
+
+    def __int__(self):
+        return int(to_0xhex(self._value), 16)
+
+    @property
+    def hex(self):
+        return hex(self)
+
+    def __hex__(self):
+        return to_0xhex(self._value)
+
+    @property
+    def bytes(self):
+        return self._value
+
+    def __str__(self):
+        return self.hex
+
+    def __repr__(self):
+        return '%s = %s' % (self.name, str(self))

@@ -6,3 +6,5 @@ output.xml
 *swo
 .svn
 .DS_Store
+.project
+.pydevproject
