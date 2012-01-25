@@ -43,7 +43,7 @@ class _Client(object):
 
     def send_packet(self, packet):
         self._client_socket.send(packet)
-        print "Data sent:", packet
+        print "Data sent:", repr(packet)
 
     def close(self):
         self._client_socket.close()
