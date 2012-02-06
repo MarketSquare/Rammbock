@@ -9,6 +9,7 @@ ${TEST MACHINE}   127.0.0.1
 ${SERVER}         ${TEST MACHINE}
 ${CLIENT}         ${TEST MACHINE}
 ${SERVER PORT}    54321
+${SERVER PORT 2}
 ${CLIENT 1 PORT}  45678
 ${CLIENT 2 PORT}  45679
 
@@ -47,16 +48,24 @@ Access header
 
 Multiple clients
     [Setup]    Define example protocol
-    Start udp client    _ip=${CLIENT}    _port=${CLIENT 1 PORT}    _name=Client_1     _protocol=Example
-    Start udp client    _ip=${CLIENT}    _port=${CLIENT 2 PORT}    _name=Client_2     _protocol=Example
-    Start udp server    ${SERVER}    ${SERVER PORT}    _name=ExampleServer  _protocol=Example
-    Client Connects    ${SERVER}    ${SERVER PORT}    _name=Client_1
-    Client Connects    ${SERVER}    ${SERVER PORT}    _name=Client_2
+    Start two clients
+    Start udp server    ${SERVER}    ${SERVER PORT}   _name=ExampleServer  _protocol=Example
+    Connect two clients    ${SERVER PORT}    ${SERVER PORT}
     Client Sends simple request    value=0xcafebabe   _name=Client_1
     Client Sends simple request    value=0xdeadbeef   _name=Client_2
-    Verify server gets from    ${CLIENT}    ${CLIENT 1 PORT}     0x 01 00 dddd 000c ffff cafebabe
-    Verify server gets from    ${CLIENT}    ${CLIENT 2 PORT}     0x 01 00 dddd 000c ffff deadbeef
+    Verify server gets from    ${CLIENT}    ${CLIENT 1 PORT}     0x 01 00 dddd 000c ffff cafebabe    _name=ExampleServer
+    Verify server gets from    ${CLIENT}    ${CLIENT 2 PORT}     0x 01 00 dddd 000c ffff deadbeef    _name=ExampleServer
 
+Multiple clients
+    [Setup]    Define example protocol
+    Start two clients
+    Start udp server    ${SERVER}    ${SERVER PORT}    _name=Server_1  _protocol=Example
+    Start udp server    ${SERVER}    ${SERVER PORT 2}  _name=Server_2  _protocol=Example
+    Connect two clients    ${SERVER PORT}    ${SERVER PORT 2}
+    Client Sends simple request    value=0xcafebabe   _name=Client_1
+    Client Sends simple request    value=0xdeadbeef   _name=Client_2
+    Verify server gets from    ${CLIENT}    ${CLIENT 1 PORT}     0x 01 00 dddd 000c ffff cafebabe     _name=Server_1
+    Verify server gets from    ${CLIENT}    ${CLIENT 2 PORT}     0x 01 00 dddd 000c ffff deadbeef     _name=Server_2
 
 *** Keywords ***
 Client Sends simple request
@@ -77,8 +86,8 @@ Verify server gets
     Binary should equal hex    ${msg}    ${expected hex}
 
 Verify server gets from
-    [Arguments]    ${ip}  ${port}  ${expected hex}
-    ${from ip}   ${from port}   ${msg} =    Server receives binary from
+    [Arguments]    ${ip}  ${port}  ${expected hex}   ${server}
+    ${from ip}   ${from port}   ${msg} =    Server receives binary from     ${server}
     Binary should equal hex    ${msg}    ${expected hex}
     Should be equal    ${from ip}    ${ip}
     Should be equal    ${from port}  ${port}
@@ -94,3 +103,12 @@ Normalize hex
     ${bin} =     Hex to bin    ${hex}
     ${normalized}   Bin to hex    ${bin}
     [return]       ${normalized}
+
+Start two clients
+    Start udp client    _ip=${CLIENT}    _port=${CLIENT 1 PORT}    _name=Client_1     _protocol=Example
+    Start udp client    _ip=${CLIENT}    _port=${CLIENT 2 PORT}    _name=Client_2     _protocol=Example
+
+Connect two clients
+    [Arguments]    ${server port 1}     ${server port 2}
+    Client Connects    ${SERVER}    ${server port 1}    _name=Client_1
+    Client Connects    ${SERVER}    ${server port 2}    _name=Client_2
