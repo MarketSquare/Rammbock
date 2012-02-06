@@ -103,7 +103,7 @@
         <field name="gtpv2.ie_len" showname="IE Length: 31" size="2" pos="140" show="31" value="001f"/>
         <field name="gtpv2.cr" showname="000. .... = CR flag: 0" size="1" pos="142" show="0" value="0" unmaskedvalue="00"/>
         <field name="gtpv2.instance" showname=".... 0000 = Instance: 0" size="1" pos="142" show="0" value="0" unmaskedvalue="00"/>
-        <field name="gtpv2.apn" showname="APN (Access Point Name): sgw.nsn.com.mnc012.mcc262.gprs" size="31" pos="143" show="sgw.nsn.com.mnc012.mcc262.gprs" value="03736777036e736e03636f6d066d6e63303132066d63633236320467707273"/>
+        <field name="gtpv2.apn" showname="APN (Access Point Name): sgw.com.mnc012.mcc262.gprs" size="31" pos="143" show="sgw.com.mnc012.mcc262.gprs" value="03736777036e736e03636f6d066d6e63303132066d63633236320467707273"/>
       </field>
       <field name="" show="Selection Mode : " size="5" pos="174" value="80000100fc">
         <field name="gtpv2.ie_type" showname="IE Type: Selection Mode (128)" size="1" pos="174" show="128" value="80"/>
