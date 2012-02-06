@@ -125,8 +125,8 @@ class Rammbock(object):
         """ Given UDP client connects to server. Server IP-address and port need to be given. If no client stated, last created client is used.
 
         Examples:
-        | Client Connects to UDP Server | 10.10.10.2 | DNS_Client1 | #Client name is stated |
-        | Client Connects to UDP Server | 10.10.10.2 | | # Last created client is used |
+        | Client Connects to UDP Server | 10.10.10.2 | 27575 | DNS_Client1 | #Client name is stated |
+        | Client Connects to UDP Server | 10.10.10.2 | 22222 | | # Last created client is used |
         """
         client_name = self._use_latest_client_name_if_name_not_present(client_name)
         self._clients[client_name].establish_connection_to_server(host, port)
@@ -135,8 +135,8 @@ class Rammbock(object):
         """ Given TCP client connects to server. Server IP-address and port need to be given. If no client stated, last created client is used.
 
         Examples:
-        | Client Connects to TCP Server | 10.10.10.2 | HTTP_Client1 | #Client name is stated |
-        | Client Connects to TCP Server | 10.10.10.2 | | # Last created client is used |
+        | Client Connects to TCP Server | 10.10.10.2 | 55555 | HTTP_Client1 | #Client name is stated |
+        | Client Connects to TCP Server | 10.10.10.2 | 77777 | | # Last created client is used |
         """
         client_name = self._use_latest_client_name_if_name_not_present(client_name)
         self._clients[client_name].establish_connection_to_server(host, port)
@@ -145,8 +145,8 @@ class Rammbock(object):
         """ Given SCTP client connects to server. Server IP-address and port need to be given. If no client stated, last created client is used.
 
         Examples:
-        | Client Connects to SCTP Server | 10.10.10.2 | Diameter_Client1 | #Client name is stated |
-        | Client Connects to SCTP Server | 10.10.10.2 | | # Last created client is used |
+        | Client Connects to SCTP Server | 10.10.10.2 | 11111 | Diameter_Client1 | #Client name is stated |
+        | Client Connects to SCTP Server | 10.10.10.2 | 22222 | | # Last created client is used |
         """
         client_name = self._use_latest_client_name_if_name_not_present(client_name)
         self._clients[client_name].establish_connection_to_server(host, port)
