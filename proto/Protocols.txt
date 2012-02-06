@@ -4,19 +4,18 @@ Define example protocol
     u8    version    0x01
     u8    reserved    0x00
     u16    messageType    # Empty on purpose, each message template defines the type for it
-    u16    length    # Empty on purpose, the length is pdu length
+    u16    length         # Empty on purpose, the length is pdu length
     u16    flags    0x0000
     pdu    length-8
     End protocol description
 
 Setup protocol, server, and client
     Define example protocol
-    Start udp server    ${SERVER}    ${SERVER PORT}    _server=ExampleServer
-    Start udp client    _client=ExampleClient
-    Connect    ${SERVER}    ${SERVER PORT}    _client=ExampleClient
+    Start udp server    ${SERVER}    ${SERVER PORT}    _name=ExampleServer  _protocol=Example
+    Start udp client    _name=ExampleClient     _protocol=Example
+    Client Connects    ${SERVER}    ${SERVER PORT}    _name=ExampleClient
 
-Send hex
+Client Sends hex
     [Arguments]    ${hex}    @{params}
     ${binary} =    Hex to bin    ${hex}
-    Send binary    ${binary}    @{params}
-
+    Client Sends binary    ${binary}    @{params}

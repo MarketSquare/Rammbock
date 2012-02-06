@@ -9,59 +9,53 @@ ${SERVER PORT}    54321
 
 *** Test Cases ***
 Client uses protocol and sends
-    Use protocol    Example   _client=ExampleClient
-    Send simple request    value=0xcafebabe    _client=ExampleClient
+    Client Sends simple request    value=0xcafebabe
     Verify server gets    0x 01 00 dddd 000c ffff cafebabe
 
 Server uses protocol and receives
-    Use protocol    Example    _server=ExampleServer
-    Send hex    0x 01 00 dddd 0c 0000 cafebabe    _client=ExampleClient
-    ${msg} =    Receive simple request    value=0xcafebabe    _server=ExampleServer
+    Client Sends hex    0x 01 00 dddd 0c 0000 cafebabe
+    ${msg} =    Server Receives simple request    value=0xcafebabe
     Should be equal    ${msg.value.hex}    0xcafebabe
 
 Server uses protocol and value validation fails
-    Use protocol    Example    _server=ExampleServer
-    Send hex    0x 01 00 dddd 0c 0000 cafebabe    _client=ExampleClient
-    Run keyword and expect error    *    Receive simple request    value=0xffffff    _server=ExampleServer
+    Client Sends hex    0x 01 00 dddd 0c 0000 cafebabe
+    Run keyword and expect error    *    Server Receives simple request    value=0xffffff
 
 Server uses protocol and messages arrive out of order
-    Use protocol    Example    _server=ExampleServer
-    Send hex    0x 01 00 aaaa 0c 0000 deadbeef    _client=ExampleClient
-    Send hex    0x 01 00 dddd 0c 0000 cafebabe    _client=ExampleClient
-    ${msg dddd} =    Receive simple request    _server=ExampleServer
+    Client Sends hex    0x 01 00 aaaa 0c 0000 deadbeef
+    Client Sends hex    0x 01 00 dddd 0c 0000 cafebabe
+    ${msg dddd} =    Server Receives simple request
     Should be equal    ${msg dddd._header.messageType.hex}    0xdddd
 
 Message field type conversions
-    Use protocol    Example    _server=ExampleServer
-    Send hex    0x 01 00 dddd 0c 0000 000000ff    _client=ExampleClient
-    ${msg} =    Receive simple request    value=0xcafebabe    _server=ExampleServer
+    Client Sends hex    0x 01 00 dddd 0c 0000 000000ff
+    ${msg} =    Server Receives simple request    value=0xcafebabe
     Should be equal    ${msg.value.hex}    0x000000ff
     Should be equal as integers    ${msg.value.int}    255
     Should be equal    ${msg.value.bytes}    \x00\x00\x00\xff
 
 Access header
-    Use protocol    Example    _server=ExampleServer
-    Send hex    0x 01 00 dddd 0c 0000 000000ff    _client=ExampleClient
-    ${msg} =    Receive simple request    value=0xcafebabe    _server=ExampleServer
+    Client Sends hex    0x 01 00 dddd 0c 0000 000000ff
+    ${msg} =    Server Receives simple request    value=0xcafebabe
     Should be equal    ${msg._header.version.hex}    0x01
     Should be equal as integers    ${msg._header.length.int}    12
 
 *** Keywords ***
-Send simple request
-    [Arguments]    @{params}
-    New pdu    messageType=0xdddd    flags=0xffff
+Client Sends simple request
+    [Arguments]     @{params}
+    New message     Example    messageType=0xdddd    flags=0xffff
     u32    value    0xdeadbeef
-    Send pdu    @{params}
+    Client Sends message    @{params}
 
-Receive simple request
+Server Receives simple request
     [Arguments]    @{params}
-    New pdu    messageType=0xdddd    flags=0xffff
+    New message    Example    messageType=0xdddd    #messageType=(0xdd|0xff)
     u32    value
-    ${msg} =    Receive pdu    @{params}
+    ${msg} =    Server receives message    @{params}
 
 Verify server gets
     [Arguments]    ${expected hex}
-    ${msg} =    Receive binary    _server=ExampleServer
+    ${msg} =    Server receives binary
     ${msg in hex} =    bin to hex    ${msg}
     ${expected normalized} =   Normalize hex   ${expected hex}
     Should be equal    ${msg in hex}    ${expected normalized}
