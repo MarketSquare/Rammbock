@@ -4,12 +4,12 @@
 *** Keywords ***
 Define diameter protocol
     Start Protocol Description    Diameter
-    bytes  1   message version        0x01
-    bytes  3   message length
-    bytes  1   message flags          0x80
-    bytes  3   command code           257
-    bytes  4   application id         0
-    bytes  4   Hop-By-Hop Identifier  0xe36006e2
-    bytes  4   End-To-End Identifier  0x00003bab
+    add number  1   message version        0x01
+    add number  3   message length
+    add number  1   message flags          0x80
+    add number  3   command code           257
+    add number  4   application id         0
+    add number  4   Hop-By-Hop Identifier  0xe36006e2
+    add number  4   End-To-End Identifier  0x00003bab
     pdu   message length-20
     End protocol description
