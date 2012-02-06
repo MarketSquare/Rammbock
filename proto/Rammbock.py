@@ -25,14 +25,14 @@ class Rammbock(object):
     def end_protocol_description(self):
         self._current_protocol.ready = True
 
-    def start_udp_server(self, ip, port, _server=None, timeout=None):
-        server = UDPServer(ip, port, timeout)
-        self._servers.add(server, _server)
+    def start_udp_server(self, _ip, _port, _name=None, _timeout=None):
+        server = UDPServer(_ip, _port, _timeout)
+        self._servers.add(server, _name)
         return server
 
-    def start_udp_client(self, ip=None, port=None, _client=None):
+    def start_udp_client(self, _ip=None, _port=None, _name=None):
         client = UDPClient()
-        self._clients.add(client, _client)
+        self._clients.add(client, _name)
         return client
 
     """Connect a client to certain host and port."""

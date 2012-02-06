@@ -1,11 +1,16 @@
 *** Settings ***
 Test Setup        Setup protocol, server, and client
+Test teardown     Reset rammbock
 Library           Rammbock.py
 Resource          Protocols.txt
 
 *** Variables ***
-${SERVER}         127.0.0.1
+${TEST MACHINE}   127.0.0.1
+${SERVER}         ${TEST MACHINE}
+${CLIENT}         ${TEST MACHINE}
 ${SERVER PORT}    54321
+${CLIENT 1 PORT}  45678
+${CLIENT 2 PORT}  45679
 
 *** Test Cases ***
 Client uses protocol and sends
@@ -40,6 +45,19 @@ Access header
     Should be equal    ${msg._header.version.hex}    0x01
     Should be equal as integers    ${msg._header.length.int}    12
 
+Multiple clients
+    [Setup]    Define example protocol
+    Start udp client    _ip=${CLIENT}    _port=${CLIENT 1 PORT}    _name=Client_1     _protocol=Example
+    Start udp client    _ip=${CLIENT}    _port=${CLIENT 2 PORT}    _name=Client_2     _protocol=Example
+    Start udp server    ${SERVER}    ${SERVER PORT}    _name=ExampleServer  _protocol=Example
+    Client Connects    ${SERVER}    ${SERVER PORT}    _name=Client_1
+    Client Connects    ${SERVER}    ${SERVER PORT}    _name=Client_2
+    Client Sends simple request    value=0xcafebabe   _name=Client_1
+    Client Sends simple request    value=0xdeadbeef   _name=Client_2
+    Verify server gets from    ${CLIENT}    ${CLIENT 1 PORT}     0x 01 00 dddd 000c ffff cafebabe
+    Verify server gets from    ${CLIENT}    ${CLIENT 2 PORT}     0x 01 00 dddd 000c ffff deadbeef
+
+
 *** Keywords ***
 Client Sends simple request
     [Arguments]     @{params}
@@ -56,9 +74,20 @@ Server Receives simple request
 Verify server gets
     [Arguments]    ${expected hex}
     ${msg} =    Server receives binary
-    ${msg in hex} =    bin to hex    ${msg}
+    Binary should equal hex    ${msg}    ${expected hex}
+
+Verify server gets from
+    [Arguments]    ${ip}  ${port}  ${expected hex}
+    ${from ip}   ${from port}   ${msg} =    Server receives binary from
+    Binary should equal hex    ${msg}    ${expected hex}
+    Should be equal    ${from ip}    ${ip}
+    Should be equal    ${from port}  ${port}
+
+Binary should equal hex
+    [arguments]      ${binary}    ${expected hex}
+    ${binary in hex} =    bin to hex    ${binary}
     ${expected normalized} =   Normalize hex   ${expected hex}
-    Should be equal    ${msg in hex}    ${expected normalized}
+    Should be equal    ${binary in hex}    ${expected normalized}
 
 Normalize hex
     [Arguments]    ${hex}
