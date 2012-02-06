@@ -1,0 +1,21 @@
+*** Test cases ***
+
+
+*** Keywords ***
+Define diameter protocol
+    Start Protocol Description    Diameter
+    u8    message version    0x01
+    u8    reserved    0x00
+    u16    messageType    # Empty on purpose, each message template defines the type for it
+    u16    length         # Empty on purpose, the length is pdu length
+    u16    flags    0x0000
+    pdu    length-8
+    End protocol description
+    
+    Add Message Version  0x01
+    Add Message Length  188
+    Add Message Flags  0x80
+    Add Command Code  ${command_code.capabilities_exchange}
+    Add Application Id  0
+    Add Hop-By-Hop Identifier  0xe36006e2
+    Add End-To-End Identifier  0x00003bab
