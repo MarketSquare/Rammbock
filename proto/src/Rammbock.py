@@ -28,6 +28,15 @@ class Rammbock(object):
     def start_udp_client(self, _ip=None, _port=None, _name=None, _timeout=None, _protocol=None):
         raise Exception('NYI')
 
+    def start_tcp_server(self, _ip, _port, _name=None, _timeout=None, _protocol=None):
+        raise Exception('NYI')
+
+    def start_tcp_client(self, _ip=None, _port=None, _name=None, _timeout=None, _protocol=None):
+        raise Exception('NYI')
+
+    def accept_connection(self, _name=None, _alias=None):
+        raise Exception('NYI')
+
     def connect(self, host, port, _client=None):
         """Connect a client to certain host and port."""
         raise Exception('NYI')

@@ -1,5 +1,5 @@
 *** Settings ***
-Test Setup        Setup protocol, server, and client
+Test Setup        Setup protocol, UDP server, and client
 Test teardown     Reset rammbock
 Library           Rammbock.py
 Resource          Protocols.txt
@@ -16,7 +16,7 @@ ${CLIENT 2 PORT}  45679
 *** Test Cases ***
 Client uses protocol and sends
     Client Sends simple request    value=0xcafebabe
-    Verify server gets    0x 01 00 dddd 000c ffff cafebabe
+    Verify server gets hex    0x 01 00 dddd 000c ffff cafebabe
 
 Server uses protocol and receives
     Client Sends hex    0x 01 00 dddd 0c 0000 cafebabe
@@ -46,27 +46,6 @@ Access header
     Should be equal    ${msg._header.version.hex}    0x01
     Should be equal as integers    ${msg._header.length.int}    12
 
-Multiple clients
-    [Setup]    Define example protocol
-    Start two clients
-    Start udp server    ${SERVER}    ${SERVER PORT}   _name=ExampleServer  _protocol=Example
-    Connect two clients    ${SERVER PORT}    ${SERVER PORT}
-    Client Sends simple request    value=0xcafebabe   _name=Client_1
-    Client Sends simple request    value=0xdeadbeef   _name=Client_2
-    Verify server gets from    ${CLIENT}    ${CLIENT 1 PORT}     0x 01 00 dddd 000c ffff cafebabe    _name=ExampleServer
-    Verify server gets from    ${CLIENT}    ${CLIENT 2 PORT}     0x 01 00 dddd 000c ffff deadbeef    _name=ExampleServer
-
-Multiple clients
-    [Setup]    Define example protocol
-    Start two clients
-    Start udp server    ${SERVER}    ${SERVER PORT}    _name=Server_1  _protocol=Example
-    Start udp server    ${SERVER}    ${SERVER PORT 2}  _name=Server_2  _protocol=Example
-    Connect two clients    ${SERVER PORT}    ${SERVER PORT 2}
-    Client Sends simple request    value=0xcafebabe   _name=Client_1
-    Client Sends simple request    value=0xdeadbeef   _name=Client_2
-    Verify server gets from    ${CLIENT}    ${CLIENT 1 PORT}     0x 01 00 dddd 000c ffff cafebabe     _name=Server_1
-    Verify server gets from    ${CLIENT}    ${CLIENT 2 PORT}     0x 01 00 dddd 000c ffff deadbeef     _name=Server_2
-
 *** Keywords ***
 Client Sends simple request
     [Arguments]     @{params}
@@ -79,36 +58,3 @@ Server Receives simple request
     New message    Example    messageType=0xdddd    #messageType=(0xdd|0xff)
     u32    value
     ${msg} =    Server receives message    @{params}
-
-Verify server gets
-    [Arguments]    ${expected hex}
-    ${msg} =    Server receives binary
-    Binary should equal hex    ${msg}    ${expected hex}
-
-Verify server gets from
-    [Arguments]    ${ip}  ${port}  ${expected hex}   ${server}
-    ${from ip}   ${from port}   ${msg} =    Server receives binary from     ${server}
-    Binary should equal hex    ${msg}    ${expected hex}
-    Should be equal    ${from ip}    ${ip}
-    Should be equal    ${from port}  ${port}
-
-Binary should equal hex
-    [arguments]      ${binary}    ${expected hex}
-    ${binary in hex} =    bin to hex    ${binary}
-    ${expected normalized} =   Normalize hex   ${expected hex}
-    Should be equal    ${binary in hex}    ${expected normalized}
-
-Normalize hex
-    [Arguments]    ${hex}
-    ${bin} =     Hex to bin    ${hex}
-    ${normalized}   Bin to hex    ${bin}
-    [return]       ${normalized}
-
-Start two clients
-    Start udp client    _ip=${CLIENT}    _port=${CLIENT 1 PORT}    _name=Client_1     _protocol=Example
-    Start udp client    _ip=${CLIENT}    _port=${CLIENT 2 PORT}    _name=Client_2     _protocol=Example
-
-Connect two clients
-    [Arguments]    ${server port 1}     ${server port 2}
-    Client Connects    ${SERVER}    ${server port 1}    _name=Client_1
-    Client Connects    ${SERVER}    ${server port 2}    _name=Client_2
