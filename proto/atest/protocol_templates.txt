@@ -4,15 +4,6 @@ Test teardown     Reset rammbock
 Library           Rammbock.py
 Resource          Protocols.txt
 
-*** Variables ***
-${TEST MACHINE}   127.0.0.1
-${SERVER}         ${TEST MACHINE}
-${CLIENT}         ${TEST MACHINE}
-${SERVER PORT}    54321
-${SERVER PORT 2}
-${CLIENT 1 PORT}  45678
-${CLIENT 2 PORT}  45679
-
 *** Test Cases ***
 Client uses protocol and sends
     Client Sends simple request    value=0xcafebabe
