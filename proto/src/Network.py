@@ -1,13 +1,14 @@
 import socket
 
-BUFFER_SIZE = 65536
+UDP_BUFFER_SIZE = 65536
+TCP_BUFFER_SIZE = 1000000
 
 class _WithTimeouts(object):
 
     _default_timeout = 10
 
     def _get_timeout(self, timeout):
-        if str(timeout).lower() == 'none':
+        if not timeout or str(timeout).lower() == 'none':
             return self._default_timeout
         elif str(timeout).lower() == 'blocking':
             return None
@@ -22,8 +23,7 @@ class _Server(_WithTimeouts):
     def __init__(self, ip, port, timeout=None):
         self._ip = ip
         self._port = port
-        self._timeout = timeout
-        self._set_default_timeout(self._timeout)
+        self._set_default_timeout(timeout)
 
     def _bind_socket(self):
         self._socket.bind((self._ip, int(self._port)))
@@ -47,19 +47,10 @@ class UDPServer(_Server):
 
     def receive_from(self, timeout=None):
         timeout = self._get_timeout(timeout)
-        try:
-            self._socket.settimeout(timeout)
-            return self._socket.recvfrom(BUFFER_SIZE)
-        # If we are sending to a machine that wont listen, then reading 
-        # becomes impossible from this socket on windows.
-        # On linux sending to a port that is not listening causes following
-        # send operations to fail.
-        except socket.error:
-            self._init_socket()
-            self._socket.settimeout(timeout)
-            return self._socket.recvfrom(BUFFER_SIZE)
+        self._socket.settimeout(timeout)
+        return self._socket.recvfrom(UDP_BUFFER_SIZE) 
 
-    def read(self, timeout=None):
+    def receive(self, timeout=None):
         return self.receive_from(timeout)[0]
 
     def send_to(self, msg, ip, port):
@@ -76,14 +67,14 @@ class TCPServer(_Server):
         self._socket.listen(1)
         self._connections = _NamedCache('connection')
 
-    def read(self, timeout=None):
+    def receive(self, timeout=None):
         return self.receive_from(timeout)[0]
 
     def receive_from(self, timeout=None, alias=None):
         connection = self._connections.get(alias)[0]
         timeout = self._get_timeout(timeout)
         connection.settimeout(timeout)
-        return connection.recvfrom(BUFFER_SIZE)
+        return connection.recvfrom(TCP_BUFFER_SIZE)
 
     def accept_connection(self, alias=None):
         connection, client_address = self._socket.accept()
@@ -93,13 +84,13 @@ class TCPServer(_Server):
     def send(self, msg, alias=None):
         self._connections.get(alias)[0].send(msg)
 
+    # TODO: Close single connection
+
 
 class _Client(_WithTimeouts):
 
-    def __init__(self, send_callback=None, read_callback=None, timeout=None):
+    def __init__(self, timeout=None):
         self._is_connected = False
-        self._send_callback = send_callback
-        self._read_callback = read_callback
         self._init_socket()
         self._set_default_timeout(timeout)
 
@@ -123,16 +114,12 @@ class _Client(_WithTimeouts):
         return self
 
     def send(self, msg):
-        if self._send_callback:
-            self._send_callback(msg)
         self._socket.sendall(msg)
 
-    def read(self, timeout=None):
+    def receive(self, timeout=None):
         timeout = self._get_timeout(timeout)
         self._socket.settimeout(timeout)
         msg = self._socket.recv(self._size_limit)
-        if self._read_callback:
-            self._read_callback(msg)
         return msg
 
     def empty(self):
@@ -152,7 +139,7 @@ class _Client(_WithTimeouts):
 
 class UDPClient(_Client):
 
-    _size_limit = BUFFER_SIZE
+    _size_limit = UDP_BUFFER_SIZE
 
     def _init_socket(self):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -160,10 +147,11 @@ class UDPClient(_Client):
 
 class TCPClient(_Client):
 
-    _size_limit = 1000000
+    _size_limit = TCP_BUFFER_SIZE
 
     def _init_socket(self):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 
 class _NamedCache(object):
 

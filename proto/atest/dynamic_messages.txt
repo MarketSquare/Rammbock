@@ -2,7 +2,7 @@
 Test Setup        Setup protocol, server, and client
 Library           Rammbock.py
 Resource          Protocols.txt
-Default tags      not-ready
+
 
 *** Variables ***
 ${SERVER}         127.0.0.1
