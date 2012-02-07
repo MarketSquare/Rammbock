@@ -11,6 +11,12 @@ class Rammbock(object):
         self._servers = _NamedCache('server')
         self._clients = _NamedCache('client')
 
+    def reset_rammbock(self):
+        """
+
+        Closes all connections, deletes all servers and clients, templates and messages
+        """
+        raise Exception('NYI')
 
     def start_protocol_description(self, protocol):
         """Start defining a new protocol template.
