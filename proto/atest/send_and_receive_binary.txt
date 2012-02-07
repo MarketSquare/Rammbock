@@ -1,0 +1,35 @@
+*** Settings ***
+Library   Rammbock
+Resource  Protocols.txt
+Test setup   Setup TCP server and client
+
+*** Test cases ***
+Client sends binary to server
+    Client sends binary    foo
+    ${message}=  Server receives binary
+    Should be equal   ${message}   foo
+    
+Server sends binary to client
+    Server sends binary   foo
+    ${message}=  Client receives binary
+    Should be equal   ${message}  foo
+    
+Multiple clients
+    [setup]  Start two udp clients
+    Start udp server    ${SERVER}    ${SERVER PORT}   _name=ExampleServer  _protocol=Example
+    Connect two clients    ${SERVER PORT}    ${SERVER PORT}
+    Client Sends binary    foo   _name=Client_1
+    Client Sends binary    bar   _name=Client_2
+    Verify server gets from    ${CLIENT}    ${CLIENT 1 PORT}     foo    _name=ExampleServer
+    Verify server gets from    ${CLIENT}    ${CLIENT 2 PORT}     bar    _name=ExampleServer
+
+Multiple servers
+    [setup]  Start two udp clients
+    Start udp server    ${SERVER}    ${SERVER PORT}    _name=Server_1  _protocol=Example
+    Start udp server    ${SERVER}    ${SERVER PORT 2}  _name=Server_2  _protocol=Example
+    Connect two clients    ${SERVER PORT}    ${SERVER PORT 2}
+    Client Sends binary    foo   _name=Client_1
+    Client Sends binary    bar   _name=Client_2
+    Verify server gets from    ${CLIENT}    ${CLIENT 1 PORT}     foo     _name=Server_1
+    Verify server gets from    ${CLIENT}    ${CLIENT 2 PORT}     bar     _name=Server_2
+    

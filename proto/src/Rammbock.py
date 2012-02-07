@@ -7,108 +7,100 @@ from binary_conversions import to_0xhex, to_bin, to_bin_of_length, to_hex
 class Rammbock(object):
 
     def __init__(self):
-        self._current_protocol = None
-        self._protocols = {}
-        self._message_pdu = None
+        self._protocols = _NamedCache('protocol')
         self._servers = _NamedCache('server')
-        self._clients = _NamedCache('clients')
+        self._clients = _NamedCache('client')
 
     """Start defining a new protocol template.
 
     All messages sent and received from a connection after calling 'Use protocol' have to use the same protocol template. Protocol template fields can be used to search messages from buffer.
     """
     def start_protocol_description(self, protocol):
-        self._protocols[protocol] = Protocol()
-        self._current_protocol = self._protocols[protocol]
+        raise Exception('NYI')
 
-    """End protocol definition."""
     def end_protocol_description(self):
-        self._current_protocol.ready = True
+        """End protocol definition."""
+        raise Exception('NYI')
 
-    def start_udp_server(self, _ip, _port, _name=None, _timeout=None):
-        server = UDPServer(_ip, _port, _timeout)
-        self._servers.add(server, _name)
-        return server
+    def start_udp_server(self, _ip, _port, _name=None, _timeout=None, _protocol=None):
+        raise Exception('NYI')
 
-    def start_udp_client(self, _ip=None, _port=None, _name=None):
-        client = UDPClient()
-        self._clients.add(client, _name)
-        return client
+    def start_udp_client(self, _ip=None, _port=None, _name=None, _timeout=None, _protocol=None):
+        raise Exception('NYI')
 
-    """Connect a client to certain host and port."""
+    def start_tcp_server(self, _ip, _port, _name=None, _timeout=None, _protocol=None):
+        raise Exception('NYI')
+
+    def start_tcp_client(self, _ip=None, _port=None, _name=None, _timeout=None, _protocol=None):
+        raise Exception('NYI')
+
+    def accept_connection(self, _name=None, _alias=None):
+        raise Exception('NYI')
+
     def connect(self, host, port, _client=None):
-        client = self._clients.get(_client) if _client else self._clients.get()
-        client.connect_to(host, port)
+        """Connect a client to certain host and port."""
+        raise Exception('NYI')
 
-    """Take a certain protocol into use in server or client.
+    def client_sends_binary(self, message, _name=None):
+        """Send raw binary data."""
+        raise Exception('NYI')
 
-    From this moment on (until another protocol is taken into use) all messages
-     received and sent have to confirm to this protocol template.
-     
-     TODO: In future it should be possible to set and override default values for protocol fields here."""
-    def use_protocol(self, protocol, _server=None, _client=None):
-        self._current_protocol = self._protocols[protocol]
+    def server_sends_binary(self, message, _name=None, _connection=None):
+        """Send raw binary data."""
+        raise Exception('NYI')
 
-    """Send raw binary data."""
-    def send_binary(self, message, _server=None, _client=None):
-        client = self._clients.get(_client)
-        client.send(message)
+    def client_receives_binary(self, _name=None, _timeout=None):
+        """Receive raw binary data."""
+        raise Exception('NYI')
 
-    """Receive raw binary data."""
-    def receive_binary(self, _server=None, _client=None):
-        server = self._servers.get(_server)
-        return server.read()
+    def server_receives_binary(self, _name=None, _timeout=None, _connection=None):
+        """Receive raw binary data."""
+        raise Exception('NYI')
 
-    """Define a new message pdu template.
+    def new_message(self, protocol=None, *parameters):
+        """Define a new message pdu template.
+    
+        Parameters have to be header fields."""
+        raise Exception('NYI')
 
-    Parameters have to be header fields."""
-    def new_pdu(self, *parameters):
-        self._message_pdu = PDU(self._parse_parameters(parameters))
+    def get_message(self, *params):
+        """Get encoded message.
+    
+        Parameters have to be pdu fields."""
+        raise Exception('NYI')
 
-    """Send a pdu.
+    def client_sends_message(self, *params):
+        """Send a pdu.
+    
+        Parameters have to be pdu fields."""
+        raise Exception('NYI')
 
-    Parameters have to be pdu fields."""
-    def send_pdu(self, *params):
-        params_dict = self._parse_parameters(params)
-        server = params_dict.pop("_server", None)
-        client = params_dict.pop("_client", None)
-        msg = self.create_binary_to_send(params_dict)
-        self.send_binary(msg, server, client)
+    def server_sends_message(self, *params):
+        """Send a pdu.
+    
+        Parameters have to be pdu fields."""
+        raise Exception('NYI')
 
-    def create_binary_to_send(self, paramsdict):
-        msg = self._current_protocol.encode(self._message_pdu, paramsdict)
-        self._log_msg('DEBUG', repr(msg))
-        return msg._raw
-
-    """Receive a message object.
-
-    Parameters that have been given are validated against message fields."""
-    def receive_pdu(self, *params):
+    def client_receives_message(self, *params):
+        """Receive a message object.
+    
+        Parameters that have been given are validated against message fields."""
         raise Exception('Not yet done')
 
-    def add_number(self, length, name, value):
-        field = _UField(length, name, value)
-        if self._message_pdu:
-            self._message_pdu.add(field)
-        elif not self._current_protocol.ready:
-            self._current_protocol.add(field)
-        else:
-            raise Exception('Fields have to be added in protocol definition or in message template.')
+    def server_receives_message(self, *params):
+        """Receive a message object.
+    
+        Parameters that have been given are validated against message fields."""
+        raise Exception('Not yet done')
 
-    def u8(self, name, default_value=None):
-        self.add_number(1, name, default_value)
-
-    def u16(self, name, default_value=None):
-        self.add_number(2, name, default_value)
-
-    def u32(self, name, default_value=None):
-        self.add_number(4, name, default_value)
+    def uint(self, length, name, value):
+        raise Exception('NYI')
 
     """Defines the pdu in protocol template.
 
     Length must be the name of a previous field in template definition."""
     def pdu(self, length):
-        self._current_protocol.add(_PDUField(length, "pdu", "placeholder"))
+        raise Exception('Not yet done')
 
     def hex_to_bin(self, hex_value):
         return to_bin(hex_value)
