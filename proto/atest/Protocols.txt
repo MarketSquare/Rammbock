@@ -19,3 +19,11 @@ Client Sends hex
     [Arguments]    ${hex}    @{params}
     ${binary} =    Hex to bin    ${hex}
     Client Sends binary    ${binary}    @{params}
+
+U8
+    [Arguments]    ${name}    ${value}=${NONE}
+    uint     1     ${name}    ${value}
+
+U16
+    [Arguments]    ${name}    ${value}=${NONE}
+    uint     2     ${name}    ${value}
