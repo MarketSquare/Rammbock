@@ -69,10 +69,10 @@ class Rammbock(object):
 
     Parameters have to be pdu fields."""
     def send_pdu(self, *params):
-        paramsdict = self._parse_parameters(params)
-        server = paramsdict.pop("_server", None)
-        client = paramsdict.pop("_client", None)
-        msg = self.create_binary_to_send(paramsdict)
+        params_dict = self._parse_parameters(params)
+        server = params_dict.pop("_server", None)
+        client = params_dict.pop("_client", None)
+        msg = self.create_binary_to_send(params_dict)
         self.send_binary(msg, server, client)
 
     def create_binary_to_send(self, paramsdict):
