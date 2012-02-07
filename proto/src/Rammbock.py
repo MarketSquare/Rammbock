@@ -1,5 +1,7 @@
 # API prototype
 import time
+from Network import TCPServer
+from Network import TCPClient
 
 from Network import UDPServer, UDPClient, _NamedCache
 from binary_conversions import to_0xhex, to_bin, to_bin_of_length, to_hex
@@ -36,10 +38,13 @@ class Rammbock(object):
         raise Exception('NYI')
 
     def start_tcp_server(self, _ip, _port, _name=None, _timeout=None, _protocol=None):
-        raise Exception('NYI')
+        server = TCPServer(ip=_ip, port=_port, timeout=_timeout, protocol=_protocol)
+        self._servers.add(server, _name)
 
     def start_tcp_client(self, _ip=None, _port=None, _name=None, _timeout=None, _protocol=None):
-        raise Exception('NYI')
+        client = TCPClient(timeout=_timeout, protocol=_protocol)
+        if _ip or _port:
+            client.set_own_ip_and_port(ip=_ip, port=_port)
 
     def accept_connection(self, _name=None, _alias=None):
         raise Exception('NYI')

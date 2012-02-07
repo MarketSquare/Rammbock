@@ -59,13 +59,14 @@ class UDPServer(_Server):
 
 class TCPServer(_Server):
 
-    def __init__(self, ip, port, timeout=None):
+    def __init__(self, ip, port, timeout=None, protocol=None):
         _Server.__init__(self, ip, port, timeout)
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._bind_socket()
         self._socket.listen(1)
         self._connections = _NamedCache('connection')
+        self._protocol = protocol
 
     def receive(self, timeout=None):
         return self.receive_from(timeout)[0]
@@ -89,7 +90,8 @@ class TCPServer(_Server):
 
 class _Client(_WithTimeouts):
 
-    def __init__(self, timeout=None):
+    def __init__(self, timeout=None, protocol=None):
+        self._protocol = protocol
         self._is_connected = False
         self._init_socket()
         self._set_default_timeout(timeout)
