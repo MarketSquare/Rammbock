@@ -11,11 +11,12 @@ class Rammbock(object):
         self._servers = _NamedCache('server')
         self._clients = _NamedCache('client')
 
-    """Start defining a new protocol template.
 
-    All messages sent and received from a connection after calling 'Use protocol' have to use the same protocol template. Protocol template fields can be used to search messages from buffer.
-    """
     def start_protocol_description(self, protocol):
+        """Start defining a new protocol template.
+
+        All messages sent and received from a connection after calling 'Use protocol' have to use the same protocol template. Protocol template fields can be used to search messages from buffer.
+        """
         raise Exception('NYI')
 
     def end_protocol_description(self):
