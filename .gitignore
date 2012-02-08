@@ -8,3 +8,4 @@ output.xml
 .DS_Store
 .project
 .pydevproject
+.idea
