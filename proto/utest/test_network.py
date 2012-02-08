@@ -2,6 +2,7 @@ import unittest
 import sys, os
 import time
 import socket
+from threading import Timer
 sys.path.append(os.path.join(os.path.dirname(__file__), '..','src'))
 from Network import UDPServer, TCPServer, UDPClient, TCPClient
 
@@ -69,12 +70,16 @@ class TestNetwork(unittest.TestCase):
         server, _ = self._udp_server_and_client(SERVER_PORT, CLIENT_PORT, timeout=0.1)
         self._assert_timeout(server)
 
+    def test_blocking_timeout(self):
+        server, client = self._udp_server_and_client(SERVER_PORT, CLIENT_PORT, timeout=0.1)
+        t = Timer(0.2, client.send, args=['foofaa'])
+        t.start()
+        self.assertEquals(server.receive(timeout='blocking'), 'foofaa')
+
     def _assert_timeout(self, node, timeout=None):
         start_time = time.time()
         self.assertRaises(socket.timeout, node.receive, timeout)
         self.assertTrue(time.time() - 0.5 < start_time)
-
-    # TODO: Test for blocking mode
 
     def _assert_receive(self, receiver, msg):
         self.assertEquals(receiver.receive(), msg)
