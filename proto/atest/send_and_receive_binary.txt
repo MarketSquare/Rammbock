@@ -2,6 +2,7 @@
 Library   Rammbock
 Resource  Protocols.txt
 Test setup   Setup TCP server and client
+Test teardown   Reset Rammbock
 
 *** Variables ***
 ${TEST MACHINE}   127.0.0.1

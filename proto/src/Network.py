@@ -45,13 +45,18 @@ class UDPServer(_Server):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._bind_socket()
 
-    def receive_from(self, timeout=None):
+    def receive_from(self, timeout=None, alias=None):
+        self._check_no_alias(alias)
         timeout = self._get_timeout(timeout)
         self._socket.settimeout(timeout)
-        return self._socket.recvfrom(UDP_BUFFER_SIZE) 
+        return self._socket.recvfrom(UDP_BUFFER_SIZE)
 
-    def receive(self, timeout=None):
-        return self.receive_from(timeout)[0]
+    def _check_no_alias(self, alias):
+        if alias:
+            raise Exception('Connection aliases are not supported on UDP Servers')
+
+    def receive(self, timeout=None, alias=None):
+        return self.receive_from(timeout, alias)[0]
 
     def send_to(self, msg, ip, port):
         self._socket.sendto(msg, (ip,int(port)))
@@ -68,8 +73,8 @@ class TCPServer(_Server):
         self._connections = _NamedCache('connection')
         self._protocol = protocol
 
-    def receive(self, timeout=None):
-        return self.receive_from(timeout)[0]
+    def receive(self, timeout=None, alias=None):
+        return self.receive_from(timeout, alias)[0]
 
     def receive_from(self, timeout=None, alias=None):
         connection = self._connections.get(alias)[0]
@@ -178,5 +183,5 @@ class _NamedCache(object):
             return self._current
         return self._cache[name]
 
-    def iterator(self):
+    def __iter__(self):
         return self._cache.itervalues()

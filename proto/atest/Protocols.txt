@@ -13,7 +13,7 @@ Setup TCP server and client  [arguments]   ${protocol}=
     Start TCP server    ${SERVER}    ${SERVER PORT}    _name=ExampleServer   _protocol=${protocol}
     Start TCP client    _name=ExampleClient
     connect    ${SERVER}    ${SERVER PORT}    _name=ExampleClient
-    Server accepts connection  _name=ExampleServer
+    Accept connection  _name=ExampleServer
 
 Setup UDP server and client  [arguments]  ${protocol}=
     Start udp server    ${SERVER}    ${SERVER PORT}    _name=ExampleServer  _protocol=${protocol}

@@ -9,6 +9,9 @@ from binary_conversions import to_0xhex, to_bin, to_bin_of_length, to_hex
 class Rammbock(object):
 
     def __init__(self):
+            self._init_caches()
+
+    def _init_caches(self):
         self._protocols = _NamedCache('protocol')
         self._servers = _NamedCache('server')
         self._clients = _NamedCache('client')
@@ -18,7 +21,11 @@ class Rammbock(object):
 
         Closes all connections, deletes all servers and clients, templates and messages
         """
-        raise Exception('NYI')
+        for client in self._clients:
+            client.close()
+        for server in self._servers:
+            server.close()
+        self._init_caches()
 
     def start_protocol_description(self, protocol):
         """Start defining a new protocol template.
@@ -39,35 +46,42 @@ class Rammbock(object):
 
     def start_tcp_server(self, _ip, _port, _name=None, _timeout=None, _protocol=None):
         server = TCPServer(ip=_ip, port=_port, timeout=_timeout, protocol=_protocol)
-        self._servers.add(server, _name)
+        return self._servers.add(server, _name)
 
     def start_tcp_client(self, _ip=None, _port=None, _name=None, _timeout=None, _protocol=None):
         client = TCPClient(timeout=_timeout, protocol=_protocol)
         if _ip or _port:
             client.set_own_ip_and_port(ip=_ip, port=_port)
+        return self._clients.add(client, _name)
 
     def accept_connection(self, _name=None, _alias=None):
-        raise Exception('NYI')
+        server = self._servers.get(_name)
+        server.accept_connection()
 
-    def connect(self, host, port, _client=None):
+    def connect(self, host, port, _name=None):
         """Connect a client to certain host and port."""
-        raise Exception('NYI')
+        client = self._clients.get(_name)
+        client.connect_to(host, port)
 
     def client_sends_binary(self, message, _name=None):
         """Send raw binary data."""
-        raise Exception('NYI')
+        client = self._clients.get(_name)
+        client.send(message)
 
     def server_sends_binary(self, message, _name=None, _connection=None):
         """Send raw binary data."""
-        raise Exception('NYI')
+        server = self._servers.get(_name)
+        server.send(message, alias=_connection)
 
     def client_receives_binary(self, _name=None, _timeout=None):
         """Receive raw binary data."""
-        raise Exception('NYI')
+        client = self._clients.get(_name)
+        return client.receive(timeout=_timeout)
 
     def server_receives_binary(self, _name=None, _timeout=None, _connection=None):
         """Receive raw binary data."""
-        raise Exception('NYI')
+        server = self._servers.get(_name)
+        return server.receive(timeout=_timeout, alias=_connection)
 
     def new_message(self, protocol=None, *parameters):
         """Define a new message pdu template.
