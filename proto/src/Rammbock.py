@@ -21,10 +21,10 @@ class Rammbock(object):
 
         Closes all connections, deletes all servers and clients, templates and messages
         """
-        for client in self._clients:
-            client.close()
         for server in self._servers:
             server.close()
+        for client in self._clients:
+            client.close()
         self._init_caches()
 
     def start_protocol_description(self, protocol):
@@ -39,10 +39,14 @@ class Rammbock(object):
         raise Exception('NYI')
 
     def start_udp_server(self, _ip, _port, _name=None, _timeout=None, _protocol=None):
-        raise Exception('NYI')
+        server = UDPServer(ip=_ip, port=_port, timeout=_timeout, protocol=_protocol)
+        return self._servers.add(server, _name)
 
     def start_udp_client(self, _ip=None, _port=None, _name=None, _timeout=None, _protocol=None):
-        raise Exception('NYI')
+        client = UDPClient(timeout=_timeout, protocol=_protocol)
+        if _ip or _port:
+            client.set_own_ip_and_port(ip=_ip, port=_port)
+        return self._clients.add(client, _name)
 
     def start_tcp_server(self, _ip, _port, _name=None, _timeout=None, _protocol=None):
         server = TCPServer(ip=_ip, port=_port, timeout=_timeout, protocol=_protocol)
@@ -56,7 +60,7 @@ class Rammbock(object):
 
     def accept_connection(self, _name=None, _alias=None):
         server = self._servers.get(_name)
-        server.accept_connection()
+        server.accept_connection(_alias)
 
     def connect(self, host, port, _name=None):
         """Connect a client to certain host and port."""
@@ -80,8 +84,11 @@ class Rammbock(object):
 
     def server_receives_binary(self, _name=None, _timeout=None, _connection=None):
         """Receive raw binary data."""
+        return self.server_receives_binary_from(_name, _timeout, _connection)[0]
+
+    def server_receives_binary_from(self, _name=None, _timeout=None, _connection=None):
         server = self._servers.get(_name)
-        return server.receive(timeout=_timeout, alias=_connection)
+        return server.receive_from(timeout=_timeout, alias=_connection)
 
     def new_message(self, protocol=None, *parameters):
         """Define a new message pdu template.

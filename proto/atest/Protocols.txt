@@ -1,3 +1,14 @@
+*** Settings ***
+Library     Rammbock
+Variables   ports.py
+
+
+*** Variables ***
+${TEST MACHINE}   127.0.0.1
+${SERVER}         ${TEST MACHINE}
+${CLIENT}         ${TEST MACHINE}
+
+
 *** Keywords ***
 Define example protocol
     Start Protocol Description    Example
@@ -28,6 +39,10 @@ Start two udp clients
     Start udp client    _ip=${CLIENT}    _port=${CLIENT 1 PORT}    _name=Client_1     _protocol=Example
     Start udp client    _ip=${CLIENT}    _port=${CLIENT 2 PORT}    _name=Client_2     _protocol=Example
 
+Start two tcp clients
+    Start tcp client    _ip=${CLIENT}    _port=${CLIENT 1 PORT}    _name=Client_1     _protocol=Example
+    Start tcp client    _ip=${CLIENT}    _port=${CLIENT 2 PORT}    _name=Client_2     _protocol=Example
+
 Connect two clients
     [Arguments]    ${server port 1}     ${server port 2}
     connect    ${SERVER}    ${server port 1}    _name=Client_1
@@ -39,11 +54,11 @@ Verify server gets hex
     Binary should equal hex    ${msg}    ${expected hex}
 
 Verify server gets from
-    [Arguments]    ${ip}  ${port}  ${expected}   ${server}
-    ${from ip}   ${from port}   ${msg} =    Server receives binary from     ${server}
+    [Arguments]    ${ip}  ${port}  ${expected}   ${server}   ${connection}=
+    ${msg}   ${from ip}   ${from port} =    Server receives binary from     _name=${server}   _connection=${connection}
     Should be equal    ${msg}    ${expected}
     Should be equal    ${from ip}    ${ip}
-    Should be equal    ${from port}  ${port}
+    Should be equal as integers    ${from port}  ${port}
 
 Binary should equal hex
     [arguments]      ${binary}    ${expected hex}
@@ -69,3 +84,17 @@ U8
 U16
     [Arguments]    ${name}    ${value}=${NONE}
     uint     2     ${name}    ${value}
+
+Teardown rammbock and increment port numbers
+    Reset Rammbock
+    Increment ports
+
+Increment ports
+    Increment port    SERVER PORT
+    Increment port    SERVER PORT 2
+    Increment port    CLIENT 1 PORT
+    Increment port    CLIENT 2 PORT
+
+Increment port   [Arguments]   ${name}
+    ${new} =    Evaluate   ${${name}}+2
+    Set suite variable    ${${name}}    ${new}

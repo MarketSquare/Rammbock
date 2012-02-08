@@ -1,45 +1,59 @@
 *** Settings ***
-Library   Rammbock
 Resource  Protocols.txt
 Test setup   Setup TCP server and client
-Test teardown   Reset Rammbock
+Test teardown   Teardown rammbock and increment port numbers
 
-*** Variables ***
-${TEST MACHINE}   127.0.0.1
-${SERVER}         ${TEST MACHINE}
-${CLIENT}         ${TEST MACHINE}
-${SERVER PORT}    54321
-${SERVER PORT 2}
-${CLIENT 1 PORT}  45678
-${CLIENT 2 PORT}  45679
 
 *** Test cases ***
-Client sends binary to server
+TCP Client sends binary to server
     Client sends binary    foo
     ${message}=  Server receives binary
     Should be equal   ${message}   foo
     
-Server sends binary to client
+TCP Server sends binary to client
     Server sends binary   foo
     ${message}=  Client receives binary
     Should be equal   ${message}  foo
     
-Multiple clients
+Multiple UDP clients
     [setup]  Start two udp clients
     Start udp server    ${SERVER}    ${SERVER PORT}   _name=ExampleServer  _protocol=Example
     Connect two clients    ${SERVER PORT}    ${SERVER PORT}
     Client Sends binary    foo   _name=Client_1
     Client Sends binary    bar   _name=Client_2
-    Verify server gets from    ${CLIENT}    ${CLIENT 1 PORT}     foo    _name=ExampleServer
-    Verify server gets from    ${CLIENT}    ${CLIENT 2 PORT}     bar    _name=ExampleServer
+    Verify server gets from    ${CLIENT}    ${CLIENT 1 PORT}     foo    ExampleServer
+    Verify server gets from    ${CLIENT}    ${CLIENT 2 PORT}     bar    ExampleServer
 
-Multiple servers
+Multiple UDP servers
     [setup]  Start two udp clients
     Start udp server    ${SERVER}    ${SERVER PORT}    _name=Server_1  _protocol=Example
     Start udp server    ${SERVER}    ${SERVER PORT 2}  _name=Server_2  _protocol=Example
     Connect two clients    ${SERVER PORT}    ${SERVER PORT 2}
     Client Sends binary    foo   _name=Client_1
     Client Sends binary    bar   _name=Client_2
-    Verify server gets from    ${CLIENT}    ${CLIENT 1 PORT}     foo     _name=Server_1
-    Verify server gets from    ${CLIENT}    ${CLIENT 2 PORT}     bar     _name=Server_2
-    
+    Verify server gets from    ${CLIENT}    ${CLIENT 1 PORT}     foo     Server_1
+    Verify server gets from    ${CLIENT}    ${CLIENT 2 PORT}     bar     Server_2
+
+Multiple TCP clients
+    [setup]  Start two tcp clients
+    Start tcp server    ${SERVER}    ${SERVER PORT}   _name=ExampleServer  _protocol=Example
+    Connect    ${SERVER}    ${SERVER PORT}    _name=Client_1
+    Accept connection      _alias=Connection_1
+    Connect    ${SERVER}    ${SERVER PORT}    _name=Client_2
+    Accept connection      _alias=Connection_2
+    Client Sends binary    foo   _name=Client_1
+    Client Sends binary    bar   _name=Client_2
+    Verify server gets from    ${CLIENT}    ${CLIENT 1 PORT}     foo    ExampleServer   Connection_1
+    Verify server gets from    ${CLIENT}    ${CLIENT 2 PORT}     bar    ExampleServer   Connection_2
+
+Multiple TCP servers
+    [setup]  Start two tcp clients
+    Start tcp server    ${SERVER}    ${SERVER PORT}    _name=Server_1  _protocol=Example
+    Start tcp server    ${SERVER}    ${SERVER PORT 2}  _name=Server_2  _protocol=Example
+    Connect two clients    ${SERVER PORT}    ${SERVER PORT 2}
+    accept connection    _name=Server_1
+    accept connection    _name=Server_2
+    Client Sends binary    foo   _name=Client_1
+    Client Sends binary    bar   _name=Client_2
+    Verify server gets from    ${CLIENT}    ${CLIENT 1 PORT}     foo     Server_1
+    Verify server gets from    ${CLIENT}    ${CLIENT 2 PORT}     bar     Server_2

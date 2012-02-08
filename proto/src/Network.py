@@ -22,11 +22,11 @@ class _Server(_WithTimeouts):
 
     def __init__(self, ip, port, timeout=None):
         self._ip = ip
-        self._port = port
+        self._port = int(port)
         self._set_default_timeout(timeout)
 
     def _bind_socket(self):
-        self._socket.bind((self._ip, int(self._port)))
+        self._socket.bind((self._ip, self._port))
         self._is_connected = True
 
     def close(self):
@@ -37,9 +37,10 @@ class _Server(_WithTimeouts):
 
 class UDPServer(_Server):
 
-    def __init__(self, ip, port, timeout=None):
+    def __init__(self, ip, port, timeout=None, protocol=None):
         _Server.__init__(self, ip, port, timeout)
         self._init_socket()
+        self._protocol= protocol
 
     def _init_socket(self):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -49,7 +50,8 @@ class UDPServer(_Server):
         self._check_no_alias(alias)
         timeout = self._get_timeout(timeout)
         self._socket.settimeout(timeout)
-        return self._socket.recvfrom(UDP_BUFFER_SIZE)
+        msg, (ip, host) = self._socket.recvfrom(UDP_BUFFER_SIZE)
+        return msg, ip, host
 
     def _check_no_alias(self, alias):
         if alias:
@@ -77,10 +79,11 @@ class TCPServer(_Server):
         return self.receive_from(timeout, alias)[0]
 
     def receive_from(self, timeout=None, alias=None):
-        connection = self._connections.get(alias)[0]
+        connection, (ip, host) = self._connections.get(alias)
         timeout = self._get_timeout(timeout)
         connection.settimeout(timeout)
-        return connection.recvfrom(TCP_BUFFER_SIZE)
+        msg = connection.recv(TCP_BUFFER_SIZE)
+        return msg, ip, host
 
     def accept_connection(self, alias=None):
         connection, client_address = self._socket.accept()
@@ -89,6 +92,13 @@ class TCPServer(_Server):
 
     def send(self, msg, alias=None):
         self._connections.get(alias)[0].send(msg)
+
+    def close(self):
+        if self._is_connected:
+            self._is_connected = False
+            for connection, _ in self._connections:
+                connection.close()
+            self._socket.close()
 
     # TODO: Close single connection
 
@@ -103,11 +113,11 @@ class _Client(_WithTimeouts):
 
     def set_own_ip_and_port(self, ip=None, port=None):
         if ip and port:
-            self._socket.bind((ip, port))
+            self._socket.bind((ip, int(port)))
         elif ip:
-            self.socket.bind((ip, 0))
+            self._socket.bind((ip, 0))
         elif port:
-            self.socket.bind(("", port))
+            self._socket.bind(("", int(port)))
         else:
             raise Exception("You must specify host or port")
 
@@ -140,7 +150,6 @@ class _Client(_WithTimeouts):
     def close(self):
         if self._is_connected:
             self._is_connected = False
-            self._socket.shutdown(socket.SHUT_RDWR)
             self._socket.close()
 
 
@@ -150,6 +159,7 @@ class UDPClient(_Client):
 
     def _init_socket(self):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 
 class TCPClient(_Client):
@@ -158,6 +168,7 @@ class TCPClient(_Client):
 
     def _init_socket(self):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 
 class _NamedCache(object):
