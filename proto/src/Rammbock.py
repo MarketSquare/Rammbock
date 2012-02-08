@@ -108,10 +108,10 @@ class Rammbock(object):
     def uint(self, length, name, value):
         raise Exception('NYI')
 
-    """Defines the pdu in protocol template.
-
-    Length must be the name of a previous field in template definition."""
     def pdu(self, length):
+        """Defines the pdu in protocol template.
+
+        Length must be the name of a previous field in template definition."""
         raise Exception('Not yet done')
 
     def hex_to_bin(self, hex_value):
