@@ -48,10 +48,27 @@ Connect two clients
     connect    ${SERVER}    ${server port 1}    _name=Client_1
     connect    ${SERVER}    ${server port 2}    _name=Client_2
 
+Connect two clients and accept connections
+    [Arguments]    ${server 1}=    ${server port 1}=${SERVER PORT}     ${server 2}=    ${server port 2}=${SERVER PORT}
+    Connect    ${SERVER}    ${server port 1}    _name=Client_1
+    Accept connection      _name=${server 1}    _alias=Connection_1
+    Connect    ${SERVER}    ${server port 2}    _name=Client_2
+    Accept connection      _name=${server 2}    _alias=Connection_2
+
+Two clients send foo and bar
+    Client Sends binary    foo   _name=Client_1
+    Client Sends binary    bar   _name=Client_2
+
 Verify server gets hex
     [Arguments]    ${expected hex}
     ${msg} =    Server receives binary
     Binary should equal hex    ${msg}    ${expected hex}
+
+Server '${server}' should get '${msg}' from '${ip}':'${port}'
+    Verify server gets from    ${ip}    ${port}    ${msg}    ${server}
+
+'${connection}' on '${server}' should get '${msg}' from '${ip}':'${port}'
+    Verify server gets from    ${ip}    ${port}    ${msg}    ${server}   ${connection}
 
 Verify server gets from
     [Arguments]    ${ip}  ${port}  ${expected}   ${server}   ${connection}=

@@ -20,41 +20,33 @@ Multiple UDP clients
     [setup]  Start two udp clients
     Start udp server    ${SERVER}    ${SERVER PORT}   _name=ExampleServer  _protocol=Example
     Connect two clients    ${SERVER PORT}    ${SERVER PORT}
-    Client Sends binary    foo   _name=Client_1
-    Client Sends binary    bar   _name=Client_2
-    Verify server gets from    ${CLIENT}    ${CLIENT 1 PORT}     foo    ExampleServer
-    Verify server gets from    ${CLIENT}    ${CLIENT 2 PORT}     bar    ExampleServer
+    Two clients send foo and bar
+    Server 'ExampleServer' should get 'foo' from '${CLIENT}':'${CLIENT 1 PORT}'
+    Server 'ExampleServer' should get 'bar' from '${CLIENT}':'${CLIENT 2 PORT}'
 
 Multiple UDP servers
     [setup]  Start two udp clients
     Start udp server    ${SERVER}    ${SERVER PORT}    _name=Server_1  _protocol=Example
     Start udp server    ${SERVER}    ${SERVER PORT 2}  _name=Server_2  _protocol=Example
     Connect two clients    ${SERVER PORT}    ${SERVER PORT 2}
-    Client Sends binary    foo   _name=Client_1
-    Client Sends binary    bar   _name=Client_2
-    Verify server gets from    ${CLIENT}    ${CLIENT 1 PORT}     foo     Server_1
-    Verify server gets from    ${CLIENT}    ${CLIENT 2 PORT}     bar     Server_2
+    Two clients send foo and bar
+    Server 'Server_1' should get 'foo' from '${CLIENT}':'${CLIENT 1 PORT}'
+    Server 'Server_2' should get 'bar' from '${CLIENT}':'${CLIENT 2 PORT}'
 
 Multiple TCP clients
     [setup]  Start two tcp clients
     Start tcp server    ${SERVER}    ${SERVER PORT}   _name=ExampleServer  _protocol=Example
-    Connect    ${SERVER}    ${SERVER PORT}    _name=Client_1
-    Accept connection      _alias=Connection_1
-    Connect    ${SERVER}    ${SERVER PORT}    _name=Client_2
-    Accept connection      _alias=Connection_2
-    Client Sends binary    foo   _name=Client_1
-    Client Sends binary    bar   _name=Client_2
-    Verify server gets from    ${CLIENT}    ${CLIENT 1 PORT}     foo    ExampleServer   Connection_1
-    Verify server gets from    ${CLIENT}    ${CLIENT 2 PORT}     bar    ExampleServer   Connection_2
+    Connect two clients and accept connections
+    Two clients send foo and bar
+    'Connection_1' on 'ExampleServer' should get 'foo' from '${CLIENT}':'${CLIENT 1 PORT}'
+    'Connection_2' on 'ExampleServer' should get 'bar' from '${CLIENT}':'${CLIENT 2 PORT}'
 
 Multiple TCP servers
     [setup]  Start two tcp clients
     Start tcp server    ${SERVER}    ${SERVER PORT}    _name=Server_1  _protocol=Example
     Start tcp server    ${SERVER}    ${SERVER PORT 2}  _name=Server_2  _protocol=Example
-    Connect two clients    ${SERVER PORT}    ${SERVER PORT 2}
-    accept connection    _name=Server_1
-    accept connection    _name=Server_2
-    Client Sends binary    foo   _name=Client_1
-    Client Sends binary    bar   _name=Client_2
-    Verify server gets from    ${CLIENT}    ${CLIENT 1 PORT}     foo     Server_1
-    Verify server gets from    ${CLIENT}    ${CLIENT 2 PORT}     bar     Server_2
+    Connect two clients and accept connections     Server_1   ${SERVER PORT}    Server_2    ${SERVER PORT 2}
+    Two clients send foo and bar
+    Server 'Server_1' should get 'foo' from '${CLIENT}':'${CLIENT 1 PORT}'
+    Server 'Server_2' should get 'bar' from '${CLIENT}':'${CLIENT 2 PORT}'
+
