@@ -3,6 +3,15 @@ Library   Rammbock
 Resource  Protocols.txt
 Test setup   Setup TCP server and client
 
+*** Variables ***
+${TEST MACHINE}   127.0.0.1
+${SERVER}         ${TEST MACHINE}
+${CLIENT}         ${TEST MACHINE}
+${SERVER PORT}    54321
+${SERVER PORT 2}
+${CLIENT 1 PORT}  45678
+${CLIENT 2 PORT}  45679
+
 *** Test cases ***
 Client sends binary to server
     Client sends binary    foo

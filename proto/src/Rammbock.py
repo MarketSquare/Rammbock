@@ -1,5 +1,7 @@
 # API prototype
 import time
+from Network import TCPServer
+from Network import TCPClient
 
 from Network import UDPServer, UDPClient, _NamedCache
 from binary_conversions import to_0xhex, to_bin, to_bin_of_length, to_hex
@@ -11,11 +13,18 @@ class Rammbock(object):
         self._servers = _NamedCache('server')
         self._clients = _NamedCache('client')
 
-    """Start defining a new protocol template.
+    def reset_rammbock(self):
+        """
 
-    All messages sent and received from a connection after calling 'Use protocol' have to use the same protocol template. Protocol template fields can be used to search messages from buffer.
-    """
+        Closes all connections, deletes all servers and clients, templates and messages
+        """
+        raise Exception('NYI')
+
     def start_protocol_description(self, protocol):
+        """Start defining a new protocol template.
+
+        All messages sent and received from a connection after calling 'Use protocol' have to use the same protocol template. Protocol template fields can be used to search messages from buffer.
+        """
         raise Exception('NYI')
 
     def end_protocol_description(self):
@@ -29,10 +38,13 @@ class Rammbock(object):
         raise Exception('NYI')
 
     def start_tcp_server(self, _ip, _port, _name=None, _timeout=None, _protocol=None):
-        raise Exception('NYI')
+        server = TCPServer(ip=_ip, port=_port, timeout=_timeout, protocol=_protocol)
+        self._servers.add(server, _name)
 
     def start_tcp_client(self, _ip=None, _port=None, _name=None, _timeout=None, _protocol=None):
-        raise Exception('NYI')
+        client = TCPClient(timeout=_timeout, protocol=_protocol)
+        if _ip or _port:
+            client.set_own_ip_and_port(ip=_ip, port=_port)
 
     def accept_connection(self, _name=None, _alias=None):
         raise Exception('NYI')

@@ -1,5 +1,5 @@
 *** Settings ***
-Test Setup        Setup protocol, server, and client
+Test Setup        Setup protocol, UDP server, and client
 Library           Rammbock.py
 Resource          Protocols.txt
 

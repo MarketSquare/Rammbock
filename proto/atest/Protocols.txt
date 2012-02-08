@@ -12,13 +12,13 @@ Define example protocol
 Setup TCP server and client  [arguments]   ${protocol}=
     Start TCP server    ${SERVER}    ${SERVER PORT}    _name=ExampleServer   _protocol=${protocol}
     Start TCP client    _name=ExampleClient
-    Client Connects    ${SERVER}    ${SERVER PORT}    _name=ExampleClient
+    connect    ${SERVER}    ${SERVER PORT}    _name=ExampleClient
     Server accepts connection  _name=ExampleServer
 
 Setup UDP server and client  [arguments]  ${protocol}=
     Start udp server    ${SERVER}    ${SERVER PORT}    _name=ExampleServer  _protocol=${protocol}
     Start udp client    _name=ExampleClient     _protocol=Example
-    Client Connects    ${SERVER}    ${SERVER PORT}    _name=ExampleClient
+    connect    ${SERVER}    ${SERVER PORT}    _name=ExampleClient
     
 Setup protocol, UDP server, and client
     Define example protocol
@@ -30,8 +30,8 @@ Start two udp clients
 
 Connect two clients
     [Arguments]    ${server port 1}     ${server port 2}
-    Client Connects    ${SERVER}    ${server port 1}    _name=Client_1
-    Client Connects    ${SERVER}    ${server port 2}    _name=Client_2
+    connect    ${SERVER}    ${server port 1}    _name=Client_1
+    connect    ${SERVER}    ${server port 2}    _name=Client_2
 
 Verify server gets hex
     [Arguments]    ${expected hex}
