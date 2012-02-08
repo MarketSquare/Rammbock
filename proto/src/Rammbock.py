@@ -12,14 +12,12 @@ class Rammbock(object):
             self._init_caches()
 
     def _init_caches(self):
-        self._protocols = _NamedCache('protocol')
+        self._protocols = {}
         self._servers = _NamedCache('server')
         self._clients = _NamedCache('client')
 
     def reset_rammbock(self):
-        """
-
-        Closes all connections, deletes all servers and clients, templates and messages
+        """Closes all connections, deletes all servers and clients, templates and messages.
         """
         for server in self._servers:
             server.close()
@@ -39,21 +37,25 @@ class Rammbock(object):
         raise Exception('NYI')
 
     def start_udp_server(self, _ip, _port, _name=None, _timeout=None, _protocol=None):
-        server = UDPServer(ip=_ip, port=_port, timeout=_timeout, protocol=_protocol)
+        protocol = self._protocols[_protocol] if _protocol else None
+        server = UDPServer(ip=_ip, port=_port, timeout=_timeout, protocol=protocol)
         return self._servers.add(server, _name)
 
     def start_udp_client(self, _ip=None, _port=None, _name=None, _timeout=None, _protocol=None):
-        client = UDPClient(timeout=_timeout, protocol=_protocol)
+        protocol = self._protocols[_protocol] if _protocol else None
+        client = UDPClient(timeout=_timeout, protocol=protocol)
         if _ip or _port:
             client.set_own_ip_and_port(ip=_ip, port=_port)
         return self._clients.add(client, _name)
 
     def start_tcp_server(self, _ip, _port, _name=None, _timeout=None, _protocol=None):
-        server = TCPServer(ip=_ip, port=_port, timeout=_timeout, protocol=_protocol)
+        protocol = self._protocols[_protocol] if _protocol else None
+        server = TCPServer(ip=_ip, port=_port, timeout=_timeout, protocol=protocol)
         return self._servers.add(server, _name)
 
     def start_tcp_client(self, _ip=None, _port=None, _name=None, _timeout=None, _protocol=None):
-        client = TCPClient(timeout=_timeout, protocol=_protocol)
+        protocol = self._protocols[_protocol] if _protocol else None
+        client = TCPClient(timeout=_timeout, protocol=protocol)
         if _ip or _port:
             client.set_own_ip_and_port(ip=_ip, port=_port)
         return self._clients.add(client, _name)
