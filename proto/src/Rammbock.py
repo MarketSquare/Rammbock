@@ -17,7 +17,10 @@ class Rammbock(object):
         self._clients = _NamedCache('client')
 
     def reset_rammbock(self):
-        """Closes all connections, deletes all servers and clients, templates and messages.
+        """Closes all connections, deletes all servers, clients, and protocols.
+
+        You should call this method before exiting your test run. This will close all the connections and the ports
+        will therefore be available for reuse faster.
         """
         for server in self._servers:
             server.close()
@@ -28,7 +31,8 @@ class Rammbock(object):
     def start_protocol_description(self, protocol):
         """Start defining a new protocol template.
 
-        All messages sent and received from a connection after calling 'Use protocol' have to use the same protocol template. Protocol template fields can be used to search messages from buffer.
+        All messages sent and received from a connection that uses a protocol have to conform to this protocol template.
+        Protocol template fields can be used to search messages from buffer.
         """
         raise Exception('NYI')
 
@@ -69,6 +73,7 @@ class Rammbock(object):
         client = self._clients.get(_name)
         client.connect_to(host, port)
 
+    # TODO: Log the raw binary that is sent and received.
     def client_sends_binary(self, message, _name=None):
         """Send raw binary data."""
         client = self._clients.get(_name)
@@ -89,31 +94,33 @@ class Rammbock(object):
         return self.server_receives_binary_from(_name, _timeout, _connection)[0]
 
     def server_receives_binary_from(self, _name=None, _timeout=None, _connection=None):
+        """Receive raw binary data. Returns message, ip, port"""
         server = self._servers.get(_name)
         return server.receive_from(timeout=_timeout, alias=_connection)
 
     def new_message(self, protocol=None, *parameters):
-        """Define a new message pdu template.
+        """Define a new message template.
     
         Parameters have to be header fields."""
         raise Exception('NYI')
 
     def get_message(self, *params):
         """Get encoded message.
-    
+
+        * Send Message -keywords are convenience methods, that will call this to get the message object and then send it.
         Parameters have to be pdu fields."""
         raise Exception('NYI')
 
     def client_sends_message(self, *params):
-        """Send a pdu.
+        """Send a message.
     
-        Parameters have to be pdu fields."""
+        Parameters have to be message fields."""
         raise Exception('NYI')
 
     def server_sends_message(self, *params):
-        """Send a pdu.
+        """Send a message.
     
-        Parameters have to be pdu fields."""
+        Parameters have to be message fields."""
         raise Exception('NYI')
 
     def client_receives_message(self, *params):
@@ -132,7 +139,7 @@ class Rammbock(object):
         raise Exception('NYI')
 
     def pdu(self, length):
-        """Defines the pdu in protocol template.
+        """Defines the message in protocol template.
 
         Length must be the name of a previous field in template definition."""
         raise Exception('Not yet done')
