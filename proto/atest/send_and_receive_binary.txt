@@ -2,6 +2,7 @@
 Resource  Protocols.txt
 Test setup   Setup TCP server and client
 Test teardown   Teardown rammbock and increment port numbers
+Default tags    Regression
 
 
 *** Test cases ***
