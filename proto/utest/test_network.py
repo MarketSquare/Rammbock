@@ -24,58 +24,66 @@ class TestNetwork(unittest.TestCase):
     def test_send_and_receive_udp(self):
         server, client = self._udp_server_and_client(SERVER_PORT, CLIENT_PORT)
         client.send('foofaa')
-        msg = server.receive()
-        self.assertEquals('foofaa', msg)
-
-    def test_setting_client_default_timeout(self):
-        _, client = self._udp_server_and_client(SERVER_PORT, CLIENT_PORT, timeout=0.1)
-        start_time = time.time()
-        self.assertRaises(socket.timeout, client.receive)
-        self.assertTrue(time.time()-0.5 < start_time)
-
-    def test_overriding_client_read_timeout(self):
-        _, client = self._udp_server_and_client(SERVER_PORT, CLIENT_PORT, timeout=5)
-        start_time = time.time()
-        self.assertRaises(socket.timeout, client.receive, 0.1)
-        self.assertTrue(time.time()-0.5 < start_time)
-
-    def test_overriding_server_read_timeout(self):
-        server, _ = self._udp_server_and_client(SERVER_PORT, CLIENT_PORT, timeout=5)
-        start_time = time.time()
-        self.assertRaises(socket.timeout, server.receive, 0.1)
-        self.assertTrue(time.time()-0.5 < start_time)
-
-    def test_setting_server_default_timeout(self):
-        server, _ = self._udp_server_and_client(SERVER_PORT, CLIENT_PORT, timeout=0.1)
-        start_time = time.time()
-        self.assertRaises(socket.timeout, server.receive)
-        self.assertTrue(time.time()-0.5 < start_time)
-
-    # TODO: Test for blocking mode
+        self._assert_receive(server, 'foofaa')
 
     def test_server_send_udp(self):
         server, client = self._udp_server_and_client(SERVER_PORT, CLIENT_PORT)
         server.send_to('foofaa', LOCAL_IP, CLIENT_PORT)
-        msg = client.receive()
-        self.assertEquals('foofaa', msg)
+        self._assert_receive(client, 'foofaa')
 
     def test_server_send_tcp(self):
         server, client = self._tcp_server_and_client(SERVER_PORT, CLIENT_PORT)
         server.accept_connection()
         server.send('foofaa')
-        msg = client.receive()
-        self.assertEquals('foofaa', msg)
+        self._assert_receive(client, 'foofaa')
 
     def test_send_and_receive_tcp(self):
         server, client = self._tcp_server_and_client(SERVER_PORT, CLIENT_PORT)
         client.send('foofaa')
         server.accept_connection()
-        msg = server.receive()
-        self.assertEquals('foofaa', msg)
+        self._assert_receive(server, 'foofaa')
 
-    def _udp_server_and_client(self, server_port, client_port, timeout=None):
+    def test_setting_port_no_ip(self):
+        server, client = self._udp_server_and_client(SERVER_PORT, CLIENT_PORT, client_ip='')
+        server.send_to('foofaa', LOCAL_IP, client.get_address()[1])
+        self._assert_receive(client, 'foofaa')
+
+    def test_setting_ip_no_port(self):
+        server, client = self._udp_server_and_client(SERVER_PORT, '')
+        server.send_to('foofaa', *client.get_address())
+        self._assert_receive(client, 'foofaa')
+
+    def test_setting_client_default_timeout(self):
+        _, client = self._udp_server_and_client(SERVER_PORT, CLIENT_PORT, timeout=0.1)
+        self._assert_timeout(client)
+
+    def test_overriding_client_read_timeout(self):
+        _, client = self._udp_server_and_client(SERVER_PORT, CLIENT_PORT, timeout=5)
+        self._assert_timeout(client, 0.1)
+
+    def test_overriding_server_read_timeout(self):
+        server, _ = self._udp_server_and_client(SERVER_PORT, CLIENT_PORT, timeout=5)
+        self._assert_timeout(server, 0.1)
+
+    def test_setting_server_default_timeout(self):
+        server, _ = self._udp_server_and_client(SERVER_PORT, CLIENT_PORT, timeout=0.1)
+        self._assert_timeout(server)
+
+    def _assert_timeout(self, node, timeout=None):
+        start_time = time.time()
+        self.assertRaises(socket.timeout, node.receive, timeout)
+        self.assertTrue(time.time() - 0.5 < start_time)
+
+    # TODO: Test for blocking mode
+
+    def _assert_receive(self, receiver, msg):
+        self.assertEquals(receiver.receive(), msg)
+
+    def _udp_server_and_client(self, server_port, client_port, client_ip=LOCAL_IP, timeout=None):
         server = UDPServer(LOCAL_IP, server_port, timeout=timeout)
-        client = UDPClient(timeout=timeout).connect_to(LOCAL_IP, server_port, own_ip=LOCAL_IP, own_port=client_port)
+        client = UDPClient(timeout=timeout)
+        client.set_own_ip_and_port(client_ip, client_port)
+        client.connect_to(LOCAL_IP, server_port)
         self.sockets.append(server)
         self.sockets.append(client)
         return server, client
