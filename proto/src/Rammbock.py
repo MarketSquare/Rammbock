@@ -36,6 +36,10 @@ class Rammbock(object):
         All messages sent and received from a connection that uses a protocol have to conform to this protocol template.
         Protocol template fields can be used to search messages from buffer.
         """
+        if self._protocol_in_progress:
+            raise Exception('Can not start a new protocol definition in middle of old.')
+        if protocol_name in self._protocols:
+            raise Exception('Protocol %s already defined' % protocol_name)
         self._protocol_in_progress = Protocol(protocol_name)
 
     def end_protocol_description(self):
@@ -44,28 +48,36 @@ class Rammbock(object):
         self._protocol_in_progress = None
 
     def start_udp_server(self, _ip, _port, _name=None, _timeout=None, _protocol=None):
-        protocol = self._protocols[_protocol] if _protocol else None
+        protocol = self._get_protocol(_protocol)
         server = UDPServer(ip=_ip, port=_port, timeout=_timeout, protocol=protocol)
         return self._servers.add(server, _name)
 
     def start_udp_client(self, _ip=None, _port=None, _name=None, _timeout=None, _protocol=None):
-        protocol = self._protocols[_protocol] if _protocol else None
+        protocol = self._get_protocol(_protocol)
         client = UDPClient(timeout=_timeout, protocol=protocol)
         if _ip or _port:
             client.set_own_ip_and_port(ip=_ip, port=_port)
         return self._clients.add(client, _name)
 
-    def start_tcp_server(self, _ip, _port, _name=None, _timeout=None, _protocol=None):
+    def _get_protocol(self, _protocol):
         protocol = self._protocols[_protocol] if _protocol else None
+        return protocol
+
+    def start_tcp_server(self, _ip, _port, _name=None, _timeout=None, _protocol=None):
+        protocol = self._get_protocol(_protocol)
         server = TCPServer(ip=_ip, port=_port, timeout=_timeout, protocol=protocol)
         return self._servers.add(server, _name)
 
     def start_tcp_client(self, _ip=None, _port=None, _name=None, _timeout=None, _protocol=None):
-        protocol = self._protocols[_protocol] if _protocol else None
+        protocol = self._get_protocol(_protocol)
         client = TCPClient(timeout=_timeout, protocol=protocol)
         if _ip or _port:
             client.set_own_ip_and_port(ip=_ip, port=_port)
         return self._clients.add(client, _name)
+
+    def get_client_protocol(self, name):
+        return self._clients.get(name).protocol
+
 
     def accept_connection(self, _name=None, _alias=None):
         server = self._servers.get(_name)
@@ -101,11 +113,21 @@ class Rammbock(object):
         server = self._servers.get(_name)
         return server.receive_from(timeout=_timeout, alias=_connection)
 
-    def new_message(self, protocol=None, *parameters):
+    def new_message(self, message_name, protocol=None, *parameters):
         """Define a new message template.
     
         Parameters have to be header fields."""
-        raise Exception('NYI')
+        proto = self._get_protocol(_protocol)
+        header_params = self._parse_param_dict(parameters)
+        self._message_in_progress = MessageTemplate(message_name, proto, header_params)
+
+    def _parse_param_dict(self, parameters):
+        result = {}
+        for parameter in parameters:
+            index = parameter.find('=')
+            result[parameter[:index].strip()] = parameter[index + 1:].strip()
+        return result
+
 
     def get_message(self, *params):
         """Get encoded message.

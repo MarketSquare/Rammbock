@@ -1,5 +1,5 @@
 import unittest
-from Protocol import Protocol, Length, UInt, PDU
+from Protocol import Protocol, Length, UInt, PDU, MessageTemplate
 
 class TestProtocol(unittest.TestCase):
 
@@ -28,6 +28,34 @@ class TestProtocol(unittest.TestCase):
         self._protocol.add(UInt(2, 'length', None))
         self._protocol.add(PDU('length-8'))
         self.assertEquals(self._protocol.header_length(), 3)
+
+
+class TestMessageTemplate(unittest.TestCase):
+
+    def setUp(self):
+        self._protocol = Protocol('Test')
+        self._protocol.add(UInt(2, 'msgId', 5))
+        self._protocol.add(UInt(2, 'length', None))
+        self._protocol.add(PDU('length-4'))
+        self.tmp = MessageTemplate('foo', self._protocol, {})
+        self.tmp.add(UInt(2, 'field_1', 1))
+        self.tmp.add(UInt(2, 'field_2', 2))
+
+    def test_create_template(self):
+        self.assertEquals(len(self.tmp._fields), 2)
+
+    def test_encode_template(self):
+        msg = self.tmp.encode({})
+        self.assertEquals(msg.field_1.int, 1)
+        self.assertEquals(msg.field_2.int, 2)
+
+    def test_encode_template_with_params(self):
+        msg = self.tmp.encode({'field_1':111, 'field_2':222})
+        self.assertEquals(msg.field_1.int, 111)
+        self.assertEquals(msg.field_2.int, 222)
+
+    def test_unknown_params_cause_exception(self):
+        self.assertRaises(Exception, self.tmp.encode, {'unknown':111})
 
 
 class TestFields(unittest.TestCase):

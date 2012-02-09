@@ -15,7 +15,7 @@ Server uses protocol and receives
 
 Server uses protocol and value validation fails
     Client Sends hex    0x 01 00 dddd 0c 0000 cafebabe
-    Run keyword and expect error    *    Server Receives simple request    value=0xffffff
+    Run keyword and expect error    Value of field value does not match *    Server Receives simple request    value=0xffffff
 
 Server uses protocol and messages arrive out of order
     Client Sends hex    0x 01 00 aaaa 0c 0000 deadbeef
@@ -30,6 +30,16 @@ Message field type conversions
     Should be equal as integers    ${msg.value.int}    255
     Should be equal    ${msg.value.bytes}    \x00\x00\x00\xff
 
+Define And Use A Message Template
+    [Tags]    regression
+    [setup]  Define Simple Protocol
+    Defined Protocol is usable in client
+
+Undefined protocol cannot be used
+    [Tags]    regression
+    [setup]  Define Simple Protocol
+    Using undefined protocol in client fails
+
 Access header
     Client Sends hex    0x 01 00 dddd 0c 0000 000000ff
     ${msg} =    Server Receives simple request    value=0xcafebabe
@@ -38,13 +48,13 @@ Access header
 
 *** Keywords ***
 Client Sends simple request
-    [Arguments]     @{params}
-    New message     Example    messageType=0xdddd    flags=0xffff
+    [Arguments]    @{params}
+    New message    ValueRequest  Example    messageType=0xdddd    flags=0xffff
     u32    value    0xdeadbeef
     Client Sends message    @{params}
 
 Server Receives simple request
     [Arguments]    @{params}
-    New message    Example    messageType=0xdddd    #messageType=(0xdd|0xff)
+    New message    ValueRequest   Example    messageType=0xdddd    #messageType=(0xdd|0xff)
     u32    value
     ${msg} =    Server receives message    @{params}

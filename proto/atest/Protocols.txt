@@ -20,6 +20,17 @@ Define example protocol
     pdu    length-8
     End protocol description
 
+Define simple protocol
+    Start Protocol Description   Example
+    uint  1  field  16
+    End Protocol Description
+
+Defined Protocol is usable in client
+    Start TCP Client  _protocol=Example
+
+Using undefined protocol in client fails
+    Run keyword and expect error  *  Start TCP Client  _protocol=Invalid
+
 Setup TCP server and client  [arguments]   ${protocol}=
     Start TCP server    ${SERVER}    ${SERVER PORT}    _name=ExampleServer   _protocol=${protocol}
     Start TCP client    _name=ExampleClient
