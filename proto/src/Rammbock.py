@@ -2,8 +2,9 @@
 import time
 from Network import TCPServer
 from Network import TCPClient
-
 from Network import UDPServer, UDPClient, _NamedCache
+
+from Protocol import Protocol
 from binary_conversions import to_0xhex, to_bin, to_bin_of_length, to_hex
 
 class Rammbock(object):
@@ -28,13 +29,14 @@ class Rammbock(object):
             client.close()
         self._init_caches()
 
-    def start_protocol_description(self, protocol):
+    def start_protocol_description(self, protocol_name):
         """Start defining a new protocol template.
 
         All messages sent and received from a connection that uses a protocol have to conform to this protocol template.
         Protocol template fields can be used to search messages from buffer.
         """
-        raise Exception('NYI')
+        self._protocols[protocol_name] = Protocol()
+
 
     def end_protocol_description(self):
         """End protocol definition."""
@@ -161,7 +163,7 @@ class Rammbock(object):
         print '*%s* %s' % (loglevel, log_msg)
 
 
-class Protocol(object):
+class _Protocol(object):
 
     def __init__(self):
         self.ready = False
