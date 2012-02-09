@@ -1,11 +1,8 @@
 # API prototype
-import time
-from Network import TCPServer
-from Network import TCPClient
-from Network import UDPServer, UDPClient, _NamedCache
+from Network import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 
-from Protocol import Protocol, UInt, PDU
-from binary_conversions import to_0xhex, to_bin, to_bin_of_length, to_hex
+from Protocol import Protocol, UInt, PDU, MessageTemplate
+from binary_conversions import to_0xhex, to_bin
 
 # TODO: pass configuration parameters like timeout, name, and connection using caps and ':'
 # example: TIMEOUT:12   CONNECTION:Alias
@@ -120,7 +117,9 @@ class Rammbock(object):
         """Define a new message template.
     
         Parameters have to be header fields."""
-        proto = self._get_protocol(_protocol)
+        if self._protocol_in_progress:
+            raise Exception("Protocol definition in progress. Please finish it before starting to define a message.")
+        proto = self._get_protocol(protocol)
         header_params = self._parse_param_dict(parameters)
         self._message_in_progress = MessageTemplate(message_name, proto, header_params)
 
@@ -170,7 +169,7 @@ class Rammbock(object):
         if self._protocol_in_progress:
             self._protocol_in_progress.add(field)
         else:
-            raise Exception('NYI')
+            self._message_in_progress.add(field)
 
     def pdu(self, length):
         """Defines the message in protocol template.
