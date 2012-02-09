@@ -13,6 +13,7 @@ class Rammbock(object):
             self._init_caches()
 
     def _init_caches(self):
+        self._protocol_in_progress = None
         self._protocols = {}
         self._servers = _NamedCache('server')
         self._clients = _NamedCache('client')
@@ -35,8 +36,7 @@ class Rammbock(object):
         All messages sent and received from a connection that uses a protocol have to conform to this protocol template.
         Protocol template fields can be used to search messages from buffer.
         """
-        self._protocols[protocol_name] = Protocol()
-
+        self._protocol_in_progress = Protocol()
 
     def end_protocol_description(self):
         """End protocol definition."""
@@ -138,7 +138,12 @@ class Rammbock(object):
         raise Exception('Not yet done')
 
     def uint(self, length, name, value):
-        raise Exception('NYI')
+        if self._protocol_in_progress:
+            self._protocol_in_progress.uint(length, name, value)
+        else:
+            raise Exception('NYI')
+
+
 
     def pdu(self, length):
         """Defines the message in protocol template.
