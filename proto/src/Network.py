@@ -122,10 +122,11 @@ class _Client(_WithTimeouts):
             raise Exception("You must specify host or port")
 
     def connect_to(self, server_ip, server_port):
-        if not self._is_connected:
-            self._server_ip = server_ip
-            self._socket.connect((server_ip, int(server_port)))
-            self._is_connected = True
+        if self._is_connected:
+            raise Exception('Client already connected!')
+        self._server_ip = server_ip
+        self._socket.connect((server_ip, int(server_port)))
+        self._is_connected = True
         return self
 
     def send(self, msg):
@@ -152,6 +153,7 @@ class _Client(_WithTimeouts):
 
     def get_address(self):
         return self._socket.getsockname()
+
 
 class UDPClient(_Client):
 
