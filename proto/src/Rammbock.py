@@ -7,6 +7,9 @@ from Network import UDPServer, UDPClient, _NamedCache
 from Protocol import Protocol, UInt, PDU
 from binary_conversions import to_0xhex, to_bin, to_bin_of_length, to_hex
 
+# TODO: pass configuration parameters like timeout, name, and connection using caps and ':'
+# example: TIMEOUT:12   CONNECTION:Alias
+# This should make it easier to separate configs from message field arguments
 class Rammbock(object):
 
     def __init__(self):

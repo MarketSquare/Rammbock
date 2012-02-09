@@ -1,17 +1,17 @@
 from binary_conversions import to_0xhex
 
-class Message(object):
 
+class _MessageStruct(object):
     def __init__(self, name):
-        self.__name = name
-        self.__fields = []
+        self._name = name
+        self._fields = []
 
     def __setitem__(self, name, value):
-        self.__fields.append(Field(value[0], name, value[1]))
+        self._fields.append((name, value))
 
     def __getitem__(self, name):
-        for field in self.__fields:
-            if field.name == name:
+        for field_name, field in self._fields:
+            if field_name == name:
                 return field
         raise KeyError(name)
 
@@ -19,17 +19,35 @@ class Message(object):
         return self[name]
 
     def __str__(self):
-        return 'Message %s' % self.__name
+        return self._name
 
     def __repr__(self):
-        result = 'Message %s %s\n' % (self.__name, str(self.__header))
-        for field in self.__fields:
-            result +='  %s\n' % repr(field)
+        result = '%s\n' % self._name
+        for _, field in self._fields:
+            result +=self._format_indented('%s' % repr(field))
         return result
+
+    def _format_indented(self, text):
+        return ''.join(['  %s\n' % line for line in text.splitlines()])
 
     @property
     def _raw(self):
-        return self.__header.raw
+        return ''.join((field._raw for _, field in self._fields))
+
+
+class Message(_MessageStruct):
+
+    def __init__(self, name):
+        _MessageStruct.__init__(self, 'Message '+name)
+
+    def _add_header(self, header):
+        self._fields.insert(0, ('_header', header))
+
+
+class MessageHeader(_MessageStruct):
+
+    def __init__(self, name):
+        _MessageStruct.__init__(self, name+' header')
 
 
 class Field(object):
@@ -69,6 +87,10 @@ class Field(object):
     @property
     def ascii_chars(self):
         return ''.join(i for i in self._value if ord(i)<128 and ord(i)>=32)
+
+    @property
+    def _raw(self):
+        return self._value
 
     def __str__(self):
         return self.hex

@@ -1,5 +1,6 @@
 import unittest
 from Protocol import Protocol, Length, UInt, PDU, MessageTemplate
+from binary_conversions import to_bin_of_length
 
 class TestProtocol(unittest.TestCase):
 
@@ -33,11 +34,11 @@ class TestProtocol(unittest.TestCase):
 class TestMessageTemplate(unittest.TestCase):
 
     def setUp(self):
-        self._protocol = Protocol('Test')
+        self._protocol = Protocol('TestProtocol')
         self._protocol.add(UInt(2, 'msgId', 5))
         self._protocol.add(UInt(2, 'length', None))
         self._protocol.add(PDU('length-4'))
-        self.tmp = MessageTemplate('foo', self._protocol, {})
+        self.tmp = MessageTemplate('FooRequest', self._protocol, {})
         self.tmp.add(UInt(2, 'field_1', 1))
         self.tmp.add(UInt(2, 'field_2', 2))
 
@@ -49,10 +50,43 @@ class TestMessageTemplate(unittest.TestCase):
         self.assertEquals(msg.field_1.int, 1)
         self.assertEquals(msg.field_2.int, 2)
 
+    def test_message_field_type_conversions(self):
+        msg = self.tmp.encode({'field_1': 1024})
+        self.assertEquals(msg.field_1.int, 1024)
+        self.assertEquals(msg.field_1.hex, '0x0400')
+        self.assertEquals(msg.field_1.bytes, '\x04\x00')
+
     def test_encode_template_with_params(self):
         msg = self.tmp.encode({'field_1':111, 'field_2':222})
         self.assertEquals(msg.field_1.int, 111)
         self.assertEquals(msg.field_2.int, 222)
+
+    def test_encode_template_header(self):
+        msg = self.tmp.encode({})
+        self.assertEquals(msg._header.msgId.int, 5)
+        self.assertEquals(msg._header.length.int, 8)
+
+    def test_encode_to_bytes(self):
+        msg = self.tmp.encode({})
+        self.assertEquals(msg._header.msgId.int, 5)
+        self.assertEquals(msg._raw, to_bin_of_length(8, '0x0005 0008 0001 0002'))
+
+    # TODO: make the fields aware of their type?
+    # so that uint fields are pretty printed to uints
+    # bytes fields to hex bytes
+    # and character fields to characters..
+    def test_pretty_print(self):
+        msg = self.tmp.encode({})
+        self.assertEquals(msg._header.msgId.int, 5)
+        self.assertEquals(str(msg), 'Message FooRequest')
+        self.assertEquals(repr(msg),
+'''Message FooRequest
+  TestProtocol header
+    msgId = 0x0005
+    length = 0x0008
+  field_1 = 0x0001
+  field_2 = 0x0002
+''')
 
     def test_unknown_params_cause_exception(self):
         self.assertRaises(Exception, self.tmp.encode, {'unknown':111})
