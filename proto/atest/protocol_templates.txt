@@ -58,3 +58,7 @@ Server Receives simple request
     New message    ValueRequest   Example    messageType=0xdddd    #messageType=(0xdd|0xff)
     u32    value
     ${msg} =    Server receives message    @{params}
+
+u32
+    [arguments]     ${name}   ${default_value}=""
+    uint  4   ${name}   ${default_value}
