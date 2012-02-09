@@ -1,37 +1,44 @@
-UINT = 'uint'
-PDU = 'pdu'
-
 class Protocol(object):
 
-    def __init__(self):
+    def __init__(self, name):
         self._fields = []
+        self.name = name
 
-    def uint(self, length, name, value):
-        self._fields.append((UINT, Length(length), name, value))
+    def add(self, field):
+        if not field.length.static:
+            if not field.length.field in [elem.name for elem in self._fields]:
+                raise Exception('Length field %s unknown' % length.field)
+        self._fields.append(field)
 
     def header_length(self):
         length = 0
         for field in self._fields:
-            if field[0] == PDU:
+            if not field.length.static:
                 return length
-            length += field[1]
+            length += field.length.value
         return length
 
-    def pdu(self, length_param):
-        length = Length(length_param)
-        name = length.split("-")[0]
-        if not name in [field[2] for field in self._fields]:
-            raise Exception('PDU length field %s unknown' % length)
-        self._fields.append((PDU, self._get_field_length(name), None, None))
 
-    def _get_field_length(self, name):
-        for field in self._fields:
-            if field[2] == name:
-                return field[1]
+class UInt(object):
+
+    type = 'uint'
+
+    def __init__(self, length, name, default_value):
+        self.length = Length(length)
+        self.name = name
+        self.default_value = default_value
+
+
+class PDU(object):
+
+    type = 'pdu'
+
+    def __init__(self, length):
+        self.length = Length(length)
 
 
 def Length(value):
-    if value.isdigit():
+    if str(value).isdigit():
         return _StaticLength(int(value))
     return _DynamicLength(value)
 
