@@ -5,10 +5,12 @@ Resource          Protocols.txt
 
 *** Test Cases ***
 Client uses protocol and sends
+    [Tags]    regression
     Client Sends simple request    value:0xcafebabe
     Verify server gets hex    0x 01 00 dddd 000c ffff cafebabe
 
 Server uses protocol and sends
+    [Tags]    regression
     Client sends request and server receives it
     Server Sends simple request    value:0xcafebabe
     Verify client gets hex    0x 01 00 dddd 000c ffff cafebabe
