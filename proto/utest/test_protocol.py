@@ -1,4 +1,6 @@
 import unittest
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..','src'))
 from Protocol import Protocol, Length, UInt, PDU, MessageTemplate
 from binary_conversions import to_bin_of_length
 
