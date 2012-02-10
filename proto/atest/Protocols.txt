@@ -26,21 +26,21 @@ Define simple protocol
     End Protocol Description
 
 Defined Protocol is usable in client
-    Start TCP Client  _protocol=Example
+    Start TCP Client  protocol=Example
 
 Using undefined protocol in client fails
-    Run keyword and expect error  *  Start TCP Client  _protocol=Invalid
+    Run keyword and expect error  *  Start TCP Client  protocol=Invalid
 
 Setup TCP server and client  [arguments]   ${protocol}=
-    Start TCP server    ${SERVER}    ${SERVER PORT}    _name=ExampleServer   _protocol=${protocol}
-    Start TCP client    _name=ExampleClient
-    connect    ${SERVER}    ${SERVER PORT}    _name=ExampleClient
-    Accept connection  _name=ExampleServer
+    Start TCP server    ${SERVER}    ${SERVER PORT}    name=ExampleServer   protocol=${protocol}
+    Start TCP client    name=ExampleClient
+    connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient
+    Accept connection  name=ExampleServer
 
 Setup UDP server and client  [arguments]  ${protocol}=
-    Start udp server    ${SERVER}    ${SERVER PORT}    _name=ExampleServer  _protocol=${protocol}
-    Start udp client    _name=ExampleClient     _protocol=Example
-    connect    ${SERVER}    ${SERVER PORT}    _name=ExampleClient
+    Start udp server    ${SERVER}    ${SERVER PORT}    name=ExampleServer  protocol=${protocol}
+    Start udp client    name=ExampleClient     protocol=Example
+    connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient
     
 Setup protocol, UDP server, and client
     Define example protocol
@@ -61,14 +61,14 @@ Connect two clients
 
 Connect two clients and accept connections
     [Arguments]    ${server 1}=    ${server port 1}=${SERVER PORT}     ${server 2}=    ${server port 2}=${SERVER PORT}
-    Connect    ${SERVER}    ${server port 1}    _name=Client_1
-    Accept connection      _name=${server 1}    _alias=Connection_1
-    Connect    ${SERVER}    ${server port 2}    _name=Client_2
-    Accept connection      _name=${server 2}    _alias=Connection_2
+    Connect    ${SERVER}    ${server port 1}    name=Client_1
+    Accept connection      name=${server 1}    alias=Connection_1
+    Connect    ${SERVER}    ${server port 2}    name=Client_2
+    Accept connection      name=${server 2}    alias=Connection_2
 
 Two clients send foo and bar
-    Client Sends binary    foo   _name=Client_1
-    Client Sends binary    bar   _name=Client_2
+    Client Sends binary    foo   name=Client_1
+    Client Sends binary    bar   name=Client_2
 
 Verify server gets hex
     [Arguments]    ${expected hex}
@@ -88,7 +88,7 @@ Server '${server}' should get '${msg}' from '${ip}':'${port}'
 
 Verify server gets from
     [Arguments]    ${ip}  ${port}  ${expected}   ${server}   ${connection}=
-    ${msg}   ${from ip}   ${from port} =    Server receives binary from     _name=${server}   _connection=${connection}
+    ${msg}   ${from ip}   ${from port} =    Server receives binary from     name=${server}   connection=${connection}
     Should be equal    ${msg}    ${expected}
     Should be equal    ${from ip}    ${ip}
     Should be equal as integers    ${from port}  ${port}

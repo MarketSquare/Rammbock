@@ -47,72 +47,72 @@ class Rammbock(object):
         self._protocols[self._protocol_in_progress.name] = self._protocol_in_progress
         self._protocol_in_progress = None
 
-    def start_udp_server(self, _ip, _port, _name=None, _timeout=None, _protocol=None):
-        protocol = self._get_protocol(_protocol)
-        server = UDPServer(ip=_ip, port=_port, timeout=_timeout, protocol=protocol)
-        return self._servers.add(server, _name)
+    def start_udp_server(self, ip, port, name=None, timeout=None, protocol=None):
+        protocol = self._get_protocol(protocol)
+        server = UDPServer(ip=ip, port=port, timeout=timeout, protocol=protocol)
+        return self._servers.add(server, name)
 
-    def start_udp_client(self, _ip=None, _port=None, _name=None, _timeout=None, _protocol=None):
-        protocol = self._get_protocol(_protocol)
-        client = UDPClient(timeout=_timeout, protocol=protocol)
-        if _ip or _port:
-            client.set_own_ip_and_port(ip=_ip, port=_port)
-        return self._clients.add(client, _name)
+    def start_udp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None):
+        protocol = self._get_protocol(protocol)
+        client = UDPClient(timeout=timeout, protocol=protocol)
+        if ip or port:
+            client.set_own_ip_and_port(ip=ip, port=port)
+        return self._clients.add(client, name)
 
-    def _get_protocol(self, _protocol):
-        protocol = self._protocols[_protocol] if _protocol else None
+    def _get_protocol(self, protocol):
+        protocol = self._protocols[protocol] if protocol else None
         return protocol
 
-    def start_tcp_server(self, _ip, _port, _name=None, _timeout=None, _protocol=None):
-        protocol = self._get_protocol(_protocol)
-        server = TCPServer(ip=_ip, port=_port, timeout=_timeout, protocol=protocol)
-        return self._servers.add(server, _name)
+    def start_tcp_server(self, ip, port, name=None, timeout=None, protocol=None):
+        protocol = self._get_protocol(protocol)
+        server = TCPServer(ip=ip, port=port, timeout=timeout, protocol=protocol)
+        return self._servers.add(server, name)
 
-    def start_tcp_client(self, _ip=None, _port=None, _name=None, _timeout=None, _protocol=None):
-        protocol = self._get_protocol(_protocol)
-        client = TCPClient(timeout=_timeout, protocol=protocol)
-        if _ip or _port:
-            client.set_own_ip_and_port(ip=_ip, port=_port)
-        return self._clients.add(client, _name)
+    def start_tcp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None):
+        protocol = self._get_protocol(protocol)
+        client = TCPClient(timeout=timeout, protocol=protocol)
+        if ip or port:
+            client.set_own_ip_and_port(ip=ip, port=port)
+        return self._clients.add(client, name)
 
     def get_client_protocol(self, name):
         return self._clients.get(name).protocol
 
 
-    def accept_connection(self, _name=None, _alias=None):
-        server = self._servers.get(_name)
-        server.accept_connection(_alias)
+    def accept_connection(self, name=None, alias=None):
+        server = self._servers.get(name)
+        server.accept_connection(alias)
 
-    def connect(self, host, port, _name=None):
+    def connect(self, host, port, name=None):
         """Connect a client to certain host and port."""
-        client = self._clients.get(_name)
+        client = self._clients.get(name)
         client.connect_to(host, port)
 
     # TODO: Log the raw binary that is sent and received.
-    def client_sends_binary(self, message, _name=None):
+    def client_sends_binary(self, message, name=None):
         """Send raw binary data."""
-        client = self._clients.get(_name)
+        client = self._clients.get(name)
         client.send(message)
 
     # FIXME: support "send to" somehow. A new keyword?
-    def server_sends_binary(self, message, _name=None, _connection=None):
+    def server_sends_binary(self, message, name=None, connection=None):
         """Send raw binary data."""
-        server = self._servers.get(_name)
-        server.send(message, alias=_connection)
+        server = self._servers.get(name)
+        server.send(message, alias=connection)
 
-    def client_receives_binary(self, _name=None, _timeout=None):
+    def client_receives_binary(self, name=None, timeout=None):
         """Receive raw binary data."""
-        client = self._clients.get(_name)
-        return client.receive(timeout=_timeout)
+        client = self._clients.get(name)
+        return client.receive(timeout=timeout)
 
-    def server_receives_binary(self, _name=None, _timeout=None, _connection=None):
+    def server_receives_binary(self, name=None, timeout=None, connection=None):
         """Receive raw binary data."""
-        return self.server_receives_binary_from(_name, _timeout, _connection)[0]
+        return self.server_receives_binary_from(name, timeout, connection)[0]
 
-    def server_receives_binary_from(self, _name=None, _timeout=None, _connection=None):
+    def server_receives_binary_from(self, name=None, timeout=None, connection=None):
         """Receive raw binary data. Returns message, ip, port"""
-        server = self._servers.get(_name)
-        return server.receive_from(timeout=_timeout, alias=_connection)
+        server = self._servers.get(name)
+        return server.receive_from(timeout=timeout, alias=connection)
 
     def new_message(self, message_name, protocol=None, *parameters):
         """Define a new message template.
@@ -121,53 +121,46 @@ class Rammbock(object):
         if self._protocol_in_progress:
             raise Exception("Protocol definition in progress. Please finish it before starting to define a message.")
         proto = self._get_protocol(protocol)
-        header_params = self._parse_param_dict(parameters)
-        self._message_in_progress = MessageTemplate(message_name, proto, header_params)
+        _, header_fields = self._parse_parameters(parameters)
+        self._message_in_progress = MessageTemplate(message_name, proto, header_fields)
 
-    def _parse_param_dict(self, parameters):
-        result = {}
-        for parameter in parameters:
-            index = parameter.find('=')
-            result[parameter[:index].strip()] = parameter[index + 1:].strip()
-        return result
-
-
-    def get_message(self, *params):
+    def get_message(self, *parameters):
         """Get encoded message.
 
         * Send Message -keywords are convenience methods, that will call this to get the message object and then send it.
         Parameters have to be pdu fields."""
-        return self._encode_message(self._parse_param_dict(params))
+        _, message_fields = self._parse_parameters(parameters)
+        return self._encode_message(message_fields)
 
-    def _encode_message(self, message_paramdict):
-        msg = self._message_in_progress.encode(message_paramdict)
+    def _encode_message(self, message_fields):
+        msg = self._message_in_progress.encode(message_fields)
         self._message_in_progress = None
         return msg
 
-    def client_sends_message(self, *params):
+    def client_sends_message(self, *parameters):
         """Send a message.
     
         Parameters have to be message fields."""
-        message_paramdict = self._parse_param_dict(params)
-        msg = self._encode_message(message_paramdict)
-        self.client_sends_binary(msg._raw, _name=message_paramdict.get('_name', None))
+        configs, message_fields = self._parse_parameters(parameters)
+        msg = self._encode_message(message_fields)
+        self.client_sends_binary(msg._raw, **configs)
 
     # FIXME: support "send to" somehow. A new keyword?
-    def server_sends_message(self, *params):
+    def server_sends_message(self, *parameters):
         """Send a message.
     
         Parameters have to be message fields."""
-        message_paramdict = self._parse_param_dict(params)
-        msg = self._encode_message(message_paramdict)
-        self.server_sends_binary(msg._raw, _name=message_paramdict.get('_name', None))
+        configs, message_fields = self._parse_parameters(parameters)
+        msg = self._encode_message(message_fields)
+        self.server_sends_binary(msg._raw, **configs)
 
-    def client_receives_message(self, *params):
+    def client_receives_message(self, *parameters):
         """Receive a message object.
     
         Parameters that have been given are validated against message fields."""
         raise Exception('Not yet done')
 
-    def server_receives_message(self, *params):
+    def server_receives_message(self, *parameters):
         """Receive a message object.
     
         Parameters that have been given are validated against message fields."""
@@ -195,11 +188,30 @@ class Rammbock(object):
         return to_0xhex(bin_value)
 
     def _parse_parameters(self, parameters):
-        result = {}
+        configs, fields = {}, {}
         for parameter in parameters:
-            index = parameter.find('=')
-            result[parameter[:index].strip()] = parameter[index + 1:].strip()
-        return result
+            self._parse_entry(parameter, configs, fields)
+        return configs, fields
+
+    def _parse_entry(self, param, configs, fields):
+        colon_index = param.find(':')
+        equals_index = param.find('=')
+        # TODO: Cleanup. There must be a cleaner way.
+        # Luckily test_rammbock.py has unit tests covering all paths.
+        if colon_index==-1 and equals_index==-1:
+            raise Exception('Illegal parameter %s' % param)
+        elif equals_index==-1:
+            self._set_name_and_value(fields, ':', param)
+        elif colon_index==-1:
+            self._set_name_and_value(configs, '=', param)
+        elif colon_index>equals_index:
+            self._set_name_and_value(configs, '=', param)
+        else:
+            self._set_name_and_value(fields, ':', param)
+
+    def _set_name_and_value(self, dictionary, separator, parameter):
+        index = parameter.find(separator)
+        dictionary[parameter[:index].strip()] = parameter[index + 1:].strip()
 
     def _log_msg(self, loglevel, log_msg):
         print '*%s* %s' % (loglevel, log_msg)

@@ -18,7 +18,7 @@ TCP Server sends binary to client
     
 Multiple UDP clients
     [setup]  Start two udp clients
-    Start udp server    ${SERVER}    ${SERVER PORT}   _name=ExampleServer
+    Start udp server    ${SERVER}    ${SERVER PORT}   name=ExampleServer
     Connect two clients    ${SERVER PORT}    ${SERVER PORT}
     Two clients send foo and bar
     Server 'ExampleServer' should get 'foo' from '${CLIENT}':'${CLIENT 1 PORT}'
@@ -26,8 +26,8 @@ Multiple UDP clients
 
 Multiple UDP servers
     [setup]  Start two udp clients
-    Start udp server    ${SERVER}    ${SERVER PORT}    _name=Server_1
-    Start udp server    ${SERVER}    ${SERVER PORT 2}  _name=Server_2
+    Start udp server    ${SERVER}    ${SERVER PORT}    name=Server_1
+    Start udp server    ${SERVER}    ${SERVER PORT 2}  name=Server_2
     Connect two clients    ${SERVER PORT}    ${SERVER PORT 2}
     Two clients send foo and bar
     Server 'Server_1' should get 'foo' from '${CLIENT}':'${CLIENT 1 PORT}'
@@ -35,7 +35,7 @@ Multiple UDP servers
 
 Multiple TCP clients
     [setup]  Start two tcp clients
-    Start tcp server    ${SERVER}    ${SERVER PORT}   _name=ExampleServer
+    Start tcp server    ${SERVER}    ${SERVER PORT}   name=ExampleServer
     Connect two clients and accept connections
     Two clients send foo and bar
     'Connection_1' on 'ExampleServer' should get 'foo' from '${CLIENT}':'${CLIENT 1 PORT}'
@@ -43,8 +43,8 @@ Multiple TCP clients
 
 Multiple TCP servers
     [setup]  Start two tcp clients
-    Start tcp server    ${SERVER}    ${SERVER PORT}    _name=Server_1
-    Start tcp server    ${SERVER}    ${SERVER PORT 2}  _name=Server_2
+    Start tcp server    ${SERVER}    ${SERVER PORT}    name=Server_1
+    Start tcp server    ${SERVER}    ${SERVER PORT 2}  name=Server_2
     Connect two clients and accept connections     Server_1   ${SERVER PORT}    Server_2    ${SERVER PORT 2}
     Two clients send foo and bar
     Server 'Server_1' should get 'foo' from '${CLIENT}':'${CLIENT 1 PORT}'
