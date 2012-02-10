@@ -136,13 +136,20 @@ class Rammbock(object):
 
         * Send Message -keywords are convenience methods, that will call this to get the message object and then send it.
         Parameters have to be pdu fields."""
-        raise Exception('NYI')
+        return self._encode_message(self._parse_param_dict(params))
+
+    def _encode_message(self, message_paramdict):
+        msg = self._message_in_progress.encode(message_paramdict)
+        self._message_in_progress = None
+        return msg
 
     def client_sends_message(self, *params):
         """Send a message.
     
         Parameters have to be message fields."""
-        raise Exception('NYI')
+        message_paramdict = self._parse_param_dict(params)
+        msg = self._encode_message(message_paramdict)
+        self.client_sends_binary(msg._raw, _name=message_paramdict.get('_name', None))
 
     def server_sends_message(self, *params):
         """Send a message.
