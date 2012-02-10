@@ -78,7 +78,6 @@ class Rammbock(object):
     def get_client_protocol(self, name):
         return self._clients.get(name).protocol
 
-
     def accept_connection(self, name=None, alias=None):
         server = self._servers.get(name)
         server.accept_connection(alias)
@@ -164,6 +163,8 @@ class Rammbock(object):
         """Receive a message object.
     
         Parameters that have been given are validated against message fields."""
+        configs, message_fields = self._parse_parameters(parameters)
+        server = self._servers.get(configs.get('name'))
         raise Exception('Not yet done')
 
     def uint(self, length, name, value):

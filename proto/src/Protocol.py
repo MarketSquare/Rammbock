@@ -26,7 +26,6 @@ class _Template(object):
 
 class Protocol(_Template):
 
-
     def header_length(self):
         length = 0
         for field in self._fields:
@@ -34,7 +33,6 @@ class Protocol(_Template):
                 return length
             length += field.length.value
         return length
-
 
     def encode(self, message, header_params):
         header_params = header_params.copy()
@@ -53,6 +51,22 @@ class Protocol(_Template):
             if field.type == 'pdu':
                 return field
         return None
+
+    # TODO: fields after the pdu
+    def read(self, stream):
+        data = stream.read(self.header_length())
+        data_index = 0
+        field_index = 0
+        header = MessageHeader(self.name)
+        while len(data) > data_index:
+            field = self._fields[field_index]
+            header[field.name] = Field(field.type, field.name, data[data_index:data_index+field.length.value])
+            data_index += field.length.value
+            field_index +=1
+        pdu_field = self._get_pdu_field()
+        length_param = header[pdu_field.length.field].int
+        pdu = stream.read(pdu_field.length.solve_value(length_param))
+        return (header, pdu)
 
 
 class MessageTemplate(_Template):
@@ -104,7 +118,7 @@ def Length(value):
         return _StaticLength(int(value))
     return _DynamicLength(value)
 
-
+# TODO: extend int
 class _StaticLength(object):
     static = True
 

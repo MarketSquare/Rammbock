@@ -2,7 +2,7 @@ import unittest
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..','src'))
 from Protocol import Protocol, Length, UInt, PDU, MessageTemplate
-from binary_conversions import to_bin_of_length
+from binary_conversions import to_bin_of_length, to_bin
 
 class TestProtocol(unittest.TestCase):
 
@@ -31,6 +31,31 @@ class TestProtocol(unittest.TestCase):
         self._protocol.add(UInt(2, 'length', None))
         self._protocol.add(PDU('length-8'))
         self.assertEquals(self._protocol.header_length(), 3)
+
+class _MockStream(object):
+
+    def __init__(self, data):
+        self.data = data
+
+    def read(self, length):
+        result = self.data[:length]
+        self.data = self.data[length:]
+        return result
+
+
+class TestProtocolMessageReceiving(unittest.TestCase):
+
+    def setUp(self, *args, **kwargs):
+        self._protocol = Protocol('Test')
+        self._protocol.add(UInt(1, 'id', 1))
+        self._protocol.add(UInt(2, 'length', None))
+        self._protocol.add(PDU('length-2'))
+
+    def test_read_header_and_pdu(self):
+        stream = _MockStream(to_bin('0xff0004cafe'))
+        header, data = self._protocol.read(stream)
+        self.assertEquals(header.id.hex, '0xff')
+        self.assertEquals(data, '\xca\xfe')
 
 
 class TestMessageTemplate(unittest.TestCase):
