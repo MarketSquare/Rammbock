@@ -41,6 +41,7 @@ class UDPServer(_Server):
         _Server.__init__(self, ip, port, timeout)
         self._init_socket()
         self._protocol= protocol
+        self._last_client = None
 
     def _init_socket(self):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -51,6 +52,7 @@ class UDPServer(_Server):
         timeout = self._get_timeout(timeout)
         self._socket.settimeout(timeout)
         msg, (ip, host) = self._socket.recvfrom(UDP_BUFFER_SIZE)
+        self._last_client = (ip, host)
         return msg, ip, host
 
     def _check_no_alias(self, alias):
@@ -62,6 +64,13 @@ class UDPServer(_Server):
 
     def send_to(self, msg, ip, port):
         self._socket.sendto(msg, (ip,int(port)))
+
+    def send(self, msg, alias=None):
+        if alias:
+            raise Exception('UDP Server does not have connection aliases. Tried to use connection %s.' % alias)
+        if not self._last_client:
+            raise Exception('Server can not send to default client, because it has not received messages from clients.')
+        self.send_to(msg, *self._last_client)
 
 
 class TCPServer(_Server):
@@ -92,6 +101,9 @@ class TCPServer(_Server):
 
     def send(self, msg, alias=None):
         self._connections.get(alias)[0].send(msg)
+
+    def send_to(self, *args):
+        raise Exception("TCP server cannot send to a specific address.")
 
     def close(self):
         if self._is_connected:

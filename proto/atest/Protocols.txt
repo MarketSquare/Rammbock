@@ -75,6 +75,11 @@ Verify server gets hex
     ${msg} =    Server receives binary
     Binary should equal hex    ${msg}    ${expected hex}
 
+Verify client gets hex
+    [Arguments]    ${expected hex}
+    ${msg} =    Client receives binary
+    Binary should equal hex    ${msg}    ${expected hex}
+
 Server '${server}' should get '${msg}' from '${ip}':'${port}'
     Verify server gets from    ${ip}    ${port}    ${msg}    ${server}
 

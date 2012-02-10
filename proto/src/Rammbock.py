@@ -94,6 +94,7 @@ class Rammbock(object):
         client = self._clients.get(_name)
         client.send(message)
 
+    # FIXME: support "send to" somehow. A new keyword?
     def server_sends_binary(self, message, _name=None, _connection=None):
         """Send raw binary data."""
         server = self._servers.get(_name)
@@ -151,11 +152,14 @@ class Rammbock(object):
         msg = self._encode_message(message_paramdict)
         self.client_sends_binary(msg._raw, _name=message_paramdict.get('_name', None))
 
+    # FIXME: support "send to" somehow. A new keyword?
     def server_sends_message(self, *params):
         """Send a message.
     
         Parameters have to be message fields."""
-        raise Exception('NYI')
+        message_paramdict = self._parse_param_dict(params)
+        msg = self._encode_message(message_paramdict)
+        self.server_sends_binary(msg._raw, _name=message_paramdict.get('_name', None))
 
     def client_receives_message(self, *params):
         """Receive a message object.
