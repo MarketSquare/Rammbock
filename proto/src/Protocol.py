@@ -10,7 +10,7 @@ class _Template(object):
     def add(self, field):
         if not field.length.static:
             if not field.length.field in [elem.name for elem in self._fields]:
-                raise Exception('Length field %s unknown' % length.field)
+                raise Exception('Length field %s unknown' % field.length)
         self._fields.append(field)
 
     def _encode_fields(self, struct, params):
@@ -25,7 +25,6 @@ class _Template(object):
 
 
 class Protocol(_Template):
-
 
     def header_length(self):
         length = 0
