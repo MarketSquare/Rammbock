@@ -53,8 +53,8 @@ class Protocol(_Template):
         return None
 
     # TODO: fields after the pdu
-    def read(self, stream):
-        data = stream.read(self.header_length())
+    def read(self, stream, timeout=None):
+        data = stream.read(self.header_length(), timeout=timeout)
         data_index = 0
         field_index = 0
         header = MessageHeader(self.name)
@@ -161,12 +161,12 @@ class MessageStream(object):
         self._stream = stream
         self._protocol = protocol
 
-    def get(self, message_template, header_fields):
+    def get(self, message_template, header_fields, timeout=None):
         msg = self._get_from_cache(message_template, header_fields)
         if msg:
             return msg
         while True:
-            header, pdu = self._protocol.read(self._stream)
+            header, pdu = self._protocol.read(self._stream, timeout=timeout)
             if self._matches(header, header_fields):
                 return self._to_msg(message_template, header, pdu)
             else:

@@ -1,3 +1,4 @@
+import socket
 import unittest
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..','src'))
@@ -39,7 +40,12 @@ class _MockStream(object):
     def __init__(self, data):
         self.data = data
 
-    def read(self, length):
+    def read(self, length, timeout=None):
+        if length > len(self.data):
+            if timeout:
+                raise socket.timeout('timeout')
+            else:
+                raise AssertionError('No timeout, but out of data.')
         result = self.data[:length]
         self.data = self.data[length:]
         return result
@@ -83,6 +89,11 @@ class TestMessageStream(unittest.TestCase):
         _ = msg_stream.get(self._msg, {'id':'0xaa'})
         msg = msg_stream.get(self._msg, {})
         self.assertEquals(msg.field_1.hex, '0xca')
+
+    def test_timeout_goes_to_stream(self):
+        byte_stream = _MockStream(to_bin('0xff0004cafe aa0004dead'))
+        msg_stream = MessageStream(byte_stream, self._protocol)
+        self.assertRaises(socket.timeout, msg_stream.get, self._msg, {'id':'0x00'}, timeout=1)
 
 
 class TestMessageTemplate(unittest.TestCase):
