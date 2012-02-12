@@ -73,27 +73,29 @@ class TestMessageStream(unittest.TestCase):
         self._protocol.add(UInt(1, 'id', 1))
         self._protocol.add(UInt(2, 'length', None))
         self._protocol.add(PDU('length-2'))
-        self._msg = MessageTemplate('FooRequest', self._protocol, {})
+        self._msg = MessageTemplate('FooRequest', self._protocol, {'id':'0xaa'})
         self._msg.add(UInt(1, 'field_1', None))
         self._msg.add(UInt(1, 'field_2', None))
 
     def test_get_message(self):
         byte_stream = _MockStream(to_bin('0xff0004cafe aa0004dead'))
         msg_stream = MessageStream(byte_stream, self._protocol)
-        msg = msg_stream.get(self._msg, {'id':'0xaa'})
+        msg = msg_stream.get(self._msg)
         self.assertEquals(msg.field_1.hex, '0xde')
 
     def test_get_message_from_buffer(self):
         byte_stream = _MockStream(to_bin('0xff0004cafe aa0004dead'))
         msg_stream = MessageStream(byte_stream, self._protocol)
-        _ = msg_stream.get(self._msg, {'id':'0xaa'})
-        msg = msg_stream.get(self._msg, {})
+        _ = msg_stream.get(self._msg)
+        self._msg.header_parameters = {}
+        msg = msg_stream.get(self._msg)
         self.assertEquals(msg.field_1.hex, '0xca')
 
     def test_timeout_goes_to_stream(self):
         byte_stream = _MockStream(to_bin('0xff0004cafe aa0004dead'))
         msg_stream = MessageStream(byte_stream, self._protocol)
-        self.assertRaises(socket.timeout, msg_stream.get, self._msg, {'id':'0x00'}, timeout=1)
+        self._msg.header_parameters = {'id':'0x00'}
+        self.assertRaises(socket.timeout, msg_stream.get, self._msg, timeout=1)
 
 
 class TestMessageTemplate(unittest.TestCase):

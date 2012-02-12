@@ -165,7 +165,7 @@ class Rammbock(object):
         Parameters that have been given are validated against message fields."""
         configs, message_fields = self._parse_parameters(parameters)
         server = self._servers.get(configs.get('name'))
-        raise Exception('Not yet done')
+        return server.get_message(self._message_in_progress, **configs)
 
     def uint(self, length, name, value):
         self._add_field(UInt(length, name, value))

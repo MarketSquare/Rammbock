@@ -68,20 +68,22 @@ class Protocol(_Template):
         pdu = stream.read(pdu_field.length.solve_value(length_param))
         return (header, pdu)
 
+    def get_message_stream(self, buffered_stream):
+        return MessageStream(buffered_stream, self)
 
 class MessageTemplate(_Template):
 
     def __init__(self, message_name, protocol, header_params):
         _Template.__init__(self, message_name)
         self._protocol = protocol
-        self._header_parameters = header_params
+        self.header_parameters = header_params
 
     def encode(self, message_params):
         message_params = message_params.copy()
         msg = Message(self.name)
         self._encode_fields(msg, message_params)
         if self._protocol:
-            msg._add_header(self._protocol.encode(msg, self._header_parameters))
+            msg._add_header(self._protocol.encode(msg, self.header_parameters))
         return msg
 
     def decode(self, data):
@@ -161,9 +163,12 @@ class MessageStream(object):
         self._stream = stream
         self._protocol = protocol
 
-    def get(self, message_template, header_fields, timeout=None):
+    def get(self, message_template, timeout=None):
+        header_fields = message_template.header_parameters
+        print "*TRACE* Get message with params %s" % header_fields
         msg = self._get_from_cache(message_template, header_fields)
         if msg:
+            print "*TRACE* Cache hit. Cache currently has %s messages" % len(self._cache)
             return msg
         while True:
             header, pdu = self._protocol.read(self._stream, timeout=timeout)
@@ -188,6 +193,10 @@ class MessageStream(object):
 
     def _matches(self, header, fields):
         for field in fields:
-            if header[field].bytes != to_bin(fields[field]):
+            if fields[field] and header[field].bytes  != to_bin(fields[field]):
                 return False
         return True
+
+    def empty(self):
+        self.cache = []
+        self._stream.empty()

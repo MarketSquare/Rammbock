@@ -1,4 +1,6 @@
 import socket
+import time
+from binary_conversions import to_hex
 
 UDP_BUFFER_SIZE = 65536
 TCP_BUFFER_SIZE = 1000000
@@ -33,25 +35,33 @@ class _Server(_WithTimeouts):
         if self._is_connected:
             self._is_connected = False
             self._socket.close()
+            self._message_stream = None
+
+    def _get_message_stream(self, connection):
+        if not self._protocol:
+            return None
+        return self._protocol.get_message_stream(BufferedStream(connection, self._default_timeout))
 
 
 class UDPServer(_Server):
 
     def __init__(self, ip, port, timeout=None, protocol=None):
         _Server.__init__(self, ip, port, timeout)
-        self._init_socket()
-        self._protocol= protocol
+        self._protocol = protocol
         self._last_client = None
+        self._init_socket()
 
     def _init_socket(self):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._bind_socket()
+        self._message_stream = self._get_message_stream(self)
 
     def receive_from(self, timeout=None, alias=None):
         self._check_no_alias(alias)
         timeout = self._get_timeout(timeout)
         self._socket.settimeout(timeout)
         msg, (ip, host) = self._socket.recvfrom(UDP_BUFFER_SIZE)
+        print "*DEBUG* Read %s" % to_hex(msg)
         self._last_client = (ip, host)
         return msg, ip, host
 
@@ -63,6 +73,7 @@ class UDPServer(_Server):
         return self.receive_from(timeout, alias)[0]
 
     def send_to(self, msg, ip, port):
+        print "*DEBUG* Send %s" % to_hex(msg)
         self._socket.sendto(msg, (ip,int(port)))
 
     def send(self, msg, alias=None):
@@ -71,6 +82,9 @@ class UDPServer(_Server):
         if not self._last_client:
             raise Exception('Server can not send to default client, because it has not received messages from clients.')
         self.send_to(msg, *self._last_client)
+
+    def get_message(self, message_template, timeout=None):
+        return self._message_stream.get(message_template, timeout=timeout)
 
 
 class TCPServer(_Server):
@@ -92,6 +106,7 @@ class TCPServer(_Server):
         timeout = self._get_timeout(timeout)
         connection.settimeout(timeout)
         msg = connection.recv(TCP_BUFFER_SIZE)
+        print "*DEBUG* Read %s" % to_hex(msg)
         return msg, ip, host
 
     def accept_connection(self, alias=None):
@@ -100,6 +115,7 @@ class TCPServer(_Server):
         return client_address
 
     def send(self, msg, alias=None):
+        print "*DEBUG* Send %s" % to_hex(msg)
         self._connections.get(alias)[0].send(msg)
 
     def send_to(self, *args):
@@ -118,10 +134,16 @@ class TCPServer(_Server):
 class _Client(_WithTimeouts):
 
     def __init__(self, timeout=None, protocol=None):
-        self._protocol = protocol
         self._is_connected = False
         self._init_socket()
         self._set_default_timeout(timeout)
+        self._protocol = protocol
+        self._message_stream = None
+
+    def _get_message_stream(self):
+        if not self._protocol:
+            return None
+        return self._protocol.get_message_stream(BufferedStream(self._socket, self._default_timeout))
 
     def set_own_ip_and_port(self, ip=None, port=None):
         if ip and port:
@@ -138,16 +160,19 @@ class _Client(_WithTimeouts):
             raise Exception('Client already connected!')
         self._server_ip = server_ip
         self._socket.connect((server_ip, int(server_port)))
+        self._message_stream = self._get_message_stream()
         self._is_connected = True
         return self
 
     def send(self, msg):
+        print "*DEBUG* Send %s" % to_hex(msg)
         self._socket.sendall(msg)
 
     def receive(self, timeout=None):
         timeout = self._get_timeout(timeout)
         self._socket.settimeout(timeout)
         msg = self._socket.recv(self._size_limit)
+        print "*DEBUG* Read %s" % to_hex(msg)
         return msg
 
     def empty(self):
@@ -157,11 +182,14 @@ class _Client(_WithTimeouts):
                 result = self.read(timeout=0.0)
         except (socket.timeout, socket.error):
             pass
+        if self._message_stream:
+            self._message_stream.empty()
 
     def close(self):
         if self._is_connected:
             self._is_connected = False
             self._socket.close()
+            self._message_stream = None
 
     def get_address(self):
         return self._socket.getsockname()
@@ -210,3 +238,35 @@ class _NamedCache(object):
 
     def __iter__(self):
         return self._cache.itervalues()
+
+
+class BufferedStream(_WithTimeouts):
+
+    def __init__(self, connection, default_timeout):
+        self._connection = connection
+        self._buffer = ''
+        self._default_timeout = default_timeout
+
+    def read(self, size, timeout=None):
+        result = ''
+        timeout = float(timeout if timeout else self._default_timeout)
+        cutoff = time.time() + timeout
+        while time.time() < cutoff:
+            result += self._get(size-len(result))
+            if len(result) == size:
+                return result
+            self._fill_buffer(timeout)
+        raise AssertionError('Timeout %ds exceeded.' % timeout)
+
+    def _get(self, size):
+        if not self._buffer:
+            return ''
+        result = self._buffer[:size]
+        self._buffer = self._buffer[size:]
+        return result
+
+    def _fill_buffer(self, timeout):
+        self._buffer += self._connection.receive(timeout=timeout)
+
+    def empty(self):
+        self.buffer = ''
