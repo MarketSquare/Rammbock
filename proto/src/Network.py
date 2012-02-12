@@ -83,8 +83,15 @@ class UDPServer(_Server):
             raise Exception('Server can not send to default client, because it has not received messages from clients.')
         self.send_to(msg, *self._last_client)
 
-    def get_message(self, message_template, timeout=None):
-        return self._message_stream.get(message_template, timeout=timeout)
+    def get_message(self, message_template, message_fields, timeout=None):
+        msg = self._message_stream.get(message_template, timeout=timeout)
+        errors = message_template.validate(msg, message_fields)
+        if errors:
+            print "Received %s" % repr(msg)
+            print '\n'.join(errors)
+            raise AssertionError(errors[0])
+        print "*DEBUG* %s" % repr(msg)
+        return msg
 
 
 class TCPServer(_Server):
@@ -132,7 +139,8 @@ class TCPServer(_Server):
         # Wrap connection to server like wrapper with message logging
         raise Exception("Not yet implemented")
 
-    # TODO: Close single connection
+    def close_connection(self, alias=None):
+        raise Exception("Not yet implemented")
 
 
 class _Client(_WithTimeouts):
@@ -198,8 +206,16 @@ class _Client(_WithTimeouts):
     def get_address(self):
         return self._socket.getsockname()
 
-    def get_message(self, message_template, timeout=None):
-        return self._message_stream.get(message_template, timeout=timeout)
+    def get_message(self, message_template, message_fields, timeout=None):
+        msg = self._message_stream.get(message_template, timeout=timeout)
+        # TODO: duplication with UDPServer
+        errors = message_template.validate(msg, message_fields)
+        if errors:
+            print "Received %s" % repr(msg)
+            print '\n'.join(errors)
+            raise AssertionError(errors[0])
+        print "*DEBUG* %s" % repr(msg)
+        return msg
 
 
 class UDPClient(_Client):

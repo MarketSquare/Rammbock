@@ -159,7 +159,7 @@ class Rammbock(object):
         Parameters that have been given are validated against message fields."""
         configs, message_fields = self._parse_parameters(parameters)
         client = self._clients.get(configs.get('name'))
-        return client.get_message(self._message_in_progress, **configs)
+        return client.get_message(self._message_in_progress, message_fields, **configs)
 
     def server_receives_message(self, *parameters):
         """Receive a message object.
@@ -167,9 +167,12 @@ class Rammbock(object):
         Parameters that have been given are validated against message fields."""
         configs, message_fields = self._parse_parameters(parameters)
         server = self._servers.get(configs.get('name'))
-        return server.get_message(self._message_in_progress, **configs)
+        return server.get_message(self._message_in_progress, message_fields, **configs)
 
-    def uint(self, length, name, value):
+    # TODO: character types
+    # TODO: byte alignment support
+
+    def uint(self, length, name, value=None):
         self._add_field(UInt(length, name, value))
 
     def _add_field(self, field):

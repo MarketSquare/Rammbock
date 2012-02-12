@@ -2,44 +2,38 @@
 Test Setup        Setup protocol, UDP server, and client
 Test teardown     Teardown rammbock and increment port numbers
 Resource          Protocols.txt
+Default tags      regression
 
 *** Test Cases ***
 Define And Use A Message Template
-    [Tags]    regression
     [setup]  Define Simple Protocol
     Defined Protocol is usable in client
 
 Undefined protocol cannot be used
-    [Tags]    regression
     [setup]  Define Simple Protocol
     Using undefined protocol in client fails
 
 Client uses protocol and sends
-    [Tags]    regression
     Client Sends simple request    value:0xcafebabe
     Verify server gets hex    0x 01 00 dddd 000c ffff cafebabe
 
 Client uses protocol and receives
-    [Tags]    regression
     Client sends request and server receives it
     Server Sends simple request    value:0xcafebabe
     ${msg} =    Client Receives simple request
     Should be equal    ${msg.value.hex}    0xcafebabe
 
 Server uses protocol and sends
-    [Tags]    regression
     Client sends request and server receives it
     Server Sends simple request    value:0xcafebabe
     Verify client gets hex    0x 01 00 dddd 000c ffff cafebabe
 
 Server uses protocol and receives
-    [Tags]    regression
     Client Sends hex    0x 01 00 dddd 000c 0000 cafebabe
     ${msg} =    Server Receives simple request
     Should be equal    ${msg.value.hex}    0xcafebabe
 
 Server uses protocol with header field values and receives
-    [Tags]    regression
     Client Sends hex    0x 01 00 dddd 000c 0000 cafebabe
     ${msg} =    Server Receives simple request with header    messageType:0xdddd
     Should be equal    ${msg.value.hex}    0xcafebabe
@@ -49,27 +43,24 @@ Server uses protocol and value validation fails
     Run keyword and expect error    Value of field value does not match *    Server Receives simple request    value:0xffffff
 
 Server uses protocol and messages arrive out of order
-    [Tags]    regression
     Client Sends hex    0x 01 00 aaaa 000c 0000 deadbeef
     Client Sends hex    0x 01 00 dddd 000c 0000 cafebabe
     ${msg_dddd} =      Server Receives simple request with header    messageType:0xdddd
     Should be equal    ${msg_dddd._header.messageType.hex}    0xdddd
 
 Message field type conversions
-    [Tags]    regression
     Client Sends hex    0x 01 00 dddd 000c 0000 000000ff
-    ${msg} =    Server Receives simple request    value:0xcafebabe
+    ${msg} =    Server Receives simple request    value:0x000000ff
     Should be equal    ${msg.value.hex}    0x000000ff
     Should be equal as integers    ${msg.value.int}    255
 
 Access header
-    [Tags]    regression
     Client Sends hex    0x 01 00 dddd 000c 0000 000000ff
     ${msg} =    Server Receives simple request
     Should be equal    ${msg._header.version.hex}    0x01
     Should be equal as integers    ${msg._header.length.int}    12
 
-# TODO: client receiving tests and also TCP tests
+# TODO: Tests for receiving with a pattern and TCP tests
 
 *** Keywords ***
 Client Sends simple request

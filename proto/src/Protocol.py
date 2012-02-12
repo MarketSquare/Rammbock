@@ -1,5 +1,5 @@
 from Message import Field, Message, MessageHeader
-from binary_conversions import to_bin_of_length, to_bin
+from binary_conversions import to_bin_of_length, to_bin, to_hex, to_0xhex
 
 class _Template(object):
 
@@ -97,15 +97,21 @@ class MessageTemplate(_Template):
             field_index +=1
         return message
 
+    def validate(self, message, message_fields):
+        errors = []
+        for field in self._fields:
+            errors += field.validate(message[field.name].bytes, message_fields)
+        return errors
+
 
 class UInt(object):
 
     type = 'uint'
 
-    def __init__(self, length, name, default_value):
+    def __init__(self, length, name, default_value=None):
         self.length = Length(length)
         self.name = name
-        self.default_value = default_value
+        self.default_value = default_value if default_value and default_value != '""' else None
 
     def encode(self, paramdict):
         value = self._get_element_value_and_remove_from_params(paramdict)
@@ -113,6 +119,36 @@ class UInt(object):
 
     def _get_element_value_and_remove_from_params(self, paramdict):
         return paramdict.pop(self.name, self.default_value)
+
+    def validate(self, value, paramdict):
+        forced_value = self._get_element_value(paramdict)
+        if not forced_value or forced_value == 'None':
+            return []
+        if forced_value.startswith('('):
+            return self._validate_pattern(forced_value, value)
+        else:
+            return self._validate_exact_match(forced_value, value)
+
+    def _validate_pattern(self, forced_pattern, value):
+        patterns = forced_pattern[1:-1].split('|')
+        for pattern in patterns:
+            if self._is_match(self.name, self.length.value, pattern, value):
+                return []
+        return ['Value of field %s does not match pattern %s!=%s' %
+                (self.name, to_0xhex(value), forced_pattern)]
+
+    def _is_match(self, name, length, forced_value, value):
+        forced_binary_val = to_bin_of_length(length, forced_value)
+        return forced_binary_val == value
+
+    def _validate_exact_match(self, forced_value, value):
+        if not self._is_match(self.name, self.length.value, forced_value, value):
+            return ['Value of field %s does not match %s!=%s' %
+                    (self.name, to_0xhex(value), forced_value)]
+        return []
+
+    def _get_element_value(self, paramdict):
+        return paramdict.get(self.name, self.default_value)
 
 
 class PDU(object):
