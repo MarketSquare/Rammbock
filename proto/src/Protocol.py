@@ -1,5 +1,5 @@
 from Message import Field, Message, MessageHeader
-from binary_conversions import to_bin_of_length
+from binary_conversions import to_bin_of_length, to_bin
 
 class _Template(object):
 
@@ -84,6 +84,17 @@ class MessageTemplate(_Template):
             msg._add_header(self._protocol.encode(msg, self._header_parameters))
         return msg
 
+    def decode(self, data):
+        data_index = 0
+        field_index = 0
+        message = Message(self.name)
+        while len(data) > data_index:
+            field = self._fields[field_index]
+            message[field.name] = Field(field.type, field.name, data[data_index:data_index+field.length.value])
+            data_index += field.length.value
+            field_index +=1
+        return message
+
 
 class UInt(object):
 
@@ -143,3 +154,40 @@ class _DynamicLength(object):
         return length + self.subtractor
 
 
+class MessageStream(object):
+
+    def __init__(self, stream, protocol):
+        self._cache = []
+        self._stream = stream
+        self._protocol = protocol
+
+    def get(self, message_template, header_fields):
+        msg = self._get_from_cache(message_template, header_fields)
+        if msg:
+            return msg
+        while True:
+            header, pdu = self._protocol.read(self._stream)
+            if self._matches(header, header_fields):
+                return self._to_msg(message_template, header, pdu)
+            else:
+                self._cache.append((header, pdu))
+
+    def _get_from_cache(self, template, fields):
+        index = 0
+        while index < len(self._cache):
+            header, pdu = self._cache[index]
+            if self._matches(header, fields):
+                self._cache.pop(index)
+                return self._to_msg(template, header, pdu)
+        return None
+
+    def _to_msg(self, template, header, pdu):
+        msg = template.decode(pdu)
+        msg._add_header(header)
+        return msg
+
+    def _matches(self, header, fields):
+        for field in fields:
+            if header[field].bytes != to_bin(fields[field]):
+                return False
+        return True

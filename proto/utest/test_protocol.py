@@ -1,7 +1,7 @@
 import unittest
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..','src'))
-from Protocol import Protocol, Length, UInt, PDU, MessageTemplate
+from Protocol import Protocol, Length, UInt, PDU, MessageTemplate, MessageStream
 from binary_conversions import to_bin_of_length, to_bin
 
 class TestProtocol(unittest.TestCase):
@@ -56,6 +56,31 @@ class TestProtocolMessageReceiving(unittest.TestCase):
         header, data = self._protocol.read(stream)
         self.assertEquals(header.id.hex, '0xff')
         self.assertEquals(data, '\xca\xfe')
+
+
+class TestMessageStream(unittest.TestCase):
+
+    def setUp(self, *args, **kwargs):
+        self._protocol = Protocol('Test')
+        self._protocol.add(UInt(1, 'id', 1))
+        self._protocol.add(UInt(2, 'length', None))
+        self._protocol.add(PDU('length-2'))
+        self._msg = MessageTemplate('FooRequest', self._protocol, {})
+        self._msg.add(UInt(1, 'field_1', None))
+        self._msg.add(UInt(1, 'field_2', None))
+
+    def test_get_message(self):
+        byte_stream = _MockStream(to_bin('0xff0004cafe aa0004dead'))
+        msg_stream = MessageStream(byte_stream, self._protocol)
+        msg = msg_stream.get(self._msg, {'id':'0xaa'})
+        self.assertEquals(msg.field_1.hex, '0xde')
+
+    def test_get_message_from_buffer(self):
+        byte_stream = _MockStream(to_bin('0xff0004cafe aa0004dead'))
+        msg_stream = MessageStream(byte_stream, self._protocol)
+        _ = msg_stream.get(self._msg, {'id':'0xaa'})
+        msg = msg_stream.get(self._msg, {})
+        self.assertEquals(msg.field_1.hex, '0xca')
 
 
 class TestMessageTemplate(unittest.TestCase):
@@ -117,6 +142,10 @@ class TestMessageTemplate(unittest.TestCase):
 
     def test_unknown_params_cause_exception(self):
         self.assertRaises(Exception, self.tmp.encode, {'unknown':111})
+
+    def test_decode_message(self):
+        msg = self.tmp.decode(to_bin('0xcafebabe'))
+        self.assertEquals(msg.field_1.hex, '0xcafe')
 
 
 class TestFields(unittest.TestCase):
