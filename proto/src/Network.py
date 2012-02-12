@@ -128,6 +128,10 @@ class TCPServer(_Server):
                 connection.close()
             self._socket.close()
 
+    def get_message(self, message_template, timeout=None, alias=None):
+        # Wrap connection to server like wrapper with message logging
+        raise Exception("Not yet implemented")
+
     # TODO: Close single connection
 
 
@@ -143,7 +147,7 @@ class _Client(_WithTimeouts):
     def _get_message_stream(self):
         if not self._protocol:
             return None
-        return self._protocol.get_message_stream(BufferedStream(self._socket, self._default_timeout))
+        return self._protocol.get_message_stream(BufferedStream(self, self._default_timeout))
 
     def set_own_ip_and_port(self, ip=None, port=None):
         if ip and port:
@@ -193,6 +197,9 @@ class _Client(_WithTimeouts):
 
     def get_address(self):
         return self._socket.getsockname()
+
+    def get_message(self, message_template, timeout=None):
+        return self._message_stream.get(message_template, timeout=timeout)
 
 
 class UDPClient(_Client):

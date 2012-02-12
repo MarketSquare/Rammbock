@@ -157,7 +157,9 @@ class Rammbock(object):
         """Receive a message object.
     
         Parameters that have been given are validated against message fields."""
-        raise Exception('Not yet done')
+        configs, message_fields = self._parse_parameters(parameters)
+        client = self._clients.get(configs.get('name'))
+        return client.get_message(self._message_in_progress, **configs)
 
     def server_receives_message(self, *parameters):
         """Receive a message object.

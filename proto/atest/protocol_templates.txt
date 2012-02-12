@@ -19,6 +19,13 @@ Client uses protocol and sends
     Client Sends simple request    value:0xcafebabe
     Verify server gets hex    0x 01 00 dddd 000c ffff cafebabe
 
+Client uses protocol and receives
+    [Tags]    regression
+    Client sends request and server receives it
+    Server Sends simple request    value:0xcafebabe
+    ${msg} =    Client Receives simple request
+    Should be equal    ${msg.value.hex}    0xcafebabe
+
 Server uses protocol and sends
     [Tags]    regression
     Client sends request and server receives it
@@ -89,6 +96,13 @@ Server Receives simple request with header
     New message    ValueRequest   Example    @{header params}
     u32    value
     ${msg} =    Server receives message
+    [return]    ${msg}
+
+Client Receives simple request
+    [Arguments]    @{params}
+    New message    ValueRequest   Example
+    u32    value
+    ${msg} =    Client receives message    @{params}
     [return]    ${msg}
 
 Client sends request and server receives it
