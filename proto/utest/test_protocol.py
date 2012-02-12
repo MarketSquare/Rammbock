@@ -4,9 +4,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..','src'))
 from Protocol import Protocol, Length, UInt, PDU, MessageTemplate, MessageStream
 from binary_conversions import to_bin_of_length, to_bin
 
+
 class TestProtocol(unittest.TestCase):
 
-    def setUp(self, *args, **kwargs):
+    def setUp(self):
         self._protocol = Protocol('Test')
 
     def test_header_length(self):
@@ -45,7 +46,7 @@ class _MockStream(object):
 
 class TestProtocolMessageReceiving(unittest.TestCase):
 
-    def setUp(self, *args, **kwargs):
+    def setUp(self):
         self._protocol = Protocol('Test')
         self._protocol.add(UInt(1, 'id', 1))
         self._protocol.add(UInt(2, 'length', None))
@@ -60,7 +61,7 @@ class TestProtocolMessageReceiving(unittest.TestCase):
 
 class TestMessageStream(unittest.TestCase):
 
-    def setUp(self, *args, **kwargs):
+    def setUp(self):
         self._protocol = Protocol('Test')
         self._protocol.add(UInt(1, 'id', 1))
         self._protocol.add(UInt(2, 'length', None))
