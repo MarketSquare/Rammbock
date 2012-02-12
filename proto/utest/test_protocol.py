@@ -33,6 +33,7 @@ class TestProtocol(unittest.TestCase):
         self._protocol.add(PDU('length-8'))
         self.assertEquals(self._protocol.header_length(), 3)
 
+
 class _MockStream(object):
 
     def __init__(self, data):
