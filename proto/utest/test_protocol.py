@@ -2,8 +2,8 @@ import socket
 import unittest
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..','src'))
-from Protocol import Protocol, Length, UInt, PDU, MessageTemplate, MessageStream
-from binary_conversions import to_bin_of_length, to_bin
+from Protocol import Protocol, Length, UInt, PDU, MessageTemplate, MessageStream, Char
+from binary_conversions import to_bin_of_length, to_bin, to_hex
 
 
 class TestProtocol(unittest.TestCase):
@@ -223,6 +223,15 @@ class TestFields(unittest.TestCase):
         self.assertEquals(field.name, "field")
         self.assertEquals(field.default_value, 8)
         self.assertEquals(field.type, 'uint')
+        self.assertEquals(to_hex(field.encode({})), '0000000008')
+
+    def test_char_static_field(self):
+        field = Char(5, "char_field", 'foo')
+        self.assertTrue(field.length.static)
+        self.assertEquals(field.name, "char_field")
+        self.assertEquals(field.default_value, 'foo')
+        self.assertEquals(field.type, 'char')
+        self.assertEquals(field.encode({}), 'foo\x00\x00')
 
     def test_pdu_field_without_subtractor(self):
         field = PDU('value')

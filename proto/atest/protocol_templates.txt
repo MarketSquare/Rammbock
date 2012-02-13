@@ -65,6 +65,15 @@ Char fields
     ${msg} =   Server receives charred request
     Should be equal   ${msg.string_value.ascii_chars}    foo
 
+Char field validation passes
+    Client sends charred request
+    ${msg} =   Server receives charred request     string_value:foo
+    Should be equal   ${msg.string_value.ascii_chars}    foo
+
+Char field validation fails
+    Client sends charred request
+    Run keyword and expect error   Value of field string_value does not match *    Server receives charred request     string_value:bar
+
 # TODO: Tests for receiving with a pattern and TCP tests
 
 *** Keywords ***

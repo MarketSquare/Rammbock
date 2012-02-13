@@ -112,6 +112,10 @@ class _TemplateField(object):
     def _get_element_value_and_remove_from_params(self, paramdict):
         return paramdict.pop(self.name, self.default_value)
 
+    def encode(self, paramdict):
+        value = self._get_element_value_and_remove_from_params(paramdict)
+        return self._encode_value(value)
+
     def validate(self, value, paramdict):
         forced_value = self._get_element_value(paramdict)
         if not forced_value or forced_value == 'None':
@@ -124,17 +128,17 @@ class _TemplateField(object):
     def _validate_pattern(self, forced_pattern, value):
         patterns = forced_pattern[1:-1].split('|')
         for pattern in patterns:
-            if self._is_match(self.name, self.length.value, pattern, value):
+            if self._is_match(pattern, value):
                 return []
         return ['Value of field %s does not match pattern %s!=%s' %
                 (self.name, to_0xhex(value), forced_pattern)]
 
-    def _is_match(self, name, length, forced_value, value):
-        forced_binary_val = to_bin_of_length(length, forced_value)
+    def _is_match(self, forced_value, value):
+        forced_binary_val = self._encode_value(forced_value)
         return forced_binary_val == value
 
     def _validate_exact_match(self, forced_value, value):
-        if not self._is_match(self.name, self.length.value, forced_value, value):
+        if not self._is_match(forced_value, value):
             return ['Value of field %s does not match %s!=%s' %
                     (self.name, to_0xhex(value), forced_value)]
         return []
@@ -149,8 +153,7 @@ class UInt(_TemplateField):
         self.name = name
         self.default_value = default_value if default_value and default_value != '""' else None
 
-    def encode(self, paramdict):
-        value = self._get_element_value_and_remove_from_params(paramdict)
+    def _encode_value(self, value):
         return to_bin_of_length(self.length.value, value)
 
 
@@ -163,8 +166,7 @@ class Char(_TemplateField):
         self.name = name
         self.default_value = default_value if default_value and default_value != '""' else None
 
-    def encode(self, paramdict):
-        value = self._get_element_value_and_remove_from_params(paramdict)
+    def _encode_value(self, value):
         return str(value.ljust(self.length.value, '\x00')) if value else ''
 
 
