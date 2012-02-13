@@ -33,6 +33,15 @@ Server uses protocol and receives
     ${msg} =    Server Receives simple request
     Should be equal    ${msg.value.hex}    0xcafebabe
 
+Server uses protocol and receives with pattern validation
+    Client Sends hex    0x 01 00 dddd 000c 0000 00000005
+    ${msg} =    Server Receives simple request   value:(4|5)
+    Should be equal    ${msg.value.hex}    0x00000005
+
+Server uses protocol and receives with pattern validation failing
+    Client Sends hex    0x 01 00 dddd 000c 0000 00000005
+    Run keyword and expect error    Value of field value does not match *   Server Receives simple request   value:(4|6)
+
 Server uses protocol with header field values and receives
     Client Sends hex    0x 01 00 dddd 000c 0000 cafebabe
     ${msg} =    Server Receives simple request with header    messageType:0xdddd
@@ -73,6 +82,12 @@ Char field validation passes
 Char field validation fails
     Client sends charred request
     Run keyword and expect error   Value of field string_value does not match *    Server receives charred request     string_value:bar
+
+Char field validation passes with pattern
+    Client sends charred request
+    ${msg} =   Server receives charred request     string_value:(bar|foo)
+    Should be equal   ${msg.string_value.ascii_chars}    foo
+
 
 # TODO: Tests for receiving with a pattern and TCP tests
 
