@@ -184,6 +184,12 @@ class Rammbock(object):
         else:
             self._message_in_progress.add(field)
 
+    def struct(self, amount, name):
+        raise Exception("NIY")
+
+    def end_struct(self, name):
+        raise Exception("NIY")
+
     def pdu(self, length):
         """Defines the message in protocol template.
 

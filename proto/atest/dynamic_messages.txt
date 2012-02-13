@@ -20,7 +20,7 @@ Server uses protocol and receives a dynamic message
 *** Keywords ***
 Server Receives dynamic request
     [Arguments]    @{params}
-    New Message    Example    messageType:0xaaaa
+    New Message    DynamicRequest  Example    messageType:0xaaaa
     u8    numberOfPairs
     Struct    numberOfPairs    pair
     u8    first
