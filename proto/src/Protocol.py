@@ -104,18 +104,10 @@ class MessageTemplate(_Template):
         return errors
 
 
-class UInt(object):
+class _TemplateField(object):
 
-    type = 'uint'
-
-    def __init__(self, length, name, default_value=None):
-        self.length = Length(length)
-        self.name = name
-        self.default_value = default_value if default_value and default_value != '""' else None
-
-    def encode(self, paramdict):
-        value = self._get_element_value_and_remove_from_params(paramdict)
-        return to_bin_of_length(self.length.value, value)
+    def _get_element_value(self, paramdict):
+        return paramdict.get(self.name, self.default_value)
 
     def _get_element_value_and_remove_from_params(self, paramdict):
         return paramdict.pop(self.name, self.default_value)
@@ -147,8 +139,33 @@ class UInt(object):
                     (self.name, to_0xhex(value), forced_value)]
         return []
 
-    def _get_element_value(self, paramdict):
-        return paramdict.get(self.name, self.default_value)
+
+class UInt(_TemplateField):
+
+    type = 'uint'
+
+    def __init__(self, length, name, default_value=None):
+        self.length = Length(length)
+        self.name = name
+        self.default_value = default_value if default_value and default_value != '""' else None
+
+    def encode(self, paramdict):
+        value = self._get_element_value_and_remove_from_params(paramdict)
+        return to_bin_of_length(self.length.value, value)
+
+
+class Char(_TemplateField):
+
+    type = 'char'
+
+    def __init__(self, length, name, default_value=None):
+        self.length = Length(length)
+        self.name = name
+        self.default_value = default_value if default_value and default_value != '""' else None
+
+    def encode(self, paramdict):
+        value = self._get_element_value_and_remove_from_params(paramdict)
+        return str(value.ljust(self.length.value, '\x00')) if value else ''
 
 
 class PDU(object):

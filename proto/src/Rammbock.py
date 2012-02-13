@@ -1,7 +1,7 @@
 # API prototype
 from Network import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 
-from Protocol import Protocol, UInt, PDU, MessageTemplate
+from Protocol import Protocol, UInt, PDU, MessageTemplate, Char
 from binary_conversions import to_0xhex, to_bin
 
 # TODO: pass configuration parameters like timeout, name, and connection using caps and ':'
@@ -174,6 +174,9 @@ class Rammbock(object):
 
     def uint(self, length, name, value=None):
         self._add_field(UInt(length, name, value))
+
+    def char(self, length, name, value=None):
+        self._add_field(Char(length, name, value))
 
     def _add_field(self, field):
         if self._protocol_in_progress:

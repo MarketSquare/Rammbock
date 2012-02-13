@@ -60,6 +60,11 @@ Access header
     Should be equal    ${msg._header.version.hex}    0x01
     Should be equal as integers    ${msg._header.length.int}    12
 
+Char fields
+    Client sends charred request
+    ${msg} =   Server receives charred request
+    Should be equal   ${msg.string_value.ascii_chars}    foo
+
 # TODO: Tests for receiving with a pattern and TCP tests
 
 *** Keywords ***
@@ -99,6 +104,19 @@ Client Receives simple request
 Client sends request and server receives it
     Client Sends simple request
     Verify server gets hex    0x 01 00 dddd 000c ffff deadbeef
+
+Client sends charred request
+    [Arguments]    @{params}
+    New message    CharredRequest  Example    messageType:0xf000
+    char    16     string_value   foo
+    Client sends message    @{params}
+
+Server receives charred request
+    [Arguments]    @{params}
+    New message    CharredRequest  Example    messageType:0xf000
+    char    16     string_value
+    ${msg} =   Server receives message    @{params}
+    [return]     ${msg}
 
 u32
     [arguments]     ${name}   ${default_value}=""
