@@ -1,10 +1,14 @@
+import socket
 import unittest
-from Protocol import Protocol, Length, UInt, PDU, MessageTemplate
-from binary_conversions import to_bin_of_length
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..','src'))
+from Protocol import Protocol, Length, UInt, PDU, MessageTemplate, MessageStream
+from binary_conversions import to_bin_of_length, to_bin
+
 
 class TestProtocol(unittest.TestCase):
 
-    def setUp(self, *args, **kwargs):
+    def setUp(self):
         self._protocol = Protocol('Test')
 
     def test_header_length(self):
@@ -29,6 +33,69 @@ class TestProtocol(unittest.TestCase):
         self._protocol.add(UInt(2, 'length', None))
         self._protocol.add(PDU('length-8'))
         self.assertEquals(self._protocol.header_length(), 3)
+
+
+class _MockStream(object):
+
+    def __init__(self, data):
+        self.data = data
+
+    def read(self, length, timeout=None):
+        if length > len(self.data):
+            if timeout:
+                raise socket.timeout('timeout')
+            else:
+                raise AssertionError('No timeout, but out of data.')
+        result = self.data[:length]
+        self.data = self.data[length:]
+        return result
+
+
+class TestProtocolMessageReceiving(unittest.TestCase):
+
+    def setUp(self):
+        self._protocol = Protocol('Test')
+        self._protocol.add(UInt(1, 'id', 1))
+        self._protocol.add(UInt(2, 'length', None))
+        self._protocol.add(PDU('length-2'))
+
+    def test_read_header_and_pdu(self):
+        stream = _MockStream(to_bin('0xff0004cafe'))
+        header, data = self._protocol.read(stream)
+        self.assertEquals(header.id.hex, '0xff')
+        self.assertEquals(data, '\xca\xfe')
+
+
+class TestMessageStream(unittest.TestCase):
+
+    def setUp(self):
+        self._protocol = Protocol('Test')
+        self._protocol.add(UInt(1, 'id', 1))
+        self._protocol.add(UInt(2, 'length', None))
+        self._protocol.add(PDU('length-2'))
+        self._msg = MessageTemplate('FooRequest', self._protocol, {'id':'0xaa'})
+        self._msg.add(UInt(1, 'field_1', None))
+        self._msg.add(UInt(1, 'field_2', None))
+
+    def test_get_message(self):
+        byte_stream = _MockStream(to_bin('0xff0004cafe aa0004dead'))
+        msg_stream = MessageStream(byte_stream, self._protocol)
+        msg = msg_stream.get(self._msg)
+        self.assertEquals(msg.field_1.hex, '0xde')
+
+    def test_get_message_from_buffer(self):
+        byte_stream = _MockStream(to_bin('0xff0004cafe aa0004dead'))
+        msg_stream = MessageStream(byte_stream, self._protocol)
+        _ = msg_stream.get(self._msg)
+        self._msg.header_parameters = {}
+        msg = msg_stream.get(self._msg)
+        self.assertEquals(msg.field_1.hex, '0xca')
+
+    def test_timeout_goes_to_stream(self):
+        byte_stream = _MockStream(to_bin('0xff0004cafe aa0004dead'))
+        msg_stream = MessageStream(byte_stream, self._protocol)
+        self._msg.header_parameters = {'id':'0x00'}
+        self.assertRaises(socket.timeout, msg_stream.get, self._msg, timeout=1)
 
 
 class TestMessageTemplate(unittest.TestCase):
@@ -90,6 +157,62 @@ class TestMessageTemplate(unittest.TestCase):
 
     def test_unknown_params_cause_exception(self):
         self.assertRaises(Exception, self.tmp.encode, {'unknown':111})
+
+    def test_decode_message(self):
+        msg = self.tmp.decode(to_bin('0xcafebabe'))
+        self.assertEquals(msg.field_1.hex, '0xcafe')
+
+
+class TestMessageTemplateValidation(unittest.TestCase):
+
+    def setUp(self):
+        self._protocol = Protocol('TestProtocol')
+        self._protocol.add(UInt(2, 'msgId', 5))
+        self._protocol.add(UInt(2, 'length', None))
+        self._protocol.add(PDU('length-4'))
+        self.tmp = MessageTemplate('FooRequest', self._protocol, {})
+        self.tmp.add(UInt(2, 'field_1', '0xcafe'))
+        self.tmp.add(UInt(2, 'field_2', '0xbabe'))
+
+    def test_validate_passing_hex(self):
+        msg = self.tmp.decode(to_bin('0xcafebabe'))
+        errors = self.tmp.validate(msg, {})
+        self.assertEquals(errors, [])
+
+    def test_validate_error_default_value(self):
+        msg = self.tmp.decode(to_bin('0xcafedead'))
+        errors = self.tmp.validate(msg, {})
+        self.assertEquals(errors, ['Value of field field_2 does not match 0xdead!=0xbabe'])
+
+    def test_validate_error_override(self):
+        msg = self.tmp.decode(to_bin('0xcafebabe'))
+        errors = self.tmp.validate(msg, {'field_2':'0xdead'})
+        self.assertEquals(errors, ['Value of field field_2 does not match 0xbabe!=0xdead'])
+
+    def test_validate_two_errors(self):
+        msg = self.tmp.decode(to_bin('0xbeefbabe'))
+        errors = self.tmp.validate(msg, {'field_2':'0xdead'})
+        self.assertEquals(len(errors), 2)
+
+    def test_validate_pattern_pass(self):
+        msg = self.tmp.decode(to_bin('0xcafe0002'))
+        errors = self.tmp.validate(msg, {'field_2':'(0|2)'})
+        self.assertEquals(len(errors), 0)
+
+    def test_validate_pattern_failure(self):
+        msg = self.tmp.decode(to_bin('0xcafe0002'))
+        errors = self.tmp.validate(msg, {'field_2':'(0|3)'})
+        self.assertEquals(len(errors), 1)
+
+    def test_validate_passing_int(self):
+        msg = self.tmp.decode(to_bin('0xcafe0200'))
+        errors = self.tmp.validate(msg, {'field_2':'512'})
+        self.assertEquals(errors, [])
+
+    def test_failing_passing_int(self):
+        msg = self.tmp.decode(to_bin('0xcafe0200'))
+        errors = self.tmp.validate(msg, {'field_2':'513'})
+        self.assertEquals(len(errors), 1)
 
 
 class TestFields(unittest.TestCase):
