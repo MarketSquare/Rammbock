@@ -104,6 +104,7 @@ class TCPServer(_Server):
         self._socket.listen(1)
         self._connections = _NamedCache('connection')
         self._protocol = protocol
+        self._message_stream = self._get_message_stream(self)
 
     def receive(self, timeout=None, alias=None):
         return self.receive_from(timeout, alias)[0]
@@ -135,12 +136,21 @@ class TCPServer(_Server):
                 connection.close()
             self._socket.close()
 
-    def get_message(self, message_template, timeout=None, alias=None):
-        # Wrap connection to server like wrapper with message logging
-        raise Exception("Not yet implemented")
+    def get_message(self, message_template, message_fields, timeout=None, alias=None):
+        msg = self._message_stream.get(message_template, timeout=timeout)
+        # TODO: duplication with UDPServer and _Client
+        # TODO: Wrap connection to server like wrapper with message logging
+        errors = message_template.validate(msg, message_fields)
+        if errors:
+            print "Received %s" % repr(msg)
+            print '\n'.join(errors)
+            raise AssertionError(errors[0])
+        print "*DEBUG* %s" % repr(msg)
+        return msg
 
     def close_connection(self, alias=None):
         raise Exception("Not yet implemented")
+
 
 
 class _Client(_WithTimeouts):
