@@ -1,0 +1,115 @@
+*** Settings ***
+Test Setup        Setup protocol, UDP server, and client
+Library           Rammbock.py
+Resource          Protocols.txt
+
+
+*** Test Cases ***
+Simple union
+    Client sends simple union request     simpleU.fooMiddle:0xf00d
+    ${msg} =    Server receives simple union request
+    Should be equal    ${msg.simpleU.fooBig.hex}        0xf00d0000
+    Should be equal    ${msg.simpleU.fooMiddle.hex}     0xf00d
+    Should be equal    ${msg.simpleU.fooShort.hex}      0xf0
+
+Complex union
+    Client sends complex union request     complexU.complexType.first:1    complexU.complexType.second:2
+    ${msg} =    Server receives complex union request
+    Should be equal    ${msg.complexU.complexType.first.int}     1
+    Should be equal    ${msg.complexU.complexType.second.int}     2
+    Should be equal    ${msg.complexU.basicType.int}     0
+
+Choosing first union by default
+    Client send hyper complex union request
+    ${msg} =    Server receives hyper complex union request
+    Should be equal    ${msg.hyperU.machine.price.int}     9500
+
+Choosing union
+    Client send hyper complex union request    hyperU:user
+    ${msg} =    Server receives hyper complex union request
+    Should be equal    ${msg.hyperU.user.name.ascii}     johnsson
+
+Overriding union by setting value
+    Client send hyper complex union request    hyperU.user.name:hasselhoff
+    ${msg} =    Server receives hyper complex union request
+    Should be equal    ${msg.hyperU.user.name.ascii}     hasselhoff
+
+
+*** Keywords ***
+Client sends simple union request
+    [Arguments]    @{params}
+    Simple union message
+    Client send message   @{params}
+
+Server receives simple union request
+    [Arguments]    @{params}
+    Simple union message
+    ${msg} =    Server Receives message    @{params}
+    [return]    ${msg}
+
+Client sends complex union request
+    [Arguments]    @{params}
+    Complex union message
+    Client send message   @{params}
+
+Server receives complex union request
+    [Arguments]    @{params}
+    Complex union message
+    ${msg} =    Server Receives message    @{params}
+    [return]    ${msg}
+
+Simple union message
+   New message    UnionMessage   Example
+   SimpleUnion   simpleU
+
+Complex union message
+   New message   ComplexUnion    Example
+   ComplexUnion  complexU
+
+Simple union
+   [arguments]    ${name}
+   Union          ${name}
+   u32            fooBig
+   u16            fooMiddle
+   u8             fooShort
+   End union
+
+Complex union
+   [arguments]   ${name}
+   Union         ${name}
+   u8            basicType
+   Tuple         complexType
+   End union
+
+Tuple
+    [arguments]     ${name}
+    Struct    Tuple    ${name}
+    u16    first
+    u16    second
+    End struct
+
+Hyper Complex union message
+   New message   HyperUnion    Example
+   ComplexUnion  hyperU
+
+
+Hyper complex union
+   [arguments]   ${name}
+   Union         ${name}
+   Machine       machine
+   User          user
+   End union
+
+Machine
+    [arguments]     ${name}
+    Struct    Machine    ${name}
+    u32       id         1337
+    u16       price      9500
+    End struct
+
+User
+    [arguments]     ${name}
+    Struct    User    ${name}
+    char   10       name       johnsson
+    u32            age         47
+    End struct
