@@ -1,0 +1,84 @@
+*** Settings ***
+Test Setup        Setup protocol, UDP server, and client
+Library           Rammbock.py
+Resource          Protocols.txt
+
+
+*** Variables ***
+${SERVER}         127.0.0.1
+${SERVER PORT}    54321
+
+*** Test Cases ***
+Message with struct
+    Client sends request with struct     pair.first:0xba   pair.second:0xbe
+    ${msg} =    Server receives request with struct
+    Should be equal    ${msg.pair.first.hex}     0xba
+    Should be equal    ${msg.pair.second.hex}    0xbe
+
+Message with list
+    Client sends request with list    default=3
+    ${msg} =    Server receives request with list
+    Should be equal    ${msg.someList[4].int}     3
+
+Dynamic message
+    Client Sends hex    0x 0100aaaa0e0000 03 cafebabe d00d
+    ${msg} =    Server Receives dynamic request
+    Should be equal    ${msg.pair.first.hex}    0xca
+    Should be equal    ${msg.pair[0].first.hex}    0xca
+    Should be equal    ${msg.pair[0].second.hex}    0xfe
+    Should be equal    ${msg.pair[2].first.hex}    0xd0
+
+*** Keywords ***
+Client sends request with struct
+    [Arguments]    @{params}
+    Message with struct
+    Client send message   @{params}
+
+Client sends request with list
+    [Arguments]    @{params}
+    List message
+    Client send message   @{params}
+
+Server receives request with struct
+    [Arguments]    @{params}
+    Message with struct
+    ${msg} =    Server Receives message    @{params}
+    [return]    ${msg}
+
+Server receives request with list
+    [Arguments]    @{params}
+    List message
+    ${msg} =    Server Receives message    @{params}
+    [return]    ${msg}
+
+Server Receives dynamic request
+    [Arguments]    @{params}
+    Dynamic message
+    ${msg} =    Server Receives message    @{params}
+    [return]    ${msg}
+
+List message
+    New message    ListRequest    Example    messageType:0xaaaa
+    Array   5    u32    someList
+
+Dynamic message
+    New Message    DynamicRequest  Example    messageType:0xaaaa
+    u8      numberOfPairs
+    Array   numberOfPairs    Pair    pairList
+
+Message with struct
+    New Message    StructRequest  Example    messageType:0xaaaa
+    Pair    pair
+
+Array
+    [arguments]    ${size}    ${type}    ${name}
+    List    ${size}     ${name}
+    Run keyword         ${type}
+    End List
+
+Pair
+    [arguments]     ${name}
+    Struct    Pair    ${name}
+    u8    first
+    u8    second
+    End struct
