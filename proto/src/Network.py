@@ -42,6 +42,18 @@ class _Server(_WithTimeouts):
             return None
         return self._protocol.get_message_stream(BufferedStream(connection, self._default_timeout))
 
+    def get_message(self, message_template, message_fields, timeout=None, alias=None):
+        # TODO: duplication with UDPServer and _Client
+        # TODO: Wrap connection to server like wrapper with message logging
+        msg = self._message_stream.get(message_template, timeout=timeout)
+        errors = message_template.validate(msg, message_fields)
+        if errors:
+            print "Received %s" % repr(msg)
+            print '\n'.join(errors)
+            raise AssertionError(errors[0])
+            print "*DEBUG* %s" % repr(msg)
+        return msg
+
 
 class UDPServer(_Server):
 
@@ -82,16 +94,6 @@ class UDPServer(_Server):
         if not self._last_client:
             raise Exception('Server can not send to default client, because it has not received messages from clients.')
         self.send_to(msg, *self._last_client)
-
-    def get_message(self, message_template, message_fields, timeout=None):
-        msg = self._message_stream.get(message_template, timeout=timeout)
-        errors = message_template.validate(msg, message_fields)
-        if errors:
-            print "Received %s" % repr(msg)
-            print '\n'.join(errors)
-            raise AssertionError(errors[0])
-        print "*DEBUG* %s" % repr(msg)
-        return msg
 
 
 class TCPServer(_Server):
@@ -135,18 +137,6 @@ class TCPServer(_Server):
             for connection, _ in self._connections:
                 connection.close()
             self._socket.close()
-
-    def get_message(self, message_template, message_fields, timeout=None, alias=None):
-        msg = self._message_stream.get(message_template, timeout=timeout)
-        # TODO: duplication with UDPServer and _Client
-        # TODO: Wrap connection to server like wrapper with message logging
-        errors = message_template.validate(msg, message_fields)
-        if errors:
-            print "Received %s" % repr(msg)
-            print '\n'.join(errors)
-            raise AssertionError(errors[0])
-        print "*DEBUG* %s" % repr(msg)
-        return msg
 
     def close_connection(self, alias=None):
         raise Exception("Not yet implemented")
