@@ -1,5 +1,6 @@
 *** Settings ***
 Test Setup        Setup protocol, UDP server, and client
+Test teardown     Teardown rammbock and increment port numbers
 Library           Rammbock.py
 Resource          Protocols.txt
 
