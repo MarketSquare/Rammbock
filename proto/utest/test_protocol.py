@@ -1,9 +1,24 @@
 import socket
 import unittest
 import sys, os
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '..','src'))
+from Message import Field
 from Protocol import Protocol, Length, UInt, PDU, MessageTemplate, MessageStream, Char, Struct
 from binary_conversions import to_bin_of_length, to_bin, to_hex
+
+
+def _get_pair():
+    struct = Struct('Pair', 'pair')
+    struct.add(UInt(2, 'first', 1))
+    struct.add(UInt(2, 'second', 2))
+    return struct
+
+def _get_recursive_struct():
+    str_str = Struct('StructStruct', 'str_str')
+    inner = _get_pair()
+    str_str.add(inner)
+    return str_str
 
 
 class TestProtocol(unittest.TestCase):
@@ -170,53 +185,41 @@ class TestStructuredTemplate(unittest.TestCase):
         self._protocol.add(UInt(2, 'length', None))
         self._protocol.add(PDU('length-4'))
         self.tmp = MessageTemplate('StructuredRequest', self._protocol, {})
-        struct = self._get_pair()
+        struct = _get_pair()
         self.tmp.add(struct)
         msg = self.tmp.encode({})
         self.assertEquals(msg.pair.first.int, 1)
 
     def test_create_struct(self):
-        struct = self._get_pair()
+        struct = _get_pair()
         self.assertEquals(struct.name, 'pair')
 
     def test_add_fields_to_struct(self):
-        struct = self._get_pair()
+        struct = _get_pair()
         encoded = struct.encode({})
         self.assertEquals(encoded.first.int, 1)
 
     def test_add_fields_to_struct_and_override_values(self):
-        struct = self._get_pair()
+        struct = _get_pair()
         encoded = struct.encode({'pair.first':42})
         self.assertEquals(encoded.first.int, 42)
 
-    def _get_recursive_struct(self):
-        str_str = Struct('StructStruct', 'str_str')
-        inner = self._get_pair()
-        str_str.add(inner)
-        return str_str
-
     def test_yo_dawg_i_heard(self):
-        str_str = self._get_recursive_struct()
+        str_str = _get_recursive_struct()
         encoded = str_str.encode({})
         self.assertEquals(encoded.pair.first.int, 1)
 
     def test_get_recursive_names(self):
-        pair = self._get_pair()
+        pair = _get_pair()
         names = pair._get_params_sub_tree({'pair.foo':0, 'pairnotyourname.ploo':2, 'pair.goo.doo':3})
         self.assertEquals(len(names), 2)
         self.assertEquals(names['foo'], 0)
         self.assertEquals(names['goo.doo'], 3)
 
     def test_set_recursive(self):
-        str_str = self._get_recursive_struct()
+        str_str = _get_recursive_struct()
         encoded = str_str.encode({'str_str.pair.first':42})
         self.assertEquals(encoded.pair.first.int, 42)
-
-    def _get_pair(self):
-        struct = Struct('Pair', 'pair')
-        struct.add(UInt(2, 'first', 1))
-        struct.add(UInt(2, 'second', 2))
-        return struct
 
 
 class TestMessageTemplateValidation(unittest.TestCase):
@@ -271,13 +274,26 @@ class TestMessageTemplateValidation(unittest.TestCase):
         self.assertEquals(len(errors), 1)
 
 
-class TestFields(unittest.TestCase):
+class TestTemplateFieldValidation(unittest.TestCase):
+
+    def test_validate_uint(self):
+        template = UInt(2, 'field', 4)
+        field = Field('uint', 'field', to_bin('0x0004'))
+        self.assertEquals(template.validate(field, {}), [])
+
+    def test_fail_validating_uint(self):
+        template = UInt(2, 'field', 4)
+        field = Field('uint', 'field', to_bin('0x0004'))
+        self.assertEquals(len(template.validate(field, {'field':'42'})), 1)
+
+
+class TestTemplateFields(unittest.TestCase):
 
     def test_uint_static_field(self):
         field = UInt(5, "field", 8)
         self.assertTrue(field.length.static)
         self.assertEquals(field.name, "field")
-        self.assertEquals(field.default_value, 8)
+        self.assertEquals(field.default_value, '8')
         self.assertEquals(field.type, 'uint')
         self.assertEquals(field.encode({}).hex, '0x0000000008')
 
@@ -299,6 +315,34 @@ class TestFields(unittest.TestCase):
         field = PDU('value-8')
         self.assertEquals(field.length.field, 'value')
         self.assertEquals(field.length.subtractor, 8)
+
+    def test_decode_uint(self):
+        field_template = UInt(2, 'field', 6)
+        decoded = field_template.decode(to_bin('0xcafe'))
+        self.assertEquals(decoded.hex, '0xcafe')
+
+    def test_decode_chars(self):
+        field_template = Char(2, 'field', 6)
+        decoded = field_template.decode(to_bin('0xcafe'))
+        self.assertEquals(decoded.hex, '0xcafe')
+
+    def test_length_of_struct(self):
+        pair = _get_pair()
+        encoded = pair.encode({})
+        self.assertEquals(len(encoded), 4)
+
+    def test_decode_struct(self):
+        pair = _get_pair()
+        decoded = pair.decode(to_bin('0xcafebabe'))
+        self.assertEquals(decoded.first.hex, '0xcafe')
+        self.assertEquals(decoded.second.hex, '0xbabe')
+
+    def test_decode_returns_used_length(self):
+        field_template = UInt(2, 'field', 6)
+        data = to_bin('0xcafebabeff00ff00')
+        decoded = field_template.decode(data)
+        self.assertEquals(decoded.hex, '0xcafe')
+        self.assertEquals(len(decoded), 2)
 
 
 class TestLength(unittest.TestCase):

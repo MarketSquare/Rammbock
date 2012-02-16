@@ -9,6 +9,7 @@ ${HEADER} =    0x0100aaaa0e0000
 
 *** Test Cases ***
 Message with struct
+    [Tags]    Regression
     Client sends request with struct     pair.first:0xba   pair.second:0xbe
     ${msg} =    Server receives request with struct
     Should be equal    ${msg.pair.first.hex}     0xba

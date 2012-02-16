@@ -34,6 +34,9 @@ class _MessageStruct(object):
     def _raw(self):
         return ''.join((field._raw for _, field in self._fields))
 
+    def __len__(self):
+        return sum(len(field) for field in self._fields)
+
 
 class Message(_MessageStruct):
 
@@ -97,3 +100,6 @@ class Field(object):
 
     def __repr__(self):
         return '%s = %s' % (self.name, str(self))
+
+    def __len__(self):
+        return len(self._value)

@@ -23,6 +23,22 @@ class _Template(object):
         if params:
             raise Exception('Unknown fields in header %s' % str(params))
 
+    def decode(self, data):
+        message = self._get_struct()
+        data_index = 0
+        field_index = 0
+        while len(data) > data_index:
+            field = self._fields[field_index]
+            message[field.name] = field.decode(data[data_index:])
+            data_index += len(message[field.name])
+            field_index +=1
+        return message
+
+    def validate(self, message, message_fields):
+        errors = []
+        for field in self._fields:
+            errors += field.validate(message[field.name], message_fields)
+        return errors
 
 class Protocol(_Template):
 
@@ -86,22 +102,8 @@ class MessageTemplate(_Template):
             msg._add_header(self._protocol.encode(msg, self.header_parameters))
         return msg
 
-    def decode(self, data):
-        data_index = 0
-        field_index = 0
-        message = Message(self.name)
-        while len(data) > data_index:
-            field = self._fields[field_index]
-            message[field.name] = Field(field.type, field.name, data[data_index:data_index+field.length.value])
-            data_index += field.length.value
-            field_index +=1
-        return message
-
-    def validate(self, message, message_fields):
-        errors = []
-        for field in self._fields:
-            errors += field.validate(message[field.name].bytes, message_fields)
-        return errors
+    def _get_struct(self):
+        return Message(self.name)
 
 class Struct(_Template):
 
@@ -114,6 +116,9 @@ class Struct(_Template):
         struct = _MessageStruct(self.name)
         self._encode_fields(struct, self._get_params_sub_tree(message_params))
         return struct
+
+    def _get_struct(self):
+        return _MessageStruct(self.name)
 
     def _get_params_sub_tree(self, params):
         result = {}
@@ -136,7 +141,11 @@ class _TemplateField(object):
         value = self._get_element_value_and_remove_from_params(paramdict)
         return Field(self.type, self.name, self._encode_value(value))
 
-    def validate(self, value, paramdict):
+    def decode(self, value):
+        return Field(self.type, self.name, value[:self.length.value])
+
+    def validate(self, field, paramdict):
+        value = field.bytes
         forced_value = self._get_element_value(paramdict)
         if not forced_value or forced_value == 'None':
             return []
@@ -171,7 +180,7 @@ class UInt(_TemplateField):
     def __init__(self, length, name, default_value=None):
         self.length = Length(length)
         self.name = name
-        self.default_value = default_value if default_value and default_value != '""' else None
+        self.default_value = str(default_value) if default_value and default_value != '""' else None
 
     def _encode_value(self, value):
         return to_bin_of_length(self.length.value, value)
