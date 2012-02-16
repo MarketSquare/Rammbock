@@ -1,7 +1,7 @@
 # API prototype
 from Network import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 
-from Protocol import Protocol, UInt, PDU, MessageTemplate, Char
+from Protocol import Protocol, UInt, PDU, MessageTemplate, Char, Struct
 from binary_conversions import to_0xhex, to_bin
 
 # TODO: pass configuration parameters like timeout, name, and connection using caps and ':'
@@ -17,6 +17,7 @@ class Rammbock(object):
         self._protocols = {}
         self._servers = _NamedCache('server')
         self._clients = _NamedCache('client')
+        self._message_stack = []
 
     def reset_rammbock(self):
         """Closes all connections, deletes all servers, clients, and protocols.
@@ -121,7 +122,7 @@ class Rammbock(object):
             raise Exception("Protocol definition in progress. Please finish it before starting to define a message.")
         proto = self._get_protocol(protocol)
         _, header_fields = self._parse_parameters(parameters)
-        self._message_in_progress = MessageTemplate(message_name, proto, header_fields)
+        self._message_stack.append(MessageTemplate(message_name, proto, header_fields))
 
     def get_message(self, *parameters):
         """Get encoded message.
@@ -132,9 +133,15 @@ class Rammbock(object):
         return self._encode_message(message_fields)
 
     def _encode_message(self, message_fields):
-        msg = self._message_in_progress.encode(message_fields)
-        self._message_in_progress = None
+        msg = self._get_message_template().encode(message_fields)
+        self._message_stack = []
+        print '*DEBUG* %s' % repr(msg)
         return msg
+
+    def _get_message_template(self):
+        if len(self._message_stack) != 1:
+            raise Exception('Message definition not complete.')
+        return self._message_stack[0]
 
     def client_sends_message(self, *parameters):
         """Send a message.
@@ -159,7 +166,7 @@ class Rammbock(object):
         Parameters that have been given are validated against message fields."""
         configs, message_fields = self._parse_parameters(parameters)
         client = self._clients.get(configs.get('name'))
-        return client.get_message(self._message_in_progress, message_fields, **configs)
+        return client.get_message(self._get_message_template(), message_fields, **configs)
 
     def server_receives_message(self, *parameters):
         """Receive a message object.
@@ -167,7 +174,7 @@ class Rammbock(object):
         Parameters that have been given are validated against message fields."""
         configs, message_fields = self._parse_parameters(parameters)
         server = self._servers.get(configs.get('name'))
-        return server.get_message(self._message_in_progress, message_fields, **configs)
+        return server.get_message(self._get_message_template(), message_fields, **configs)
 
     # TODO: character types
     # TODO: byte alignment support
@@ -182,13 +189,14 @@ class Rammbock(object):
         if self._protocol_in_progress:
             self._protocol_in_progress.add(field)
         else:
-            self._message_in_progress.add(field)
+            self._message_stack[-1].add(field)
 
-    def struct(self, amount, name):
-        raise Exception("NIY")
+    def struct(self, type, name):
+        self._message_stack.append(Struct(type, name))
 
-    def end_struct(self, name):
-        raise Exception("NIY")
+    def end_struct(self):
+        struct = self._message_stack.pop()
+        self._add_field(struct)
 
     def pdu(self, length):
         """Defines the message in protocol template.

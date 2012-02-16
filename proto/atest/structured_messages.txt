@@ -5,7 +5,7 @@ Library           Rammbock.py
 Resource          Protocols.txt
 
 *** Variables ***
-HEADER =    0x0100aaaa0e0000
+${HEADER} =    0x0100aaaa0e0000
 
 *** Test Cases ***
 Message with struct
@@ -36,12 +36,12 @@ Struct containing struct
 Client sends request with struct
     [Arguments]    @{params}
     Message with struct
-    Client send message   @{params}
+    Client sends message   @{params}
 
 Client sends request with list
     [Arguments]    @{params}
     List message
-    Client send message   @{params}
+    Client sends message   @{params}
 
 Server receives request with struct
     [Arguments]    @{params}
