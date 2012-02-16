@@ -3,6 +3,8 @@ Test Setup        Setup protocol, UDP server, and client
 Library           Rammbock.py
 Resource          Protocols.txt
 
+*** Variables ***
+HEADER =    0x0100aaaa0e0000
 
 *** Test Cases ***
 Message with struct
@@ -17,12 +19,17 @@ Message with list
     Should be equal    ${msg.someList[4].int}     3
 
 Dynamic message
-    Client Sends hex    0x 0100aaaa0e0000 03 cafebabe d00d
+    Client Sends hex    ${HEADER} 03 cafe babe d00d
     ${msg} =    Server Receives dynamic request
-    Should be equal    ${msg.pair.first.hex}    0xca
-    Should be equal    ${msg.pair[0].first.hex}    0xca
-    Should be equal    ${msg.pair[0].second.hex}    0xfe
-    Should be equal    ${msg.pair[2].first.hex}    0xd0
+    Should be equal    ${msg.pairList[0].first.hex}     0xca
+    Should be equal    ${msg.pairList[0].second.hex}    0xfe
+    Should be equal    ${msg.pairList[2].first.hex}     0xd0
+
+Struct containing struct
+    Client sends struct with struct   structstruct.mollyMalones.closesAt:4
+    ${msg} =    Server Receives struct with struct  structstruct.mollyMalones.closesAt:
+    Should be equal    ${msg.structstruct.mollyMalones.closesAt.int}   4
+
 
 *** Keywords ***
 Client sends request with struct
@@ -77,4 +84,22 @@ Pair
     Struct    Pair    ${name}
     u8    first
     u8    second
+    End struct
+
+Message with struct in struct
+    New Message   StructStruct   Example    messageType:0xaaaa
+    StructStruct   structstruct
+
+StructStruct
+    [Arguments]    ${name}
+    Struct   StructStruct   ${name}
+    u32      foo    6
+    Bar      mollyMalones
+    End struct
+
+Bar
+    [Arguments]    ${name}
+    Struct   Bar   ${name}
+    u8        opensAt    10
+    u8        closesAt    2
     End struct

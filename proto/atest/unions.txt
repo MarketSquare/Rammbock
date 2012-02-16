@@ -34,6 +34,11 @@ Overriding union by setting value
     ${msg} =    Server receives hyper complex union request
     Should be equal    ${msg.hyperU.user.name.ascii}     hasselhoff
 
+Choosing union when receiving
+    Client send hyper complex union request
+    ${msg} =    Server receives hyper complex union request    hyperU:machine
+    Field should not exist    ${msg.hyperU.user}
+
 
 *** Keywords ***
 Client sends simple union request
@@ -90,10 +95,10 @@ Tuple
 
 Hyper Complex union message
    New message   HyperUnion    Example
-   ComplexUnion  hyperU
+   HyperUnion  hyperU
 
 
-Hyper complex union
+HyperUnion
    [arguments]   ${name}
    Union         ${name}
    Machine       machine
