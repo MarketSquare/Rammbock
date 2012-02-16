@@ -1,4 +1,4 @@
-from Message import Field, Message, MessageHeader
+from Message import Field, Message, MessageHeader, _MessageStruct
 from binary_conversions import to_bin_of_length, to_bin, to_hex, to_0xhex
 
 class _Template(object):
@@ -8,7 +8,7 @@ class _Template(object):
         self.name = name
 
     def add(self, field):
-        if not field.length.static:
+        if not field.structured and not field.length.static:
             if not field.length.field in [elem.name for elem in self._fields]:
                 raise Exception('Length field %s unknown' % field.length)
         self._fields.append(field)
@@ -19,7 +19,7 @@ class _Template(object):
             # (now it is a 0 length place holder in header)
             encoded = field.encode(params)
             if encoded:
-                struct[field.name] = Field(field.type, field.name, encoded)
+                struct[field.name] = encoded
         if params:
             raise Exception('Unknown fields in header %s' % str(params))
 
@@ -103,9 +103,22 @@ class MessageTemplate(_Template):
             errors += field.validate(message[field.name].bytes, message_fields)
         return errors
 
+class Struct(_Template):
+
+    structured = True
+    def __init__(self, type, name):
+        self.type = type
+        _Template.__init__(self,name)
+
+    def encode(self, message_params):
+        struct = _MessageStruct(self.name)
+        self._encode_fields(struct, message_params)
+        return struct
+
 
 class _TemplateField(object):
 
+    structured = False
     def _get_element_value(self, paramdict):
         return paramdict.get(self.name, self.default_value)
 
@@ -114,7 +127,7 @@ class _TemplateField(object):
 
     def encode(self, paramdict):
         value = self._get_element_value_and_remove_from_params(paramdict)
-        return self._encode_value(value)
+        return Field(self.type, self.name, self._encode_value(value))
 
     def validate(self, value, paramdict):
         forced_value = self._get_element_value(paramdict)
@@ -170,7 +183,7 @@ class Char(_TemplateField):
         return str(value.ljust(self.length.value, '\x00')) if value else ''
 
 
-class PDU(object):
+class PDU(_TemplateField):
 
     type = 'pdu'
 
@@ -178,7 +191,7 @@ class PDU(object):
         self.length = Length(length)
 
     def encode(self, params):
-        return ''
+        return None
 
 
 def Length(value):

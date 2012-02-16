@@ -2,7 +2,7 @@ import socket
 import unittest
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..','src'))
-from Protocol import Protocol, Length, UInt, PDU, MessageTemplate, MessageStream, Char
+from Protocol import Protocol, Length, UInt, PDU, MessageTemplate, MessageStream, Char, Struct
 from binary_conversions import to_bin_of_length, to_bin, to_hex
 
 
@@ -162,6 +162,47 @@ class TestMessageTemplate(unittest.TestCase):
         msg = self.tmp.decode(to_bin('0xcafebabe'))
         self.assertEquals(msg.field_1.hex, '0xcafe')
 
+class TestStructuredTemplate(unittest.TestCase):
+
+    def test_access_struct(self):
+        self._protocol = Protocol('TestProtocol')
+        self._protocol.add(UInt(2, 'msgId', 5))
+        self._protocol.add(UInt(2, 'length', None))
+        self._protocol.add(PDU('length-4'))
+        self.tmp = MessageTemplate('StructuredRequest', self._protocol, {})
+        struct  = Struct('Pair', 'pair')
+        struct.add(UInt(2, 'first', 1))
+        struct.add(UInt(2, 'second', 2))
+        self.tmp.add(struct)
+        msg = self.tmp.encode({})
+        self.assertEquals(msg.pair.first.int, 1)
+
+    def test_create_struct(self):
+        struct = Struct('Pair', 'pair')
+        self.assertEquals(struct.name, 'pair')
+
+    def test_add_fields_to_struct(self):
+        struct = Struct('Pair', 'pair')
+        struct.add(UInt(2, 'first', 1))
+        struct.add(UInt(2, 'second', 2))
+        encoded = struct.encode({})
+        self.assertEquals(encoded.first.int, 1)
+
+    def test_add_fields_to_struct_and_override_values(self):
+        struct = Struct('Pair', 'pair')
+        struct.add(UInt(2, 'first', 1))
+        struct.add(UInt(2, 'second', 2))
+        encoded = struct.encode({'first':42})
+        self.assertEquals(encoded.first.int, 42)
+
+    def test_yo_dawg_i_heard(self):
+        str_str = Struct('StructStruct', 'str_str')
+        inner = Struct('Pair', 'pair')
+        inner.add(UInt(2, 'first', 1))
+        inner.add(UInt(2, 'second', 2))
+        str_str.add(inner)
+        encoded = str_str.encode({})
+        self.assertEquals(encoded.pair.first.int, 1)
 
 class TestMessageTemplateValidation(unittest.TestCase):
 
@@ -223,7 +264,7 @@ class TestFields(unittest.TestCase):
         self.assertEquals(field.name, "field")
         self.assertEquals(field.default_value, 8)
         self.assertEquals(field.type, 'uint')
-        self.assertEquals(to_hex(field.encode({})), '0000000008')
+        self.assertEquals(field.encode({}).hex, '0x0000000008')
 
     def test_char_static_field(self):
         field = Char(5, "char_field", 'foo')
@@ -231,7 +272,7 @@ class TestFields(unittest.TestCase):
         self.assertEquals(field.name, "char_field")
         self.assertEquals(field.default_value, 'foo')
         self.assertEquals(field.type, 'char')
-        self.assertEquals(field.encode({}), 'foo\x00\x00')
+        self.assertEquals(field.encode({}).bytes, 'foo\x00\x00')
 
     def test_pdu_field_without_subtractor(self):
         field = PDU('value')
