@@ -33,10 +33,16 @@ Server uses protocol and receives
     ${msg} =    Server Receives simple request
     Should be equal    ${msg.value.hex}    0xcafebabe
 
-Server uses protocol and receives with pattern validation
+UDP Server uses protocol and receives with pattern validation
     Client Sends hex    0x 01 00 dddd 000c 0000 00000005
     ${msg} =    Server Receives simple request   value:(4|5)
     Should be equal    ${msg.value.hex}    0x00000005
+
+TCP server uses protocol and receives with pattern validation
+    [Tags]
+    [Setup]  Setup protocol, TCP server, and client
+    Client Sends simple request
+    Server Receives simple request
 
 Server uses protocol and receives with pattern validation failing
     Client Sends hex    0x 01 00 dddd 000c 0000 00000005

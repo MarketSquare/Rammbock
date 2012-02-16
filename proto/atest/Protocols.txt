@@ -45,7 +45,11 @@ Setup UDP server and client  [arguments]  ${protocol}=
 Setup protocol, UDP server, and client
     Define example protocol
     Setup UDP server and client    protocol=Example
-    
+
+Setup protocol, TCP server, and client
+    Define example protocol
+    Setup TCP server and client    protocol=Example
+
 Start two udp clients
     Start udp client    ${CLIENT}    ${CLIENT 1 PORT}    Client_1
     Start udp client    ${CLIENT}    ${CLIENT 2 PORT}    Client_2
