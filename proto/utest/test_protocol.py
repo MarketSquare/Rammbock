@@ -170,39 +170,54 @@ class TestStructuredTemplate(unittest.TestCase):
         self._protocol.add(UInt(2, 'length', None))
         self._protocol.add(PDU('length-4'))
         self.tmp = MessageTemplate('StructuredRequest', self._protocol, {})
-        struct  = Struct('Pair', 'pair')
-        struct.add(UInt(2, 'first', 1))
-        struct.add(UInt(2, 'second', 2))
+        struct = self._get_pair()
         self.tmp.add(struct)
         msg = self.tmp.encode({})
         self.assertEquals(msg.pair.first.int, 1)
 
     def test_create_struct(self):
-        struct = Struct('Pair', 'pair')
+        struct = self._get_pair()
         self.assertEquals(struct.name, 'pair')
 
     def test_add_fields_to_struct(self):
-        struct = Struct('Pair', 'pair')
-        struct.add(UInt(2, 'first', 1))
-        struct.add(UInt(2, 'second', 2))
+        struct = self._get_pair()
         encoded = struct.encode({})
         self.assertEquals(encoded.first.int, 1)
 
     def test_add_fields_to_struct_and_override_values(self):
+        struct = self._get_pair()
+        encoded = struct.encode({'pair.first':42})
+        self.assertEquals(encoded.first.int, 42)
+
+    def _get_recursive_struct(self):
+        str_str = Struct('StructStruct', 'str_str')
+        inner = self._get_pair()
+        str_str.add(inner)
+        return str_str
+
+    def test_yo_dawg_i_heard(self):
+        str_str = self._get_recursive_struct()
+        encoded = str_str.encode({})
+        self.assertEquals(encoded.pair.first.int, 1)
+
+    def test_get_recursive_names(self):
+        pair = self._get_pair()
+        names = pair._get_params_sub_tree({'pair.foo':0, 'pairnotyourname.ploo':2, 'pair.goo.doo':3})
+        self.assertEquals(len(names), 2)
+        self.assertEquals(names['foo'], 0)
+        self.assertEquals(names['goo.doo'], 3)
+
+    def test_set_recursive(self):
+        str_str = self._get_recursive_struct()
+        encoded = str_str.encode({'str_str.pair.first':42})
+        self.assertEquals(encoded.pair.first.int, 42)
+
+    def _get_pair(self):
         struct = Struct('Pair', 'pair')
         struct.add(UInt(2, 'first', 1))
         struct.add(UInt(2, 'second', 2))
-        encoded = struct.encode({'first':42})
-        self.assertEquals(encoded.first.int, 42)
+        return struct
 
-    def test_yo_dawg_i_heard(self):
-        str_str = Struct('StructStruct', 'str_str')
-        inner = Struct('Pair', 'pair')
-        inner.add(UInt(2, 'first', 1))
-        inner.add(UInt(2, 'second', 2))
-        str_str.add(inner)
-        encoded = str_str.encode({})
-        self.assertEquals(encoded.pair.first.int, 1)
 
 class TestMessageTemplateValidation(unittest.TestCase):
 

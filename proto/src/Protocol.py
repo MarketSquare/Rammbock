@@ -112,9 +112,16 @@ class Struct(_Template):
 
     def encode(self, message_params):
         struct = _MessageStruct(self.name)
-        self._encode_fields(struct, message_params)
+        self._encode_fields(struct, self._get_params_sub_tree(message_params))
         return struct
 
+    def _get_params_sub_tree(self, params):
+        result = {}
+        for key in params.keys():
+            prefix, _, ending = key.partition('.')
+            if prefix == self.name:
+                result[ending] = params.pop(key)
+        return result
 
 class _TemplateField(object):
 
