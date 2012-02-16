@@ -286,6 +286,16 @@ class TestTemplateFieldValidation(unittest.TestCase):
         field = Field('uint', 'field', to_bin('0x0004'))
         self.assertEquals(len(template.validate(field, {'field':'42'})), 1)
 
+    def test_validate_struct_passes(self):
+        template = _get_pair()
+        field = template.encode({})
+        self.assertEquals(template.validate(field, {'pair.first':'1'}), [])
+
+    def test_validate_struct_fails(self):
+        template = _get_pair()
+        field = template.encode({})
+        self.assertEquals(len(template.validate(field, {'pair.first':'42'})), 1)
+
 
 class TestTemplateFields(unittest.TestCase):
 

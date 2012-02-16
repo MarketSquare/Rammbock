@@ -15,6 +15,16 @@ Message with struct
     Should be equal    ${msg.pair.first.hex}     0xba
     Should be equal    ${msg.pair.second.hex}    0xbe
 
+Validate with struct
+    [Tags]    Regression
+    Client sends request with struct     pair.first:0xba   pair.second:0xbe
+    Server receives request with struct    pair.first:0xba
+
+Fail validation with struct
+    [Tags]    Regression
+    Client sends request with struct     pair.first:0xba   pair.second:0xbe
+    Server should fail validation with struct    pair.first:0xff
+
 Message with list
     Client sends request with list    default=3
     ${msg} =    Server receives request with list
@@ -49,6 +59,10 @@ Server receives request with struct
     Message with struct
     ${msg} =    Server Receives message    @{params}
     [return]    ${msg}
+
+Server should fail validation with struct
+    [Arguments]    @{params}
+    Run keyword and expect error     Value of field first does not *    Server receives request with struct    @{params}
 
 Server receives request with list
     [Arguments]    @{params}

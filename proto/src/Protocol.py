@@ -128,6 +128,9 @@ class Struct(_Template):
                 result[ending] = params.pop(key)
         return result
 
+    def validate(self, message, message_fields):
+        return _Template.validate(self, message, self._get_params_sub_tree(message_fields))
+
 class _TemplateField(object):
 
     structured = False
