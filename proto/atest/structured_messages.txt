@@ -3,40 +3,37 @@ Test Setup        Setup protocol, UDP server, and client
 Test teardown     Teardown rammbock and increment port numbers
 Library           Rammbock.py
 Resource          Protocols.txt
+Default Tags      Regression
 
 *** Variables ***
 ${HEADER} =    0x0100aaaa0e0000
 
 *** Test Cases ***
 Message with struct
-    [Tags]    Regression
     Client sends request with struct     pair.first:0xba   pair.second:0xbe
     ${msg} =    Server receives request with struct
     Should be equal    ${msg.pair.first.hex}     0xba
     Should be equal    ${msg.pair.second.hex}    0xbe
 
 Validate with struct
-    [Tags]    Regression
     Client sends request with struct     pair.first:0xba   pair.second:0xbe
     Server receives request with struct    pair.first:0xba
 
 Fail validation with struct
-    [Tags]    Regression
     Client sends request with struct     pair.first:0xba   pair.second:0xbe
     Server should fail validation with struct    pair.first:0xff
 
 Message with list
-    [Tags]    Regression
     Client sends request with list
     ${msg} =    Server receives request with list    someList[2]:3
     Should be equal as integers    ${msg.someList[4].int}     3
 
 Message with list validation fails
-    [Tags]    Regression
     Client sends request with list
     Server should fail validation with list   someList[2]:4
 
 Dynamic message
+    [Tags]
     Client Sends hex    ${HEADER} 03 cafe babe d00d
     ${msg} =    Server Receives dynamic request
     Should be equal    ${msg.pairList[0].first.hex}     0xca
@@ -46,8 +43,14 @@ Dynamic message
 Struct containing struct
     Client sends struct with struct   structstruct.mollyMalones.closesAt:4
     ${msg} =    Server Receives struct with struct  structstruct.mollyMalones.closesAt:
-    Should be equal    ${msg.structstruct.mollyMalones.closesAt.int}   4
+    Should be equal as integers   ${msg.structstruct.mollyMalones.closesAt.int}   4
 
+Unfinished struct fails
+    New message   ExampleMessage   Example   messageType:0xbabe
+    Struct  MyStruct  myStruct
+    u8    foo
+    Get message fails because 'myStruct' is not completed
+     
 
 *** Keywords ***
 Client sends request with struct
@@ -60,9 +63,20 @@ Client sends request with list
     List message
     Client sends message   @{params}
 
+Client sends struct with struct
+    [Arguments]    @{params}
+    Message with struct in struct
+    Client sends message   @{params}
+
 Server receives request with struct
     [Arguments]    @{params}
     Message with struct
+    ${msg} =    Server Receives message    @{params}
+    [return]    ${msg}
+
+Server Receives struct with struct
+    [Arguments]    @{params}
+    Message with struct in struct
     ${msg} =    Server Receives message    @{params}
     [return]    ${msg}
 
@@ -129,3 +143,6 @@ Bar
     u8        opensAt    10
     u8        closesAt    2
     End struct
+
+Get message fails because '${name}' is not completed
+    Run keyword and expect error   Message definition not complete. ${name} not completed.  Get message    
