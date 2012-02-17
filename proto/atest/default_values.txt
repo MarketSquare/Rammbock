@@ -4,32 +4,22 @@ Test Setup        Setup protocol, UDP server, and client
 Test teardown     Teardown rammbock and increment port numbers
 
 *** Test cases ***
-Client sends message with field value from template
-    Client sends     ExampleMessage
-    ${msg}=     Server receives     ExampleMessage
-    Should be equal as integers  1    ${msg.foo}
-    Should be equal as integers  2    ${msg.bar} 
-
-Client sends message with field value from value definition
-    Client sends     Value ExampleMessage
+Client send server receive
+    Client sends     Value ExampleMessage    faa:5
+    Client sends     Value ExampleMessage    faa:5
     ${msg}=     Server receives     Value ExampleMessage
-    Should be equal as integers  10    ${msg.foo}
-    Should be equal as integers  2    ${msg.bar} 
+    ${msg}=     Server receives     Value ExampleMessage    
+    Should be equal as integers    1    ${msg.foo}
+    Should be equal as integers    10   ${msg.bar} 
+    Should be equal as integers    5    ${msg.faa}    
 
-Client sends message with field value from parameters
-    Client sends     Value ExampleMessage   bar:15
-    ${msg}=     Server receives     Value ExampleMessage    bar:15
-    Should be equal as integers  10    ${msg.foo}
-    Should be equal as integers  15    ${msg.bar} 
-
-Receive message with field value from template
-    Fail   not implemented
-
-Receive message with field value from value definition
-    Fail   not implemented
-
-Receive message with field value from parameters
-    Fail   not implemented
+Server send client receive
+    Send first message to server to identify client   #TODO: Implement send to
+    Server sends     Value ExampleMessage    faa:5
+    ${msg}=     Client receives    Value ExampleMessage
+    Should be equal as integers    1    ${msg.foo}
+    Should be equal as integers    10   ${msg.bar} 
+    Should be equal as integers    5    ${msg.faa}    
     
 *** Keywords ***
 ExampleMessage
@@ -40,18 +30,31 @@ ExampleMessage
     
 Value ExampleMessage
     ExampleMessage
-    Value           foo      10
+    Value           bar      10
     
 Client sends
     [Arguments]    ${message type}   @{params}
     Run keyword    ${message type}
     Client sends message    @{params}
+
+Server sends 
+    [Arguments]    ${message type}   @{params}
+    Run keyword    ${message type}
+    Server sends message    @{params}
     
 Server receives
     [Arguments]    ${message type}   @{params}
     Run keyword    ${message type}
-    ${msg}=     Server receives message    @{params}  
+    ${msg}=      Server receives message    @{params}  
     [Return]     ${msg}
     
+Client receives
+    [Arguments]    ${message type}   @{params}
+    Run keyword    ${message type}
+    ${msg}=      Client receives message    @{params}  
+    [Return]     ${msg}
     
+Send first message to server to identify client    
+    Client sends     Value ExampleMessage    faa:5
+    ${msg}=     Server receives     Value ExampleMessage
     
