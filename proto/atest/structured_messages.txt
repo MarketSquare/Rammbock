@@ -28,8 +28,13 @@ Fail validation with struct
 Message with list
     [Tags]    Regression
     Client sends request with list
-    ${msg} =    Server receives request with list
+    ${msg} =    Server receives request with list    someList[2]:3
     Should be equal as integers    ${msg.someList[4].int}     3
+
+Message with list validation fails
+    [Tags]    Regression
+    Client sends request with list
+    Server should fail validation with list   someList[2]:4
 
 Dynamic message
     Client Sends hex    ${HEADER} 03 cafe babe d00d
@@ -70,6 +75,10 @@ Server receives request with list
     List message
     ${msg} =    Server Receives message    @{params}
     [return]    ${msg}
+
+Server should fail validation with list
+    [Arguments]    @{params}
+    Run keyword and expect error     Value of field *    Server receives request with list    @{params}
 
 Server Receives dynamic request
     [Arguments]    @{params}

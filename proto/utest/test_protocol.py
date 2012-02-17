@@ -20,6 +20,23 @@ def _get_recursive_struct():
     str_str.add(inner)
     return str_str
 
+def _get_list_of_three():
+    list = List(3, 'topthree')
+    list.add(UInt(2, None, 1))
+    return list
+
+def _get_list_list():
+    innerList= List(2, None)
+    innerList.add(UInt(2, None, 7))
+    outerList = List('2', 'listlist')
+    outerList.add(innerList)
+    return outerList
+
+def _get_struct_list():
+    list = List(2, 'liststruct')
+    list.add(_get_pair())
+    return list
+
 
 class TestProtocol(unittest.TestCase):
 
@@ -225,36 +242,30 @@ class TestStructuredTemplate(unittest.TestCase):
 class TestListTemplate(unittest.TestCase):
 
     def test_create_list(self):
-        list = List(3, 'topthree')
-        list.add(UInt(2, None, 1))
+        list = _get_list_of_three()
         self.assertEquals(list.name, 'topthree')
         self.assertEquals(list.encode({})[0].int, 1)
         self.assertEquals(list.encode({})[2].int, 1)
 
     def test_create_list_with_setting_value(self):
-        list = List('3', 'topthree')
-        list.add(UInt(2, None, 1))
+        list = _get_list_of_three()
         encoded = list.encode({'topthree[0]':42})
         self.assertEquals(encoded[0].int, 42)
         self.assertEquals(encoded[1].int, 1)
 
     def test_list_with_struct(self):
-        list = List(3, 'topthree')
-        list.add(_get_pair())
-        encoded = list.encode({'topthree[1].first':24})
+        list = _get_struct_list()
+        encoded = list.encode({'liststruct[1].first':24})
         self.assertEquals(encoded[0].first.int, 1)
         self.assertEquals(encoded[1].first.int, 24)
         self.assertEquals(encoded[1].second.int, 2)
 
     def test_list_list(self):
-        innerList= List(3, None)
-        innerList.add(UInt(2, None, 7))
-        outerList = List('4', 'listlist')
-        outerList.add(innerList)
-        encoded = outerList.encode({'listlist[0][1]':10, 'listlist[3][2]':55})
+        outerList = _get_list_list()
+        encoded = outerList.encode({'listlist[0][1]':10, 'listlist[1][0]':55})
         self.assertEquals(encoded[0][1].int, 10)
-        self.assertEquals(encoded[3][2].int, 55)
-        self.assertEquals(encoded[2][2].int, 7)
+        self.assertEquals(encoded[1][0].int, 55)
+        self.assertEquals(encoded[1][1].int, 7)
 
     def test_decode_message(self):
         list = List('5', 'five')
@@ -263,6 +274,47 @@ class TestListTemplate(unittest.TestCase):
         self.assertEquals(len(decoded[4]), 4)
         self.assertEquals(len(decoded), 20)
         self.assertEquals(decoded[0].int, 3)
+
+    def test_pretty_print(self):
+        encoded = _get_struct_list().encode({})
+        self.assertEquals('\n'+repr(encoded),
+        """
+liststruct Pair
+  liststruct[0]
+    first = 0x0001
+    second = 0x0002
+  liststruct[1]
+    first = 0x0001
+    second = 0x0002
+""")
+
+    def test_pretty_print_primitive_list(self):
+        decoded = _get_list_of_three().decode(to_bin('0x'+('0003'*3)))
+        self.assertEquals('\n'+repr(decoded),
+            """
+topthree uint
+  topthree[0] = 0x0003
+  topthree[1] = 0x0003
+  topthree[2] = 0x0003
+""")
+
+    def test_pretty_print_list_list(self):
+        decoded = _get_list_list().decode(to_bin('0x'+('0003'*4)))
+        self.assertEquals('\n'+repr(decoded),
+            """
+listlist List
+  listlist[0] uint
+    listlist[0][0] = 0x0003
+    listlist[0][1] = 0x0003
+  listlist[1] uint
+    listlist[1][0] = 0x0003
+    listlist[1][1] = 0x0003
+""")
+
+    def test_not_enough_data(self):
+        template = _get_list_of_three()
+        self.assertRaises(Exception, template.decode, to_bin('0x00010002'))
+
 
 class TestMessageTemplateValidation(unittest.TestCase):
 
@@ -321,22 +373,50 @@ class TestTemplateFieldValidation(unittest.TestCase):
     def test_validate_uint(self):
         template = UInt(2, 'field', 4)
         field = Field('uint', 'field', to_bin('0x0004'))
-        self.assertEquals(template.validate(field, {}), [])
+        self._should_pass(template.validate(field, {}))
+
+    def _should_pass(self, validation):
+        self.assertEquals(validation, [])
+
+    def _should_fail(self, validation, number_of_errors):
+        self.assertEquals(len(validation), number_of_errors)
 
     def test_fail_validating_uint(self):
         template = UInt(2, 'field', 4)
         field = Field('uint', 'field', to_bin('0x0004'))
-        self.assertEquals(len(template.validate(field, {'field':'42'})), 1)
+        self._should_fail(template.validate(field, {'field':'42'}), 1)
 
     def test_validate_struct_passes(self):
         template = _get_pair()
         field = template.encode({})
-        self.assertEquals(template.validate(field, {'pair.first':'1'}), [])
+        self._should_pass(template.validate(field, {'pair.first':'1'}))
 
     def test_validate_struct_fails(self):
         template = _get_pair()
         field = template.encode({})
-        self.assertEquals(len(template.validate(field, {'pair.first':'42'})), 1)
+        self._should_fail(template.validate(field, {'pair.first':'42'}), 1)
+
+    def test_validate_list_succeeds(self):
+        template = _get_list_of_three()
+        encoded = template.encode({})
+        self._should_pass(template.validate(encoded, {'topthree[1]':'1'}))
+
+    def test_validate_list_fails(self):
+        template = _get_list_of_three()
+        encoded = template.encode({})
+        self._should_fail(template.validate(encoded, {'topthree[1]':'42'}), 1)
+
+    def test_validate_list_list(self):
+        template = _get_list_list()
+        encoded = template.encode({})
+        self._should_pass(template.validate(encoded, {'listlist[1][1]':'7'}))
+        self._should_fail(template.validate(encoded, {'listlist[1][1]':'42'}), 1)
+
+    def test_validate_struct_list(self):
+        template = _get_struct_list()
+        encoded = template.encode({})
+        self._should_pass(template.validate(encoded, {'liststruct[1].first':'1'}))
+        self._should_fail(template.validate(encoded, {'liststruct[1].first':'42'}), 1)
 
 
 class TestTemplateFields(unittest.TestCase):

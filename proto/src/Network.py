@@ -51,7 +51,7 @@ class _Server(_WithTimeouts):
             print "Received %s" % repr(msg)
             print '\n'.join(errors)
             raise AssertionError(errors[0])
-            print "*DEBUG* %s" % repr(msg)
+        print "*DEBUG* Received %s" % repr(msg)
         return msg
 
 
