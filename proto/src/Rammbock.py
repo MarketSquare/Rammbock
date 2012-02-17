@@ -135,7 +135,6 @@ class Rammbock(object):
 
     def _encode_message(self, message_fields):
         msg = self._get_message_template().encode(message_fields)
-        self._message_stack = []
         print '*DEBUG* %s' % repr(msg)
         return msg
 
@@ -143,7 +142,9 @@ class Rammbock(object):
         print '*DEBUG* len(self._message_stack)', len(self._message_stack)
         if len(self._message_stack) != 1:
             raise Exception('Message definition not complete.')
-        return self._message_stack[0]
+        template = self._message_stack[0]
+        self._message_stack = []
+        return template
 
     def client_sends_message(self, *parameters):
         """Send a message.
@@ -168,9 +169,7 @@ class Rammbock(object):
         Parameters that have been given are validated against message fields."""
         configs, message_fields = self._get_paramaters_with_defaults(parameters)
         client = self._clients.get(configs.get('name'))
-        template = self._get_message_template()
-        self._message_stack = []
-        return client.get_message(template, message_fields, **configs)
+        return client.get_message(self._get_message_template(), message_fields, **configs)
 
     def server_receives_message(self, *parameters):
         """Receive a message object.
@@ -178,9 +177,7 @@ class Rammbock(object):
         Parameters that have been given are validated against message fields."""
         configs, message_fields = self._get_paramaters_with_defaults(parameters)
         server = self._servers.get(configs.get('name'))
-        template = self._get_message_template()
-        self._message_stack = []
-        return server.get_message(template, message_fields, **configs)
+        return server.get_message(self._get_message_template(), message_fields, **configs)
 
     # TODO: character types
     # TODO: byte alignment support
