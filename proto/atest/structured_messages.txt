@@ -26,9 +26,15 @@ Fail validation with struct
     Server should fail validation with struct    pair.first:0xff
 
 Message with list
-    Client sends request with list    default=3
-    ${msg} =    Server receives request with list
-    Should be equal    ${msg.someList[4].int}     3
+    [Tags]    Regression
+    Client sends request with list
+    ${msg} =    Server receives request with list    someList[2]:3
+    Should be equal as integers    ${msg.someList[4].int}     3
+
+Message with list validation fails
+    [Tags]    Regression
+    Client sends request with list
+    Server should fail validation with list   someList[2]:4
 
 Dynamic message
     Client Sends hex    ${HEADER} 03 cafe babe d00d
@@ -70,6 +76,10 @@ Server receives request with list
     ${msg} =    Server Receives message    @{params}
     [return]    ${msg}
 
+Server should fail validation with list
+    [Arguments]    @{params}
+    Run keyword and expect error     Value of field *    Server receives request with list    @{params}
+
 Server Receives dynamic request
     [Arguments]    @{params}
     Dynamic message
@@ -78,7 +88,7 @@ Server Receives dynamic request
 
 List message
     New message    ListRequest    Example    messageType:0xaaaa
-    Array   5    u32    someList
+    Array   5    u32    someList    3
 
 Dynamic message
     New Message    DynamicRequest  Example    messageType:0xaaaa
@@ -90,9 +100,9 @@ Message with struct
     Pair    pair
 
 Array
-    [arguments]    ${size}    ${type}    ${name}
-    List    ${size}     ${name}
-    Run keyword         ${type}
+    [arguments]    ${size}    ${type}    ${name}    ${value}=
+    New List       ${size}    ${name}
+    Run keyword    ${type}    ${name}    ${value}
     End List
 
 Pair

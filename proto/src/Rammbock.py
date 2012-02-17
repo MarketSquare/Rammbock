@@ -1,7 +1,7 @@
 # API prototype
 from Network import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 
-from Protocol import Protocol, UInt, PDU, MessageTemplate, Char, Struct
+from Protocol import Protocol, UInt, PDU, MessageTemplate, Char, Struct, List
 from binary_conversions import to_0xhex, to_bin
 
 # TODO: pass configuration parameters like timeout, name, and connection using caps and ':'
@@ -199,6 +199,13 @@ class Rammbock(object):
     def end_struct(self):
         struct = self._message_stack.pop()
         self._add_field(struct)
+
+    def new_list(self, size, name):
+        self._message_stack.append(List(size, name))
+
+    def end_list(self):
+        list = self._message_stack.pop()
+        self._add_field(list)
 
     def pdu(self, length):
         """Defines the message in protocol template.
