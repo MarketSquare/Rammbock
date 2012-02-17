@@ -16,6 +16,10 @@ Server sends client receives
     ${msg}=     Client receives    Value ExampleMessage   faa:200
     Verify message fields    ${msg}
     
+Default values in get message
+     Value ExampleMessage
+     ${msg}=      Get message    faa:200
+     Verify message fields   ${msg}
     
 *** Keywords ***
 Verify message fields

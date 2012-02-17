@@ -131,7 +131,7 @@ class Rammbock(object):
 
         * Send Message -keywords are convenience methods, that will call this to get the message object and then send it.
         Parameters have to be pdu fields."""
-        _, message_fields = self._parse_parameters(parameters)
+        _, message_fields = self._get_paramaters_with_defaults(parameters)
         return self._encode_message(message_fields)
 
     def _encode_message(self, message_fields):
@@ -140,10 +140,9 @@ class Rammbock(object):
         return msg
 
     def _get_message_template(self):
-        if len(self._message_stack) != 1:
-            raise Exception('Message definition not complete.')
-        template = self._message_stack[0]
-        self._message_stack = []
+        template = self._message_stack.pop()
+        if self._message_stack:
+            raise Exception('Message definition not complete. %s not completed.' % template.name)
         return template
 
     def client_sends_message(self, *parameters):
