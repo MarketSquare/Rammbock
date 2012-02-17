@@ -18,6 +18,7 @@ class Rammbock(object):
         self._servers = _NamedCache('server')
         self._clients = _NamedCache('client')
         self._message_stack = []
+        self._default_values = None
 
     def reset_rammbock(self):
         """Closes all connections, deletes all servers, clients, and protocols.
@@ -214,14 +215,14 @@ class Rammbock(object):
     
     def _get_paramaters_with_defaults(self, parameters):
         config, fields = self._parse_parameters(parameters)
-        self._populate_defaults(fields)
+        fields = self._populate_defaults(fields)
         return config, fields
     
     def _populate_defaults(self, fields):
-        for key in iter(self._default_values):
-            if not fields.has_key(key):
-                fields[key] = self._default_values[key]
+        ret_val = self._default_values
+        ret_val.update(fields)
         self._default_values = {}
+        return ret_val 
     
     def value(self, name, value):
         self._default_values[name] = value
