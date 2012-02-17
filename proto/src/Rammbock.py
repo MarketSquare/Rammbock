@@ -10,7 +10,7 @@ from binary_conversions import to_0xhex, to_bin
 class Rammbock(object):
 
     def __init__(self):
-            self._init_caches()
+        self._init_caches()
 
     def _init_caches(self):
         self._protocol_in_progress = None
@@ -123,6 +123,7 @@ class Rammbock(object):
         proto = self._get_protocol(protocol)
         _, header_fields = self._parse_parameters(parameters)
         self._message_stack.append(MessageTemplate(message_name, proto, header_fields))
+        self._default_values = {}
 
     def get_message(self, *parameters):
         """Get encoded message.
@@ -147,7 +148,7 @@ class Rammbock(object):
         """Send a message.
     
         Parameters have to be message fields."""
-        configs, message_fields = self._parse_parameters(parameters)
+        configs, message_fields = self._get_paramaters_with_defaults(parameters)
         msg = self._encode_message(message_fields)
         self.client_sends_binary(msg._raw, **configs)
 
@@ -172,7 +173,7 @@ class Rammbock(object):
         """Receive a message object.
     
         Parameters that have been given are validated against message fields."""
-        configs, message_fields = self._parse_parameters(parameters)
+        configs, message_fields = self._get_paramaters_with_defaults(parameters)
         server = self._servers.get(configs.get('name'))
         return server.get_message(self._get_message_template(), message_fields, **configs)
 
@@ -209,6 +210,20 @@ class Rammbock(object):
 
     def bin_to_hex(self, bin_value):
         return to_0xhex(bin_value)
+    
+    def _get_paramaters_with_defaults(self, parameters):
+        config, fields = self._parse_parameters(parameters)
+        self._populate_defaults(fields)
+        return config, fields
+    
+    def _populate_defaults(self, fields):
+        for key in iter(self._default_values):
+            if not fields.has_key(key):
+                fields[key] = self._default_values[key]
+        self._default_values = {}
+    
+    def value(self, name, value):
+        self._default_values[name] = value
 
     def _parse_parameters(self, parameters):
         configs, fields = {}, {}
