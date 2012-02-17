@@ -1,7 +1,7 @@
 # API prototype
 from Network import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 
-from Protocol import Protocol, UInt, PDU, MessageTemplate, Char, Struct
+from Protocol import Protocol, UInt, PDU, MessageTemplate, Char, Struct, List
 from binary_conversions import to_0xhex, to_bin
 
 # TODO: pass configuration parameters like timeout, name, and connection using caps and ':'
@@ -10,7 +10,7 @@ from binary_conversions import to_0xhex, to_bin
 class Rammbock(object):
 
     def __init__(self):
-            self._init_caches()
+        self._init_caches()
 
     def _init_caches(self):
         self._protocol_in_progress = None
@@ -18,6 +18,7 @@ class Rammbock(object):
         self._servers = _NamedCache('server')
         self._clients = _NamedCache('client')
         self._message_stack = []
+        self._default_values = None
 
     def reset_rammbock(self):
         """Closes all connections, deletes all servers, clients, and protocols.
@@ -123,31 +124,32 @@ class Rammbock(object):
         proto = self._get_protocol(protocol)
         _, header_fields = self._parse_parameters(parameters)
         self._message_stack.append(MessageTemplate(message_name, proto, header_fields))
+        self._default_values = {}
 
     def get_message(self, *parameters):
         """Get encoded message.
 
         * Send Message -keywords are convenience methods, that will call this to get the message object and then send it.
         Parameters have to be pdu fields."""
-        _, message_fields = self._parse_parameters(parameters)
+        _, message_fields = self._get_paramaters_with_defaults(parameters)
         return self._encode_message(message_fields)
 
     def _encode_message(self, message_fields):
         msg = self._get_message_template().encode(message_fields)
-        self._message_stack = []
         print '*DEBUG* %s' % repr(msg)
         return msg
 
     def _get_message_template(self):
-        if len(self._message_stack) != 1:
-            raise Exception('Message definition not complete.')
-        return self._message_stack[0]
+        template = self._message_stack.pop()
+        if self._message_stack:
+            raise Exception('Message definition not complete. %s not completed.' % template.name)
+        return template
 
     def client_sends_message(self, *parameters):
         """Send a message.
 
         Parameters have to be message fields."""
-        configs, message_fields = self._parse_parameters(parameters)
+        configs, message_fields = self._get_paramaters_with_defaults(parameters)
         msg = self._encode_message(message_fields)
         self.client_sends_binary(msg._raw, **configs)
 
@@ -156,7 +158,7 @@ class Rammbock(object):
         """Send a message.
 
         Parameters have to be message fields."""
-        configs, message_fields = self._parse_parameters(parameters)
+        configs, message_fields = self._get_paramaters_with_defaults(parameters)
         msg = self._encode_message(message_fields)
         self.server_sends_binary(msg._raw, **configs)
 
@@ -164,7 +166,7 @@ class Rammbock(object):
         """Receive a message object.
     
         Parameters that have been given are validated against message fields."""
-        configs, message_fields = self._parse_parameters(parameters)
+        configs, message_fields = self._get_paramaters_with_defaults(parameters)
         client = self._clients.get(configs.get('name'))
         return client.get_message(self._get_message_template(), message_fields, **configs)
 
@@ -172,7 +174,7 @@ class Rammbock(object):
         """Receive a message object.
 
         Parameters that have been given are validated against message fields."""
-        configs, message_fields = self._parse_parameters(parameters)
+        configs, message_fields = self._get_paramaters_with_defaults(parameters)
         server = self._servers.get(configs.get('name'))
         return server.get_message(self._get_message_template(), message_fields, **configs)
 
@@ -198,6 +200,13 @@ class Rammbock(object):
         struct = self._message_stack.pop()
         self._add_field(struct)
 
+    def new_list(self, size, name):
+        self._message_stack.append(List(size, name))
+
+    def end_list(self):
+        list = self._message_stack.pop()
+        self._add_field(list)
+
     def pdu(self, length):
         """Defines the message in protocol template.
 
@@ -209,6 +218,20 @@ class Rammbock(object):
 
     def bin_to_hex(self, bin_value):
         return to_0xhex(bin_value)
+    
+    def _get_paramaters_with_defaults(self, parameters):
+        config, fields = self._parse_parameters(parameters)
+        fields = self._populate_defaults(fields)
+        return config, fields
+    
+    def _populate_defaults(self, fields):
+        ret_val = self._default_values
+        ret_val.update(fields)
+        self._default_values = {}
+        return ret_val 
+    
+    def value(self, name, value):
+        self._default_values[name] = value
 
     def _parse_parameters(self, parameters):
         configs, fields = {}, {}

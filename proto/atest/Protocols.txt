@@ -132,6 +132,10 @@ U16
     [Arguments]    ${name}    ${value}=${NONE}
     uint     2     ${name}    ${value}
 
+U32
+    [Arguments]    ${name}    ${value}=${NONE}
+    uint     4     ${name}    ${value}
+
 Teardown rammbock and increment port numbers
     Reset Rammbock
     Increment ports
