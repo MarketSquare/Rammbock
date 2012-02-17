@@ -10,6 +10,7 @@ class _MessageStruct(object):
         self._fields.append((name, value))
 
     def __getitem__(self, name):
+        name = str(name)
         for field_name, field in self._fields:
             if field_name == name:
                 return field
@@ -35,7 +36,7 @@ class _MessageStruct(object):
         return ''.join((field._raw for _, field in self._fields))
 
     def __len__(self):
-        return sum(len(field) for field in self._fields)
+        return sum(len(field) for _ ,field in self._fields)
 
 
 class Message(_MessageStruct):

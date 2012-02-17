@@ -112,24 +112,63 @@ class Struct(_Template):
         self.type = type
         _Template.__init__(self,name)
 
-    def encode(self, message_params):
-        struct = _MessageStruct(self.name)
-        self._encode_fields(struct, self._get_params_sub_tree(message_params))
+    def encode(self, message_params, name=None):
+        struct = _MessageStruct(name if name else self.name)
+        self._encode_fields(struct, self._get_params_sub_tree(message_params, name))
         return struct
 
     def _get_struct(self):
         return _MessageStruct(self.name)
 
-    def _get_params_sub_tree(self, params):
+    def _get_params_sub_tree(self, params, name=None):
         result = {}
+        name = name if name else self.name
         for key in params.keys():
             prefix, _, ending = key.partition('.')
-            if prefix == self.name:
+            if prefix == name:
                 result[ending] = params.pop(key)
         return result
 
     def validate(self, message, message_fields):
         return _Template.validate(self, message, self._get_params_sub_tree(message_fields))
+
+class List(_Template):
+
+    structured = True
+    def __init__(self, size, name):
+        self.size = int(size)
+        _Template.__init__(self,name)
+
+    def encode(self, message_params, name=None):
+        name = name if name else self.name
+        list = _MessageStruct(name)
+        for index in range(0,self.size):
+            list[str(index)] = self.field.encode(message_params, name= '%s[%d]' % (name, index))
+        return list
+
+    @property
+    def field(self):
+        return self._fields[0]
+
+    def _get_struct(self):
+        return _MessageStruct(self.name)
+
+    def decode(self, data):
+        message = self._get_struct()
+        data_index = 0
+        field_index = 0
+        while len(data) > data_index:
+            message[str(field_index)] = self.field.decode(data[data_index:])
+            data_index += len(message[field_index])
+            field_index +=1
+        return message
+
+    def validate(self, message, message_fields):
+        errors = []
+        for index in range(0,self.size):
+            errors += self.field.validate(message[index], message_fields)
+        return errors
+
 
 class _TemplateField(object):
 
@@ -137,11 +176,13 @@ class _TemplateField(object):
     def _get_element_value(self, paramdict):
         return paramdict.get(self.name, self.default_value)
 
-    def _get_element_value_and_remove_from_params(self, paramdict):
+    def _get_element_value_and_remove_from_params(self, paramdict, name=None):
+        if name:
+            return paramdict.pop(name, self.default_value)
         return paramdict.pop(self.name, self.default_value)
 
-    def encode(self, paramdict):
-        value = self._get_element_value_and_remove_from_params(paramdict)
+    def encode(self, paramdict, name=None):
+        value = self._get_element_value_and_remove_from_params(paramdict, name)
         return Field(self.type, self.name, self._encode_value(value))
 
     def decode(self, value):

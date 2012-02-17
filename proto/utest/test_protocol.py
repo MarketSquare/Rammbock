@@ -4,7 +4,7 @@ import sys, os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..','src'))
 from Message import Field
-from Protocol import Protocol, Length, UInt, PDU, MessageTemplate, MessageStream, Char, Struct
+from Protocol import Protocol, Length, UInt, PDU, MessageTemplate, MessageStream, Char, Struct, List
 from binary_conversions import to_bin_of_length, to_bin, to_hex
 
 
@@ -221,6 +221,48 @@ class TestStructuredTemplate(unittest.TestCase):
         encoded = str_str.encode({'str_str.pair.first':42})
         self.assertEquals(encoded.pair.first.int, 42)
 
+
+class TestListTemplate(unittest.TestCase):
+
+    def test_create_list(self):
+        list = List(3, 'topthree')
+        list.add(UInt(2, None, 1))
+        self.assertEquals(list.name, 'topthree')
+        self.assertEquals(list.encode({})[0].int, 1)
+        self.assertEquals(list.encode({})[2].int, 1)
+
+    def test_create_list_with_setting_value(self):
+        list = List('3', 'topthree')
+        list.add(UInt(2, None, 1))
+        encoded = list.encode({'topthree[0]':42})
+        self.assertEquals(encoded[0].int, 42)
+        self.assertEquals(encoded[1].int, 1)
+
+    def test_list_with_struct(self):
+        list = List(3, 'topthree')
+        list.add(_get_pair())
+        encoded = list.encode({'topthree[1].first':24})
+        self.assertEquals(encoded[0].first.int, 1)
+        self.assertEquals(encoded[1].first.int, 24)
+        self.assertEquals(encoded[1].second.int, 2)
+
+    def test_list_list(self):
+        innerList= List(3, None)
+        innerList.add(UInt(2, None, 7))
+        outerList = List('4', 'listlist')
+        outerList.add(innerList)
+        encoded = outerList.encode({'listlist[0][1]':10, 'listlist[3][2]':55})
+        self.assertEquals(encoded[0][1].int, 10)
+        self.assertEquals(encoded[3][2].int, 55)
+        self.assertEquals(encoded[2][2].int, 7)
+
+    def test_decode_message(self):
+        list = List('5', 'five')
+        list.add(UInt(4, None, 3))
+        decoded = list.decode(to_bin('0x'+('00000003'*5)))
+        self.assertEquals(len(decoded[4]), 4)
+        self.assertEquals(len(decoded), 20)
+        self.assertEquals(decoded[0].int, 3)
 
 class TestMessageTemplateValidation(unittest.TestCase):
 
