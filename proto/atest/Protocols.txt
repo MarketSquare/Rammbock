@@ -37,6 +37,16 @@ Setup TCP server and client  [arguments]   ${protocol}=
     connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient
     Accept connection  name=ExampleServer
 
+Define protocol, start tcp server and two clients  [arguments]   ${protocol}=
+    Define example protocol
+    Start TCP server    ${SERVER}    ${SERVER PORT}    name=ExampleServer   protocol=${protocol}
+    Start TCP client    name=ExampleClient1
+    Start TCP client    name=ExampleClient2
+    connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient1
+    Accept connection  alias=Connection1
+    connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient2
+    Accept connection  alias=Connection2
+
 Setup UDP server and client  [arguments]  ${protocol}=
     Start udp server    ${SERVER}    ${SERVER PORT}    name=ExampleServer  protocol=${protocol}
     Start udp client    name=ExampleClient     protocol=Example

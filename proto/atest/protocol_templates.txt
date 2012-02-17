@@ -39,10 +39,17 @@ UDP Server uses protocol and receives with pattern validation
     Should be equal    ${msg.value.hex}    0x00000005
 
 TCP server uses protocol and receives with pattern validation
-    [Tags]
     [Setup]  Setup protocol, TCP server, and client
     Client Sends simple request
     Server Receives simple request
+
+TCP server receives from two clients with pattern validation
+    [Tags]
+    [setup]  Define protocol, start tcp server and two clients
+    Named client sends simple request  ExampleClient1  value:0xcafebabe
+    Named client sends simple request  ExampleClient2  value:0xdeadbeef
+    Server Receives simple request from named connection  ExampleConnection2  value:0xdeadbeef
+    Server Receives simple request from named connection  ExampleConnection1  value:0xcafebabe
 
 Server uses protocol and receives with pattern validation failing
     Client Sends hex    0x 01 00 dddd 000c 0000 00000005
@@ -104,11 +111,24 @@ Client Sends simple request
     u32    value    0xdeadbeef
     Client Sends message    @{params}
 
+Named client sends simple request
+    [Arguments]    ${client}=   @{params}
+    New message    ValueRequest  Example    messageType:0xdddd    flags:0xffff
+    u32    value    0xdeadbeef
+    Client Sends message   name=${client}   @{params}
+
 Server Sends simple request
     [Arguments]    @{params}
     New message    ValueRequest  Example    messageType:0xdddd    flags:0xffff
     u32    value    0xdeadbeef
     Server Sends message    @{params}
+
+Server Receives simple request from named connection
+    [Arguments]    ${connection}=  @{params}
+    New message    ValueRequest   Example
+    u32    value
+    ${msg} =    Server receives message    connection=${connection}  @{params}
+    [return]    ${msg}
 
 Server Receives simple request
     [Arguments]    @{params}
