@@ -2,26 +2,28 @@
 Resource          Protocols.txt
 Test Setup        Setup protocol, UDP server, and client
 Test teardown     Teardown rammbock and increment port numbers
+Force Tags        Regression
 
 *** Test cases ***
-Client send server receive
-    Client sends     Value ExampleMessage    faa:5
-    Client sends     Value ExampleMessage    faa:5
-    ${msg}=     Server receives     Value ExampleMessage
-    ${msg}=     Server receives     Value ExampleMessage    
-    Should be equal as integers    1    ${msg.foo}
-    Should be equal as integers    10   ${msg.bar} 
-    Should be equal as integers    5    ${msg.faa}    
+Client sends server receives
+    Client sends     Value ExampleMessage    faa:200
+    ${msg}=     Server receives     Value ExampleMessage   faa:200
+    Verify message fields    ${msg}
 
-Server send client receive
+Server sends client receives
     Send first message to server to identify client   #TODO: Implement send to
-    Server sends     Value ExampleMessage    faa:5
-    ${msg}=     Client receives    Value ExampleMessage
-    Should be equal as integers    1    ${msg.foo}
-    Should be equal as integers    10   ${msg.bar} 
-    Should be equal as integers    5    ${msg.faa}    
+    Server sends     Value ExampleMessage    faa:200
+    ${msg}=     Client receives    Value ExampleMessage   faa:200
+    Verify message fields    ${msg}
+    
     
 *** Keywords ***
+Verify message fields
+    [Arguments]   ${msg}
+    Should be equal as integers    1    ${msg.foo.int}
+    Should be equal as integers    10   ${msg.bar.int} 
+    Should be equal as integers    200    ${msg.faa.int}    
+    
 ExampleMessage
     New Message     ExampleMessage    Example    messageType:0xbabe  
     u16             foo       1
@@ -31,6 +33,7 @@ ExampleMessage
 Value ExampleMessage
     ExampleMessage
     Value           bar      10
+    Value           faa      20
     
 Client sends
     [Arguments]    ${message type}   @{params}
@@ -55,6 +58,6 @@ Client receives
     [Return]     ${msg}
     
 Send first message to server to identify client    
-    Client sends     Value ExampleMessage    faa:5
+    Client sends     Value ExampleMessage
     ${msg}=     Server receives     Value ExampleMessage
     

@@ -139,7 +139,6 @@ class Rammbock(object):
         return msg
 
     def _get_message_template(self):
-        print '*DEBUG* len(self._message_stack)', len(self._message_stack)
         if len(self._message_stack) != 1:
             raise Exception('Message definition not complete.')
         template = self._message_stack[0]
