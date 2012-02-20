@@ -1,7 +1,7 @@
 import unittest
-import sys, os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..','src'))
+
 from Rammbock import Rammbock
+
 
 class TestRammbock(unittest.TestCase):
 
@@ -22,6 +22,7 @@ class TestRammbock(unittest.TestCase):
     def test_defining_message_when_defining_protocol(self):
         self.rammbock.start_protocol_description('foo')
         self.assertRaises(Exception, self.rammbock.new_message, 'foo')
+
 
 class TestParamParsing(unittest.TestCase):
 

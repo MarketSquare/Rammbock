@@ -1,9 +1,7 @@
 import unittest
-import sys, os
 import time
 import socket
 from threading import Timer
-sys.path.append(os.path.join(os.path.dirname(__file__), '..','src'))
 from Network import UDPServer, TCPServer, UDPClient, TCPClient
 
 LOCAL_IP = '127.0.0.1'
@@ -11,6 +9,7 @@ SERVER_PORT = 12345
 SERVER_PORT_2 = 12346
 CLIENT_PORT = 54321
 CLIENT_PORT_2 = 64321
+
 
 class TestNetwork(unittest.TestCase):
 
