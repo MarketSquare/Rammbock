@@ -24,21 +24,19 @@ class _Template(object):
         if params:
             raise Exception('Unknown fields in header %s' % str(params))
 
-    def decode(self, data, parent=None):
-        message = self._get_struct()
+    def decode(self, data, parent=None, name=None):
+        message = self._get_struct(name)
         data_index = 0
-        field_index = 0
-        while len(data) > data_index:
-            field = self._fields[field_index]
+        for field in self._fields:
             message[field.name] = field.decode(data[data_index:], message)
             data_index += len(message[field.name])
-            field_index +=1
         return message
+
 
     def validate(self, message, message_fields):
         errors = []
         for field in self._fields:
-            errors += field.validate(message, message[field.name], message_fields)
+            errors += field.validate(message, message_fields)
         return errors
 
 
@@ -90,6 +88,8 @@ class Protocol(_Template):
         return MessageStream(buffered_stream, self)
 
 class MessageTemplate(_Template):
+    
+    type = 'Message'
 
     def __init__(self, message_name, protocol, header_params):
         _Template.__init__(self, message_name)
@@ -104,7 +104,7 @@ class MessageTemplate(_Template):
             msg._add_header(self._protocol.encode(msg, self.header_parameters))
         return msg
 
-    def _get_struct(self):
+    def _get_struct(self, name):
         return Message(self.name)
 
 class Struct(_Template):
@@ -120,8 +120,8 @@ class Struct(_Template):
         self._encode_fields(struct, self._get_params_sub_tree(message_params, name))
         return struct
 
-    def _get_struct(self):
-        return _MessageStruct(self.name)
+    def _get_struct(self, name):
+        return _MessageStruct(name if name else self.name)
 
     def _get_params_sub_tree(self, params, name=None):
         result = {}
@@ -132,7 +132,9 @@ class Struct(_Template):
                 result[ending] = params.pop(key)
         return result
 
-    def validate(self, message, field, message_fields, name=None):
+    def validate(self, parent, message_fields, name=None):
+        name = name if name else self.name
+        message = parent[name]
         return _Template.validate(self, message, self._get_params_sub_tree(message_fields, name))
 
 class List(_Template):
@@ -150,7 +152,7 @@ class List(_Template):
         name = name if name else self.name
         params_subtree = self._get_params_sub_tree(message_params, name)
         list = self._get_struct(name)
-        for index in range(0, self.length.value):
+        for index in range(0, self.length.decode(parent)):
             list[str(index)] = self.field.encode(params_subtree, parent, name=str(index))
         return list
 
@@ -165,16 +167,18 @@ class List(_Template):
         name = name if name else self.name
         message = self._get_struct(name)
         data_index = 0
-        for index in range(0,self.length.value):
+        for index in range(0,self.length.decode(parent)):
             message[str(index)] = self.field.decode(data[data_index:], message, name=str(index))
             data_index += len(message[index])
         return message
 
-    def validate(self, list, field, message_fields, name=None):
+    def validate(self, parent, message_fields, name=None):
         name = name if name else self.name
+        params_subtree = self._get_params_sub_tree(message_fields, name)
+        list = parent[name]
         errors = []
-        for index in range(0,self.length.value):
-            errors += self.field.validate(list, list[index], message_fields, name=str(index))
+        for index in range(0,self.length.decode(parent)):
+            errors += self.field.validate(list, params_subtree, name=str(index))
         return errors
 
     def _get_params_sub_tree(self, params, name=None):
@@ -209,15 +213,17 @@ class _TemplateField(object):
             raise Exception('Not enough data for %s. Needs %s bytes, given %s' % (name, self.length.value, len(value)))
         return Field(self.type, name, value[:decoded_length])
 
-    def validate(self, message, field, paramdict, name=None):
+    def validate(self, parent, paramdict, name=None):
+        name = name if name else self.name
+        field = parent[name]
         value = field.bytes
         forced_value = self._get_element_value(paramdict, name)
         if not forced_value or forced_value == 'None':
             return []
         if forced_value.startswith('('):
-            return self._validate_pattern(forced_value, value, message)
+            return self._validate_pattern(forced_value, value, parent)
         else:
-            return self._validate_exact_match(forced_value, value, message)
+            return self._validate_exact_match(forced_value, value, parent)
 
     def _validate_pattern(self, forced_pattern, value, message):
         patterns = forced_pattern[1:-1].split('|')

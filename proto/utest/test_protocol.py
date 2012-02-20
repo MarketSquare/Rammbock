@@ -238,6 +238,12 @@ class TestStructuredTemplate(unittest.TestCase):
         encoded = str_str.encode({'str_str.pair.first':42}, None)
         self.assertEquals(encoded.pair.first.int, 42)
 
+    def test_decode_several_structs(self):
+        str_list = _get_struct_list()
+        decoded = str_list.decode(to_bin('0xcafebabe d00df00d'), {})
+        self.assertEquals(decoded[0].first.hex, '0xcafe')
+        self.assertEquals(decoded[1].second.hex, '0xf00d')
+
 
 class TestListTemplate(unittest.TestCase):
 
@@ -364,6 +370,25 @@ class TestDynamicMessageTemplate(unittest.TestCase):
         self.assertEquals(encoded.chars2.ascii, 'ef')
         self.assertEquals(len(encoded.chars2), 6)
 
+    def test_decode_dynamic_list(self):
+        tmp = MessageTemplate('Dymagic', self._protocol, {})
+        tmp.add(UInt(2,'len', None))
+        lst = List('len', 'foo')
+        lst.add(UInt(1,'bar', None))
+        tmp.add(lst)
+        decoded = tmp.decode(to_bin('0x 00 04 6162 6364'))
+        self.assertEquals(decoded.len.int, 4)
+        self.assertEquals(decoded.foo[0].hex, '0x61')
+
+    def test_encode_dynamic_list(self):
+        tmp = MessageTemplate('Dymagic', self._protocol, {})
+        tmp.add(UInt(2,'len', None))
+        lst = List('len', 'foo')
+        lst.add(UInt(1,'bar', 1))
+        tmp.add(lst)
+        encoded = tmp.encode({'len':6})
+        self.assertEquals(len(encoded.foo), 6)
+
 
 class TestMessageTemplateValidation(unittest.TestCase):
 
@@ -417,12 +442,12 @@ class TestMessageTemplateValidation(unittest.TestCase):
         self.assertEquals(len(errors), 1)
 
 
-class XTestTemplateFieldValidation(object):
+class TestTemplateFieldValidation(unittest.TestCase):
 
     def test_validate_uint(self):
         template = UInt(2, 'field', 4)
         field = Field('uint', 'field', to_bin('0x0004'))
-        self._should_pass(template.validate(None, field, {}))
+        self._should_pass(template.validate({'field':field}, {}))
 
     def _should_pass(self, validation):
         self.assertEquals(validation, [])
@@ -433,47 +458,47 @@ class XTestTemplateFieldValidation(object):
     def test_fail_validating_uint(self):
         template = UInt(2, 'field', 4)
         field = Field('uint', 'field', to_bin('0x0004'))
-        self._should_fail(template.validate(None, field, {'field':'42'}), 1)
+        self._should_fail(template.validate({'field':field}, {'field':'42'}), 1)
 
     def test_validate_struct_passes(self):
         template = _get_pair()
         field = template.encode({}, None)
-        self._should_pass(template.validate(field, None, {'pair.first':'1'}))
+        self._should_pass(template.validate({'pair':field}, {'pair.first':'1'}))
 
     def test_validate_struct_fails(self):
         template = _get_pair()
         field = template.encode({}, None)
-        self._should_fail(template.validate(field, None,  {'pair.first':'42'}), 1)
+        self._should_fail(template.validate({'pair':field},  {'pair.first':'42'}), 1)
 
     def test_validate_list_succeeds(self):
         template = _get_list_of_three()
         encoded = template.encode({}, None)
-        self._should_pass(template.validate(encoded, None, {'topthree[1]':'1'}))
+        self._should_pass(template.validate({'topthree':encoded}, {'topthree[1]':'1'}))
 
     def test_validate_list_fails(self):
         template = _get_list_of_three()
         encoded = template.encode({}, None)
-        self._should_fail(template.validate(encoded, None, {'topthree[1]':'42'}), 1)
+        self._should_fail(template.validate({'topthree':encoded}, {'topthree[1]':'42'}), 1)
 
     def test_validate_list_list(self):
         template = _get_list_list()
         encoded = template.encode({}, None)
-        self._should_pass(template.validate(encoded, None, {'listlist[1][1]':'7'}))
-        self._should_fail(template.validate(encoded, None, {'listlist[1][1]':'42'}), 1)
+        self._should_pass(template.validate({'listlist':encoded}, {'listlist[1][1]':'7'}))
+        self._should_fail(template.validate({'listlist':encoded}, {'listlist[1][1]':'42'}), 1)
 
     def test_validate_struct_list(self):
         template = _get_struct_list()
         encoded = template.encode({}, None)
-        self._should_pass(template.validate(encoded, None, {'liststruct[1].first':'1'}))
-        self._should_fail(template.validate(encoded, None, {'liststruct[1].first':'42'}), 1)
+        self._should_pass(template.validate({'liststruct':encoded}, {'liststruct[1].first':'1'}))
+        self._should_fail(template.validate({'liststruct':encoded}, {'liststruct[1].first':'42'}), 1)
 
     def test_dynamic_field_validation(self):
         struct = Struct('Foo', 'foo')
         struct.add(UInt(2, 'len', None))
         struct.add(Char('len', 'text', None))
         encoded = struct.encode({'len':6, 'foo.text':'fobba'}, None)
-        self._should_pass(struct.validate(encoded, None, {'foo.text':'fobba'}))
-        self._should_fail(struct.validate(encoded, None, {'foo.text':'fob'}), 1)
+        self._should_pass(struct.validate({'foo':encoded}, {'foo.text':'fobba'}))
+        self._should_fail(struct.validate({'foo':encoded}, {'foo.text':'fob'}), 1)
 
 
 class TestTemplateFields(unittest.TestCase):

@@ -3,10 +3,10 @@ Test Setup        Setup protocol, UDP server, and client
 Test teardown     Teardown rammbock and increment port numbers
 Library           Rammbock.py
 Resource          Protocols.txt
-Default Tags      Regression
+Force Tags      Regression
 
 *** Variables ***
-${HEADER} =    0x0100aaaa0e0000
+${HEADER} =    0x0100aaaa000f0000
 
 *** Test Cases ***
 Message with struct
@@ -33,7 +33,6 @@ Message with list validation fails
     Server should fail validation with list   someList[2]:4
 
 Dynamic message
-    [Tags]
     Client Sends hex    ${HEADER} 03 cafe babe d00d
     ${msg} =    Server Receives dynamic request
     Should be equal    ${msg.pairList[0].first.hex}     0xca
@@ -116,14 +115,14 @@ Message with struct
 Array
     [arguments]    ${size}    ${type}    ${name}    ${value}=
     New List       ${size}    ${name}
-    Run keyword    ${type}    ${name}    ${value}
+    Run keyword    ${type}    ${EMPTY}   ${value}
     End List
 
 Pair
-    [arguments]     ${name}
+    [arguments]     ${name}=     ${value}=
     Struct    Pair    ${name}
-    u8    first
-    u8    second
+    u8    first       ${value}
+    u8    second      ${value}
     End struct
 
 Message with struct in struct
