@@ -3,7 +3,7 @@ Test Setup        Setup protocol, UDP server, and client
 Test teardown     Teardown rammbock and increment port numbers
 Library           Rammbock.py
 Resource          Protocols.txt
-Force Tags      Regression
+Default Tags      Regression
 
 *** Variables ***
 ${HEADER} =    0x0100aaaa000f0000
@@ -46,6 +46,15 @@ Encode dynamic message
     Should be equal    ${msg.pairList[0].second.hex}    0x02
     Should be equal    ${msg.pairList[1].first.hex}     0x11
 
+Reuse struct in another message
+    [Tags]
+    Populate dynamic message  2  0x01  0x02  0x11  0x22
+    ${list msg} =    Get message
+    Value       pair     ${list msg.pairList[0]}
+    Message with struct
+    ${pair msg} =    Get message
+    Should be equal    ${pair msg.pair.first.hex}     0x01
+
 Encoding dynamic message without length fails
     # TODO: This should perhaps work?
     Populate dynamic message  ${EMPTY}  0x01  0x02  0x11  0x22
@@ -65,7 +74,7 @@ Unfinished struct fails
     Struct  MyStruct  myStruct
     u8    foo
     Get message fails because 'myStruct' is not completed
-     
+
 
 *** Keywords ***
 Client sends request with struct
