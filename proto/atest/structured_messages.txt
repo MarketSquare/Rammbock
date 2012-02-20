@@ -32,12 +32,24 @@ Message with list validation fails
     Client sends request with list
     Server should fail validation with list   someList[2]:4
 
-Dynamic message
+Receive dynamic message
     Client Sends hex    ${HEADER} 03 cafe babe d00d
     ${msg} =    Server Receives dynamic request
     Should be equal    ${msg.pairList[0].first.hex}     0xca
     Should be equal    ${msg.pairList[0].second.hex}    0xfe
     Should be equal    ${msg.pairList[2].first.hex}     0xd0
+
+Encode dynamic message
+    Dynamic Message
+    value   numberOfPairs  2
+    value   pairList[0].first   1
+    value   pairList[0].second   2
+    value   pairList[1].first   0x11
+    value   pairList[1].second   0x22
+    ${msg} =    Get message
+    Should be equal    ${msg.pairList[0].first.hex}     0x01
+    Should be equal    ${msg.pairList[0].second.hex}    0x02
+    Should be equal    ${msg.pairList[1].first.hex}     0x11
 
 Struct containing struct
     Client sends struct with struct   structstruct.mollyMalones.closesAt:4

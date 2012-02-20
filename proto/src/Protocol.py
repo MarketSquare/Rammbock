@@ -254,7 +254,9 @@ class UInt(_TemplateField):
         self.default_value = str(default_value) if default_value and default_value != '""' else None
 
     def _encode_value(self, value, message):
-        return to_bin_of_length(self.length.value, value if value else '0')
+        if not value:
+            raise AssertionError('Value of %s not set' % self.name if self.name else self.type)
+        return to_bin_of_length(self.length.value, value)
 
 
 class Char(_TemplateField):

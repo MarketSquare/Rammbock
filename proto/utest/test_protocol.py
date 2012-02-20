@@ -496,7 +496,7 @@ class TestTemplateFieldValidation(unittest.TestCase):
         struct = Struct('Foo', 'foo')
         struct.add(UInt(2, 'len', None))
         struct.add(Char('len', 'text', None))
-        encoded = struct.encode({'len':6, 'foo.text':'fobba'}, None)
+        encoded = struct.encode({'foo.len':6, 'foo.text':'fobba'}, None)
         self._should_pass(struct.validate({'foo':encoded}, {'foo.text':'fobba'}))
         self._should_fail(struct.validate({'foo':encoded}, {'foo.text':'fob'}), 1)
 
@@ -518,6 +518,18 @@ class TestTemplateFields(unittest.TestCase):
         self.assertEquals(field.default_value, 'foo')
         self.assertEquals(field.type, 'char')
         self.assertEquals(field.encode({}, None).bytes, 'foo\x00\x00')
+
+    def test_encoding_missing_value_fails(self):
+        field = UInt(2, 'foo', None)
+        self.assertRaises(Exception, field.encode, {}, {})
+        field = UInt(2, 'foo', '')
+        self.assertRaises(Exception, field.encode, {}, {})
+
+    def test_encoding_illegal_value_fails(self):
+        field = UInt(2, 'foo',  '(1|2)')
+        self.assertRaises(Exception, field.encode, {}, {})
+        field = UInt(2, 'foo',  'poplpdsf')
+        self.assertRaises(Exception, field.encode, {}, {})
 
     def test_pdu_field_without_subtractor(self):
         field = PDU('value')
