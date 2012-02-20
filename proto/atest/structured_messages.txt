@@ -40,16 +40,20 @@ Receive dynamic message
     Should be equal    ${msg.pairList[2].first.hex}     0xd0
 
 Encode dynamic message
-    Dynamic Message
-    value   numberOfPairs  2
-    value   pairList[0].first   1
-    value   pairList[0].second   2
-    value   pairList[1].first   0x11
-    value   pairList[1].second   0x22
+    Populate dynamic message  2  0x01  0x02  0x11  0x22
     ${msg} =    Get message
     Should be equal    ${msg.pairList[0].first.hex}     0x01
     Should be equal    ${msg.pairList[0].second.hex}    0x02
     Should be equal    ${msg.pairList[1].first.hex}     0x11
+
+Encoding dynamic message without length fails
+    # TODO: This should perhaps work?
+    Populate dynamic message  ${EMPTY}  0x01  0x02  0x11  0x22
+    Run keyword and expect error   Value of numberOfPairs not set    Get message
+
+Encoding dynamic message with extra list entries fails
+    Populate dynamic message  1  0x01  0x02  0x11  0x22
+    Run keyword and expect error   Unknown fields in pairList *   Get message
 
 Struct containing struct
     Client sends struct with struct   structstruct.mollyMalones.closesAt:4
@@ -110,6 +114,15 @@ Server Receives dynamic request
     Dynamic message
     ${msg} =    Server Receives message    @{params}
     [return]    ${msg}
+
+Populate dynamic message
+    [Arguments]   ${len}  ${0 first}  ${0 second}  ${1 first}  ${1 second}
+    Dynamic Message
+    value   numberOfPairs   ${len}
+    value   pairList[0].first   ${0 first}
+    value   pairList[0].second   ${0 second}
+    value   pairList[1].first   ${1 first}
+    value   pairList[1].second   ${1 second}
 
 List message
     New message    ListRequest    Example    messageType:0xaaaa

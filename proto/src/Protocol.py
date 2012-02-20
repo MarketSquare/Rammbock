@@ -154,6 +154,8 @@ class List(_Template):
         list = self._get_struct(name)
         for index in range(0, self.length.decode(parent)):
             list[str(index)] = self.field.encode(params_subtree, parent, name=str(index))
+        if params_subtree:
+            raise Exception('Unknown fields in %s %s' % (name, str(params_subtree)))
         return list
 
     @property
