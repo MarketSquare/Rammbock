@@ -89,7 +89,7 @@ class Field(object):
 
     #TODO: Test
     @property
-    def ascii_chars(self):
+    def ascii(self):
         return ''.join(i for i in self._value if 128 > ord(i) >= 32)
 
     @property
