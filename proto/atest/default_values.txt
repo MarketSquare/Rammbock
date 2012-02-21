@@ -4,6 +4,7 @@ Test Setup        Setup protocol, UDP server, and client
 Test teardown     Teardown rammbock and increment port numbers
 Force Tags        Regression
 
+
 *** Test cases ***
 Client sends server receives
     Client sends     Value ExampleMessage    faa:200
@@ -20,6 +21,7 @@ Default values in get message
      Value ExampleMessage
      ${msg}=      Get message    faa:200
      Verify message fields   ${msg}
+
     
 *** Keywords ***
 Verify message fields
@@ -64,4 +66,3 @@ Client receives
 Send first message to server to identify client    
     Client sends     Value ExampleMessage
     ${msg}=     Server receives     Value ExampleMessage
-    

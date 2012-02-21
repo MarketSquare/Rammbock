@@ -1,7 +1,9 @@
-from Message import Field, Message, MessageHeader, _MessageStruct
+import re
+
+from Message import Field, Union, Message, MessageHeader, _MessageStruct
 from message_stream import MessageStream
 from primitives import Length
-import re
+
 
 class _Template(object):
 
@@ -39,6 +41,15 @@ class _Template(object):
         for field in self._fields:
             errors += field.validate(message, message_fields)
         return errors
+
+    def _get_params_sub_tree(self, params, name=None):
+        result = {}
+        name = name if name else self.name
+        for key in params.keys():
+            prefix, _, ending = key.partition('.')
+            if prefix == name:
+                result[ending] = params.pop(key)
+        return result
 
 
 class Protocol(_Template):
@@ -88,6 +99,7 @@ class Protocol(_Template):
     def get_message_stream(self, buffered_stream):
         return MessageStream(buffered_stream, self)
 
+
 class MessageTemplate(_Template):
     
     type = 'Message'
@@ -108,6 +120,7 @@ class MessageTemplate(_Template):
     def _get_struct(self, name):
         return Message(self.name)
 
+
 class Struct(_Template):
 
     has_length = False
@@ -115,6 +128,9 @@ class Struct(_Template):
     def __init__(self, type, name):
         self.type = type
         _Template.__init__(self,name)
+
+    def get_static_length(self):
+        return sum(field.get_static_length() for field in self._fields)
 
     def encode(self, message_params, parent, name=None):
         struct = _MessageStruct(name if name else self.name)
@@ -124,20 +140,51 @@ class Struct(_Template):
     def _get_struct(self, name):
         return _MessageStruct(name if name else self.name)
 
-    def _get_params_sub_tree(self, params, name=None):
-        result = {}
-        name = name if name else self.name
-        for key in params.keys():
-            prefix, _, ending = key.partition('.')
-            if prefix == name:
-                result[ending] = params.pop(key)
-        return result
-
     def validate(self, parent, message_fields, name=None):
         name = name if name else self.name
         message = parent[name]
         return _Template.validate(self, message, self._get_params_sub_tree(message_fields, name))
 
+
+class UnionTemplate(_Template):
+    
+    has_length = False
+    
+    def __init__(self, type, name):
+        self.type = type
+        _Template.__init__(self, name)
+    
+    def add(self, field):
+        field.get_static_length()
+        self._fields.append(field)
+            
+    def get_static_length(self):
+        return max(field.get_static_length() for field in self._fields)
+
+    def decode(self, data, parent=None, name=None):
+        union = Union(name if name else self.name, self.get_static_length())
+        for field in self._fields: 
+            union[field.name] = field.decode(data, union)
+        return union
+    
+    def encode(self, union_params, parent=None, name=None):
+        name = name if name else self.name
+        union = Union(name, self.get_static_length())
+        if name not in union_params:
+            raise AssertionError('Value not chosen for union %s' % name)
+        chosen_one = union_params[name]
+        for field in self._fields:
+            if field.name == chosen_one:
+                union[field.name] = field.encode(self._get_params_sub_tree(union_params, name), union)
+                return union
+        raise Exception('Unknown union field %s' % chosen_one)
+        
+    def validate(self, parent, message_fields, name=None):
+        name = name if name else self.name
+        message = parent[name]
+        return _Template.validate(self, message, self._get_params_sub_tree(message_fields, name))
+
+    
 class List(_Template):
 
     param_pattern = re.compile(r'(.*?)\[(.*?)\](.*)')
@@ -148,6 +195,9 @@ class List(_Template):
     def __init__(self, length, name):
         self.length = Length(length)
         _Template.__init__(self,name)
+
+    def get_static_length(self):
+        return self.length.value * self.field.get_static_length()
 
     def encode(self, message_params, parent, name=None):
         name = name if name else self.name
@@ -194,4 +244,3 @@ class List(_Template):
                 if prefix == name:
                     result[child_name + ending] =  params.pop(key)
         return result
-

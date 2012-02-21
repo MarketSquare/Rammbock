@@ -28,15 +28,36 @@ class _MessageStruct(object):
             result +=self._format_indented('%s' % repr(field))
         return result
 
+    def __contains__(self, key):
+        return key in [name for name, _ in self._fields]
+
     def _format_indented(self, text):
         return ''.join(['  %s\n' % line for line in text.splitlines()])
 
     @property
     def _raw(self):
+        return self._get_raw_bytes()
+        
+    def _get_raw_bytes(self):
         return ''.join((field._raw for _, field in self._fields))
 
     def __len__(self):
         return sum(len(field) for _ ,field in self._fields)
+
+
+class Union(_MessageStruct):
+
+    def __init__(self, name, length):
+        self._length = length
+        _MessageStruct.__init__(self, 'Union '+name)
+        
+    def _get_raw_bytes(self):
+        raw_bytes = [field._raw for _, field in self._fields]
+        max_raw = ''
+        for raw in raw_bytes:
+            if len(raw) > len(max_raw):
+                max_raw = raw
+        return max_raw.ljust(self._length, '\x00')
 
 
 class Message(_MessageStruct):

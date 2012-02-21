@@ -1,25 +1,31 @@
 from Message import Field
 from binary_conversions import to_bin_of_length, to_0xhex
 
+
 class _TemplateField(object):
 
     has_length = True
     
+    def get_static_length(self):
+        if not self.length.static:
+            raise Exception('Length of %s is dynamic.' % self._get_name())
+        return self.length.value
+    
     def _get_element_value(self, paramdict, name=None):
-        return paramdict.get(name if name else self.name, self.default_value)
+        return paramdict.get(self._get_name(name), self.default_value)
 
     def _get_element_value_and_remove_from_params(self, paramdict, name=None):
-        return paramdict.pop(name if name else self.name, self.default_value)
+        return paramdict.pop(self._get_name(name), self.default_value)
 
     def encode(self, paramdict, parent, name=None):
         value = self._get_element_value_and_remove_from_params(paramdict, name)
-        return Field(self.type, name if name else self.name, self._encode_value(value, parent))
+        return Field(self.type,self._get_name(name), self._encode_value(value, parent))
 
     def decode(self, value, message, name=None):
         decoded_length = self.length.decode(message)
         if len(value) < decoded_length: 
             raise Exception('Not enough data for %s. Needs %s bytes, given %s' % (name, self.length.value, len(value)))
-        return Field(self.type, name, value[:decoded_length])
+        return Field(self.type, self._get_name(name), value[:decoded_length])
 
     def validate(self, parent, paramdict, name=None):
         name = name if name else self.name
@@ -39,7 +45,7 @@ class _TemplateField(object):
             if self._is_match(pattern, value, message):
                 return []
         return ['Value of field %s does not match pattern %s!=%s' %
-                (self.name, to_0xhex(value), forced_pattern)]
+                (self._get_name(), to_0xhex(value), forced_pattern)]
 
     def _is_match(self, forced_value, value, message):
         forced_binary_val = self._encode_value(forced_value, message)   # TODO: Should pass msg
@@ -48,8 +54,11 @@ class _TemplateField(object):
     def _validate_exact_match(self, forced_value, value, message):
         if not self._is_match(forced_value, value, message):
             return ['Value of field %s does not match %s!=%s' %
-                    (self.name, to_0xhex(value), forced_value)]
+                    (self._get_name(), to_0xhex(value), forced_value)]
         return []
+
+    def _get_name(self, name=None):
+        return name or self.name or self.type
 
 
 class UInt(_TemplateField):
@@ -63,7 +72,7 @@ class UInt(_TemplateField):
 
     def _encode_value(self, value, message):
         if not value:
-            raise AssertionError('Value of %s not set' % self.name if self.name else self.type)
+            raise AssertionError('Value of %s not set' % self._get_name())
         return to_bin_of_length(self.length.value, value)
 
 
@@ -97,7 +106,7 @@ def Length(value):
         return _StaticLength(int(value))
     return _DynamicLength(value)
 
-# TODO: extend int
+
 class _StaticLength(object):
     static = True
 
@@ -127,3 +136,6 @@ class _DynamicLength(object):
     def decode(self, message):
         return self.calc_value(message[self.field].int)
 
+    @property
+    def value(self):
+        raise Exception('Length is dynamic.')

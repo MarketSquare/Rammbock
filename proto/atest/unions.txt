@@ -2,50 +2,44 @@
 Test Setup        Setup protocol, UDP server, and client
 Test teardown     Teardown rammbock and increment port numbers
 Library           Rammbock.py
+Library           message_tools.py
 Resource          Protocols.txt
+Default Tags      Regression
 
 
 *** Test Cases ***
 Simple union
-    Client sends simple union request     simpleU.fooMiddle:0xf00d
+    Client sends simple union request     simpleU:fooMiddle   simpleU.fooMiddle:0xf00d
     ${msg} =    Server receives simple union request
     Should be equal    ${msg.simpleU.fooBig.hex}        0xf00d0000
     Should be equal    ${msg.simpleU.fooMiddle.hex}     0xf00d
     Should be equal    ${msg.simpleU.fooShort.hex}      0xf0
 
 Complex union
-    Client sends complex union request     complexU.complexType.first:1    complexU.complexType.second:2
+    Client sends complex union request     complexU:complexType  complexU.complexType.first:1    complexU.complexType.second:2
     ${msg} =    Server receives complex union request
-    Should be equal    ${msg.complexU.complexType.first.int}     1
-    Should be equal    ${msg.complexU.complexType.second.int}     2
-    Should be equal    ${msg.complexU.basicType.int}     0
+    Should be equal as integers    ${msg.complexU.complexType.first.int}     1
+    Should be equal as integers    ${msg.complexU.complexType.second.int}     2
+    Should be equal as integers    ${msg.complexU.basicType.int}     0
 
-Choosing first union by default
-    Client send hyper complex union request
-    ${msg} =    Server receives hyper complex union request
-    Should be equal    ${msg.hyperU.machine.price.int}     9500
-
-Choosing union
-    Client send hyper complex union request    hyperU:user
+Hyper complex union
+    Client sends hyper complex union request    hyperU:user
     ${msg} =    Server receives hyper complex union request
     Should be equal    ${msg.hyperU.user.name.ascii}     johnsson
 
-Overriding union by setting value
-    Client send hyper complex union request    hyperU.user.name:hasselhoff
-    ${msg} =    Server receives hyper complex union request
-    Should be equal    ${msg.hyperU.user.name.ascii}     hasselhoff
-
 Choosing union when receiving
-    Client send hyper complex union request
+    [Tags]
+    Client sends hyper complex union request    hyperU:machine
     ${msg} =    Server receives hyper complex union request    hyperU:machine
-    Field should not exist    ${msg.hyperU.user}
+    Field should exist        ${msg.hyperU}     machine 
+    Field should not exist    ${msg.hyperU}     user
 
 
 *** Keywords ***
 Client sends simple union request
     [Arguments]    @{params}
     Simple union message
-    Client send message   @{params}
+    Client sends message   @{params}
 
 Server receives simple union request
     [Arguments]    @{params}
@@ -56,7 +50,7 @@ Server receives simple union request
 Client sends complex union request
     [Arguments]    @{params}
     Complex union message
-    Client send message   @{params}
+    Client sends message   @{params}
 
 Server receives complex union request
     [Arguments]    @{params}
@@ -64,17 +58,32 @@ Server receives complex union request
     ${msg} =    Server Receives message    @{params}
     [return]    ${msg}
 
+Client sends hyper complex union request
+    [Arguments]    @{params}
+    Hyper complex union message
+    value   hyperU.user.name    johnsson
+    value   hyperU.user.age    47
+    value   hyperU.machine.id    1337
+    value   hyperU.machine.price    9500
+    Client sends message   @{params}
+
+Server receives hyper complex union request
+    [Arguments]    @{params}
+    Hyper complex union message
+    ${msg} =    Server Receives message    @{params}
+    [return]    ${msg}
+
 Simple union message
-   New message    UnionMessage   Example
+   New message    UnionMessage   Example  messageType:0xb00b
    SimpleUnion   simpleU
 
 Complex union message
-   New message   ComplexUnion    Example
+   New message   ComplexUnion    Example  messageType:0xb00b
    ComplexUnion  complexU
 
 Simple union
    [arguments]    ${name}
-   Union          ${name}
+   Union          Simple   ${name}   
    u32            fooBig
    u16            fooMiddle
    u8             fooShort
@@ -82,7 +91,7 @@ Simple union
 
 Complex union
    [arguments]   ${name}
-   Union         ${name}
+   Union         Complex   ${name}
    u8            basicType
    Tuple         complexType
    End union
@@ -95,13 +104,12 @@ Tuple
     End struct
 
 Hyper Complex union message
-   New message   HyperUnion    Example
+   New message   HyperUnion    Example  messageType:0xb00b
    HyperUnion  hyperU
-
 
 HyperUnion
    [arguments]   ${name}
-   Union         ${name}
+   Union         Hyper   ${name}
    Machine       machine
    User          user
    End union
@@ -109,13 +117,13 @@ HyperUnion
 Machine
     [arguments]     ${name}
     Struct    Machine    ${name}
-    u32       id         1337
-    u16       price      9500
+    u32       id
+    u16       price
     End struct
 
 User
     [arguments]     ${name}
     Struct    User    ${name}
-    char   10       name       johnsson
-    u32            age         47
+    char   10       name
+    u32            age
     End struct
