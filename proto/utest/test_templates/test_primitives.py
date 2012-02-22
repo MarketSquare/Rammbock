@@ -151,13 +151,21 @@ class TestLength(unittest.TestCase):
 
 class TestAlignment(unittest.TestCase):
 
-    def test_align_uint(self):
+    def test_encode_aligned_uint(self):
         uint = UInt(1,'foo', '0xff', align='4')
         encoded = uint.encode({}, None)
         self.assertEquals(encoded.int, 255)
         self.assertEquals(encoded.hex, '0xff')
         self.assertEquals(len(encoded), 4)
         self.assertEquals(encoded._raw, to_bin('0xff00 0000'))
+
+    def test_decode_aligned_uint(self):
+        uint = UInt(1,'foo', None, align='4')
+        decoded = uint.decode(to_bin('0xff00 0000'), None)
+        self.assertEquals(decoded.int, 255)
+        self.assertEquals(decoded.hex, '0xff')
+        self.assertEquals(len(decoded), 4)
+        self.assertEquals(decoded._raw, to_bin('0xff00 0000'))
 
 
 if __name__ == '__main__':

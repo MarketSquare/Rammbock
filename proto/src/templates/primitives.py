@@ -22,10 +22,10 @@ class _TemplateField(object):
         return Field(self.type,self._get_name(name), *self._encode_value(value, parent))
 
     def decode(self, value, message, name=None):
-        decoded_length = self.length.decode_lengths(message)
-        if len(value) < decoded_length[1]: 
-            raise Exception('Not enough data for %s. Needs %s bytes, given %s' % (self._get_name(name), decoded_length[1], len(value)))
-        return Field(self.type, self._get_name(name), value[:decoded_length[1]])
+        length, aligned_length = self.length.decode_lengths(message)
+        if len(value) < aligned_length: 
+            raise Exception('Not enough data for %s. Needs %s bytes, given %s' % (self._get_name(name), aligned_length, len(value)))
+        return Field(self.type, self._get_name(name), value[:length], aligned_len=aligned_length)
 
     def validate(self, parent, paramdict, name=None):
         name = name if name else self.name
