@@ -94,6 +94,12 @@ Char field validation passes with pattern
     ${msg} =   Server receives charred request     string_value:(bar|foo)
     Should be equal   ${msg.string_value.ascii}    foo
 
+Field alignment
+    Client sends aligned request     aligned_8bit_field:0xff
+    ${msg}=    Server receives aligned request
+    Should be equal   ${msg.aligned_8bit_field.hex}   0xff
+    Binary should equal hex   ${msg.aligned_8bit_field._raw}   0xff000000
+    
 
 # TODO: Tests for receiving with a pattern and TCP tests
 
@@ -148,6 +154,17 @@ Server receives charred request
     ${msg} =   Server receives message    @{params}
     [return]     ${msg}
 
-u32
-    [arguments]     ${name}   ${default_value}=""
-    uint  4   ${name}   ${default_value}
+AlignedRequest
+    New message    AlignedRequest  Example    messageType:0xf000
+    u8      aligned_8bit_field    align=4
+
+Client sends aligned request
+    [Arguments]    @{params}
+    AlignedRequest    
+    Client sends message    @{params}
+    
+Server receives aligned request
+    [Arguments]   @{params}
+    AlignedRequest
+    ${msg}=    Server receives message    @{params}
+    [Return]    ${msg}

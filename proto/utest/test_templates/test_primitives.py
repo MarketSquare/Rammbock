@@ -2,7 +2,7 @@ import unittest
 
 from templates.primitives import Length, Char, UInt, PDU
 from Message import _MessageStruct, Field
-from binary_conversions import to_bin
+from binary_conversions import to_bin, to_bin_of_length
 
 
 class TestTemplateFields(unittest.TestCase):
@@ -21,6 +21,7 @@ class TestTemplateFields(unittest.TestCase):
         self.assertEquals(field.name, "char_field")
         self.assertEquals(field.default_value, 'foo')
         self.assertEquals(field.type, 'char')
+        self.assertEquals(field.encode({}, None)._raw, 'foo\x00\x00')
         self.assertEquals(field.encode({}, None).bytes, 'foo\x00\x00')
 
     def test_encoding_missing_value_fails(self):
@@ -129,6 +130,34 @@ class TestLength(unittest.TestCase):
     def test_decode_static(self):
         stat_len = Length('5')
         self.assertEquals(stat_len.decode(None), 5)
+
+    def test_align_static(self):
+        self._assert_alignment('5','4',8)
+        self._assert_alignment('5','1',5)
+        self._assert_alignment('3','4',4)
+        self._assert_alignment('1','4',4)
+        self._assert_alignment('25','4',28)
+        self._assert_alignment('25','',25)
+        self._assert_alignment('25',None,25)
+
+    def _assert_alignment(self, length, alignment, result):
+        self.assertEquals(Length(length, alignment).decode_lengths(None)[1], result)
+
+    def test_align_must_be_int(self):
+        self.assertRaises(Exception, Length, 'foo', 'len')
+        self.assertRaises(Exception, Length, '5', '0')
+        self.assertRaises(Exception, Length, 'foo-1', '-1')
+
+
+class TestAlignment(unittest.TestCase):
+
+    def test_align_uint(self):
+        uint = UInt(1,'foo', '0xff', align='4')
+        encoded = uint.encode({}, None)
+        self.assertEquals(encoded.int, 255)
+        self.assertEquals(encoded.hex, '0xff')
+        self.assertEquals(len(encoded), 4)
+        self.assertEquals(encoded._raw, to_bin('0xff00 0000'))
 
 
 if __name__ == '__main__':

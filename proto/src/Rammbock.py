@@ -181,8 +181,8 @@ class Rammbock(object):
     # TODO: character types
     # TODO: byte alignment support
 
-    def uint(self, length, name, value=None):
-        self._add_field(UInt(length, name, value))
+    def uint(self, length, name, value=None, align=None):
+        self._add_field(UInt(length, name, value, align=align))
 
     def char(self, length, name, value=None):
         self._add_field(Char(length, name, value))

@@ -77,10 +77,11 @@ class MessageHeader(_MessageStruct):
 
 class Field(object):
 
-    def __init__(self, type, name, value):
+    def __init__(self, type, name, value, aligned_len=None):
         self._type = type
         self._name = name
         self._value = value
+        self._length = aligned_len if aligned_len else len(value)
 
     @property
     def name(self):
@@ -115,7 +116,7 @@ class Field(object):
 
     @property
     def _raw(self):
-        return self._value
+        return self._value.ljust(self._length, '\x00')
 
     def __str__(self):
         return self.hex
@@ -124,4 +125,4 @@ class Field(object):
         return '%s = %s' % (self.name, str(self))
 
     def __len__(self):
-        return len(self._value)
+        return self._length

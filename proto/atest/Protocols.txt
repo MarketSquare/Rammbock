@@ -115,16 +115,16 @@ Client Sends hex
     Client Sends binary    ${binary}    @{params}
 
 U8
-    [Arguments]    ${name}    ${value}=${NONE}
-    uint     1     ${name}    ${value}
+    [Arguments]    ${name}    ${value}=${NONE}  ${align}=${NONE}
+    uint     1     ${name}    ${value}      align=${align}
 
 U16
-    [Arguments]    ${name}    ${value}=${NONE}
-    uint     2     ${name}    ${value}
+    [Arguments]    ${name}    ${value}=${NONE}  ${align}=${NONE}
+    uint     2     ${name}    ${value}     align=${align}
 
 U32
-    [Arguments]    ${name}    ${value}=${NONE}
-    uint     4     ${name}    ${value}
+    [Arguments]    ${name}    ${value}=${NONE}  ${align}=${NONE}
+    uint     4     ${name}    ${value}    align=${align}
 
 Teardown rammbock and increment port numbers
     Reset Rammbock

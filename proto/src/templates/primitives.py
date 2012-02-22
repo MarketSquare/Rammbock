@@ -19,13 +19,13 @@ class _TemplateField(object):
 
     def encode(self, paramdict, parent, name=None):
         value = self._get_element_value_and_remove_from_params(paramdict, name)
-        return Field(self.type,self._get_name(name), self._encode_value(value, parent))
+        return Field(self.type,self._get_name(name), *self._encode_value(value, parent))
 
     def decode(self, value, message, name=None):
-        decoded_length = self.length.decode(message)
-        if len(value) < decoded_length: 
-            raise Exception('Not enough data for %s. Needs %s bytes, given %s' % (name, self.length.value, len(value)))
-        return Field(self.type, self._get_name(name), value[:decoded_length])
+        decoded_length = self.length.decode_lengths(message)
+        if len(value) < decoded_length[1]: 
+            raise Exception('Not enough data for %s. Needs %s bytes, given %s' % (self._get_name(name), decoded_length[1], len(value)))
+        return Field(self.type, self._get_name(name), value[:decoded_length[1]])
 
     def validate(self, parent, paramdict, name=None):
         name = name if name else self.name
@@ -48,7 +48,7 @@ class _TemplateField(object):
                 (self._get_name(), to_0xhex(value), forced_pattern)]
 
     def _is_match(self, forced_value, value, message):
-        forced_binary_val = self._encode_value(forced_value, message)   # TODO: Should pass msg
+        forced_binary_val, _ = self._encode_value(forced_value, message)   # TODO: Should pass msg
         return forced_binary_val == value
 
     def _validate_exact_match(self, forced_value, value, message):
@@ -65,15 +65,16 @@ class UInt(_TemplateField):
 
     type = 'uint'
 
-    def __init__(self, length, name, default_value=None):
-        self.length = Length(length)
+    def __init__(self, length, name, default_value=None, align=None):
+        self.length = Length(length, align)
         self.name = name
         self.default_value = str(default_value) if default_value and default_value != '""' else None
 
     def _encode_value(self, value, message):
         if not value:
             raise AssertionError('Value of %s not set' % self._get_name())
-        return to_bin_of_length(self.length.value, value)
+        length, aligned_length = self.length.decode_lengths(message)
+        return to_bin_of_length(length, value), aligned_length
 
 
 class Char(_TemplateField):
@@ -87,7 +88,8 @@ class Char(_TemplateField):
 
     def _encode_value(self, value, message):
         value = value if value else ''
-        return str(value).ljust(self.length.decode(message), '\x00')
+        length, aligned_length = self.length.decode_lengths(message)
+        return str(value).ljust(length,'\x00'), aligned_length
 
 
 class PDU(_TemplateField):
@@ -101,31 +103,47 @@ class PDU(_TemplateField):
         return None
 
 
-def Length(value):
+def Length(value, align=None):
+    if align:
+        align = int(align)
+    else:
+        align = 1
+    if align < 1:
+        raise Exception('Illegal alignment %d' % align)
     if str(value).isdigit():
-        return _StaticLength(int(value))
-    return _DynamicLength(value)
+        return _StaticLength(int(value), align)
+    return _DynamicLength(value, align)
 
 
-class _StaticLength(object):
-    static = True
-
-    def __init__(self, value):
-        self.value = value
+class _Length(object):
+    
+    def _get_aligned_lengths(self, length):
+        return (length, length + (self.align - length % self.align) % self.align)
 
     def decode(self, message):
-        return self.value
+        return self.decode_lengths(message)[0]
 
 
-class _DynamicLength(object):
+class _StaticLength(_Length):
+    static = True
+
+    def __init__(self, value, align):
+        self.value = value
+        self.align = align
+
+    def decode_lengths(self, message):
+        return self._get_aligned_lengths(self.value)
+
+class _DynamicLength(_Length):
     static = False
 
-    def __init__(self, value):
+    def __init__(self, value, align):
         if "-" in value:
             self.field, _, subtractor = value.rpartition('-')
         else:
             self.field, subtractor = value, 0
         self.subtractor = int(subtractor)
+        self.align = align
 
     def calc_value(self, param):
         return param - self.subtractor
@@ -133,8 +151,8 @@ class _DynamicLength(object):
     def solve_parameter(self, length):
         return length + self.subtractor
 
-    def decode(self, message):
-        return self.calc_value(message[self.field].int)
+    def decode_lengths(self, message):
+        return self._get_aligned_lengths(self.calc_value(message[self.field].int))
 
     @property
     def value(self):
