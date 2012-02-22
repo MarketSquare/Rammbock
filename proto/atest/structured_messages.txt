@@ -6,7 +6,7 @@ Resource          Protocols.txt
 Default Tags      Regression
 
 *** Variables ***
-${HEADER} =    0x0100aaaa0e0000
+${HEADER} =    0x0100aaaa000f0000
 
 *** Test Cases ***
 Message with struct
@@ -32,13 +32,37 @@ Message with list validation fails
     Client sends request with list
     Server should fail validation with list   someList[2]:4
 
-Dynamic message
-    [Tags]
+Receive dynamic message
     Client Sends hex    ${HEADER} 03 cafe babe d00d
     ${msg} =    Server Receives dynamic request
     Should be equal    ${msg.pairList[0].first.hex}     0xca
     Should be equal    ${msg.pairList[0].second.hex}    0xfe
     Should be equal    ${msg.pairList[2].first.hex}     0xd0
+
+Encode dynamic message
+    Populate dynamic message  2  0x01  0x02  0x11  0x22
+    ${msg} =    Get message
+    Should be equal    ${msg.pairList[0].first.hex}     0x01
+    Should be equal    ${msg.pairList[0].second.hex}    0x02
+    Should be equal    ${msg.pairList[1].first.hex}     0x11
+
+Reuse struct in another message
+    [Tags]
+    Populate dynamic message  2  0x01  0x02  0x11  0x22
+    ${list msg} =    Get message
+    Value       pair     ${list msg.pairList[0]}
+    Message with struct
+    ${pair msg} =    Get message
+    Should be equal    ${pair msg.pair.first.hex}     0x01
+
+Encoding dynamic message without length fails
+    # TODO: This should perhaps work?
+    Populate dynamic message  ${EMPTY}  0x01  0x02  0x11  0x22
+    Run keyword and expect error   Value of numberOfPairs not set    Get message
+
+Encoding dynamic message with extra list entries fails
+    Populate dynamic message  1  0x01  0x02  0x11  0x22
+    Run keyword and expect error   Unknown fields in pairList *   Get message
 
 Struct containing struct
     Client sends struct with struct   structstruct.mollyMalones.closesAt:4
@@ -50,7 +74,7 @@ Unfinished struct fails
     Struct  MyStruct  myStruct
     u8    foo
     Get message fails because 'myStruct' is not completed
-     
+
 
 *** Keywords ***
 Client sends request with struct
@@ -100,6 +124,15 @@ Server Receives dynamic request
     ${msg} =    Server Receives message    @{params}
     [return]    ${msg}
 
+Populate dynamic message
+    [Arguments]   ${len}  ${0 first}  ${0 second}  ${1 first}  ${1 second}
+    Dynamic Message
+    value   numberOfPairs   ${len}
+    value   pairList[0].first   ${0 first}
+    value   pairList[0].second   ${0 second}
+    value   pairList[1].first   ${1 first}
+    value   pairList[1].second   ${1 second}
+
 List message
     New message    ListRequest    Example    messageType:0xaaaa
     Array   5    u32    someList    3
@@ -116,14 +149,14 @@ Message with struct
 Array
     [arguments]    ${size}    ${type}    ${name}    ${value}=
     New List       ${size}    ${name}
-    Run keyword    ${type}    ${name}    ${value}
+    Run keyword    ${type}    ${EMPTY}   ${value}
     End List
 
 Pair
-    [arguments]     ${name}
+    [arguments]     ${name}=     ${value}=
     Struct    Pair    ${name}
-    u8    first
-    u8    second
+    u8    first       ${value}
+    u8    second      ${value}
     End struct
 
 Message with struct in struct
