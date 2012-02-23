@@ -1,8 +1,8 @@
 *** Settings ***
 Test Setup        Setup protocol, UDP server, and client
-Test teardown     Teardown rammbock and increment port numbers
+Test Teardown     Teardown rammbock and increment port numbers
+Default Tags      regression
 Resource          Protocols.txt
-Default tags      regression
 
 *** Test Cases ***
 Define And Use A Message Template
@@ -39,10 +39,16 @@ UDP Server uses protocol and receives with pattern validation
     Should be equal    ${msg.value.hex}    0x00000005
 
 TCP server uses protocol and receives with pattern validation
-    [Tags]
     [Setup]  Setup protocol, TCP server, and client
     Client Sends simple request
     Server Receives simple request
+
+TCP server receives from two clients with pattern validation
+    [Setup]    Define protocol, start tcp server and two clients    Example
+    Named client sends simple request    ExampleClient1    value:0xcafebabe
+    Named client sends simple request    ExampleClient2    value:0xdeadbeef
+    Server Receives simple request from named connection    Connection2    value:0xdeadbeef
+    Server Receives simple request from named connection    Connection1    value:0xcafebabe
 
 Server uses protocol and receives with pattern validation failing
     Client Sends hex    0x 01 00 dddd 000c 0000 00000005
@@ -94,6 +100,7 @@ Char field validation passes with pattern
     ${msg} =   Server receives charred request     string_value:(bar|foo)
     Should be equal   ${msg.string_value.ascii}    foo
 
+<<<<<<< HEAD
 Field alignment
     Client sends aligned request     aligned_8bit_field:0xff
     ${msg}=    Server receives aligned request
@@ -103,6 +110,8 @@ Field alignment
 
 # TODO: Tests for receiving with a pattern and TCP tests
 
+=======
+>>>>>>> c223b322499dfdea49c357bb864cb653d667f972
 *** Keywords ***
 Client Sends simple request
     [Arguments]    @{params}
@@ -110,11 +119,24 @@ Client Sends simple request
     u32    value    0xdeadbeef
     Client Sends message    @{params}
 
+Named client sends simple request
+    [Arguments]    ${client}=   @{params}
+    New message    ValueRequest  Example    messageType:0xdddd    flags:0xffff
+    u32    value    0xdeadbeef
+    Client Sends message   name=${client}   @{params}
+
 Server Sends simple request
     [Arguments]    @{params}
     New message    ValueRequest  Example    messageType:0xdddd    flags:0xffff
     u32    value    0xdeadbeef
     Server Sends message    @{params}
+
+Server Receives simple request from named connection
+    [Arguments]    ${connection}=  @{params}
+    New message    ValueRequest   Example
+    u32    value
+    ${msg} =    Server receives message    connection=${connection}  @{params}
+    [return]    ${msg}
 
 Server Receives simple request
     [Arguments]    @{params}

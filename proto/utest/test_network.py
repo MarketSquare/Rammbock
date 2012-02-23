@@ -3,12 +3,15 @@ import time
 import socket
 from threading import Timer
 from Network import UDPServer, TCPServer, UDPClient, TCPClient
+from templates.containers import Protocol
+from templates.primitives import UInt, PDU
 
 LOCAL_IP = '127.0.0.1'
 SERVER_PORT = 12345
 SERVER_PORT_2 = 12346
 CLIENT_PORT = 54321
 CLIENT_PORT_2 = 64321
+CONNECTION_ALIAS = "Connection alias"
 
 
 class TestNetwork(unittest.TestCase):
@@ -42,6 +45,18 @@ class TestNetwork(unittest.TestCase):
         client.send('foofaa')
         server.accept_connection()
         self._assert_receive(server, 'foofaa')
+
+    def test_tcp_server_with_queued_connections(self):
+        server, client = self._tcp_server_and_client(SERVER_PORT, CLIENT_PORT)
+        TCPClient().connect_to(LOCAL_IP, SERVER_PORT)
+        server.accept_connection()
+        server.accept_connection()
+
+    def test_tcp_server_with_named_connection(self):
+        server = TCPServer(LOCAL_IP, 1337)
+        client = TCPClient().connect_to(LOCAL_IP, 1337)
+        server.accept_connection(alias=CONNECTION_ALIAS + "1")
+        self.assertTrue(server._connections.get(CONNECTION_ALIAS + "1"))
 
     def test_setting_port_no_ip(self):
         server, client = self._udp_server_and_client(SERVER_PORT, CLIENT_PORT, client_ip='')
@@ -103,6 +118,13 @@ class TestNetwork(unittest.TestCase):
         msg = self.net.server_receive(name)
         self.assertEquals(text, msg)
 
+
+def _get_template():
+    protocol = Protocol('Test')
+    protocol.add(UInt(1, 'id', 1))
+    protocol.add(UInt(2, 'length', None))
+    protocol.add(PDU('length-2'))
+    return protocol
 
 if __name__ == "__main__":
     unittest.main()

@@ -4,6 +4,7 @@ from binary_conversions import to_hex
 
 UDP_BUFFER_SIZE = 65536
 TCP_BUFFER_SIZE = 1000000
+TCP_MAX_QUEUED_CONNECTIONS = 5
 
 class _WithTimeouts(object):
 
@@ -103,10 +104,10 @@ class TCPServer(_Server):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._bind_socket()
-        self._socket.listen(1)
+        self._socket.listen(TCP_MAX_QUEUED_CONNECTIONS)
         self._connections = _NamedCache('connection')
+        self._message_streams = _NamedCache('message stream')
         self._protocol = protocol
-        self._message_stream = self._get_message_stream(self)
 
     def receive(self, timeout=None, alias=None):
         return self.receive_from(timeout, alias)[0]
@@ -122,6 +123,7 @@ class TCPServer(_Server):
     def accept_connection(self, alias=None):
         connection, client_address = self._socket.accept()
         self._connections.add((connection, client_address), alias)
+        self._message_streams.add(self._get_message_stream(_Connection(connection, client_address)), alias)
         return client_address
 
     def send(self, msg, alias=None):
@@ -141,7 +143,30 @@ class TCPServer(_Server):
     def close_connection(self, alias=None):
         raise Exception("Not yet implemented")
 
+    def get_message(self, message_template, message_fields, timeout=None, connection=None):
+        # TODO: duplication with UDPServer and _Client
+        # TODO: Wrap connection to server like wrapper with message logging
+        stream = self._message_streams.get(connection)
+        msg = stream.get(message_template, timeout=timeout)
+        errors = message_template.validate(msg, message_fields)
+        if errors:
+            print "Received %s" % repr(msg)
+            print '\n'.join(errors)
+            raise AssertionError(errors[0])
+        print "*DEBUG* Received %s" % repr(msg)
+        return msg
 
+
+class _Connection(_WithTimeouts):
+
+    def __init__(self, socket, client_address):
+        self._socket = socket
+        self._ip, self._port = client_address
+
+    def receive(self, timeout=None):
+        self._socket.settimeout(self._get_timeout(timeout))
+        msg = self._socket.recv(TCP_BUFFER_SIZE)
+        return msg
 
 class _Client(_WithTimeouts):
 

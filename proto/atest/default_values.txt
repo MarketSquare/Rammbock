@@ -2,7 +2,7 @@
 Resource          Protocols.txt
 Test Setup        Setup protocol, UDP server, and client
 Test teardown     Teardown rammbock and increment port numbers
-Force Tags        Regression
+Default Tags        Regression
 
 
 *** Test cases ***
@@ -22,6 +22,26 @@ Default values in get message
      ${msg}=      Get message    faa:200
      Verify message fields   ${msg}
 
+Setting a default value for all unset msg fields
+    [Tags]
+    ExampleMessage
+    Default    *         0
+    ${msg}=    Get message
+    Should be equal as integers   0   ${msg.faa.int}
+    Should be equal as integers   2   ${msg.bar.int}
+
+Setting a default value for all fields of a subelement
+    [Tags]
+    ComplexMessage
+    Value      wonker.id    10
+    Value      bonker.id    222
+    Default    wonker       0
+    Default    bonker       999
+    ${msg}=    Get message
+    Should be equal as integers   0   ${msg.faa.int}
+    Should be equal as integers   2   ${msg.bar.int}
+    
+
     
 *** Keywords ***
 Verify message fields
@@ -40,6 +60,19 @@ Value ExampleMessage
     ExampleMessage
     Value           bar      10
     Value           faa      20
+
+ComplexMessage
+    New Message     ComplexMessage    Example    messageType:0xbabe
+    Product        wonker
+    Product        bonker
+    
+Product
+    [Arguments]    ${name}
+    Struct   Product   ${name}
+    u32          id
+    u32          price
+    u32          category
+    End struct
     
 Client sends
     [Arguments]    ${message type}   @{params}

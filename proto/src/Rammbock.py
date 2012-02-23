@@ -117,7 +117,7 @@ class Rammbock(object):
 
     def new_message(self, message_name, protocol=None, *parameters):
         """Define a new message template.
-    
+
         Parameters have to be header fields."""
         if self._protocol_in_progress:
             raise Exception("Protocol definition in progress. Please finish it before starting to define a message.")
@@ -147,7 +147,7 @@ class Rammbock(object):
 
     def client_sends_message(self, *parameters):
         """Send a message.
-    
+
         Parameters have to be message fields."""
         configs, message_fields = self._get_paramaters_with_defaults(parameters)
         msg = self._encode_message(message_fields)
@@ -156,7 +156,7 @@ class Rammbock(object):
     # FIXME: support "send to" somehow. A new keyword?
     def server_sends_message(self, *parameters):
         """Send a message.
-    
+
         Parameters have to be message fields."""
         configs, message_fields = self._get_paramaters_with_defaults(parameters)
         msg = self._encode_message(message_fields)
@@ -172,7 +172,7 @@ class Rammbock(object):
 
     def server_receives_message(self, *parameters):
         """Receive a message object.
-    
+
         Parameters that have been given are validated against message fields."""
         configs, message_fields = self._get_paramaters_with_defaults(parameters)
         server = self._servers.get(configs.get('name'))
@@ -251,13 +251,11 @@ class Rammbock(object):
         equals_index = param.find('=')
         # TODO: Cleanup. There must be a cleaner way.
         # Luckily test_rammbock.py has unit tests covering all paths.
-        if colon_index==-1 and equals_index==-1:
+        if colon_index == -1 and equals_index == -1:
             raise Exception('Illegal parameter %s' % param)
-        elif equals_index==-1:
+        elif equals_index == -1:
             self._set_name_and_value(fields, ':', param)
-        elif colon_index==-1:
-            self._set_name_and_value(configs, '=', param)
-        elif colon_index>equals_index:
+        elif colon_index == -1 or colon_index > equals_index:
             self._set_name_and_value(configs, '=', param)
         else:
             self._set_name_and_value(fields, ':', param)
