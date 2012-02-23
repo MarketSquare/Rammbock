@@ -100,7 +100,6 @@ Char field validation passes with pattern
     ${msg} =   Server receives charred request     string_value:(bar|foo)
     Should be equal   ${msg.string_value.ascii}    foo
 
-<<<<<<< HEAD
 Field alignment
     Client sends aligned request     aligned_8bit_field:0xff
     ${msg}=    Server receives aligned request
@@ -110,8 +109,7 @@ Field alignment
 
 # TODO: Tests for receiving with a pattern and TCP tests
 
-=======
->>>>>>> c223b322499dfdea49c357bb864cb653d667f972
+
 *** Keywords ***
 Client Sends simple request
     [Arguments]    @{params}
