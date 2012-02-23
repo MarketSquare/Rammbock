@@ -1,8 +1,8 @@
 *** Settings ***
 Test Setup        Setup protocol, UDP server, and client
-Test teardown     Teardown rammbock and increment port numbers
+Test Teardown     Teardown rammbock and increment port numbers
+Default Tags      regression
 Resource          Protocols.txt
-Default tags      regression
 
 *** Test Cases ***
 Define And Use A Message Template
@@ -44,12 +44,11 @@ TCP server uses protocol and receives with pattern validation
     Server Receives simple request
 
 TCP server receives from two clients with pattern validation
-    [Tags]
-    [setup]  Define protocol, start tcp server and two clients
-    Named client sends simple request  ExampleClient1  value:0xcafebabe
-    Named client sends simple request  ExampleClient2  value:0xdeadbeef
-    Server Receives simple request from named connection  ExampleConnection2  value:0xdeadbeef
-    Server Receives simple request from named connection  ExampleConnection1  value:0xcafebabe
+    [Setup]    Define protocol, start tcp server and two clients    Example
+    Named client sends simple request    ExampleClient1    value:0xcafebabe
+    Named client sends simple request    ExampleClient2    value:0xdeadbeef
+    Server Receives simple request from named connection    Connection2    value:0xdeadbeef
+    Server Receives simple request from named connection    Connection1    value:0xcafebabe
 
 Server uses protocol and receives with pattern validation failing
     Client Sends hex    0x 01 00 dddd 000c 0000 00000005
@@ -100,9 +99,6 @@ Char field validation passes with pattern
     Client sends charred request
     ${msg} =   Server receives charred request     string_value:(bar|foo)
     Should be equal   ${msg.string_value.ascii}    foo
-
-
-# TODO: Tests for receiving with a pattern and TCP tests
 
 *** Keywords ***
 Client Sends simple request
