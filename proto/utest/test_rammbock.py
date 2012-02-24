@@ -3,11 +3,6 @@ import unittest
 from Rammbock import Rammbock
 
 
-class TestRammbock(unittest.TestCase):
-
-    def setUp(self):
-        self.rammbock = Rammbock()
-
 class TestParamParsing(unittest.TestCase):
 
     def setUp(self):
