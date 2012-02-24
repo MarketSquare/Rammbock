@@ -147,7 +147,7 @@ Server Receives simple request from named connection
     [Arguments]    ${connection}=  @{params}
     New message    ValueRequest   Example
     u32    value
-    ${msg} =    Server receives message    connection=${connection}  @{params}
+    ${msg} =    Server receives message    alias=${connection}  @{params}
     [return]    ${msg}
 
 Server Receives simple request

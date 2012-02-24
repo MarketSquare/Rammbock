@@ -44,8 +44,7 @@ class _Server(_WithTimeouts):
         return self._protocol.get_message_stream(BufferedStream(connection, self._default_timeout))
 
     def get_message(self, message_template, message_fields, timeout=None, alias=None):
-        # TODO: duplication with UDPServer and _Client
-        # TODO: Wrap connection to server like wrapper with message logging
+        # TODO: duplication with _Client
         msg = self._message_stream.get(message_template, timeout=timeout)
         errors = message_template.validate(msg, message_fields)
         if errors:
@@ -143,10 +142,10 @@ class TCPServer(_Server):
     def close_connection(self, alias=None):
         raise Exception("Not yet implemented")
 
-    def get_message(self, message_template, message_fields, timeout=None, connection=None):
+    def get_message(self, message_template, message_fields, timeout=None, alias=None):
         # TODO: duplication with UDPServer and _Client
         # TODO: Wrap connection to server like wrapper with message logging
-        stream = self._message_streams.get(connection)
+        stream = self._message_streams.get(alias)
         msg = stream.get(message_template, timeout=timeout)
         errors = message_template.validate(msg, message_fields)
         if errors:
