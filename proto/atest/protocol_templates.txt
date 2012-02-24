@@ -109,6 +109,20 @@ Field alignment
 
 # TODO: Tests for receiving with a pattern and TCP tests
 
+Starting new protocol in middle of old protocol definition fails
+    start protocol description  foo
+    Run keyword and expect error  *  start protocol description  bar
+
+Redifining protocol fails
+    start protocol description  foo
+    uint  1  length
+    pdu   length
+    end protocol description
+    run keyword and expect error  *  start protocol description  foo
+
+Defining message while defining protocol fails
+    start protocol description  foo
+    run keyword and expect error  *  new message  foo
 
 *** Keywords ***
 Client Sends simple request
