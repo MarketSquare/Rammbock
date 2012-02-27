@@ -6,6 +6,7 @@ UDP_BUFFER_SIZE = 65536
 TCP_BUFFER_SIZE = 1000000
 TCP_MAX_QUEUED_CONNECTIONS = 5
 
+
 class _WithTimeouts(object):
 
     _default_timeout = 10
@@ -21,7 +22,16 @@ class _WithTimeouts(object):
         self._default_timeout = self._get_timeout(timeout)
 
 
-class _Server(_WithTimeouts):
+class _WithMessageStreams(object):
+
+    def get_message(self, message_template, timeout=None):
+        return self._get_from_stream(message_template, self._message_stream, timeout=timeout)
+
+    def _get_from_stream(self, message_template, stream, timeout):
+        return stream.get(message_template, timeout=timeout)
+
+
+class _Server(_WithTimeouts, _WithMessageStreams):
 
     def __init__(self, ip, port, timeout=None):
         self._ip = ip
@@ -42,11 +52,6 @@ class _Server(_WithTimeouts):
         if not self._protocol:
             return None
         return self._protocol.get_message_stream(BufferedStream(connection, self._default_timeout))
-
-    def get_message(self, message_template, timeout=None, alias=None):
-        # TODO: duplication with _Client
-        msg = self._message_stream.get(message_template, timeout=timeout)
-        return msg
 
 
 class UDPServer(_Server):
@@ -137,11 +142,8 @@ class TCPServer(_Server):
         raise Exception("Not yet implemented")
 
     def get_message(self, message_template, timeout=None, alias=None):
-        # TODO: duplication with UDPServer and _Client
-        # TODO: Wrap connection to server like wrapper with message logging
         stream = self._message_streams.get(alias)
-        return stream.get(message_template, timeout=timeout)
-        
+        return self._get_from_stream(message_template, stream, timeout=timeout)
 
 
 class _Connection(_WithTimeouts):
@@ -155,7 +157,7 @@ class _Connection(_WithTimeouts):
         msg = self._socket.recv(TCP_BUFFER_SIZE)
         return msg
 
-class _Client(_WithTimeouts):
+class _Client(_WithTimeouts, _WithMessageStreams):
 
     def __init__(self, timeout=None, protocol=None):
         self._is_connected = False
@@ -217,10 +219,6 @@ class _Client(_WithTimeouts):
 
     def get_address(self):
         return self._socket.getsockname()
-
-    def get_message(self, message_template, timeout=None):
-        return self._message_stream.get(message_template, timeout=timeout)
-        # TODO: duplication with UDPServer
 
 
 class UDPClient(_Client):
