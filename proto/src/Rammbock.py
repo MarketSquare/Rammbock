@@ -1,12 +1,10 @@
-# API prototype
+from contextlib import contextmanager
 from Network import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 
 from templates import Protocol, UInt, PDU, MessageTemplate, Char, Struct, List, UnionTemplate
 from binary_conversions import to_0xhex, to_bin
 
-# TODO: pass configuration parameters like timeout, name, and connection using caps and ':'
-# example: TIMEOUT:12   CONNECTION:Alias
-# This should make it easier to separate configs from message field arguments
+
 class Rammbock(object):
 
     def __init__(self):
@@ -165,35 +163,29 @@ class Rammbock(object):
         """Receive a message object.
     
         Parameters that have been given are validated against message fields."""
-        configs, message_fields = self._get_paramaters_with_defaults(parameters)
-        msg = self._client_receive(configs)
-        self._validate_message(msg, message_fields)
-        print "*DEBUG* Received %s" % repr(msg)
-        return msg
+        with self._receive(self._clients, *parameters) as (msg, message_fields):
+            self._validate_message(msg, message_fields)
+            return msg
 
     def client_receives_without_validation(self, *parameters):
-        configs, _ = self._get_paramaters_with_defaults(parameters)
-        msg = self._client_receive(configs)
-        print "*DEBUG* Received %s" % repr(msg)
-        return msg
-
-    def _client_receive(self, configs):
-        client = self._clients.get(configs.get('name'))
-        return client.get_message(self._get_message_template(), **configs)
+        with self._receive(self._clients, *parameters) as (msg, _):
+            return msg
 
     def server_receives_message(self, *parameters):
         """Receive a message object.
 
         Parameters that have been given are validated against message fields."""
-        configs, message_fields = self._get_paramaters_with_defaults(parameters)
-        msg = self._server_receive(configs)
-        self._validate_message(msg, message_fields)
-        print "*DEBUG* Received %s" % repr(msg)        
-        return msg
+        with self._receive(self._servers, *parameters) as (msg, message_fields):
+            self._validate_message(msg, message_fields)
+            return msg
 
-    def _server_receive(self, configs):
-        server = self._servers.get(configs.get('name'))
-        return server.get_message(self._get_message_template(), **configs)
+    def server_receives_without_validation(self, *parameters):
+        with self._receive(self._servers, *parameters) as (msg, _):
+            return msg
+
+    def validate_message(self, msg, *parameters):
+        _, message_fields = self._get_paramaters_with_defaults(parameters)
+        self._validate_message(msg, message_fields)
 
     def _validate_message(self, msg, message_fields):
         errors = self._get_message_template().validate(msg, message_fields)
@@ -202,18 +194,13 @@ class Rammbock(object):
             print '\n'.join(errors)
             raise AssertionError(errors[0])
 
-    def validate_message(self, msg, *parameters):
-        _, message_fields = self._get_paramaters_with_defaults(parameters)
-        self._validate_message(msg, message_fields)
-
-    def server_receives_without_validation(self, *parameters):
-        configs, _ = self._get_paramaters_with_defaults(parameters)
-        msg = self._server_receive(configs)
+    @contextmanager
+    def _receive(self, nodes, *parameters):
+        configs, message_fields = self._get_paramaters_with_defaults(parameters)
+        node = nodes.get(configs.get('name'))
+        msg = node.get_message(self._get_message_template(), **configs)
+        yield msg, message_fields
         print "*DEBUG* Received %s" % repr(msg)
-        return msg
-
-    # TODO: character types
-    # TODO: byte alignment support
 
     def uint(self, length, name, value=None, align=None):
         self._add_field(UInt(length, name, value, align=align))
