@@ -31,7 +31,7 @@ class _TemplateField(object):
         name = name if name else self.name
         field = parent[name]
         value = field.bytes
-        forced_value = self._get_element_value(paramdict, name)
+        forced_value = self._get_element_value_and_remove_from_params(paramdict, name)
         if not forced_value or forced_value == 'None':
             return []
         if forced_value.startswith('('):

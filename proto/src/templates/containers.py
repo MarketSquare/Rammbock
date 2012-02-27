@@ -11,6 +11,9 @@ class _Template(object):
         self._fields = []
         self.name = name
 
+    def _pretty_print_fields(self, fields):
+        return ', '.join('%s:%s' % (key, value) for key, value in fields.items())
+            
     def add(self, field):
         if field.has_length and not field.length.static:
             if not field.length.field in [elem.name for elem in self._fields]:
@@ -25,7 +28,7 @@ class _Template(object):
             if encoded:
                 struct[field.name] = encoded
         if params:
-            raise Exception('Unknown fields in header %s' % str(params))
+            raise Exception('Unknown fields %s' % self._pretty_print_fields(params))
 
     def decode(self, data, parent=None, name=None):
         message = self._get_struct(name)
@@ -35,11 +38,12 @@ class _Template(object):
             data_index += len(message[field.name])
         return message
 
-
     def validate(self, message, message_fields):
         errors = []
         for field in self._fields:
             errors += field.validate(message, message_fields)
+        if message_fields:
+            raise Exception('Unknown fields %s' % self._pretty_print_fields(message_fields))
         return errors
 
     def _get_params_sub_tree(self, params, name=None):
@@ -206,7 +210,7 @@ class List(_Template):
         for index in range(0, self.length.decode(parent)):
             list[str(index)] = self.field.encode(params_subtree, parent, name=str(index))
         if params_subtree:
-            raise Exception('Unknown fields in %s %s' % (name, str(params_subtree)))
+            raise Exception('Unknown fields in %s %s' % (name, self._pretty_print_fields(params_subtree)))
         return list
 
     @property
@@ -232,6 +236,8 @@ class List(_Template):
         errors = []
         for index in range(0,self.length.decode(parent)):
             errors += self.field.validate(list, params_subtree, name=str(index))
+        if params_subtree:
+            raise Exception('Unknown fields %s' % self._pretty_print_fields(params_subtree))
         return errors
 
     def _get_params_sub_tree(self, params, name=None):

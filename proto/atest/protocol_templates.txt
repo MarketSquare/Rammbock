@@ -131,6 +131,22 @@ Client receive and validate separately
     Server Sends simple request
     ${msg}=    Client receives without validation
     Validate message    ${msg}
+    
+Client receive and validate fails
+    Client sends request and server receives it
+    Server Sends simple request
+    ${msg}=    Client receives without validation
+    Validation fails    ${msg}    Value of field value does not match*    value:0xfeedd00d
+
+Server receive and validate fails
+    Client sends simple request
+    ${msg}=    Server receives without validation
+    Validation fails    ${msg}    Value of field value does not match*    value:0xfeedd00d
+
+Validate fails when trying to validate nonexistent field
+    Client sends simple request
+    ${msg}=    Server receives without validation
+    Validation fails    ${msg}    Unknown fields foo:0xfeedd00d     foo:0xfeedd00d
 
 
 *** Keywords ***
@@ -211,3 +227,9 @@ Server receives aligned request
     AlignedRequest
     ${msg}=    Server receives message    @{params}
     [Return]    ${msg}
+
+Validation fails
+    [Arguments]    ${msg}    ${error}    @{parameters}
+    Run keyword and expect error   ${error}    Validate message    ${msg}   @{parameters}
+
+    
