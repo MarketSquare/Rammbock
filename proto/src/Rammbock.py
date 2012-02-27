@@ -123,7 +123,7 @@ class Rammbock(object):
             raise Exception("Protocol definition in progress. Please finish it before starting to define a message.")
         proto = self._get_protocol(protocol)
         _, header_fields = self._parse_parameters(parameters)
-        self._message_stack.append(MessageTemplate(message_name, proto, header_fields))
+        self._message_stack = [MessageTemplate(message_name, proto, header_fields)]
         self._default_values = {}
 
     def get_message(self, *parameters):
@@ -140,10 +140,9 @@ class Rammbock(object):
         return msg
 
     def _get_message_template(self):
-        template = self._message_stack.pop()
-        if self._message_stack:
-            raise Exception('Message definition not complete. %s not completed.' % template.name)
-        return template
+        if len(self._message_stack) != 1:
+            raise Exception('Message definition not complete. %s not completed.' % self._message_stack[-1].name)
+        return self._message_stack[0]
 
     def client_sends_message(self, *parameters):
         """Send a message.
@@ -167,16 +166,51 @@ class Rammbock(object):
     
         Parameters that have been given are validated against message fields."""
         configs, message_fields = self._get_paramaters_with_defaults(parameters)
+        msg = self._client_receive(configs)
+        self._validate_message(msg, message_fields)
+        print "*DEBUG* Received %s" % repr(msg)
+        return msg
+
+    def client_receives_without_validation(self, *parameters):
+        configs, _ = self._get_paramaters_with_defaults(parameters)
+        msg = self._client_receive(configs)
+        print "*DEBUG* Received %s" % repr(msg)
+        return msg
+
+    def _client_receive(self, configs):
         client = self._clients.get(configs.get('name'))
-        return client.get_message(self._get_message_template(), message_fields, **configs)
+        return client.get_message(self._get_message_template(), **configs)
 
     def server_receives_message(self, *parameters):
         """Receive a message object.
 
         Parameters that have been given are validated against message fields."""
         configs, message_fields = self._get_paramaters_with_defaults(parameters)
+        msg = self._server_receive(configs)
+        self._validate_message(msg, message_fields)
+        print "*DEBUG* Received %s" % repr(msg)        
+        return msg
+
+    def _server_receive(self, configs):
         server = self._servers.get(configs.get('name'))
-        return server.get_message(self._get_message_template(), message_fields, **configs)
+        return server.get_message(self._get_message_template(), **configs)
+
+    def _validate_message(self, msg, message_fields):
+        errors = self._get_message_template().validate(msg, message_fields)
+        if errors:
+            print "Validation failed for %s" % repr(msg)
+            print '\n'.join(errors)
+            raise AssertionError(errors[0])
+
+    def validate_message(self, msg, *parameters):
+        _, message_fields = self._get_paramaters_with_defaults(parameters)
+        self._validate_message(msg, message_fields)
+
+    def server_receives_without_validation(self, *parameters):
+        configs, _ = self._get_paramaters_with_defaults(parameters)
+        msg = self._server_receive(configs)
+        print "*DEBUG* Received %s" % repr(msg)
+        return msg
 
     # TODO: character types
     # TODO: byte alignment support

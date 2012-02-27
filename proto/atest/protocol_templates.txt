@@ -105,9 +105,6 @@ Field alignment
     ${msg}=    Server receives aligned request
     Should be equal   ${msg.aligned_8bit_field.hex}   0xff
     Binary should equal hex   ${msg.aligned_8bit_field._raw}   0xff000000
-    
-
-# TODO: Tests for receiving with a pattern and TCP tests
 
 Starting new protocol in middle of old protocol definition fails
     start protocol description  foo
@@ -123,6 +120,18 @@ Redifining protocol fails
 Defining message while defining protocol fails
     start protocol description  foo
     run keyword and expect error  *  new message  foo
+    
+Server receive and validate separately
+    Client Sends simple request
+    ${msg}=    Server receives without validation
+    Validate message    ${msg}
+
+Client receive and validate separately
+    Client sends request and server receives it
+    Server Sends simple request
+    ${msg}=    Client receives without validation
+    Validate message    ${msg}
+
 
 *** Keywords ***
 Client Sends simple request
