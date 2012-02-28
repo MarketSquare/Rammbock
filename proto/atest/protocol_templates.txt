@@ -6,11 +6,11 @@ Resource          Protocols.txt
 
 *** Test Cases ***
 Define And Use A Message Template
-    [setup]  Define Simple Protocol
+    [Setup]    Define Simple Protocol
     Defined Protocol is usable in client
 
 Undefined protocol cannot be used
-    [setup]  Define Simple Protocol
+    [Setup]    Define Simple Protocol
     Using undefined protocol in client fails
 
 Client uses protocol and sends
@@ -35,11 +35,11 @@ Server uses protocol and receives
 
 UDP Server uses protocol and receives with pattern validation
     Client Sends hex    0x 01 00 dddd 000c 0000 00000005
-    ${msg} =    Server Receives simple request   value:(4|5)
+    ${msg} =    Server Receives simple request    value:(4|5)
     Should be equal    ${msg.value.hex}    0x00000005
 
 TCP server uses protocol and receives with pattern validation
-    [Setup]  Setup protocol, TCP server, and client
+    [Setup]    Setup protocol, TCP server, and client
     Client Sends simple request
     Server Receives simple request
 
@@ -52,7 +52,7 @@ TCP server receives from two clients with pattern validation
 
 Server uses protocol and receives with pattern validation failing
     Client Sends hex    0x 01 00 dddd 000c 0000 00000005
-    Run keyword and expect error    Value of field value does not match *   Server Receives simple request   value:(4|6)
+    Run keyword and expect error    Value of field value does not match *    Server Receives simple request    value:(4|6)
 
 Server uses protocol with header field values and receives
     Client Sends hex    0x 01 00 dddd 000c 0000 cafebabe
@@ -66,7 +66,7 @@ Server uses protocol and value validation fails
 Server uses protocol and messages arrive out of order
     Client Sends hex    0x 01 00 aaaa 000c 0000 deadbeef
     Client Sends hex    0x 01 00 dddd 000c 0000 cafebabe
-    ${msg_dddd} =      Server Receives simple request with header    messageType:0xdddd
+    ${msg_dddd} =    Server Receives simple request with header    messageType:0xdddd
     Should be equal    ${msg_dddd._header.messageType.hex}    0xdddd
 
 Message field type conversions
@@ -83,44 +83,44 @@ Access header
 
 Char fields
     Client sends charred request
-    ${msg} =   Server receives charred request
-    Should be equal   ${msg.string_value.ascii}    foo
+    ${msg} =    Server receives charred request
+    Should be equal    ${msg.string_value.ascii}    foo
 
 Char field validation passes
     Client sends charred request
-    ${msg} =   Server receives charred request     string_value:foo
-    Should be equal   ${msg.string_value.ascii}    foo
+    ${msg} =    Server receives charred request    string_value:foo
+    Should be equal    ${msg.string_value.ascii}    foo
 
 Char field validation fails
     Client sends charred request
-    Run keyword and expect error   Value of field string_value does not match *    Server receives charred request     string_value:bar
+    Run keyword and expect error    Value of field string_value does not match *    Server receives charred request    string_value:bar
 
 Char field validation passes with pattern
     Client sends charred request
-    ${msg} =   Server receives charred request     string_value:(bar|foo)
-    Should be equal   ${msg.string_value.ascii}    foo
+    ${msg} =    Server receives charred request    string_value:(bar|foo)
+    Should be equal    ${msg.string_value.ascii}    foo
 
 Field alignment
-    Client sends aligned request     aligned_8bit_field:0xff
+    Client sends aligned request    aligned_8bit_field:0xff
     ${msg}=    Server receives aligned request
-    Should be equal   ${msg.aligned_8bit_field.hex}   0xff
-    Binary should equal hex   ${msg.aligned_8bit_field._raw}   0xff000000
+    Should be equal    ${msg.aligned_8bit_field.hex}    0xff
+    Binary should equal hex    ${msg.aligned_8bit_field._raw}    0xff000000
 
 Starting new protocol in middle of old protocol definition fails
-    start protocol description  foo
-    Run keyword and expect error  *  start protocol description  bar
+    start protocol description    foo
+    Run keyword and expect error    *    start protocol description    bar
 
 Redifining protocol fails
-    start protocol description  foo
-    uint  1  length
-    pdu   length
+    start protocol description    foo
+    uint    1    length
+    pdu    length
     end protocol description
-    run keyword and expect error  *  start protocol description  foo
+    run keyword and expect error    *    start protocol description    foo
 
 Defining message while defining protocol fails
-    start protocol description  foo
-    run keyword and expect error  *  new message  foo
-    
+    start protocol description    foo
+    run keyword and expect error    *    new message    foo
+
 Server receive and validate separately
     Client Sends simple request
     ${msg}=    Server receives without validation
@@ -131,7 +131,7 @@ Client receive and validate separately
     Server Sends simple request
     ${msg}=    Client receives without validation
     Validate message    ${msg}
-    
+
 Client receive and validate fails
     Client sends request and server receives it
     Server Sends simple request
@@ -146,55 +146,57 @@ Server receive and validate fails
 Validate fails when trying to validate nonexistent field
     Client sends simple request
     ${msg}=    Server receives without validation
-    Validation fails    ${msg}    Unknown fields foo:0xfeedd00d     foo:0xfeedd00d
+    Validation fails    ${msg}    Unknown fields foo:0xfeedd00d    foo:0xfeedd00d
 
+Error when giving non-ascii parameters
+    Run keyword and expect error    Only ascii characters are supported in parameters.    New message    ValueRequest    Example    messägeType:0xdddd
 
 *** Keywords ***
 Client Sends simple request
     [Arguments]    @{params}
-    New message    ValueRequest  Example    messageType:0xdddd    flags:0xffff
+    New message    ValueRequest    Example    messageType:0xdddd    flags:0xffff
     u32    value    0xdeadbeef
     Client Sends message    @{params}
 
 Named client sends simple request
-    [Arguments]    ${client}=   @{params}
-    New message    ValueRequest  Example    messageType:0xdddd    flags:0xffff
+    [Arguments]    ${client}=    @{params}
+    New message    ValueRequest    Example    messageType:0xdddd    flags:0xffff
     u32    value    0xdeadbeef
-    Client Sends message   name=${client}   @{params}
+    Client Sends message    name=${client}    @{params}
 
 Server Sends simple request
     [Arguments]    @{params}
-    New message    ValueRequest  Example    messageType:0xdddd    flags:0xffff
+    New message    ValueRequest    Example    messageType:0xdddd    flags:0xffff
     u32    value    0xdeadbeef
     Server Sends message    @{params}
 
 Server Receives simple request from named connection
-    [Arguments]    ${connection}=  @{params}
-    New message    ValueRequest   Example
+    [Arguments]    ${connection}=    @{params}
+    New message    ValueRequest    Example
     u32    value
-    ${msg} =    Server receives message    alias=${connection}  @{params}
-    [return]    ${msg}
+    ${msg} =    Server receives message    alias=${connection}    @{params}
+    [Return]    ${msg}
 
 Server Receives simple request
     [Arguments]    @{params}
-    New message    ValueRequest   Example
+    New message    ValueRequest    Example
     u32    value
     ${msg} =    Server receives message    @{params}
-    [return]    ${msg}
+    [Return]    ${msg}
 
 Server Receives simple request with header
     [Arguments]    @{header params}
-    New message    ValueRequest   Example    @{header params}
+    New message    ValueRequest    Example    @{header params}
     u32    value
     ${msg} =    Server receives message
-    [return]    ${msg}
+    [Return]    ${msg}
 
 Client Receives simple request
     [Arguments]    @{params}
-    New message    ValueRequest   Example
+    New message    ValueRequest    Example
     u32    value
     ${msg} =    Client receives message    @{params}
-    [return]    ${msg}
+    [Return]    ${msg}
 
 Client sends request and server receives it
     Client Sends simple request
@@ -202,34 +204,33 @@ Client sends request and server receives it
 
 Client sends charred request
     [Arguments]    @{params}
-    New message    CharredRequest  Example    messageType:0xf000
-    char    16     string_value   foo
+    New message    CharredRequest    Example    messageType:0xf000
+    char    16    string_value    foo
     Client sends message    @{params}
 
 Server receives charred request
     [Arguments]    @{params}
-    New message    CharredRequest  Example    messageType:0xf000
-    char    16     string_value
-    ${msg} =   Server receives message    @{params}
-    [return]     ${msg}
+    New message    CharredRequest    Example    messageType:0xf000
+    char    16    string_value
+    ${msg} =    Server receives message    @{params}
+    [Return]    ${msg}
 
 AlignedRequest
-    New message    AlignedRequest  Example    messageType:0xf000
-    u8      aligned_8bit_field    align=4
+    New message    AlignedRequest    Example    messageType:0xf000
+    u8    aligned_8bit_field    align=4
 
 Client sends aligned request
     [Arguments]    @{params}
-    AlignedRequest    
+    AlignedRequest
     Client sends message    @{params}
-    
+
 Server receives aligned request
-    [Arguments]   @{params}
+    [Arguments]    @{params}
     AlignedRequest
     ${msg}=    Server receives message    @{params}
     [Return]    ${msg}
 
 Validation fails
     [Arguments]    ${msg}    ${error}    @{parameters}
-    Run keyword and expect error   ${error}    Validate message    ${msg}   @{parameters}
+    Run keyword and expect error    ${error}    Validate message    ${msg}    @{parameters}
 
-    

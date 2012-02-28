@@ -1,3 +1,4 @@
+from __future__ import with_statement
 from contextlib import contextmanager
 from Network import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 
@@ -161,7 +162,7 @@ class Rammbock(object):
 
     def client_receives_message(self, *parameters):
         """Receive a message object.
-    
+
         Parameters that have been given are validated against message fields."""
         with self._receive(self._clients, *parameters) as (msg, message_fields):
             self._validate_message(msg, message_fields)
@@ -246,18 +247,18 @@ class Rammbock(object):
 
     def bin_to_hex(self, bin_value):
         return to_0xhex(bin_value)
-    
+
     def _get_paramaters_with_defaults(self, parameters):
         config, fields = self._parse_parameters(parameters)
         fields = self._populate_defaults(fields)
         return config, fields
-    
+
     def _populate_defaults(self, fields):
         ret_val = self._default_values
         ret_val.update(fields)
         self._default_values = {}
         return ret_val 
-    
+
     def value(self, name, value):
         self._default_values[name] = value
 
@@ -283,7 +284,11 @@ class Rammbock(object):
 
     def _set_name_and_value(self, dictionary, separator, parameter):
         index = parameter.find(separator)
-        dictionary[parameter[:index].strip()] = parameter[index + 1:].strip()
+        try:
+            key = str(parameter[:index].strip())
+        except UnicodeError:
+            raise Exception("Only ascii characters are supported in parameters.")
+        dictionary[key] = parameter[index + 1:].strip()
 
     def _log_msg(self, loglevel, log_msg):
         print '*%s* %s' % (loglevel, log_msg)
