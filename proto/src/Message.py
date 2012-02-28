@@ -109,7 +109,6 @@ class Field(object):
     def chars(self):
         return str(self._value)
 
-    #TODO: Test
     @property
     def ascii(self):
         return ''.join(i for i in self._value if 128 > ord(i) >= 32)

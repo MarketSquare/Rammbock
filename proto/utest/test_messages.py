@@ -13,6 +13,7 @@ class TestMessages(unittest.TestCase):
         self.assertTrue('a' in msg)
         self.assertFalse('d' in msg)
 
+
 class TestFields(unittest.TestCase):
 
     def _assert_align(self, value, length, raw):
@@ -32,7 +33,7 @@ class TestFields(unittest.TestCase):
         self._assert_align('0xff', 6, '0xff00 0000 0000')
         self._assert_align('0x000000ff', 4, '0x0000 00ff')
         self._assert_align('0xff', 1, '0xff')
-        
+
 
 if __name__ == "__main__":
     unittest.main()
