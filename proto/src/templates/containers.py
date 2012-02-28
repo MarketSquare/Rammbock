@@ -125,7 +125,7 @@ class MessageTemplate(_Template):
         return Message(self.name)
 
 
-class Struct(_Template):
+class StructTemplate(_Template):
 
     has_length = False
     
@@ -189,13 +189,12 @@ class UnionTemplate(_Template):
         return _Template.validate(self, message, self._get_params_sub_tree(message_fields, name))
 
     
-class List(_Template):
+class ListTemplate(_Template):
 
     param_pattern = re.compile(r'(.*?)\[(.*?)\](.*)')
-
     has_length = True
-    
     type = 'List'
+
     def __init__(self, length, name):
         self.length = Length(length)
         _Template.__init__(self,name)

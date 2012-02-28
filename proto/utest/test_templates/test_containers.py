@@ -1,36 +1,36 @@
 import unittest
 
-from templates.containers import Protocol, MessageTemplate, Struct, List, UnionTemplate
+from templates.containers import Protocol, MessageTemplate, StructTemplate, ListTemplate, UnionTemplate
 from templates.primitives import UInt, PDU, Char
 from binary_conversions import to_bin_of_length, to_bin
 
 
 def _get_pair():
-    struct = Struct('Pair', 'pair')
+    struct = StructTemplate('Pair', 'pair')
     struct.add(UInt(2, 'first', 1))
     struct.add(UInt(2, 'second', 2))
     return struct
 
 def _get_recursive_struct():
-    str_str = Struct('StructStruct', 'str_str')
+    str_str = StructTemplate('StructStruct', 'str_str')
     inner = _get_pair()
     str_str.add(inner)
     return str_str
 
 def _get_list_of_three():
-    list = List(3, 'topthree')
+    list = ListTemplate(3, 'topthree')
     list.add(UInt(2, None, 1))
     return list
 
 def _get_list_list():
-    innerList= List(2, None)
+    innerList= ListTemplate(2, None)
     innerList.add(UInt(2, None, 7))
-    outerList = List('2', 'listlist')
+    outerList = ListTemplate('2', 'listlist')
     outerList.add(innerList)
     return outerList
 
 def _get_struct_list():
-    list = List(2, 'liststruct')
+    list = ListTemplate(2, 'liststruct')
     list.add(_get_pair())
     return list
 
@@ -228,7 +228,7 @@ class TestListTemplate(unittest.TestCase):
         self.assertEquals(encoded[1][1].int, 7)
 
     def test_decode_message(self):
-        list = List('5', 'five')
+        list = ListTemplate('5', 'five')
         list.add(UInt(4, None, 3))
         decoded = list.decode(to_bin('0x'+('00000003'*5)), {})
         self.assertEquals(len(decoded[4]), 4)
@@ -297,7 +297,7 @@ class TestDynamicMessageTemplate(unittest.TestCase):
 
     def test_non_existing_dynamic_list_variable(self):
         tmp = MessageTemplate('Dymagic', self._protocol, {})
-        lst = List('not_existing', 'foo')
+        lst = ListTemplate('not_existing', 'foo')
         lst.add(UInt(1,'bar', None))
         self.assertRaises(Exception, tmp.add, lst)
 
@@ -327,7 +327,7 @@ class TestDynamicMessageTemplate(unittest.TestCase):
     def test_decode_dynamic_list(self):
         tmp = MessageTemplate('Dymagic', self._protocol, {})
         tmp.add(UInt(2,'len', None))
-        lst = List('len', 'foo')
+        lst = ListTemplate('len', 'foo')
         lst.add(UInt(1,'bar', None))
         tmp.add(lst)
         decoded = tmp.decode(to_bin('0x 00 04 6162 6364'))
@@ -337,7 +337,7 @@ class TestDynamicMessageTemplate(unittest.TestCase):
     def test_encode_dynamic_list(self):
         tmp = MessageTemplate('Dymagic', self._protocol, {})
         tmp.add(UInt(2,'len', None))
-        lst = List('len', 'foo')
+        lst = ListTemplate('len', 'foo')
         lst.add(UInt(1,'bar', 1))
         tmp.add(lst)
         encoded = tmp.encode({'len':6})
@@ -431,7 +431,7 @@ class TestTemplateFieldValidation(unittest.TestCase, _WithValidation):
         self._should_fail(template.validate({'liststruct':encoded}, {'liststruct[1].first':'42'}), 1)
 
     def test_dynamic_field_validation(self):
-        struct = Struct('Foo', 'foo')
+        struct = StructTemplate('Foo', 'foo')
         struct.add(UInt(2, 'len', None))
         struct.add(Char('len', 'text', None))
         encoded = struct.encode({'foo.len':6, 'foo.text':'fobba'}, None)
@@ -462,7 +462,7 @@ class TestUnions(unittest.TestCase, _WithValidation):
     def test_fail_on_dynamic_length(self):
         union = UnionTemplate('NotLegal', 'dymagic')
         union.add(UInt(2,'bar',None))
-        struct = Struct('Foo','foo')
+        struct = StructTemplate('Foo','foo')
         struct.add(UInt(1,'len',22))
         struct.add(Char('len','dymagic','foo'))
         self.assertRaises(Exception, union.add, struct)

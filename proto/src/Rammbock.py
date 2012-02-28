@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 from Network import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 
-from templates import Protocol, UInt, PDU, MessageTemplate, Char, Struct, List, UnionTemplate
+from templates import Protocol, UInt, PDU, MessageTemplate, Char, StructTemplate, ListTemplate, UnionTemplate
 from binary_conversions import to_0xhex, to_bin
 
 
@@ -215,14 +215,14 @@ class Rammbock(object):
             self._message_stack[-1].add(field)
 
     def struct(self, type, name):
-        self._message_stack.append(Struct(type, name))
+        self._message_stack.append(StructTemplate(type, name))
 
     def end_struct(self):
         struct = self._message_stack.pop()
         self._add_field(struct)
 
     def new_list(self, size, name):
-        self._message_stack.append(List(size, name))
+        self._message_stack.append(ListTemplate(size, name))
 
     def end_list(self):
         list = self._message_stack.pop()
