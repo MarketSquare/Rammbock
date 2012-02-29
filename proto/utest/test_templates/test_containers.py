@@ -122,7 +122,7 @@ class TestMessageTemplate(unittest.TestCase):
         self.assertEquals(str(msg), 'Message FooRequest')
         self.assertEquals(repr(msg),
 '''Message FooRequest
-  TestProtocol header
+  Header TestProtocol
     msgId = 0x0005
     length = 0x0008
   field_1 = 0x0001
@@ -246,11 +246,11 @@ class TestListTemplate(unittest.TestCase):
         encoded = _get_struct_list().encode({}, None)
         self.assertEquals('\n'+repr(encoded),
         """
-liststruct Pair
-  0
+Pair liststruct[]
+  Pair 0
     first = 0x0001
     second = 0x0002
-  1
+  Pair 1
     first = 0x0001
     second = 0x0002
 """)
@@ -259,7 +259,7 @@ liststruct Pair
         decoded = _get_list_of_three().decode(to_bin('0x'+('0003'*3)), {})
         self.assertEquals('\n'+repr(decoded),
             """
-topthree uint
+uint topthree[]
   0 = 0x0003
   1 = 0x0003
   2 = 0x0003
@@ -269,11 +269,11 @@ topthree uint
         decoded = _get_list_list().decode(to_bin('0x'+('0003'*4)), {})
         self.assertEquals('\n'+repr(decoded),
             """
-listlist List
-  0 uint
+List listlist[]
+  uint 0[]
     0 = 0x0003
     1 = 0x0003
-  1 uint
+  uint 1[]
     0 = 0x0003
     1 = 0x0003
 """)

@@ -1,12 +1,12 @@
 import unittest
-from Message import _MessageStruct, Field
+from Message import Struct, Field
 from binary_conversions import to_bin
 
 
 class TestMessages(unittest.TestCase):
 
     def test_in(self):
-        msg = _MessageStruct('foo')
+        msg = Struct('foo', 'foo_type')
         msg['a'] = 1
         msg['b'] = 1
         msg['c'] = 1

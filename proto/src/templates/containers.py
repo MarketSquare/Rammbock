@@ -1,6 +1,6 @@
 import re
 
-from Message import Field, Union, Message, MessageHeader, _MessageStruct
+from Message import Field, Union, Message, Header, List, Struct
 from message_stream import MessageStream
 from primitives import Length
 
@@ -69,7 +69,7 @@ class Protocol(_Template):
     def encode(self, message, header_params):
         header_params = header_params.copy()
         self._insert_length_to_header_parameters(header_params, message)
-        header = MessageHeader(self.name)
+        header = Header(self.name)
         self._encode_fields(header, header_params)
         return header
 
@@ -89,7 +89,7 @@ class Protocol(_Template):
         data = stream.read(self.header_length(), timeout=timeout)
         data_index = 0
         field_index = 0
-        header = MessageHeader(self.name)
+        header = Header(self.name)
         while len(data) > data_index:
             field = self._fields[field_index]
             header[field.name] = Field(field.type, field.name, data[data_index:data_index+field.length.value])
@@ -137,12 +137,12 @@ class StructTemplate(_Template):
         return sum(field.get_static_length() for field in self._fields)
 
     def encode(self, message_params, parent, name=None):
-        struct = _MessageStruct(name if name else self.name)
+        struct = self._get_struct(name)
         self._encode_fields(struct, self._get_params_sub_tree(message_params, name))
         return struct
 
     def _get_struct(self, name):
-        return _MessageStruct(name if name else self.name)
+        return Struct(name if name else self.name, self.type)
 
     def validate(self, parent, message_fields, name=None):
         name = name if name else self.name
@@ -217,7 +217,7 @@ class ListTemplate(_Template):
         return self._fields[0]
 
     def _get_struct(self, name=None):
-        return _MessageStruct("%s %s" % (name if name else self.name, self.field.type))
+        return List(name if name else self.name, self.field.type)
 
     def decode(self, data, parent, name=None):
         name = name if name else self.name

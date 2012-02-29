@@ -1,7 +1,7 @@
 import unittest
 
 from templates.primitives import Length, Char, UInt, PDU
-from Message import _MessageStruct, Field
+from Message import Struct, Field
 from binary_conversions import to_bin, to_bin_of_length
 
 
@@ -116,13 +116,13 @@ class TestLength(unittest.TestCase):
         self.assertEquals(length.field, 'length')
 
     def test_decode_dynamic(self):
-        msg = _MessageStruct('foo')
+        msg = Struct('foo', 'foo_type')
         msg['len'] = Field('uint', 'len', to_bin('0x04'))
         dyn_len = Length('len')
         self.assertEquals(dyn_len.decode(msg), 4)
 
     def test_decode_dynamic_with_subtractor(self):
-        msg = _MessageStruct('foo')
+        msg = Struct('foo', 'foo_type')
         msg['len'] = Field('uint', 'len', to_bin('0x04'))
         dyn_len = Length('len-2')
         self.assertEquals(dyn_len.decode(msg), 2)

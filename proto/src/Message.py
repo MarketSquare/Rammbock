@@ -1,9 +1,10 @@
 from binary_conversions import to_0xhex
 
 
-class _MessageStruct(object):
+class _StructuredElement(object):
+
     def __init__(self, name):
-        self._name = name
+        self._name = '%s %s' % (self._type, name)
         self._fields = []
 
     def __setitem__(self, name, value):
@@ -45,12 +46,32 @@ class _MessageStruct(object):
         return sum(len(field) for _ ,field in self._fields)
 
 
-class Union(_MessageStruct):
+class List(_StructuredElement):
+
+    _type = 'List'
+
+    def __init__(self, name, type_name):
+        self._name = '%s %s[]' % (type_name, name)
+        self._fields = []
+
+
+class Struct(_StructuredElement):
+
+    _type = 'Struct'
+
+    def __init__(self, name, type_name):
+        self._name = '%s %s' % (type_name, name)
+        self._fields = []
+
+
+class Union(_StructuredElement):
+
+    _type = 'Union'
 
     def __init__(self, name, length):
         self._length = length
-        _MessageStruct.__init__(self, 'Union '+name)
-        
+        _StructuredElement.__init__(self, name)
+
     def _get_raw_bytes(self):
         raw_bytes = [field._raw for _, field in self._fields]
         max_raw = ''
@@ -60,19 +81,17 @@ class Union(_MessageStruct):
         return max_raw.ljust(self._length, '\x00')
 
 
-class Message(_MessageStruct):
+class Message(_StructuredElement):
 
-    def __init__(self, name):
-        _MessageStruct.__init__(self, 'Message '+name)
+    _type = 'Message'
 
     def _add_header(self, header):
         self._fields.insert(0, ('_header', header))
 
 
-class MessageHeader(_MessageStruct):
+class Header(_StructuredElement):
 
-    def __init__(self, name):
-        _MessageStruct.__init__(self, name+' header')
+    _type = 'Header'
 
 
 class Field(object):
