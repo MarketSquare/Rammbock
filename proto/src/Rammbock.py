@@ -49,13 +49,25 @@ class Rammbock(object):
         self._protocol_in_progress = None
 
     def start_udp_server(self, ip, port, name=None, timeout=None, protocol=None):
+        self._start_server(UDPServer, ip, port, name, timeout, protocol)
+
+    def start_tcp_server(self, ip, port, name=None, timeout=None, protocol=None):
+        self._start_server(TCPServer, ip, port, name, timeout, protocol)
+
+    def _start_server(self, server_class, ip, port, name=None, timeout=None, protocol=None):
         protocol = self._get_protocol(protocol)
-        server = UDPServer(ip=ip, port=port, timeout=timeout, protocol=protocol)
+        server = server_class(ip=ip, port=port, timeout=timeout, protocol=protocol)
         return self._servers.add(server, name)
 
     def start_udp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None):
+        self._start_client(UDPClient, ip, port, name, timeout, protocol)
+
+    def start_tcp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None):
+        self._start_client(TCPClient, ip, port, name, timeout, protocol)
+
+    def _start_client(self, client_class, ip=None, port=None, name=None, timeout=None, protocol=None):
         protocol = self._get_protocol(protocol)
-        client = UDPClient(timeout=timeout, protocol=protocol)
+        client = client_class(timeout=timeout, protocol=protocol)
         if ip or port:
             client.set_own_ip_and_port(ip=ip, port=port)
         return self._clients.add(client, name)
@@ -63,18 +75,6 @@ class Rammbock(object):
     def _get_protocol(self, protocol):
         protocol = self._protocols[protocol] if protocol else None
         return protocol
-
-    def start_tcp_server(self, ip, port, name=None, timeout=None, protocol=None):
-        protocol = self._get_protocol(protocol)
-        server = TCPServer(ip=ip, port=port, timeout=timeout, protocol=protocol)
-        return self._servers.add(server, name)
-
-    def start_tcp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None):
-        protocol = self._get_protocol(protocol)
-        client = TCPClient(timeout=timeout, protocol=protocol)
-        if ip or port:
-            client.set_own_ip_and_port(ip=ip, port=port)
-        return self._clients.add(client, name)
 
     def get_client_protocol(self, name):
         return self._clients.get(name).protocol
@@ -147,18 +147,19 @@ class Rammbock(object):
         """Send a message.
 
         Parameters have to be message fields."""
-        configs, message_fields = self._get_paramaters_with_defaults(parameters)
-        msg = self._encode_message(message_fields)
-        self.client_sends_binary(msg._raw, **configs)
+        self._send_message(self.client_sends_binary, parameters)
 
     # FIXME: support "send to" somehow. A new keyword?
     def server_sends_message(self, *parameters):
         """Send a message.
 
         Parameters have to be message fields."""
+        self._send_message(self.server_sends_binary, parameters)
+
+    def _send_message(self, callback, parameters):
         configs, message_fields = self._get_paramaters_with_defaults(parameters)
         msg = self._encode_message(message_fields)
-        self.server_sends_binary(msg._raw, **configs)
+        callback(msg._raw, **configs)
 
     def client_receives_message(self, *parameters):
         """Receive a message object.
