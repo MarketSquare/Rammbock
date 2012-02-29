@@ -49,8 +49,14 @@ class Rammbock(object):
         self._protocol_in_progress = None
 
     def start_udp_server(self, ip, port, name=None, timeout=None, protocol=None):
+        self._start_server(UDPServer, ip, port, name, timeout, protocol)
+
+    def start_tcp_server(self, ip, port, name=None, timeout=None, protocol=None):
+        self._start_server(TCPServer, ip, port, name, timeout, protocol)
+
+    def _start_server(self, server_class, ip, port, name=None, timeout=None, protocol=None):
         protocol = self._get_protocol(protocol)
-        server = UDPServer(ip=ip, port=port, timeout=timeout, protocol=protocol)
+        server = server_class(ip=ip, port=port, timeout=timeout, protocol=protocol)
         return self._servers.add(server, name)
 
     def start_udp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None):
@@ -69,11 +75,6 @@ class Rammbock(object):
     def _get_protocol(self, protocol):
         protocol = self._protocols[protocol] if protocol else None
         return protocol
-
-    def start_tcp_server(self, ip, port, name=None, timeout=None, protocol=None):
-        protocol = self._get_protocol(protocol)
-        server = TCPServer(ip=ip, port=port, timeout=timeout, protocol=protocol)
-        return self._servers.add(server, name)
 
     def get_client_protocol(self, name):
         return self._clients.get(name).protocol
