@@ -147,18 +147,19 @@ class Rammbock(object):
         """Send a message.
 
         Parameters have to be message fields."""
-        configs, message_fields = self._get_paramaters_with_defaults(parameters)
-        msg = self._encode_message(message_fields)
-        self.client_sends_binary(msg._raw, **configs)
+        self._send_message(self.client_sends_binary, parameters)
 
     # FIXME: support "send to" somehow. A new keyword?
     def server_sends_message(self, *parameters):
         """Send a message.
 
         Parameters have to be message fields."""
+        self._send_message(self.server_sends_binary, parameters)
+
+    def _send_message(self, callback, parameters):
         configs, message_fields = self._get_paramaters_with_defaults(parameters)
         msg = self._encode_message(message_fields)
-        self.server_sends_binary(msg._raw, **configs)
+        callback(msg._raw, **configs)
 
     def client_receives_message(self, *parameters):
         """Receive a message object.
