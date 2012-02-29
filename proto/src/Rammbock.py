@@ -1,6 +1,6 @@
 from __future__ import with_statement
 from contextlib import contextmanager
-from Network import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
+from Networking import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 
 from templates import Protocol, UInt, PDU, MessageTemplate, Char, StructTemplate, ListTemplate, UnionTemplate
 from binary_conversions import to_0xhex, to_bin

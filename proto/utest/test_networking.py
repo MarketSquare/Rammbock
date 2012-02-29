@@ -2,7 +2,7 @@ import unittest
 import time
 import socket
 from threading import Timer
-from Network import UDPServer, TCPServer, UDPClient, TCPClient
+from Networking import UDPServer, TCPServer, UDPClient, TCPClient
 from templates.containers import Protocol
 from templates.primitives import UInt, PDU
 
