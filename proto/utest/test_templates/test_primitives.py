@@ -2,7 +2,7 @@ import unittest
 
 from templates.primitives import Length, Char, UInt, PDU
 from Message import Struct, Field
-from binary_conversions import to_bin, to_bin_of_length
+from binary_conversions import to_bin
 
 
 class TestTemplateFields(unittest.TestCase):
@@ -64,6 +64,29 @@ class TestTemplateFields(unittest.TestCase):
         self.assertEquals(decoded.hex, '0xcafe')
         self.assertEquals(len(decoded), 2)
 
+
+class TestLittleEndian(unittest.TestCase):
+
+    def test_little_endian_uint_decode(self):
+        template = UInt(2, 'field', None)
+        field = template.decode(to_bin('0x0100'), None, little_endian=True)
+        self.assertEquals(field._raw, to_bin('0x0100'))
+        self.assertEquals(field.int, 1)
+        self.assertEquals(field.bytes, to_bin('0x0001'))
+
+    def test_little_endian_char_decode(self):
+        template = Char(5, 'field', None)
+        field = template.decode('hello', None, little_endian=True)
+        self.assertEquals(field._raw, 'hello')
+        self.assertEquals(field.bytes, 'hello')
+        self.assertEquals(field.ascii, 'hello')
+
+    def test_little_endian_uint_encode(self):
+        template = UInt(2, 'field', 1)
+        field = template.encode({}, None, little_endian=True)
+        self.assertEquals(field._raw, to_bin('0x0100'))
+        self.assertEquals(field.int, 1)
+        self.assertEquals(field.bytes, to_bin('0x0001'))
 
 class TestTemplateFieldValidation(unittest.TestCase):
 

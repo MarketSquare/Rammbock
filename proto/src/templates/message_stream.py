@@ -15,11 +15,11 @@ class MessageStream(object):
             print "*TRACE* Cache hit. Cache currently has %s messages" % len(self._cache)
             return msg
         while True:
-            header, pdu = self._protocol.read(self._stream, timeout=timeout)
+            header, pdu_bytes = self._protocol.read(self._stream, timeout=timeout)
             if self._matches(header, header_fields):
-                return self._to_msg(message_template, header, pdu)
+                return self._to_msg(message_template, header, pdu_bytes)
             else:
-                self._cache.append((header, pdu))
+                self._cache.append((header, pdu_bytes))
 
     def _get_from_cache(self, template, fields):
         index = 0
@@ -30,8 +30,8 @@ class MessageStream(object):
                 return self._to_msg(template, header, pdu)
         return None
 
-    def _to_msg(self, template, header, pdu):
-        msg = template.decode(pdu)
+    def _to_msg(self, template, header, pdu_bytes):
+        msg = template.decode(pdu_bytes, parent=header)
         msg._add_header(header)
         return msg
 

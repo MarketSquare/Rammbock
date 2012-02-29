@@ -35,5 +35,22 @@ class TestFields(unittest.TestCase):
         self._assert_align('0xff', 1, '0xff')
 
 
+class TestLittleEndian(unittest.TestCase):
+
+    def test_little_endian(self):
+        field = Field('uint', 'name', to_bin('0x0100'), little_endian=True)
+        self.assertEquals(field._raw, to_bin('0x0100'))
+        self.assertEquals(field.int, 1)
+        self.assertEquals(field.bytes, to_bin('0x0001'))
+        self.assertEquals(field.hex, '0x0001')
+
+    def test_little_endian_with_align(self):
+        field = Field('uint', 'name', to_bin('0x0100'), aligned_len=5, little_endian=True)
+        self.assertEquals(field._raw, to_bin('0x0100000000'))
+        self.assertEquals(field.int, 1)
+        self.assertEquals(field.bytes, to_bin('0x0001'))
+        self.assertEquals(field.hex, '0x0001')
+
+
 if __name__ == "__main__":
     unittest.main()

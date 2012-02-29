@@ -514,5 +514,30 @@ class TestUnions(unittest.TestCase, _WithValidation):
         self._should_fail(struct.validate({'pair':decoded}, {}), 3)
 
 
+class TestLittleEndian(unittest.TestCase):
+
+    def test_little_endian_struct_decode(self):
+        pair = _get_pair()
+        decoded = pair.decode(to_bin('0xcafebabe'), little_endian=True)
+        self.assertEquals(decoded.first.hex, '0xfeca')
+        self.assertEquals(decoded.second.hex, '0xbeba')
+
+    def test_little_endian_struct_encode(self):
+        pair = _get_pair()
+        encoded = pair.encode({}, None, little_endian=True)
+        self.assertEquals(encoded.first.hex, '0x0001')
+        self.assertEquals(encoded.first._raw, to_bin('0x0100'))
+        self.assertEquals(encoded.second.hex, '0x0002')
+        self.assertEquals(encoded.second._raw, to_bin('0x0200'))
+
+    def test_little_endian_list_encode(self):
+        struct_list = _get_struct_list()
+        encoded = struct_list.encode({}, None, little_endian=True)
+        self.assertEquals(encoded[0].first.hex, '0x0001')
+        self.assertEquals(encoded[0].first._raw, to_bin('0x0100'))
+        self.assertEquals(encoded[0].second.hex, '0x0002')
+        self.assertEquals(encoded[0].second._raw, to_bin('0x0200'))
+
+
 if __name__ == '__main__':
     unittest.main()

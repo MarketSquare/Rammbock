@@ -20,21 +20,21 @@ class _Template(object):
                 raise Exception('Length field %s unknown' % field.length)
         self._fields.append(field)
 
-    def _encode_fields(self, struct, params):
+    def _encode_fields(self, struct, params, little_endian=False):
         for field in self._fields:
             # TODO: clean away this ugly hack that makes it possible to skip PDU
             # (now it is a 0 length place holder in header)
-            encoded = field.encode(params, struct)
+            encoded = field.encode(params, struct, little_endian=little_endian)
             if encoded:
                 struct[field.name] = encoded
         if params:
             raise Exception('Unknown fields %s' % self._pretty_print_fields(params))
 
-    def decode(self, data, parent=None, name=None):
+    def decode(self, data, parent=None, name=None, little_endian=False):
         message = self._get_struct(name)
         data_index = 0
         for field in self._fields:
-            message[field.name] = field.decode(data[data_index:], message)
+            message[field.name] = field.decode(data[data_index:], message, little_endian=little_endian)
             data_index += len(message[field.name])
         return message
 
@@ -66,11 +66,11 @@ class Protocol(_Template):
             length += field.length.value
         return length
 
-    def encode(self, message, header_params):
+    def encode(self, message, header_params, little_endian=False):
         header_params = header_params.copy()
         self._insert_length_to_header_parameters(header_params, message)
         header = Header(self.name)
-        self._encode_fields(header, header_params)
+        self._encode_fields(header, header_params, little_endian=little_endian)
         return header
 
     def _insert_length_to_header_parameters(self, header_params, message):
@@ -97,8 +97,8 @@ class Protocol(_Template):
             field_index +=1
         pdu_field = self._get_pdu_field()
         length_param = header[pdu_field.length.field].int
-        pdu = stream.read(pdu_field.length.calc_value(length_param))
-        return (header, pdu)
+        pdu_bytes = stream.read(pdu_field.length.calc_value(length_param))
+        return (header, pdu_bytes)
 
     def get_message_stream(self, buffered_stream):
         return MessageStream(buffered_stream, self)
@@ -113,11 +113,12 @@ class MessageTemplate(_Template):
         self._protocol = protocol
         self.header_parameters = header_params
 
-    def encode(self, message_params):
+    def encode(self, message_params, little_endian=False):
         message_params = message_params.copy()
         msg = Message(self.name)
-        self._encode_fields(msg, message_params)
+        self._encode_fields(msg, message_params, little_endian=little_endian)
         if self._protocol:
+            # TODO: little endian support for protocol header
             msg._add_header(self._protocol.encode(msg, self.header_parameters))
         return msg
 
@@ -136,9 +137,9 @@ class StructTemplate(_Template):
     def get_static_length(self):
         return sum(field.get_static_length() for field in self._fields)
 
-    def encode(self, message_params, parent, name=None):
+    def encode(self, message_params, parent, name=None, little_endian=False):
         struct = self._get_struct(name)
-        self._encode_fields(struct, self._get_params_sub_tree(message_params, name))
+        self._encode_fields(struct, self._get_params_sub_tree(message_params, name), little_endian=little_endian)
         return struct
 
     def _get_struct(self, name):
@@ -165,13 +166,13 @@ class UnionTemplate(_Template):
     def get_static_length(self):
         return max(field.get_static_length() for field in self._fields)
 
-    def decode(self, data, parent=None, name=None):
+    def decode(self, data, parent=None, name=None, little_endian=False):
         union = Union(name if name else self.name, self.get_static_length())
         for field in self._fields: 
-            union[field.name] = field.decode(data, union)
+            union[field.name] = field.decode(data, union, little_endian=little_endian)
         return union
     
-    def encode(self, union_params, parent=None, name=None):
+    def encode(self, union_params, parent=None, name=None, little_endian=False):
         name = name if name else self.name
         union = Union(name, self.get_static_length())
         if name not in union_params:
@@ -179,7 +180,9 @@ class UnionTemplate(_Template):
         chosen_one = union_params[name]
         for field in self._fields:
             if field.name == chosen_one:
-                union[field.name] = field.encode(self._get_params_sub_tree(union_params, name), union)
+                union[field.name] = field.encode(self._get_params_sub_tree(union_params, name), 
+                                                 union, 
+                                                 little_endian=little_endian)
                 return union
         raise Exception('Unknown union field %s' % chosen_one)
         
@@ -202,12 +205,15 @@ class ListTemplate(_Template):
     def get_static_length(self):
         return self.length.value * self.field.get_static_length()
 
-    def encode(self, message_params, parent, name=None):
+    def encode(self, message_params, parent, name=None, little_endian=False):
         name = name if name else self.name
         params_subtree = self._get_params_sub_tree(message_params, name)
         list = self._get_struct(name)
         for index in range(0, self.length.decode(parent)):
-            list[str(index)] = self.field.encode(params_subtree, parent, name=str(index))
+            list[str(index)] = self.field.encode(params_subtree, 
+                                                 parent, 
+                                                 name=str(index), 
+                                                 little_endian=little_endian)
         if params_subtree:
             raise Exception('Unknown fields in %s %s' % (name, self._pretty_print_fields(params_subtree)))
         return list
@@ -219,12 +225,12 @@ class ListTemplate(_Template):
     def _get_struct(self, name=None):
         return List(name if name else self.name, self.field.type)
 
-    def decode(self, data, parent, name=None):
+    def decode(self, data, parent, name=None, little_endian=False):
         name = name if name else self.name
         message = self._get_struct(name)
         data_index = 0
-        for index in range(0,self.length.decode(parent)):
-            message[str(index)] = self.field.decode(data[data_index:], message, name=str(index))
+        for index in range(0, self.length.decode(parent)):
+            message[str(index)] = self.field.decode(data[data_index:], message, name=str(index), little_endian=little_endian)
             data_index += len(message[index])
         return message
 
@@ -233,7 +239,7 @@ class ListTemplate(_Template):
         params_subtree = self._get_params_sub_tree(message_fields, name)
         list = parent[name]
         errors = []
-        for index in range(0,self.length.decode(parent)):
+        for index in range(0, self.length.decode(parent)):
             errors += self.field.validate(list, params_subtree, name=str(index))
         if params_subtree:
             raise Exception('Unknown fields %s' % self._pretty_print_fields(params_subtree))

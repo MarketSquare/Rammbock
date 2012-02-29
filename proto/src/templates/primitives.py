@@ -5,6 +5,7 @@ from binary_conversions import to_bin_of_length, to_0xhex
 class _TemplateField(object):
 
     has_length = True
+    can_be_little_endian = False
     
     def get_static_length(self):
         if not self.length.static:
@@ -17,15 +18,21 @@ class _TemplateField(object):
     def _get_element_value_and_remove_from_params(self, paramdict, name=None):
         return paramdict.pop(self._get_name(name), self.default_value)
 
-    def encode(self, paramdict, parent, name=None):
+    def encode(self, paramdict, parent, name=None, little_endian=False):
         value = self._get_element_value_and_remove_from_params(paramdict, name)
-        return Field(self.type,self._get_name(name), *self._encode_value(value, parent))
+        return Field(self.type,self._get_name(name), 
+                     *self._encode_value(value, parent, little_endian=little_endian),
+                     little_endian=little_endian)
 
-    def decode(self, value, message, name=None):
+    def decode(self, value, message, name=None, little_endian=False):
         length, aligned_length = self.length.decode_lengths(message)
         if len(value) < aligned_length: 
             raise Exception('Not enough data for %s. Needs %s bytes, given %s' % (self._get_name(name), aligned_length, len(value)))
-        return Field(self.type, self._get_name(name), value[:length], aligned_len=aligned_length)
+        return Field(self.type, 
+                     self._get_name(name), 
+                     value[:length], 
+                     aligned_len=aligned_length, 
+                     little_endian=little_endian and self.can_be_little_endian)
 
     def validate(self, parent, paramdict, name=None):
         name = name if name else self.name
@@ -64,17 +71,20 @@ class _TemplateField(object):
 class UInt(_TemplateField):
 
     type = 'uint'
+    can_be_little_endian = True    
 
     def __init__(self, length, name, default_value=None, align=None):
         self.length = Length(length, align)
         self.name = name
         self.default_value = str(default_value) if default_value and default_value != '""' else None
 
-    def _encode_value(self, value, message):
+    def _encode_value(self, value, message, little_endian=False):
         if not value:
             raise AssertionError('Value of %s not set' % self._get_name())
         length, aligned_length = self.length.decode_lengths(message)
-        return to_bin_of_length(length, value), aligned_length
+        binary = to_bin_of_length(length, value)
+        binary = binary[::-1] if little_endian else binary
+        return binary, aligned_length 
 
 
 class Char(_TemplateField):
@@ -86,7 +96,7 @@ class Char(_TemplateField):
         self.name = name
         self.default_value = default_value if default_value and default_value != '""' else None
 
-    def _encode_value(self, value, message):
+    def _encode_value(self, value, message, little_endian=False):
         value = value if value else ''
         length, aligned_length = self.length.decode_lengths(message)
         return str(value).ljust(length,'\x00'), aligned_length
@@ -99,7 +109,7 @@ class PDU(_TemplateField):
     def __init__(self, length):
         self.length = Length(length)
 
-    def encode(self, params, parent):
+    def encode(self, params, parent, little_endian=False):
         return None
 
 

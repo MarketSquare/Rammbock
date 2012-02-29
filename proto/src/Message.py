@@ -96,11 +96,18 @@ class Header(_StructuredElement):
 
 class Field(object):
 
-    def __init__(self, type, name, value, aligned_len=None):
+    def __init__(self, type, name, value, aligned_len=None, little_endian=False):
         self._type = type
         self._name = name
-        self._value = value
+        self._original_value = value
         self._length = aligned_len if aligned_len else len(value)
+        self._little_endian = little_endian
+
+    @property
+    def _value(self):
+        return self._original_value[::-1] if self._little_endian else self._original_value
+    # TODO: If needed, original value and raw value can be precalculated
+    # in __init__
 
     @property
     def name(self):
@@ -134,7 +141,7 @@ class Field(object):
 
     @property
     def _raw(self):
-        return self._value.ljust(self._length, '\x00')
+        return self._original_value.ljust(self._length, '\x00')
 
     def __str__(self):
         return self.hex
