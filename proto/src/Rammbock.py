@@ -18,7 +18,6 @@ class Rammbock(object):
         self._clients = _NamedCache('client')
         self._message_stack = []
         self._field_values = None
-        self._default_values = None
 
     def reset_rammbock(self):
         """Closes all connections, deletes all servers, clients, and protocols.
@@ -125,7 +124,6 @@ class Rammbock(object):
         _, header_fields = self._parse_parameters(parameters)
         self._message_stack = [MessageTemplate(message_name, proto, header_fields)]
         self._field_values = {}
-        self._default_values = {}
 
     def get_message(self, *parameters):
         """Get encoded message.
@@ -136,7 +134,7 @@ class Rammbock(object):
         return self._encode_message(message_fields)
 
     def _encode_message(self, message_fields):
-        msg = self._get_message_template().encode(message_fields, self._default_values)
+        msg = self._get_message_template().encode(message_fields)
         print '*DEBUG* %s' % repr(msg)
         return msg
 
@@ -264,9 +262,6 @@ class Rammbock(object):
 
     def value(self, name, value):
         self._field_values[name] = value
-
-    def default(self, name, value):
-        self._default_values[name] = value
 
     def _parse_parameters(self, parameters):
         configs, fields = {}, {}

@@ -15,12 +15,12 @@ class _TemplateField(object):
     def _get_element_value(self, paramdict, name=None):
         return paramdict.get(self._get_name(name), self.default_value)
 
-    def _get_element_value_and_remove_from_params(self, paramdict, default_params, name=None):
+    def _get_element_value_and_remove_from_params(self, paramdict, name=None):
         return paramdict.pop(self._get_name(name),
-            self.default_value or default_params.get('*'))
+            self.default_value or paramdict.get('*'))
 
-    def encode(self, paramdict, default_params, parent, name=None, little_endian=False):
-        value = self._get_element_value_and_remove_from_params(paramdict, default_params, name)
+    def encode(self, paramdict, parent, name=None, little_endian=False):
+        value = self._get_element_value_and_remove_from_params(paramdict, name)
         return Field(self.type,self._get_name(name), 
                      *self._encode_value(value, parent, little_endian=little_endian),
                      little_endian=little_endian)
@@ -39,7 +39,7 @@ class _TemplateField(object):
         name = name if name else self.name
         field = parent[name]
         value = field.bytes
-        forced_value = self._get_element_value_and_remove_from_params(paramdict, {}, name)
+        forced_value = self._get_element_value_and_remove_from_params(paramdict, name)
         if not forced_value or forced_value == 'None':
             return []
         if forced_value.startswith('('):
@@ -110,7 +110,7 @@ class PDU(_TemplateField):
     def __init__(self, length):
         self.length = Length(length)
 
-    def encode(self, params, default_params, parent, little_endian=False):
+    def encode(self, params, parent, little_endian=False):
         return None
 
 

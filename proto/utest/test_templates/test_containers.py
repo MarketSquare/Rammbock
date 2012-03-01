@@ -5,11 +5,21 @@ from templates.primitives import UInt, PDU, Char
 from binary_conversions import to_bin_of_length, to_bin
 
 
-def _get_empty_pair():
-    struct = StructTemplate('Pair', 'pair')
+def _get_empty_pair(name='pair'):
+    struct = StructTemplate('Pair', name)
     struct.add(UInt(2, 'first', None))
     struct.add(UInt(2, 'second', None))
     return struct
+
+def _get_empty_recursive_struct():
+    str_str = StructTemplate('StructStruct', '3pairs')
+    pair1 = _get_empty_pair('pair1')
+    pair2 = _get_empty_pair('pair2')
+    pair3 = _get_empty_pair('pair3')
+    str_str.add(pair1)
+    str_str.add(pair2)
+    str_str.add(pair3)
+    return str_str
 
 def _get_pair():
     struct = StructTemplate('Pair', 'pair')
@@ -136,7 +146,7 @@ class TestMessageTemplate(unittest.TestCase):
 ''')
 
     def test_unknown_params_cause_exception(self):
-        self.assertRaises(AssertionError, self.tmp.encode, {'unknown':111}, {}, None)
+        self.assertRaises(AssertionError, self.tmp.encode, {'unknown':111}, {})
 
     def test_decode_message(self):
         msg = self.tmp.decode(to_bin('0xcafebabe'))
@@ -162,17 +172,17 @@ class TestStructuredTemplate(unittest.TestCase):
 
     def test_add_fields_to_struct(self):
         struct = _get_pair()
-        encoded = struct.encode({}, {}, None)
+        encoded = struct.encode({}, {})
         self.assertEquals(encoded.first.int, 1)
 
     def test_add_fields_to_struct_and_override_values(self):
         struct = _get_pair()
-        encoded = struct.encode({'pair.first':42}, {}, None)
+        encoded = struct.encode({'pair.first':42}, {})
         self.assertEquals(encoded.first.int, 42)
 
     def test_yo_dawg_i_heard(self):
         str_str = _get_recursive_struct()
-        encoded = str_str.encode({}, {}, None)
+        encoded = str_str.encode({}, {})
         self.assertEquals(encoded.pair.first.int, 1)
 
     def test_get_recursive_names(self):
@@ -184,7 +194,7 @@ class TestStructuredTemplate(unittest.TestCase):
 
     def test_set_recursive(self):
         str_str = _get_recursive_struct()
-        encoded = str_str.encode({'str_str.pair.first':42}, {}, None)
+        encoded = str_str.encode({'str_str.pair.first':42}, {})
         self.assertEquals(encoded.pair.first.int, 42)
 
     def test_decode_several_structs(self):
@@ -195,7 +205,7 @@ class TestStructuredTemplate(unittest.TestCase):
 
     def test_length_of_struct(self):
         pair = _get_pair()
-        encoded = pair.encode({}, {}, None)
+        encoded = pair.encode({}, {})
         self.assertEquals(len(encoded), 4)
 
     def test_decode_struct(self):
@@ -209,8 +219,15 @@ class TestDefaultValues(unittest.TestCase):
 
     def test_default_values(self):
         pair = _get_empty_pair()
-        encoded = pair.encode({}, {'*': '5'}, None)
+        encoded = pair.encode({'pair.*': '5'})
         self.assertEquals(encoded.first.int, 5)
+
+    def test_sub_default_values(self):
+        pairs = _get_empty_recursive_struct()
+        encoded = pairs.encode({'*': '1', '3pairs.pair2.*': '2', '3pairs.pair3.*': '3'})
+        self.assertEquals(encoded.pair1.first.int, 1)
+        self.assertEquals(encoded.pair2.first.int, 2)
+        self.assertEquals(encoded.pair3.first.int, 3)
 
 
 class TestListTemplate(unittest.TestCase):
@@ -218,8 +235,8 @@ class TestListTemplate(unittest.TestCase):
     def test_create_list(self):
         list = _get_list_of_three()
         self.assertEquals(list.name, 'topthree')
-        self.assertEquals(list.encode({}, {}, None)[0].int, 1)
-        self.assertEquals(list.encode({}, {}, None)[2].int, 1)
+        self.assertEquals(list.encode({}, None)[0].int, 1)
+        self.assertEquals(list.encode({}, None)[2].int, 1)
 
     def test_create_list_with_setting_value(self):
         list = _get_list_of_three()
@@ -257,7 +274,7 @@ class TestListTemplate(unittest.TestCase):
         self.assertEquals(len(params), 2)
 
     def test_pretty_print(self):
-        encoded = _get_struct_list().encode({}, {}, None)
+        encoded = _get_struct_list().encode({}, None)
         self.assertEquals('\n'+repr(encoded),
         """
 Pair liststruct[]
@@ -332,7 +349,7 @@ class TestDynamicMessageTemplate(unittest.TestCase):
         tmp.add(Char('len', 'chars', 'abcd'))
         tmp.add(UInt(4, 'len2', '6'))
         tmp.add(Char('len2', 'chars2', 'ef'))
-        encoded = tmp.encode({}, {})
+        encoded = tmp.encode({})
         self.assertEquals(encoded.chars.ascii, 'abcd')
         self.assertEquals(len(encoded.chars), 4)
         self.assertEquals(encoded.chars2.ascii, 'ef')
@@ -354,7 +371,7 @@ class TestDynamicMessageTemplate(unittest.TestCase):
         lst = ListTemplate('len', 'foo')
         lst.add(UInt(1,'bar', 1))
         tmp.add(lst)
-        encoded = tmp.encode({'len':6}, {})
+        encoded = tmp.encode({'len':6})
         self.assertEquals(len(encoded.foo), 6)
 
 
@@ -414,33 +431,33 @@ class TestTemplateFieldValidation(unittest.TestCase, _WithValidation):
 
     def test_validate_struct_passes(self):
         template = _get_pair()
-        field = template.encode({}, {}, None)
+        field = template.encode({})
         self._should_pass(template.validate({'pair':field}, {'pair.first':'1'}))
 
     def test_validate_struct_fails(self):
         template = _get_pair()
-        field = template.encode({}, {}, None)
+        field = template.encode({})
         self._should_fail(template.validate({'pair':field},  {'pair.first':'42'}), 1)
 
     def test_validate_list_succeeds(self):
         template = _get_list_of_three()
-        encoded = template.encode({}, {}, None)
+        encoded = template.encode({}, None)
         self._should_pass(template.validate({'topthree':encoded}, {'topthree[1]':'1'}))
 
     def test_validate_list_fails(self):
         template = _get_list_of_three()
-        encoded = template.encode({}, {}, None)
+        encoded = template.encode({}, None)
         self._should_fail(template.validate({'topthree':encoded}, {'topthree[1]':'42'}), 1)
 
     def test_validate_list_list(self):
         template = _get_list_list()
-        encoded = template.encode({}, {}, None)
+        encoded = template.encode({}, None)
         self._should_pass(template.validate({'listlist':encoded}, {'listlist[1][1]':'7'}))
         self._should_fail(template.validate({'listlist':encoded}, {'listlist[1][1]':'42'}), 1)
 
     def test_validate_struct_list(self):
         template = _get_struct_list()
-        encoded = template.encode({}, {}, None)
+        encoded = template.encode({}, None)
         self._should_pass(template.validate({'liststruct':encoded}, {'liststruct[1].first':'1'}))
         self._should_fail(template.validate({'liststruct':encoded}, {'liststruct[1].first':'42'}), 1)
 
@@ -448,7 +465,7 @@ class TestTemplateFieldValidation(unittest.TestCase, _WithValidation):
         struct = StructTemplate('Foo', 'foo')
         struct.add(UInt(2, 'len', None))
         struct.add(Char('len', 'text', None))
-        encoded = struct.encode({'foo.len':6, 'foo.text':'fobba'}, {}, None)
+        encoded = struct.encode({'foo.len':6, 'foo.text':'fobba'})
         self._should_pass(struct.validate({'foo':encoded}, {'foo.text':'fobba'}))
         self._should_fail(struct.validate({'foo':encoded}, {'foo.text':'fob'}), 1)
 
@@ -538,7 +555,7 @@ class TestLittleEndian(unittest.TestCase):
 
     def test_little_endian_struct_encode(self):
         pair = _get_pair()
-        encoded = pair.encode({}, {}, None, little_endian=True)
+        encoded = pair.encode({}, little_endian=True)
         self.assertEquals(encoded.first.hex, '0x0001')
         self.assertEquals(encoded.first._raw, to_bin('0x0100'))
         self.assertEquals(encoded.second.hex, '0x0002')
@@ -546,7 +563,7 @@ class TestLittleEndian(unittest.TestCase):
 
     def test_little_endian_list_encode(self):
         struct_list = _get_struct_list()
-        encoded = struct_list.encode({}, {}, None, little_endian=True)
+        encoded = struct_list.encode({}, None, little_endian=True)
         self.assertEquals(encoded[0].first.hex, '0x0001')
         self.assertEquals(encoded[0].first._raw, to_bin('0x0100'))
         self.assertEquals(encoded[0].second.hex, '0x0002')

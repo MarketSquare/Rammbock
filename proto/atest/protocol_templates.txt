@@ -146,7 +146,7 @@ Server receive and validate fails
 Validate fails when trying to validate nonexistent field
     Client sends simple request
     ${msg}=    Server receives without validation
-    Validation fails    ${msg}    Unknown fields foo:0xfeedd00d    foo:0xfeedd00d
+    Validation fails    ${msg}    Unknown fields in ValueRequest foo:0xfeedd00d    foo:0xfeedd00d
 
 Error when giving non-ascii parameters
     Run keyword and expect error    Only ascii characters are supported in parameters.    New message    ValueRequest    Example    messägeType:0xdddd

@@ -24,24 +24,24 @@ Default values in get message
 
 Setting a default value for all unset msg fields
     ExampleMessage
-    Default    *         0
+    Value      *         0
     ${msg}=    Get message
     Should be equal as integers   0   ${msg.faa.int}
     Should be equal as integers   2   ${msg.bar.int}
 
 Setting a default value for all fields of a subelement
-    [Tags]
     ComplexMessage
     Value      wonker.id    10
     Value      bonker.id    222
-    Default    wonker       0
-    Default    bonker       999
+    Value      wonker.*     0
+    Value      bonker.*     999
     ${msg}=    Get message
-    Should be equal as integers   0   ${msg.faa.int}
-    Should be equal as integers   2   ${msg.bar.int}
+    Should be equal as integers   10   ${msg.wonker.id.int}
+    Should be equal as integers   0    ${msg.wonker.price.int}
+    Should be equal as integers   222  ${msg.bonker.id.int}
+    Should be equal as integers   999  ${msg.bonker.price.int}
     
 
-    
 *** Keywords ***
 Verify message fields
     [Arguments]   ${msg}
