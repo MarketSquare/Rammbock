@@ -40,9 +40,28 @@ Setting a default value for all fields of a subelement
     Should be equal as integers   0    ${msg.wonker.price.int}
     Should be equal as integers   222  ${msg.bonker.id.int}
     Should be equal as integers   999  ${msg.bonker.price.int}
-    
+
+Validate with wild cards
+    ComplexMessage
+    Value      wonker.*     0
+    Value      bonker.*     999
+    ${msg}=    Get message
+    Validate message   ${msg}
+
+Validate with wild cards fails
+    ComplexMessage
+    Value      wonker.*     0
+    Value      bonker.*     999
+    ${msg}=    Get message
+    Value      bonker.*     1
+    Validation of field fails     id    ${msg}
+
 
 *** Keywords ***
+Validation of field fails
+    [Arguments]   ${field}    ${msg}
+    Run keyword and expect error   Value of field ${field} does not match *   Validate message   ${msg}
+
 Verify message fields
     [Arguments]   ${msg}
     Should be equal as integers    1    ${msg.foo.int}
