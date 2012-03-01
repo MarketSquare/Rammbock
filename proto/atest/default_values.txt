@@ -23,7 +23,6 @@ Default values in get message
      Verify message fields   ${msg}
 
 Setting a default value for all unset msg fields
-    [Tags]
     ExampleMessage
     Default    *         0
     ${msg}=    Get message

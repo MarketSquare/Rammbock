@@ -17,6 +17,7 @@ class Rammbock(object):
         self._servers = _NamedCache('server')
         self._clients = _NamedCache('client')
         self._message_stack = []
+        self._field_values = None
         self._default_values = None
 
     def reset_rammbock(self):
@@ -123,6 +124,7 @@ class Rammbock(object):
         proto = self._get_protocol(protocol)
         _, header_fields = self._parse_parameters(parameters)
         self._message_stack = [MessageTemplate(message_name, proto, header_fields)]
+        self._field_values = {}
         self._default_values = {}
 
     def get_message(self, *parameters):
@@ -134,7 +136,7 @@ class Rammbock(object):
         return self._encode_message(message_fields)
 
     def _encode_message(self, message_fields):
-        msg = self._get_message_template().encode(message_fields)
+        msg = self._get_message_template().encode(message_fields, self._default_values)
         print '*DEBUG* %s' % repr(msg)
         return msg
 
@@ -255,12 +257,15 @@ class Rammbock(object):
         return config, fields
 
     def _populate_defaults(self, fields):
-        ret_val = self._default_values
+        ret_val = self._field_values
         ret_val.update(fields)
-        self._default_values = {}
+        self._field_values = {}
         return ret_val 
 
     def value(self, name, value):
+        self._field_values[name] = value
+
+    def default(self, name, value):
         self._default_values[name] = value
 
     def _parse_parameters(self, parameters):

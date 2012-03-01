@@ -13,7 +13,7 @@ class TestTemplateFields(unittest.TestCase):
         self.assertEquals(field.name, "field")
         self.assertEquals(field.default_value, '8')
         self.assertEquals(field.type, 'uint')
-        self.assertEquals(field.encode({}, None).hex, '0x0000000008')
+        self.assertEquals(field.encode({}, {}, None).hex, '0x0000000008')
 
     def test_char_static_field(self):
         field = Char(5, "char_field", 'foo')
@@ -21,8 +21,8 @@ class TestTemplateFields(unittest.TestCase):
         self.assertEquals(field.name, "char_field")
         self.assertEquals(field.default_value, 'foo')
         self.assertEquals(field.type, 'char')
-        self.assertEquals(field.encode({}, None)._raw, 'foo\x00\x00')
-        self.assertEquals(field.encode({}, None).bytes, 'foo\x00\x00')
+        self.assertEquals(field.encode({}, {}, None)._raw, 'foo\x00\x00')
+        self.assertEquals(field.encode({}, {}, None).bytes, 'foo\x00\x00')
 
     def test_encoding_missing_value_fails(self):
         field = UInt(2, 'foo', None)
@@ -83,7 +83,7 @@ class TestLittleEndian(unittest.TestCase):
 
     def test_little_endian_uint_encode(self):
         template = UInt(2, 'field', 1)
-        field = template.encode({}, None, little_endian=True)
+        field = template.encode({}, {}, None, little_endian=True)
         self.assertEquals(field._raw, to_bin('0x0100'))
         self.assertEquals(field.int, 1)
         self.assertEquals(field.bytes, to_bin('0x0001'))
@@ -176,7 +176,7 @@ class TestAlignment(unittest.TestCase):
 
     def test_encode_aligned_uint(self):
         uint = UInt(1,'foo', '0xff', align='4')
-        encoded = uint.encode({}, None)
+        encoded = uint.encode({}, {}, None)
         self.assertEquals(encoded.int, 255)
         self.assertEquals(encoded.hex, '0xff')
         self.assertEquals(len(encoded), 4)
