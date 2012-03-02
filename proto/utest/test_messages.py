@@ -1,6 +1,6 @@
 import unittest
 from Message import Struct, Field
-from binary_conversions import to_bin
+from binary_tools import to_bin
 
 
 class TestMessages(unittest.TestCase):

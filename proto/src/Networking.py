@@ -1,6 +1,6 @@
 import socket
 import time
-from binary_conversions import to_hex
+from binary_tools import to_hex
 
 UDP_BUFFER_SIZE = 65536
 TCP_BUFFER_SIZE = 1000000

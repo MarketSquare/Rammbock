@@ -1,4 +1,4 @@
-from binary_conversions import to_bin
+from binary_tools import to_bin
 
 class MessageStream(object):
 

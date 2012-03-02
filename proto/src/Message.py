@@ -1,4 +1,4 @@
-from binary_conversions import to_0xhex
+from binary_tools import to_0xhex
 
 
 class _StructuredElement(object):

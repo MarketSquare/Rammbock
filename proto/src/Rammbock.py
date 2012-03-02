@@ -3,7 +3,7 @@ from contextlib import contextmanager
 from Networking import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 
 from templates import Protocol, UInt, PDU, MessageTemplate, Char, StructTemplate, ListTemplate, UnionTemplate
-from binary_conversions import to_0xhex, to_bin
+from binary_tools import to_0xhex, to_bin
 
 
 class Rammbock(object):

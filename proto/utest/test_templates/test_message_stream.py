@@ -3,7 +3,7 @@ import socket
 
 from templates.message_stream import MessageStream
 from templates import Protocol, MessageTemplate, UInt, PDU
-from binary_conversions import to_bin 
+from binary_tools import to_bin 
 
 
 class _MockStream(object):
