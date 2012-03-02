@@ -349,7 +349,7 @@ class TestDynamicMessageTemplate(unittest.TestCase):
         tmp.add(Char('len', 'chars', 'abcd'))
         tmp.add(UInt(4, 'len2', '6'))
         tmp.add(Char('len2', 'chars2', 'ef'))
-        encoded = tmp.encode({})
+        encoded = tmp.encode({}, {})
         self.assertEquals(encoded.chars.ascii, 'abcd')
         self.assertEquals(len(encoded.chars), 4)
         self.assertEquals(encoded.chars2.ascii, 'ef')
@@ -371,7 +371,7 @@ class TestDynamicMessageTemplate(unittest.TestCase):
         lst = ListTemplate('len', 'foo')
         lst.add(UInt(1,'bar', 1))
         tmp.add(lst)
-        encoded = tmp.encode({'len':6})
+        encoded = tmp.encode({'len':6}, {})
         self.assertEquals(len(encoded.foo), 6)
 
 

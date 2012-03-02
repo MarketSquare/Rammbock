@@ -117,14 +117,20 @@ class MessageTemplate(_Template):
         self._protocol = protocol
         self.header_parameters = header_params
 
-    def encode(self, message_params, little_endian=False):
+    def encode(self, message_params, header_params, little_endian=False):
         message_params = message_params.copy()
         msg = Message(self.name)
         self._encode_fields(msg, message_params, little_endian=little_endian)
         if self._protocol:
             # TODO: little endian support for protocol header
-            msg._add_header(self._protocol.encode(msg, self.header_parameters))
+            msg._add_header(self._protocol.encode(msg, self._headers(header_params)))
         return msg
+
+    def _headers(self, header_params):
+        result = {}
+        result.update(self.header_parameters)
+        result.update(header_params)
+        return result
 
     def _get_struct(self, name):
         return Message(self.name)

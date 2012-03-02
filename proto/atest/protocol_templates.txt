@@ -151,6 +151,11 @@ Validate fails when trying to validate nonexistent field
 Error when giving non-ascii parameters
     Run keyword and expect error    Only ascii characters are supported in parameters.    New message    ValueRequest    Example    messägeType:0xdddd
 
+Overriding header parameters in send
+    Client sends simple request    header:flags:0xcafe
+    ${msg}=    Server receives simple request
+    Should be equal    0xcafe    ${msg._header.flags.hex}
+
 *** Keywords ***
 Client Sends simple request
     [Arguments]    @{params}

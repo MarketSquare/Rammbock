@@ -121,7 +121,7 @@ class Rammbock(object):
         if self._protocol_in_progress:
             raise Exception("Protocol definition in progress. Please finish it before starting to define a message.")
         proto = self._get_protocol(protocol)
-        _, header_fields = self._parse_parameters(parameters)
+        _, header_fields, _ = self._parse_parameters(parameters)
         self._message_stack = [MessageTemplate(message_name, proto, header_fields)]
         self._field_values = {}
 
@@ -130,11 +130,11 @@ class Rammbock(object):
 
         * Send Message -keywords are convenience methods, that will call this to get the message object and then send it.
         Parameters have to be pdu fields."""
-        _, message_fields = self._get_paramaters_with_defaults(parameters)
-        return self._encode_message(message_fields)
+        _, message_fields, header_fields = self._get_paramaters_with_defaults(parameters)
+        return self._encode_message(message_fields, header_fields)
 
-    def _encode_message(self, message_fields):
-        msg = self._get_message_template().encode(message_fields)
+    def _encode_message(self, message_fields, header_fields):
+        msg = self._get_message_template().encode(message_fields, header_fields)
         print '*DEBUG* %s' % repr(msg)
         return msg
 
@@ -157,8 +157,8 @@ class Rammbock(object):
         self._send_message(self.server_sends_binary, parameters)
 
     def _send_message(self, callback, parameters):
-        configs, message_fields = self._get_paramaters_with_defaults(parameters)
-        msg = self._encode_message(message_fields)
+        configs, message_fields, header_fields = self._get_paramaters_with_defaults(parameters)
+        msg = self._encode_message(message_fields, header_fields)
         callback(msg._raw, **configs)
 
     def client_receives_message(self, *parameters):
@@ -186,7 +186,7 @@ class Rammbock(object):
             return msg
 
     def validate_message(self, msg, *parameters):
-        _, message_fields = self._get_paramaters_with_defaults(parameters)
+        _, message_fields, _ = self._get_paramaters_with_defaults(parameters)
         self._validate_message(msg, message_fields)
 
     def _validate_message(self, msg, message_fields):
@@ -198,7 +198,7 @@ class Rammbock(object):
 
     @contextmanager
     def _receive(self, nodes, *parameters):
-        configs, message_fields = self._get_paramaters_with_defaults(parameters)
+        configs, message_fields, _ = self._get_paramaters_with_defaults(parameters)
         node = nodes.get(configs.pop('name', None))
         msg = node.get_message(self._get_message_template(), **configs)
         yield msg, message_fields
@@ -250,9 +250,9 @@ class Rammbock(object):
         return to_0xhex(bin_value)
 
     def _get_paramaters_with_defaults(self, parameters):
-        config, fields = self._parse_parameters(parameters)
+        config, fields, headers = self._parse_parameters(parameters)
         fields = self._populate_defaults(fields)
-        return config, fields
+        return config, fields, headers
 
     def _populate_defaults(self, fields):
         ret_val = self._field_values
@@ -264,10 +264,25 @@ class Rammbock(object):
         self._field_values[name] = value
 
     def _parse_parameters(self, parameters):
-        configs, fields = {}, {}
+        configs, fields = [], []
         for parameter in parameters:
             self._parse_entry(parameter, configs, fields)
-        return configs, fields
+        headers, fields = self._get_headers(fields)
+        return self._to_dict(configs, fields, headers)
+
+    def _get_headers(self, fields):
+        headers = []
+        header_indexes = []
+        for index, (name, value) in enumerate(fields):
+            if name == 'header' and ':' in value:
+                headers.append(value.split(':', 1))
+                header_indexes.append(index)
+        fields = [field for index, field in enumerate(fields) 
+                  if index not in header_indexes]
+        return headers, fields
+    
+    def _to_dict(self, *lists):
+        return (dict(list) for list in lists)
 
     def _parse_entry(self, param, configs, fields):
         colon_index = param.find(':')
@@ -277,19 +292,19 @@ class Rammbock(object):
         if colon_index == -1 and equals_index == -1:
             raise Exception('Illegal parameter %s' % param)
         elif equals_index == -1:
-            self._set_name_and_value(fields, ':', param)
+            fields.append(self._name_and_value(':', param))
         elif colon_index == -1 or colon_index > equals_index:
-            self._set_name_and_value(configs, '=', param)
+            configs.append(self._name_and_value('=', param))
         else:
-            self._set_name_and_value(fields, ':', param)
+            fields.append(self._name_and_value(':', param))
 
-    def _set_name_and_value(self, dictionary, separator, parameter):
+    def _name_and_value(self, separator, parameter):
         index = parameter.find(separator)
         try:
             key = str(parameter[:index].strip())
         except UnicodeError:
             raise Exception("Only ascii characters are supported in parameters.")
-        dictionary[key] = parameter[index + 1:].strip()
+        return (key, parameter[index + 1:].strip())
 
     def _log_msg(self, loglevel, log_msg):
         print '*%s* %s' % (loglevel, log_msg)
