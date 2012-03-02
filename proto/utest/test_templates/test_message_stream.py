@@ -51,22 +51,28 @@ class TestMessageStream(unittest.TestCase):
     def test_get_message(self):
         byte_stream = _MockStream(to_bin('0xff0004cafe aa0004dead'))
         msg_stream = MessageStream(byte_stream, self._protocol)
-        msg = msg_stream.get(self._msg)
+        msg = msg_stream.get(self._msg, header_filter='id')
         self.assertEquals(msg.field_1.hex, '0xde')
 
     def test_get_message_from_buffer(self):
         byte_stream = _MockStream(to_bin('0xff0004cafe aa0004dead'))
         msg_stream = MessageStream(byte_stream, self._protocol)
-        _ = msg_stream.get(self._msg)
+        _ = msg_stream.get(self._msg, header_filter='id')
         self._msg.header_parameters = {}
         msg = msg_stream.get(self._msg)
         self.assertEquals(msg.field_1.hex, '0xca')
+
+    def test_filter_by_unset_field_fails(self):
+        byte_stream = _MockStream(to_bin('0xff0004cafe aa0004dead'))
+        msg_stream = MessageStream(byte_stream, self._protocol)
+        self._msg.header_parameters = {}
+        self.assertRaises(AssertionError, msg_stream.get, self._msg, header_filter='id')
 
     def test_timeout_goes_to_stream(self):
         byte_stream = _MockStream(to_bin('0xff0004cafe aa0004dead'))
         msg_stream = MessageStream(byte_stream, self._protocol)
         self._msg.header_parameters = {'id':'0x00'}
-        self.assertRaises(socket.timeout, msg_stream.get, self._msg, timeout=1)
+        self.assertRaises(socket.timeout, msg_stream.get, self._msg, timeout=0.1, header_filter='id')
 
 
 if __name__ == '__main__':

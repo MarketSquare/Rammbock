@@ -2,7 +2,7 @@ import unittest
 
 from templates.containers import Protocol, MessageTemplate, StructTemplate, ListTemplate, UnionTemplate
 from templates.primitives import UInt, PDU, Char
-from binary_conversions import to_bin_of_length, to_bin
+from binary_tools import to_bin_of_length, to_bin
 
 
 def _get_empty_pair(name='pair'):

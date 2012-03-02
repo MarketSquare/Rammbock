@@ -1,5 +1,5 @@
 from Message import Field
-from binary_conversions import to_bin_of_length, to_0xhex
+from binary_tools import to_bin_of_length, to_0xhex
 
 
 class _TemplateField(object):

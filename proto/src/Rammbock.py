@@ -199,7 +199,7 @@ class Rammbock(object):
     @contextmanager
     def _receive(self, nodes, *parameters):
         configs, message_fields = self._get_paramaters_with_defaults(parameters)
-        node = nodes.get(configs.get('name'))
+        node = nodes.get(configs.pop('name', None))
         msg = node.get_message(self._get_message_template(), **configs)
         yield msg, message_fields
         print "*DEBUG* Received %s" % repr(msg)

@@ -24,11 +24,11 @@ class _WithTimeouts(object):
 
 class _WithMessageStreams(object):
 
-    def get_message(self, message_template, timeout=None):
-        return self._get_from_stream(message_template, self._message_stream, timeout=timeout)
+    def get_message(self, message_template, timeout=None, header_filter=None):
+        return self._get_from_stream(message_template, self._message_stream, timeout=timeout, header_filter=header_filter)
 
-    def _get_from_stream(self, message_template, stream, timeout):
-        return stream.get(message_template, timeout=timeout)
+    def _get_from_stream(self, message_template, stream, timeout, header_filter):
+        return stream.get(message_template, timeout=timeout, header_filter=header_filter)
 
 
 class _Server(_WithTimeouts, _WithMessageStreams):
@@ -141,9 +141,9 @@ class TCPServer(_Server):
     def close_connection(self, alias=None):
         raise Exception("Not yet implemented")
 
-    def get_message(self, message_template, timeout=None, alias=None):
+    def get_message(self, message_template, timeout=None, alias=None, header_filter=None):
         stream = self._message_streams.get(alias)
-        return self._get_from_stream(message_template, stream, timeout=timeout)
+        return self._get_from_stream(message_template, stream, timeout=timeout, header_filter=header_filter)
 
 
 class _Connection(_WithTimeouts):

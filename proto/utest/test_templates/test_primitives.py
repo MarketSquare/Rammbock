@@ -2,7 +2,7 @@ import unittest
 
 from templates.primitives import Length, Char, UInt, PDU
 from Message import Struct, Field
-from binary_conversions import to_bin
+from binary_tools import to_bin
 
 
 class TestTemplateFields(unittest.TestCase):

@@ -48,8 +48,8 @@ Define protocol, start tcp server and two clients  [arguments]   ${protocol}=
     Accept connection  alias=Connection2
 
 Setup UDP server and client  [arguments]  ${protocol}=
-    Start udp server    ${SERVER}    ${SERVER PORT}    name=ExampleServer  protocol=${protocol}
-    Start udp client    name=ExampleClient     protocol=Example
+    Start udp server    ${SERVER}    ${SERVER PORT}    name=ExampleServer  protocol=${protocol}    timeout=1
+    Start udp client    name=ExampleClient     protocol=Example    timeout=1
     connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient
     
 Setup protocol, UDP server, and client

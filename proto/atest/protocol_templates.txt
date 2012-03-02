@@ -66,7 +66,7 @@ Server uses protocol and value validation fails
 Server uses protocol and messages arrive out of order
     Client Sends hex    0x 01 00 aaaa 000c 0000 deadbeef
     Client Sends hex    0x 01 00 dddd 000c 0000 cafebabe
-    ${msg_dddd} =    Server Receives simple request with header    messageType:0xdddd
+    ${msg_dddd} =    Server Receives simple request with header    messageType:0xdddd    flags:0xffff
     Should be equal    ${msg_dddd._header.messageType.hex}    0xdddd
 
 Message field type conversions
@@ -188,7 +188,7 @@ Server Receives simple request with header
     [Arguments]    @{header params}
     New message    ValueRequest    Example    @{header params}
     u32    value
-    ${msg} =    Server receives message
+    ${msg} =    Server receives message    header_filter=messageType
     [Return]    ${msg}
 
 Client Receives simple request
