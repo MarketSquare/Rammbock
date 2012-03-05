@@ -28,6 +28,7 @@ class MessageStream(object):
             if self._matches(header, fields, header_filter):
                 self._cache.pop(index)
                 return self._to_msg(template, header, pdu)
+            index += 1
         return None
 
     def _to_msg(self, template, header, pdu_bytes):

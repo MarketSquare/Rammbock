@@ -8,6 +8,8 @@ from binary_tools import to_0xhex, to_bin
 
 class Rammbock(object):
 
+    ROBOT_LIBRARY_SCOPE = 'GLOBAL'
+
     def __init__(self):
         self._init_caches()
 
