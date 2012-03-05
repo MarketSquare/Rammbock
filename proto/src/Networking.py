@@ -30,6 +30,9 @@ class _WithMessageStreams(object):
     def _get_from_stream(self, message_template, stream, timeout, header_filter):
         return stream.get(message_template, timeout=timeout, header_filter=header_filter)
 
+    def log_send(self, binary, ip, port):
+        print '*DEBUG* Send %s to %s:%s over %s' % (to_hex(binary), ip, port, self._transport_layer_name)
+
 
 class _Server(_WithTimeouts, _WithMessageStreams):
 
@@ -55,6 +58,8 @@ class _Server(_WithTimeouts, _WithMessageStreams):
 
 
 class UDPServer(_Server):
+
+    _transport_layer_name = 'UDP'
 
     def __init__(self, ip, port, timeout=None, protocol=None):
         _Server.__init__(self, ip, port, timeout)
@@ -84,7 +89,7 @@ class UDPServer(_Server):
         return self.receive_from(timeout, alias)[0]
 
     def send_to(self, msg, ip, port):
-        print "*DEBUG* Send %s" % to_hex(msg)
+        self.log_send(msg, ip, port)
         self._socket.sendto(msg, (ip,int(port)))
 
     def send(self, msg, alias=None):
@@ -96,6 +101,8 @@ class UDPServer(_Server):
 
 
 class TCPServer(_Server):
+
+    _transport_layer_name = 'TCP'
 
     def __init__(self, ip, port, timeout=None, protocol=None):
         _Server.__init__(self, ip, port, timeout)
@@ -125,8 +132,9 @@ class TCPServer(_Server):
         return client_address
 
     def send(self, msg, alias=None):
-        print "*DEBUG* Send %s" % to_hex(msg)
-        self._connections.get(alias)[0].send(msg)
+        connection, (ip, port) = self._connections.get(alias)
+        self.log_send(msg, ip, port)
+        connection.send(msg)
 
     def send_to(self, *args):
         raise Exception("TCP server cannot send to a specific address.")
@@ -191,7 +199,8 @@ class _Client(_WithTimeouts, _WithMessageStreams):
         return self
 
     def send(self, msg):
-        print "*DEBUG* Send %s" % to_hex(msg)
+        ip, port = self._socket.getpeername()
+        self.log_send(msg, ip, port)
         self._socket.sendall(msg)
 
     def receive(self, timeout=None):
@@ -223,6 +232,7 @@ class _Client(_WithTimeouts, _WithMessageStreams):
 
 class UDPClient(_Client):
 
+    _transport_layer_name = 'UDP'
     _size_limit = UDP_BUFFER_SIZE
 
     def _init_socket(self):
@@ -232,6 +242,7 @@ class UDPClient(_Client):
 
 class TCPClient(_Client):
 
+    _transport_layer_name = 'TCP'
     _size_limit = TCP_BUFFER_SIZE
 
     def _init_socket(self):
@@ -251,7 +262,7 @@ class _NamedCache(object):
         if not name:
             name=self._next_name()
         self._cache[name] = value
-        self._current = value
+        self._current = name
 
     def _next_name(self):
         self._counter+=1
@@ -259,7 +270,8 @@ class _NamedCache(object):
 
     def get(self, name=None):
         if not name:
-            return self._current
+            print '*DEBUG* Choosing %s by default' % self._current
+            return self._cache[self._current]
         return self._cache[name]
 
     def __iter__(self):
