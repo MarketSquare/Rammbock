@@ -33,6 +33,16 @@ class Rammbock(object):
             client.close()
         self._init_caches()
 
+    def reset_message_streams(self):
+        """ Resets streams of incoming messages.
+        
+        You can use this method to reuse the same connections for several consecutive test cases.
+        """
+        for client in self._clients:
+            client.empty()
+        for server in self._servers:
+            server.empty()
+
     def start_protocol_description(self, protocol_name):
         """Start defining a new protocol template.
 

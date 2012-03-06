@@ -156,6 +156,11 @@ Overriding header parameters in send
     ${msg}=    Server receives simple request
     Should be equal    0xcafe    ${msg._header.flags.hex}
 
+Resetting message stream cache
+    Client sends simple request
+    Reset message streams
+    Server receive for simple request will timeout
+
 *** Keywords ***
 Client Sends simple request
     [Arguments]    @{params}
@@ -181,6 +186,9 @@ Server Receives simple request from named connection
     u32    value
     ${msg} =    Server receives message    alias=${connection}    @{params}
     [Return]    ${msg}
+
+Server receive for simple request will timeout
+    Run keyword and expect error    timeout: timed out    Server Receives simple request    timeout=0.1
 
 Server Receives simple request
     [Arguments]    @{params}

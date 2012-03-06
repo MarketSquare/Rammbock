@@ -12,7 +12,7 @@ class _WithTimeouts(object):
     _default_timeout = 10
 
     def _get_timeout(self, timeout):
-        if not timeout or str(timeout).lower() == 'none':
+        if timeout is None or timeout == '' or str(timeout).lower() == 'none':
             return self._default_timeout
         elif str(timeout).lower() == 'blocking':
             return None
@@ -32,6 +32,16 @@ class _WithMessageStreams(object):
 
     def log_send(self, binary, ip, port):
         print '*DEBUG* Send %s to %s:%s over %s' % (to_hex(binary), ip, port, self._transport_layer_name)
+
+    def empty(self):
+        result = True
+        try:
+            while (result):
+                result = self.receive(timeout=0.0)
+        except (socket.timeout, socket.error):
+            pass
+        if self._message_stream:
+            self._message_stream.empty()
 
 
 class _Server(_WithTimeouts, _WithMessageStreams):
@@ -111,29 +121,22 @@ class TCPServer(_Server):
         self._bind_socket()
         self._socket.listen(TCP_MAX_QUEUED_CONNECTIONS)
         self._connections = _NamedCache('connection')
-        self._message_streams = _NamedCache('message stream')
         self._protocol = protocol
 
     def receive(self, timeout=None, alias=None):
         return self.receive_from(timeout, alias)[0]
 
     def receive_from(self, timeout=None, alias=None):
-        connection, (ip, host) = self._connections.get(alias)
-        timeout = self._get_timeout(timeout)
-        connection.settimeout(timeout)
-        msg = connection.recv(TCP_BUFFER_SIZE)
-        print "*DEBUG* Read %s" % to_hex(msg)
-        return msg, ip, host
+        connection = self._connections.get(alias)
+        return connection.receive_from(timeout=timeout)
 
     def accept_connection(self, alias=None):
         connection, client_address = self._socket.accept()
-        self._connections.add((connection, client_address), alias)
-        self._message_streams.add(self._get_message_stream(_Connection(connection, client_address)), alias)
+        self._connections.add(_Connection(connection, protocol=self._protocol), alias)
         return client_address
 
     def send(self, msg, alias=None):
-        connection, (ip, port) = self._connections.get(alias)
-        self.log_send(msg, ip, port)
+        connection = self._connections.get(alias)
         connection.send(msg)
 
     def send_to(self, *args):
@@ -142,7 +145,7 @@ class TCPServer(_Server):
     def close(self):
         if self._is_connected:
             self._is_connected = False
-            for connection, _ in self._connections:
+            for connection in self._connections:
                 connection.close()
             self._socket.close()
 
@@ -150,20 +153,48 @@ class TCPServer(_Server):
         raise Exception("Not yet implemented")
 
     def get_message(self, message_template, timeout=None, alias=None, header_filter=None):
-        stream = self._message_streams.get(alias)
-        return self._get_from_stream(message_template, stream, timeout=timeout, header_filter=header_filter)
+        connection = self._connections.get(alias)
+        return connection.get_message(message_template, timeout=timeout, header_filter=header_filter)
+
+    def empty(self):
+        for connection in self._connections:
+            connection.empty()
 
 
-class _Connection(_WithTimeouts):
+class _Connection(_WithTimeouts, _WithMessageStreams):
 
-    def __init__(self, socket, client_address):
+    _transport_layer_name = 'TCP'
+
+    # TODO: cleanup (lots of duplicated code, and default timeout should be inherited)
+    def __init__(self, socket, protocol=None):
         self._socket = socket
-        self._ip, self._port = client_address
+        self._protocol = protocol
+        self._message_stream = self._get_message_stream()
+
+    def _get_message_stream(self):
+        if not self._protocol:
+            return None
+        return self._protocol.get_message_stream(BufferedStream(self, self._default_timeout))
 
     def receive(self, timeout=None):
-        self._socket.settimeout(self._get_timeout(timeout))
+        return self.receive_from(timeout)[0]
+
+    def receive_from(self, timeout=None):
+        timeout = self._get_timeout(timeout)
+        self._socket.settimeout(timeout)
         msg = self._socket.recv(TCP_BUFFER_SIZE)
-        return msg
+        print "*DEBUG* Read %s" % to_hex(msg)
+        ip, port = self._socket.getpeername()
+        return msg, ip, port
+
+    def send(self, msg):
+        ip, port = self._socket.getpeername()
+        self.log_send(msg, ip, port)
+        self._socket.sendall(msg)
+
+    def close(self):
+        self._socket.close()
+
 
 class _Client(_WithTimeouts, _WithMessageStreams):
 
@@ -209,16 +240,6 @@ class _Client(_WithTimeouts, _WithMessageStreams):
         msg = self._socket.recv(self._size_limit)
         print "*DEBUG* Read %s" % to_hex(msg)
         return msg
-
-    def empty(self):
-        result = True
-        try:
-            while (result):
-                result = self.read(timeout=0.0)
-        except (socket.timeout, socket.error):
-            pass
-        if self._message_stream:
-            self._message_stream.empty()
 
     def close(self):
         if self._is_connected:
@@ -308,3 +329,4 @@ class BufferedStream(_WithTimeouts):
 
     def empty(self):
         self.buffer = ''
+        # TODO: Socket should be reset also
