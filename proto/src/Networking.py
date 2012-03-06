@@ -9,6 +9,7 @@ TCP_MAX_QUEUED_CONNECTIONS = 5
 
 class _WithTimeouts(object):
 
+    # TODO: Tests for timeout=0.0
     _default_timeout = 10
 
     def _get_timeout(self, timeout):

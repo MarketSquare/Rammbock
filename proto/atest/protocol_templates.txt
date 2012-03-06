@@ -13,6 +13,13 @@ Undefined protocol cannot be used
     [Setup]    Define Simple Protocol
     Using undefined protocol in client fails
 
+Using same field name twice fails
+    [Setup]    Define Simple Protocol
+    New message   Foo    Example
+    u8     foo
+    u8     bar
+    Run keyword and expect error    *     u8    foo
+
 Client uses protocol and sends
     Client Sends simple request    value:0xcafebabe
     Verify server gets hex    0x 01 00 dddd 000c ffff cafebabe

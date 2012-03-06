@@ -15,6 +15,8 @@ class _Template(object):
         return ', '.join('%s:%s' % (key, value) for key, value in fields.items())
             
     def add(self, field):
+        if field.name in (elem.name for elem in self._fields):
+            raise AssertionError('Duplicate field %s in %s' % (field.name, self.name))
         if field.has_length and not field.length.static:
             if not field.length.field in [elem.name for elem in self._fields]:
                 raise Exception('Length field %s unknown' % field.length)

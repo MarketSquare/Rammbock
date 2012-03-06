@@ -106,6 +106,7 @@ class Char(_TemplateField):
 class PDU(_TemplateField):
 
     type = 'pdu'
+    name = '__pdu__'
 
     def __init__(self, length):
         self.length = Length(length)

@@ -219,7 +219,7 @@ class Rammbock(object):
     def uint(self, length, name, value=None, align=None):
         self._add_field(UInt(length, name, value, align=align))
 
-    def char(self, length, name, value=None):
+    def chars(self, length, name, value=None):
         self._add_field(Char(length, name, value))
 
     def _add_field(self, field):

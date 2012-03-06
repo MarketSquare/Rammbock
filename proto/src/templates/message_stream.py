@@ -46,5 +46,6 @@ class MessageStream(object):
         return True
 
     def empty(self):
-        self.cache = []
+        # TODO: better tests for message stream cache emptying
+        self._cache = []
         self._stream.empty()
