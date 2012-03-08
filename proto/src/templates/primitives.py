@@ -21,9 +21,8 @@ class _TemplateField(object):
 
     def encode(self, paramdict, parent, name=None, little_endian=False):
         value = self._get_element_value_and_remove_from_params(paramdict, name)
-        return Field(self.type,self._get_name(name), 
-                     *self._encode_value(value, parent, little_endian=little_endian),
-                     little_endian=little_endian)
+        field_name, field_value = self._encode_value(value, parent, little_endian=little_endian)
+        return Field(self.type,self._get_name(name), field_name, field_value, little_endian=little_endian)
 
     def decode(self, value, message, name=None, little_endian=False):
         length, aligned_length = self.length.decode_lengths(message)
