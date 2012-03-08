@@ -72,12 +72,17 @@ class TestNetwork(unittest.TestCase):
         _, client = self._udp_server_and_client(ports['SERVER_PORT'], ports['CLIENT_PORT'], timeout=0.1)
         self._assert_timeout(client)
 
+    def test_setting_timeout_to_0(self):
+        server, client = self._udp_server_and_client(ports['SERVER_PORT'], ports['CLIENT_PORT'], timeout=3)
+        self._assert_timeout_error(server, 0.0)
+        self._assert_timeout_error(client, '0.0')
+
     def test_overriding_client_read_timeout(self):
-        _, client = self._udp_server_and_client(ports['SERVER_PORT'], ports['CLIENT_PORT'], timeout=5)
+        _, client = self._udp_server_and_client(ports['SERVER_PORT'], ports['CLIENT_PORT'], timeout=3)
         self._assert_timeout(client, 0.1)
 
     def test_overriding_server_read_timeout(self):
-        server, _ = self._udp_server_and_client(ports['SERVER_PORT'], ports['CLIENT_PORT'], timeout=5)
+        server, _ = self._udp_server_and_client(ports['SERVER_PORT'], ports['CLIENT_PORT'], timeout=3)
         self._assert_timeout(server, 0.1)
 
     def test_setting_server_default_timeout(self):
@@ -112,8 +117,14 @@ class TestNetwork(unittest.TestCase):
         self._assert_receive(server, 'after')
 
     def _assert_timeout(self, node, timeout=None):
+        self._assert_timeout_with_type(node, socket.timeout, timeout)
+
+    def _assert_timeout_error(self, node, timeout=None):
+        self._assert_timeout_with_type(node, socket.error, timeout)
+
+    def _assert_timeout_with_type(self, node, exception_type, timeout):
         start_time = time.time()
-        self.assertRaises(socket.timeout, node.receive, timeout)
+        self.assertRaises(exception_type, node.receive, timeout)
         self.assertTrue(time.time() - 0.5 < start_time)
 
     def _assert_receive(self, receiver, msg):
