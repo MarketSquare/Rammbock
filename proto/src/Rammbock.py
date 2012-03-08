@@ -100,7 +100,6 @@ class Rammbock(object):
         client = self._clients.get(name)
         client.connect_to(host, port)
 
-    # TODO: Log the raw binary that is sent and received.
     def client_sends_binary(self, message, name=None):
         """Send raw binary data."""
         client = self._clients.get(name)
