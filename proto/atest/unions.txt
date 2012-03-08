@@ -124,6 +124,6 @@ Machine
 User
     [arguments]     ${name}
     Struct    User    ${name}
-    char   10       name
+    chars   10       name
     u32            age
     End struct

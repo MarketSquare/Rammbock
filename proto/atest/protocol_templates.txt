@@ -225,13 +225,13 @@ Client sends request and server receives it
 Client sends charred request
     [Arguments]    @{params}
     New message    CharredRequest    Example    messageType:0xf000
-    char    16    string_value    foo
+    chars    16    string_value    foo
     Client sends message    @{params}
 
 Server receives charred request
     [Arguments]    @{params}
     New message    CharredRequest    Example    messageType:0xf000
-    char    16    string_value
+    chars    16    string_value
     ${msg} =    Server receives message    @{params}
     [Return]    ${msg}
 
