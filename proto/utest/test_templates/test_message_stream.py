@@ -21,6 +21,9 @@ class _MockStream(object):
         self.data = self.data[length:]
         return result
 
+    def empty(self):
+        self.data = ''
+
 
 class TestProtocolMessageReceiving(unittest.TestCase):
 
@@ -59,6 +62,11 @@ class TestMessageStream(unittest.TestCase):
         self._msg.header_parameters = {'id': '0xdd'}
         msg = self._msg_stream.get(self._msg, header_filter='id')
         self.assertEquals(msg.field_1.hex, '0xbe')
+
+    def test_empty_message_stream(self):
+        _ = self._msg_stream.get(self._msg, header_filter='id')
+        self._msg_stream.empty()
+        self.assertRaises(socket.timeout, self._msg_stream.get, self._msg, timeout=0.1)
 
     def test_filter_by_unset_field_fails(self):
         self._msg.header_parameters = {}
