@@ -256,12 +256,13 @@ class ListTemplate(_Template):
         return errors
 
     def _get_params_sub_tree(self, params, name=None):
-        result = {}
+        # TODO: Test for * syntax in array subfields
+        result = {'*': params['*']} if '*' in params else {}
         name = name if name else self.name
         for key in params.keys():
             match = self.param_pattern.match(key)
             if match:        
                 prefix, child_name, ending = match.groups()
-                if prefix == name:
+                if prefix == name or prefix == '*':
                     result[child_name + ending] =  params.pop(key)
         return result
