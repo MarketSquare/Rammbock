@@ -1,0 +1,98 @@
+*** Settings ***
+Default Tags    regression
+Test Setup      Create server and client, and define protocol
+Test Teardown   Reset Rammbock
+Library         Rammbock
+Resource        Protocols.txt
+
+*** Variables ***
+${GTP CONTROL PORT}=          2123
+${LOCALHOST IP}=              127.0.0.1
+${CREATE SESSION REQUEST}=
+
+*** Test Cases ***
+Create Session Request
+    [tags]
+    Create and send Create Session Request
+    Receive and Validate Create Session Request
+
+*** Keywords ***
+Create and send Create Session Request
+    send Create Session Request
+    validate create session request
+
+Receive and Validate Create Session Request
+    Server Receives Data
+    Validate Create Session Request
+
+Create server and client, and define protocol
+    define gtpv2 protocol
+    start udp server    ${LOCALHOST IP}     ${GTP CONTROL PORT}    protocol=gtpv2
+    start udp client    ip=${LOCALHOST IP}      protocol=gtpv2
+
+define gtpv2 protocol
+    start protocol description    gtpv2
+    u8      flags                         72
+    u8      message type
+    u16     message length
+    pdu     message length-4
+    end protocol description
+
+send Create Session Request
+    new message    create session request    gtpv2    message type=${CREATE SESSION REQUEST}
+    u32     tunnel endpoint identifier    0
+    u24     sequence number
+    u8      spare                         0
+    IMSI    262120000000001
+    MSISDN    cuntrycode:358     foo:1
+    ULI     uli.flags:0b00011000   uli.tai.tracking_area:1
+
+
+
+IMSI
+   [Arguments]   ${value}
+   IE   imsi   83   u64   ${value}
+
+MSISDN
+   [Arguments]   ${value}
+   IE   msisdn   54   tbcd   ${value}
+
+ADDRESS
+   [Arguments]   ${value}
+   IE   address   54   Chars   ie length   ${value}
+
+WOPPA
+   [Arguments]   ${value}
+   IE   wobba_flags   54   u8   ${value}
+
+ULI
+   [Arguments]   ${value}
+   IE   uli   88   uli_fields   ${value}
+
+Uli flields
+   u8      flags
+   TAI     tai
+   ECGI    ecgi
+
+
+
+
+
+
+
+
+IE
+    [Arguments]    ${name}   ${type}   ${content}   @{values}
+    Struct   IE    ${name}    @{values}
+    u8      ie type    ${type}
+    u16     ie length
+    u8      instance
+    container   ie length   ${content}
+    End struct
+
+
+
+
+
+
+
