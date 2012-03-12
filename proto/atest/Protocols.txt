@@ -132,6 +132,10 @@ U16
     [Arguments]    ${name}    ${value}=${NONE}  ${align}=${NONE}
     uint     2     ${name}    ${value}     align=${align}
 
+U24
+    [Arguments]    ${name}    ${value}=${NONE}  ${align}=${NONE}
+    uint     3     ${name}    ${value}    align=${align}
+
 U32
     [Arguments]    ${name}    ${value}=${NONE}  ${align}=${NONE}
     uint     4     ${name}    ${value}    align=${align}

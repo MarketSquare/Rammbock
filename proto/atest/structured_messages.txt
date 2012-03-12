@@ -75,8 +75,40 @@ Unfinished struct fails
     u8    foo
     Get message fails because 'myStruct' is not completed
 
+Pass value dict to Struct
+   [tags]
+   New message   FooExample   Example    messageType:0xb0b0
+   Struct    FooType   fooName    first:1    second:2
+   u8    first      0xff
+   u8    second     0xff
+   u8    third      0xff
+   End Struct
+   ${msg}   Get message    fooName.second:0x22
+   Should be equal     ${msg.fooName.first.hex}    0x01
+   Should be equal     ${msg.fooName.second.hex}    0x22
+
+Variable length container
+   [tags]
+    New message   FooExample   Example    messageType:0xb0b0
+    u8    length field
+    container    length field    u64    field    0x00
+    ${msg}    get message
+    should be equal as integers    ${msg.length field.int}    8
+
+Variable length container with multiple fields
+   [tags]
+    New message   FooExample   Example    messageType:0xb0b0
+    u8    length field
+    container    length field    multiple fields
+    ${msg}    get message
+    should be equal as integers    ${msg.length field.int}    2
+
 
 *** Keywords ***
+multiple fields
+    u8    value1    1
+    u8    value1    2
+
 Client sends request with struct
     [Arguments]    @{params}
     Message with struct
@@ -151,6 +183,12 @@ Array
     New List       ${size}    ${name}
     Run keyword    ${type}    ${EMPTY}   ${value}
     End List
+
+Container
+    [arguments]    ${length field}    ${type}    @{params to type}
+    New container  ${length field}
+    Run keyword    ${type}    @{params to type}
+    End container
 
 Pair
     [arguments]     ${name}=     ${value}=
