@@ -227,8 +227,9 @@ class Rammbock(object):
         else:
             self._message_stack[-1].add(field)
 
-    def struct(self, type, name):
-        self._message_stack.append(StructTemplate(type, name))
+    def struct(self, type, name, *parameters):
+        _, parameters, _ = self._get_paramaters_with_defaults(parameters)
+        self._message_stack.append(StructTemplate(type, name, parameters))
 
     def end_struct(self):
         struct = self._message_stack.pop()

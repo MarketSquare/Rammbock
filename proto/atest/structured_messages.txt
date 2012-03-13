@@ -76,16 +76,20 @@ Unfinished struct fails
     Get message fails because 'myStruct' is not completed
 
 Pass value dict to Struct
-   [tags]
    New message   FooExample   Example    messageType:0xb0b0
-   Struct    FooType   fooName    first:1    second:2
-   u8    first      0xff
-   u8    second     0xff
-   u8    third      0xff
-   End Struct
+   define struct
+   ${msg}   Get message
+   Should be equal     ${msg.fooName.first.hex}    0x01
+   Should be equal     ${msg.fooName.second.hex}   0x02
+   Should be equal     ${msg.fooName.third.hex}    0xff
+
+Pass value dict to Struct but replace it in Get Message
+   New message   FooExample   Example    messageType:0xb0b0
+   define struct
    ${msg}   Get message    fooName.second:0x22
    Should be equal     ${msg.fooName.first.hex}    0x01
-   Should be equal     ${msg.fooName.second.hex}    0x22
+   Should be equal     ${msg.fooName.second.hex}   0x22
+   Should be equal     ${msg.fooName.third.hex}    0xff
 
 Variable length container
    [tags]
@@ -217,3 +221,10 @@ Bar
 
 Get message fails because '${name}' is not completed
     Run keyword and expect error   Message definition not complete. ${name} not completed.  Get message    
+
+define struct
+   Struct    FooType   fooName    fooName.first:1    fooName.second:2
+   u8    first      0xff
+   u8    second     0xff
+   u8    third      0xff
+   End Struct

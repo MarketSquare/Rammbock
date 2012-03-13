@@ -142,7 +142,8 @@ class StructTemplate(_Template):
 
     has_length = False
     
-    def __init__(self, type, name):
+    def __init__(self, type, name, parameters=None):
+        self._parameters = parameters if parameters else {}
         self.type = type
         _Template.__init__(self,name)
 
@@ -151,6 +152,7 @@ class StructTemplate(_Template):
 
     def encode(self, message_params, parent=None, name=None, little_endian=False):
         struct = self._get_struct(name)
+        self._add_struct_params(message_params)
         self._encode_fields(struct, self._get_params_sub_tree(message_params, name), little_endian=little_endian)
         return struct
 
@@ -162,6 +164,9 @@ class StructTemplate(_Template):
         message = parent[name]
         return _Template.validate(self, message, self._get_params_sub_tree(message_fields, name))
 
+    def _add_struct_params(self, params):
+        for key in self._parameters.keys():
+            params[key] = self._parameters.pop(key) if key not in params else params[key]
 
 class UnionTemplate(_Template):
     
