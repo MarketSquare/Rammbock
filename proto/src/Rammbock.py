@@ -301,7 +301,7 @@ class Rammbock(object):
         equals_index = param.find('=')
         # TODO: Cleanup. There must be a cleaner way.
         # Luckily test_rammbock.py has unit tests covering all paths.
-        if colon_index == -1 and equals_index == -1:
+        if colon_index == equals_index == -1:
             raise Exception('Illegal parameter %s' % param)
         elif equals_index == -1:
             fields.append(self._name_and_value(':', param))
