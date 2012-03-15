@@ -77,7 +77,7 @@ Unfinished struct fails
 
 Pass value dict to Struct
    New message   FooExample   Example    messageType:0xb0b0
-   define struct
+   define struct    fooName.first:1    fooName.second:2
    ${msg}   Get message
    Should be equal     ${msg.fooName.first.hex}    0x01
    Should be equal     ${msg.fooName.second.hex}   0x02
@@ -85,7 +85,7 @@ Pass value dict to Struct
 
 Pass value dict to Struct but replace it in Get Message
    New message   FooExample   Example    messageType:0xb0b0
-   define struct
+   define struct    fooName.first:1    fooName.second:2
    ${msg}   Get message    fooName.second:0x22
    Should be equal     ${msg.fooName.first.hex}    0x01
    Should be equal     ${msg.fooName.second.hex}   0x22
@@ -98,12 +98,30 @@ Use struct length in field
     ${msg}    get message
     should be equal as integers    ${msg.length_field.int}    1
 
+Get dynamic length from value when encoding
+    [tags]
+    New message FooExample  Example   messageType:0xb0b0
+    u8    length_field
+    chars    length_field     name
+    ${msg}=    get message    name:ilmari
+    Should be equal as integers    ${msg.length_field.int}    6
+
 Variable length container with multiple fields
+    [tags]
     New message   FooExample   Example    messageType:0xb0b0
     u8    length_field
     container    container    length_field    multiple fields
-    ${msg}    get message
+    ${msg}=    get message
     should be equal as integers    ${msg.length_field.int}    10
+
+Variable length container with dynamic length content
+    [tags]
+    New message   FooExample   Example    messageType:0xb0b0
+    u8    length_field
+    container    container    length_field    Dynamic string
+    ${msg}=    get message    container.name:fobbabobba
+    should be equal as integers    ${msg.length_field.int}    11
+    should be equal as integers    ${msg.container.stringLen.int}   10
 
 
 *** Keywords ***
@@ -175,8 +193,15 @@ List message
 
 Dynamic message
     New Message    DynamicRequest  Example    messageType:0xaaaa
+    Dynamic pair array
+
+Dynamic pair array
     u8      numberOfPairs
     Array   numberOfPairs    Pair    pairList
+
+Dynamic string
+    u8     stringLen
+    Chars    stringLen   name
 
 Message with struct
     New Message    StructRequest  Example    messageType:0xaaaa
@@ -223,7 +248,8 @@ Get message fails because '${name}' is not completed
     Run keyword and expect error   Message definition not complete. ${name} not completed.  Get message    
 
 define struct
-   Struct    FooType   fooName    fooName.first:1    fooName.second:2
+   [arguments]     @{params}
+   Struct    FooType   fooName    @{params}
    u8    first      0xff
    u8    second     0xff
    u8    third      0xff
