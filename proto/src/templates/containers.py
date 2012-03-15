@@ -3,13 +3,14 @@ import re
 from Message import Field, Union, Message, Header, List, Struct
 from message_stream import MessageStream
 from primitives import Length
+from OrderedDict import OrderedDict
 
 
 class _Template(object):
 
     def __init__(self, name, parent):
         self.parent = parent
-        self._fields = []
+        self._fields = OrderedDict()
         self.name = name
 
     def _pretty_print_fields(self, fields):
@@ -21,13 +22,10 @@ class _Template(object):
         if field.has_length and not field.length.static:
             if not self._get_field_recursive(field.length.field):
                 raise AssertionError('Length field %s unknown' % field.length.field)
-        self._fields.append(field)
+        self._fields[field.name] = field
 
     def _get_field(self, field_name):
-        for elem in self._fields:
-            if elem.name == field_name:
-                return elem
-        return None
+        return self._fields.get(field_name)
 
     def _get_field_recursive(self, field_name):
         return self._get_field(field_name) or self.parent and self.parent._get_field_recursive(field_name)
@@ -39,7 +37,7 @@ class _Template(object):
                                  (name, self._pretty_print_fields(message_fields)))
 
     def _encode_fields(self, struct, params, little_endian=False):
-        for field in self._fields:
+        for field in self._fields.values():
             # TODO: clean away this ugly hack that makes it possible to skip PDU
             # (now it is a 0 length place holder in header)
             encoded = field.encode(params, struct, little_endian=little_endian)
@@ -50,14 +48,14 @@ class _Template(object):
     def decode(self, data, parent=None, name=None, little_endian=False):
         message = self._get_struct(name)
         data_index = 0
-        for field in self._fields:
+        for field in self._fields.values():
             message[field.name] = field.decode(data[data_index:], message, little_endian=little_endian)
             data_index += len(message[field.name])
         return message
 
     def validate(self, message, message_fields):
         errors = []
-        for field in self._fields:
+        for field in self._fields.values():
             errors += field.validate(message, message_fields)
         self._check_params_empty(message_fields, self.name)
         return errors
@@ -79,7 +77,7 @@ class Protocol(_Template):
 
     def header_length(self):
         length = 0
-        for field in self._fields:
+        for field in self._fields.values():
             if not field.length.static:
                 return length
             length += field.length.value
@@ -98,7 +96,7 @@ class Protocol(_Template):
         header_params[pdu_field.length.field] = pdu_field.length.solve_parameter(pdu_length)
 
     def _get_pdu_field(self):
-        for field in self._fields:
+        for field in self._fields.values():
             if field.type == 'pdu':
                 return field
         return None
@@ -109,8 +107,9 @@ class Protocol(_Template):
         data_index = 0
         field_index = 0
         header = Header(self.name)
+        values = self._fields.values()
         while len(data) > data_index:
-            field = self._fields[field_index]
+            field = values[field_index]
             header[field.name] = Field(field.type, field.name, data[data_index:data_index+field.length.value])
             data_index += field.length.value
             field_index +=1
@@ -161,7 +160,7 @@ class StructTemplate(_Template):
         _Template.__init__(self, name, parent)
 
     def get_static_length(self):
-        return sum(field.get_static_length() for field in self._fields)
+        return sum(field.get_static_length() for field in self._fields.values())
 
     def encode(self, message_params, parent=None, name=None, little_endian=False):
         struct = self._get_struct(name)
@@ -191,14 +190,14 @@ class UnionTemplate(_Template):
     
     def add(self, field):
         field.get_static_length()
-        self._fields.append(field)
+        self._fields[field.name] = field
             
     def get_static_length(self):
-        return max(field.get_static_length() for field in self._fields)
+        return max(field.get_static_length() for field in self._fields.values())
 
     def decode(self, data, parent=None, name=None, little_endian=False):
         union = Union(name if name else self.name, self.get_static_length())
-        for field in self._fields: 
+        for field in self._fields.values():
             union[field.name] = field.decode(data, union, little_endian=little_endian)
         return union
     
@@ -208,20 +207,21 @@ class UnionTemplate(_Template):
         if name not in union_params:
             raise AssertionError('Value not chosen for union %s' % name)
         chosen_one = union_params[name]
-        for field in self._fields:
-            if field.name == chosen_one:
-                union[field.name] = field.encode(self._get_params_sub_tree(union_params, name),
-                                                 union,
-                                                 little_endian=little_endian)
-                return union
-        raise Exception('Unknown union field %s' % chosen_one)
-        
+        if chosen_one not in self._fields:
+            raise Exception('Unknown union field %s' % chosen_one)
+        field = self._fields[chosen_one]
+        union[field.name] = field.encode(self._get_params_sub_tree(union_params, name),
+                                         union,
+                                         little_endian=little_endian)
+        return union
+
     def validate(self, parent, message_fields, name=None):
         name = name if name else self.name
         message = parent[name]
         return _Template.validate(self, message, self._get_params_sub_tree(message_fields, name))
 
-    
+#TODO: check that only one field is added to list
+#TODO: list field could be overriden
 class ListTemplate(_Template):
 
     param_pattern = re.compile(r'(.*?)\[(.*?)\](.*)')
@@ -249,7 +249,7 @@ class ListTemplate(_Template):
 
     @property
     def field(self):
-        return self._fields[0]
+        return self._fields.values()[0]
 
     def _get_struct(self, name=None):
         return List(name if name else self.name, self.field.type)
