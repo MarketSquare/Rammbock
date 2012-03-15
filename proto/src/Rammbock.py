@@ -1,8 +1,8 @@
 from __future__ import with_statement
 from contextlib import contextmanager
 from Networking import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
-
-from templates import Protocol, UInt, PDU, MessageTemplate, Char, StructTemplate, ListTemplate, UnionTemplate
+from templates import Protocol, UInt, PDU, MessageTemplate, Char, \
+    StructTemplate, ListTemplate, UnionTemplate
 from binary_tools import to_0xhex, to_bin
 
 
@@ -231,9 +231,11 @@ class Rammbock(object):
         _, parameters, _ = self._get_paramaters_with_defaults(parameters)
         self._message_stack.append(StructTemplate(type, name, parameters))
 
-    def end_struct(self):
+    def end_struct(self, length_field=None):
         struct = self._message_stack.pop()
         self._add_field(struct)
+        if length_field:
+            self._field_values[length_field] = struct.get_static_length()
 
     def new_list(self, size, name):
         self._message_stack.append(ListTemplate(size, name))

@@ -91,27 +91,27 @@ Pass value dict to Struct but replace it in Get Message
    Should be equal     ${msg.fooName.second.hex}   0x22
    Should be equal     ${msg.fooName.third.hex}    0xff
 
-Variable length container
-   [tags]
+Use struct length in field
     New message   FooExample   Example    messageType:0xb0b0
-    u8    length field
-    container    length field    u64    field    0x00
+    u8    length_field
+    container    container    length_field    u8    field    0x00
     ${msg}    get message
-    should be equal as integers    ${msg.length field.int}    8
+    should be equal as integers    ${msg.length_field.int}    1
 
 Variable length container with multiple fields
-   [tags]
     New message   FooExample   Example    messageType:0xb0b0
-    u8    length field
-    container    length field    multiple fields
+    u8    length_field
+    container    container    length_field    multiple fields
     ${msg}    get message
-    should be equal as integers    ${msg.length field.int}    2
+    should be equal as integers    ${msg.length_field.int}    10
 
 
 *** Keywords ***
 multiple fields
     u8    value1    1
-    u8    value1    2
+    u8    value2    2
+    u32   value3    2
+    u32   value4    2
 
 Client sends request with struct
     [Arguments]    @{params}
@@ -189,10 +189,10 @@ Array
     End List
 
 Container
-    [arguments]    ${length field}    ${type}    @{params to type}
-    New container  ${length field}
+    [arguments]    ${name}    ${length field}    ${type}    @{params to type}
+    struct    Container    ${name}
     Run keyword    ${type}    @{params to type}
-    End container
+    end struct    ${length field}
 
 Pair
     [arguments]     ${name}=     ${value}=

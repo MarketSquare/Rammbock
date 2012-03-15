@@ -217,7 +217,7 @@ class ListTemplate(_Template):
 
     def __init__(self, length, name):
         self.length = Length(length)
-        _Template.__init__(self,name)
+        _Template.__init__(self, name)
 
     def get_static_length(self):
         return self.length.value * self.field.get_static_length()
