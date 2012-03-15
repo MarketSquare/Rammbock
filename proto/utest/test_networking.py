@@ -161,7 +161,7 @@ def _get_template():
 
 class TestBufferedStream(unittest.TestCase):
 
-    DATA = 'foobar'
+    DATA = 'foobardiibadaa'
     
     def setUp(self):
         self._buffered_stream = BufferedStream(MockConnection(self.DATA), 0.1)
@@ -170,9 +170,9 @@ class TestBufferedStream(unittest.TestCase):
         self.assertEquals(self.DATA, self._buffered_stream.read(len(self.DATA)))
 
     def test_empty(self):
-        self._buffered_stream._fill_buffer(0.1)
+        self._buffered_stream.read(len('foobar'))
         self._buffered_stream.empty()
-        self.assertRaises(AssertionError, self._buffered_stream.read, len(self.DATA))
+        self.assertRaises(AssertionError, self._buffered_stream.read, len(self.DATA)-len('foobar'))
 
 
 class MockConnection(object):
