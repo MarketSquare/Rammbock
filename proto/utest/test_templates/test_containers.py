@@ -374,6 +374,18 @@ class TestDynamicMessageTemplate(unittest.TestCase):
         encoded = tmp.encode({'len':6}, {})
         self.assertEquals(len(encoded.foo), 6)
 
+    def test_add_field_with_length_reference_to_parent(self):
+        tmp = MessageTemplate('Dymagic', self._protocol, {})
+        tmp.add(UInt(2,'len', None))
+        str = StructTemplate('FooType', 'foo', tmp)
+        str.add(Char('len', "bar"))
+
+    def test_add_field_with_length_reference_missing(self):
+        tmp = MessageTemplate('Dymagic', self._protocol, {})
+        tmp.add(UInt(2,'len', None))
+        str = StructTemplate('FooType', 'foo', tmp)
+        self.assertRaises(AssertionError, str.add, Char('notfound', "bar"))
+
 
 class TestMessageTemplateValidation(unittest.TestCase):
 
