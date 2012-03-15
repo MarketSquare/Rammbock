@@ -1,21 +1,18 @@
 from binary_tools import to_0xhex
+from OrderedDict import OrderedDict
 
 
 class _StructuredElement(object):
 
     def __init__(self, name):
         self._name = '%s %s' % (self._type, name)
-        self._fields = []
+        self._fields = OrderedDict()
 
     def __setitem__(self, name, value):
-        self._fields.append((name, value))
+        self._fields[name] = value
 
     def __getitem__(self, name):
-        name = str(name)
-        for field_name, field in self._fields:
-            if field_name == name:
-                return field
-        raise KeyError(name)
+        return self._fields[str(name)]
 
     def __getattr__(self, name):
         return self[name]
@@ -25,12 +22,12 @@ class _StructuredElement(object):
 
     def __repr__(self):
         result = '%s\n' % self._name
-        for _, field in self._fields:
+        for field in self._fields.values():
             result +=self._format_indented('%s' % repr(field))
         return result
 
     def __contains__(self, key):
-        return key in [name for name, _ in self._fields]
+        return key in self._fields
 
     def _format_indented(self, text):
         return ''.join(['  %s\n' % line for line in text.splitlines()])
@@ -40,10 +37,10 @@ class _StructuredElement(object):
         return self._get_raw_bytes()
         
     def _get_raw_bytes(self):
-        return ''.join((field._raw for _, field in self._fields))
+        return ''.join((field._raw for field in self._fields.values()))
 
     def __len__(self):
-        return sum(len(field) for _ ,field in self._fields)
+        return sum(len(field) for field in self._fields.values())
 
 
 class List(_StructuredElement):
@@ -52,7 +49,7 @@ class List(_StructuredElement):
 
     def __init__(self, name, type_name):
         self._name = '%s %s[]' % (type_name, name)
-        self._fields = []
+        self._fields = OrderedDict()
 
 
 class Struct(_StructuredElement):
@@ -61,7 +58,7 @@ class Struct(_StructuredElement):
 
     def __init__(self, name, type_name):
         self._name = '%s %s' % (type_name, name)
-        self._fields = []
+        self._fields = OrderedDict()
 
 
 class Union(_StructuredElement):
@@ -73,7 +70,7 @@ class Union(_StructuredElement):
         _StructuredElement.__init__(self, name)
 
     def _get_raw_bytes(self):
-        raw_bytes = [field._raw for _, field in self._fields]
+        raw_bytes = [field._raw for field in self._fields.values()]
         max_raw = ''
         for raw in raw_bytes:
             if len(raw) > len(max_raw):
@@ -86,7 +83,9 @@ class Message(_StructuredElement):
     _type = 'Message'
 
     def _add_header(self, header):
-        self._fields.insert(0, ('_header', header))
+        new = OrderedDict({'_header':header})
+        new.update(self._fields)
+        self._fields = new
 
 
 class Header(_StructuredElement):
