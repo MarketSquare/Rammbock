@@ -328,5 +328,5 @@ class BufferedStream(_WithTimeouts):
         self._buffer += self._connection.receive(timeout=timeout)
 
     def empty(self):
-        self.buffer = ''
+        self._buffer = ''
         # TODO: Socket should be reset also

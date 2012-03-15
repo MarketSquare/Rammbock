@@ -2,7 +2,7 @@ import unittest
 import time
 import socket
 from threading import Timer
-from Networking import UDPServer, TCPServer, UDPClient, TCPClient
+from Networking import UDPServer, TCPServer, UDPClient, TCPClient, BufferedStream
 from templates.containers import Protocol
 from templates.primitives import UInt, PDU
 
@@ -12,7 +12,7 @@ CONNECTION_ALIAS = "Connection alias"
 ports = {'SERVER_PORT': 12345,
          'CLIENT_PORT': 54321}
 
-class TestNetwork(unittest.TestCase):
+class TestNetworking(unittest.TestCase):
 
     def setUp(self):
         self.sockets = []
@@ -157,6 +157,34 @@ def _get_template():
     protocol.add(UInt(2, 'length', None))
     protocol.add(PDU('length-2'))
     return protocol
+
+
+class TestBufferedStream(unittest.TestCase):
+
+    DATA = 'foobar'
+    
+    def setUp(self):
+        self._buffered_stream = BufferedStream(MockConnection(self.DATA), 0.1)
+    
+    def test_normal_read(self):
+        self.assertEquals(self.DATA, self._buffered_stream.read(len(self.DATA)))
+
+    def test_empty(self):
+        self._buffered_stream._fill_buffer(0.1)
+        self._buffered_stream.empty()
+        self.assertRaises(AssertionError, self._buffered_stream.read, len(self.DATA))
+
+
+class MockConnection(object):
+    
+    def __init__(self, mock_data_to_receive):
+        self._data = mock_data_to_receive
+    
+    def receive(self, timeout):
+        ret = self._data
+        self._data = ''
+        return ret
+
 
 if __name__ == "__main__":
     unittest.main()
