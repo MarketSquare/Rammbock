@@ -6,13 +6,13 @@ from binary_tools import to_bin_of_length, to_bin
 
 
 def _get_empty_pair(name='pair'):
-    struct = StructTemplate('Pair', name)
+    struct = StructTemplate('Pair', name, parent=None)
     struct.add(UInt(2, 'first', None))
     struct.add(UInt(2, 'second', None))
     return struct
 
 def _get_empty_recursive_struct():
-    str_str = StructTemplate('StructStruct', '3pairs')
+    str_str = StructTemplate('StructStruct', '3pairs', parent=None)
     pair1 = _get_empty_pair('pair1')
     pair2 = _get_empty_pair('pair2')
     pair3 = _get_empty_pair('pair3')
@@ -22,31 +22,31 @@ def _get_empty_recursive_struct():
     return str_str
 
 def _get_pair():
-    struct = StructTemplate('Pair', 'pair')
+    struct = StructTemplate('Pair', 'pair', parent=None)
     struct.add(UInt(2, 'first', 1))
     struct.add(UInt(2, 'second', 2))
     return struct
 
 def _get_recursive_struct():
-    str_str = StructTemplate('StructStruct', 'str_str')
+    str_str = StructTemplate('StructStruct', 'str_str', parent=None)
     inner = _get_pair()
     str_str.add(inner)
     return str_str
 
 def _get_list_of_three():
-    list = ListTemplate(3, 'topthree')
+    list = ListTemplate(3, 'topthree', parent=None)
     list.add(UInt(2, None, 1))
     return list
 
 def _get_list_list():
-    innerList= ListTemplate(2, None)
+    innerList= ListTemplate(2, None, parent=None)
     innerList.add(UInt(2, None, 7))
-    outerList = ListTemplate('2', 'listlist')
+    outerList = ListTemplate('2', 'listlist', parent=None)
     outerList.add(innerList)
     return outerList
 
 def _get_struct_list():
-    list = ListTemplate(2, 'liststruct')
+    list = ListTemplate(2, 'liststruct', parent=None)
     list.add(_get_pair())
     return list
 
@@ -259,7 +259,7 @@ class TestListTemplate(unittest.TestCase):
         self.assertEquals(encoded[1][1].int, 7)
 
     def test_decode_message(self):
-        list = ListTemplate('5', 'five')
+        list = ListTemplate('5', 'five', parent=None)
         list.add(UInt(4, None, 3))
         decoded = list.decode(to_bin('0x'+('00000003'*5)), {})
         self.assertEquals(len(decoded[4]), 4)
@@ -328,7 +328,7 @@ class TestDynamicMessageTemplate(unittest.TestCase):
 
     def test_non_existing_dynamic_list_variable(self):
         tmp = MessageTemplate('Dymagic', self._protocol, {})
-        lst = ListTemplate('not_existing', 'foo')
+        lst = ListTemplate('not_existing', 'foo', parent=None)
         lst.add(UInt(1,'bar', None))
         self.assertRaises(Exception, tmp.add, lst)
 
@@ -358,7 +358,7 @@ class TestDynamicMessageTemplate(unittest.TestCase):
     def test_decode_dynamic_list(self):
         tmp = MessageTemplate('Dymagic', self._protocol, {})
         tmp.add(UInt(2,'len', None))
-        lst = ListTemplate('len', 'foo')
+        lst = ListTemplate('len', 'foo', parent=None)
         lst.add(UInt(1,'bar', None))
         tmp.add(lst)
         decoded = tmp.decode(to_bin('0x 00 04 6162 6364'))
@@ -368,7 +368,7 @@ class TestDynamicMessageTemplate(unittest.TestCase):
     def test_encode_dynamic_list(self):
         tmp = MessageTemplate('Dymagic', self._protocol, {})
         tmp.add(UInt(2,'len', None))
-        lst = ListTemplate('len', 'foo')
+        lst = ListTemplate('len', 'foo', parent=None)
         lst.add(UInt(1,'bar', 1))
         tmp.add(lst)
         encoded = tmp.encode({'len':6}, {})
@@ -462,7 +462,7 @@ class TestTemplateFieldValidation(unittest.TestCase, _WithValidation):
         self._should_fail(template.validate({'liststruct':encoded}, {'liststruct[1].first':'42'}), 1)
 
     def test_dynamic_field_validation(self):
-        struct = StructTemplate('Foo', 'foo')
+        struct = StructTemplate('Foo', 'foo', parent=None)
         struct.add(UInt(2, 'len', None))
         struct.add(Char('len', 'text', None))
         encoded = struct.encode({'foo.len':6, 'foo.text':'fobba'})
@@ -473,7 +473,7 @@ class TestTemplateFieldValidation(unittest.TestCase, _WithValidation):
 class TestUnions(unittest.TestCase, _WithValidation):
 
     def _check_length(self, length, *fields):
-        union = UnionTemplate('Foo', 'foo')
+        union = UnionTemplate('Foo', 'foo', parent=None)
         for value in fields:
             union.add(value)
         self.assertEquals(union.get_static_length(), length)
@@ -491,9 +491,9 @@ class TestUnions(unittest.TestCase, _WithValidation):
         self._check_length(6, _get_pair(), _get_list_of_three())
 
     def test_fail_on_dynamic_length(self):
-        union = UnionTemplate('NotLegal', 'dymagic')
+        union = UnionTemplate('NotLegal', 'dymagic', parent=None)
         union.add(UInt(2,'bar',None))
-        struct = StructTemplate('Foo','foo')
+        struct = StructTemplate('Foo','foo', parent=None)
         struct.add(UInt(1,'len',22))
         struct.add(Char('len','dymagic','foo'))
         self.assertRaises(Exception, union.add, struct)
@@ -511,7 +511,7 @@ class TestUnions(unittest.TestCase, _WithValidation):
         self.assertEquals(decoded._raw, to_bin('0xcafebabe'))
 
     def _get_foo_union(self):
-        union = UnionTemplate('Foo', 'foo')
+        union = UnionTemplate('Foo', 'foo', parent=None)
         union.add(UInt(1, 'small', '0xff'))
         union.add(UInt(2, 'medium', '0xf00d'))
         union.add(UInt(4, 'large', None))

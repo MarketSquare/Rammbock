@@ -7,7 +7,8 @@ from primitives import Length
 
 class _Template(object):
 
-    def __init__(self, name):
+    def __init__(self, name, parent):
+        self.parent = parent
         self._fields = []
         self.name = name
 
@@ -15,12 +16,21 @@ class _Template(object):
         return ', '.join('%s:%s' % (key, value) for key, value in fields.items())
             
     def add(self, field):
-        if field.name in (elem.name for elem in self._fields):
+        if self._get_field(field.name):
             raise AssertionError('Duplicate field %s in %s' % (field.name, self.name))
         if field.has_length and not field.length.static:
-            if not field.length.field in [elem.name for elem in self._fields]:
-                raise Exception('Length field %s unknown' % field.length)
+            if not self._get_field_recursive(field.length.field):
+                raise Exception('Length field %s unknown' % field.length.field)
         self._fields.append(field)
+
+    def _get_field(self, field_name):
+        for elem in self._fields:
+            if elem.name == field_name:
+                return elem
+        return None
+
+    def _get_field_recursive(self, field_name):
+        return self._get_field(field_name) or self.parent and self.parent._get_field_recursive(field_name)
 
     def _check_params_empty(self, message_fields, name):
         message_fields.pop('*', None)
@@ -63,6 +73,9 @@ class _Template(object):
 
 
 class Protocol(_Template):
+
+    def __init__(self, name):
+        _Template.__init__(self, name, None)
 
     def header_length(self):
         length = 0
@@ -115,7 +128,7 @@ class MessageTemplate(_Template):
     type = 'Message'
 
     def __init__(self, message_name, protocol, header_params):
-        _Template.__init__(self, message_name)
+        _Template.__init__(self, message_name, None)
         self._protocol = protocol
         self.header_parameters = header_params
 
@@ -142,10 +155,10 @@ class StructTemplate(_Template):
 
     has_length = False
     
-    def __init__(self, type, name, parameters=None):
+    def __init__(self, type, name, parent, parameters=None):
         self._parameters = parameters if parameters else {}
         self.type = type
-        _Template.__init__(self,name)
+        _Template.__init__(self, name, parent)
 
     def get_static_length(self):
         return sum(field.get_static_length() for field in self._fields)
@@ -172,9 +185,9 @@ class UnionTemplate(_Template):
     
     has_length = False
     
-    def __init__(self, type, name):
+    def __init__(self, type, name, parent):
         self.type = type
-        _Template.__init__(self, name)
+        _Template.__init__(self, name, parent)
     
     def add(self, field):
         field.get_static_length()
@@ -215,9 +228,9 @@ class ListTemplate(_Template):
     has_length = True
     type = 'List'
 
-    def __init__(self, length, name):
+    def __init__(self, length, name, parent):
         self.length = Length(length)
-        _Template.__init__(self, name)
+        _Template.__init__(self, name, parent)
 
     def get_static_length(self):
         return self.length.value * self.field.get_static_length()

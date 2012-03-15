@@ -92,6 +92,7 @@ Pass value dict to Struct but replace it in Get Message
    Should be equal     ${msg.fooName.third.hex}    0xff
 
 Use struct length in field
+    [tags]
     New message   FooExample   Example    messageType:0xb0b0
     u8    length_field
     container    container    length_field    u8    field    0x00

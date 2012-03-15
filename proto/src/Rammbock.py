@@ -21,6 +21,10 @@ class Rammbock(object):
         self._message_stack = []
         self._field_values = None
 
+    @property
+    def _current_container(self):
+        return self._message_stack[-1]
+
     def reset_rammbock(self):
         """Closes all connections, deletes all servers, clients, and protocols.
 
@@ -151,7 +155,7 @@ class Rammbock(object):
 
     def _get_message_template(self):
         if len(self._message_stack) != 1:
-            raise Exception('Message definition not complete. %s not completed.' % self._message_stack[-1].name)
+            raise Exception('Message definition not complete. %s not completed.' % self._current_container.name)
         return self._message_stack[0]
 
     def client_sends_message(self, *parameters):
@@ -225,27 +229,25 @@ class Rammbock(object):
         if self._protocol_in_progress:
             self._protocol_in_progress.add(field)
         else:
-            self._message_stack[-1].add(field)
+            self._current_container.add(field)
 
     def struct(self, type, name, *parameters):
         _, parameters, _ = self._get_paramaters_with_defaults(parameters)
-        self._message_stack.append(StructTemplate(type, name, parameters))
+        self._message_stack.append(StructTemplate(type, name, self._current_container, parameters))
 
     def end_struct(self, length_field=None):
         struct = self._message_stack.pop()
         self._add_field(struct)
-        if length_field:
-            self._field_values[length_field] = struct.get_static_length()
 
     def new_list(self, size, name):
-        self._message_stack.append(ListTemplate(size, name))
+        self._message_stack.append(ListTemplate(size, name, self._current_container))
 
     def end_list(self):
         list = self._message_stack.pop()
         self._add_field(list)
 
     def union(self, type, name):
-        self._message_stack.append(UnionTemplate(type, name))
+        self._message_stack.append(UnionTemplate(type, name, self._current_container))
 
     def end_union(self):
         union = self._message_stack.pop()
