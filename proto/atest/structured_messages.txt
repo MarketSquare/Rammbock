@@ -99,13 +99,41 @@ Use struct length in field
     ${msg}    get message
     should be equal as integers    ${msg.length_field.int}    1
 
-Get dynamic length from value when encoding
+Use struct length in field with value set and matching
     [tags]
+    New message   FooExample   Example    messageType:0xb0b0
+    u8    length_field
+    container    container    length_field    u8    field    0x00
+    ${msg}    get message   length_field:1
+    should be equal as integers    ${msg.length_field.int}    1
+
+Use struct length in field with value too large
+    [tags]
+    New message   FooExample   Example    messageType:0xb0b0
+    u8    length_field
+    container    container    length_field    u8    field    0x00
+    Should fail    get message   length_field:5
+
+Use struct length in field with value too small
+    [tags]
+    New message   FooExample   Example    messageType:0xb0b0
+    u8    length_field
+    container    container    length_field    u16    field    0x00
+    Should fail    get message   length_field:1
+
+Get dynamic length from value when encoding
     New message   FooExample  Example   messageType:0xb0b0
     u8    length_field
     chars    length_field     name
     ${msg}=    get message    name:ilmari
     Should be equal as integers    ${msg.length_field.int}    6
+
+Too short dynamic length fails
+    [tags]
+    New message   FooExample  Example   messageType:0xb0b0
+    u8    length_field    1
+    chars    length_field     name
+    Should fail   get message    name:ilmari
 
 Variable length container with multiple fields
     [tags]
@@ -247,6 +275,9 @@ Bar
 
 Get message fails because '${name}' is not completed
     Run keyword and expect error   Message definition not complete. ${name} not completed.  Get message    
+
+Should fail    [Arguments]    @{args}
+    run keyword and expect error   *   @{args}
 
 define struct
    [arguments]     @{params}
