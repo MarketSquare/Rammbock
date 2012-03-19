@@ -27,12 +27,14 @@ class MessageSequence(object):
                               '%s:%s' % (protocol, message_name), error, 'sent'))
 
     def receive(self, receiver_name, receiver, sender, protocol, message_name, error=''):
-        row = (self._get_operator(ip_name(*sender)), self._operator(receiver_name, *receiver),
+        sender_ip_name = ip_name(*sender)
+        row = (self._get_operator(sender_ip_name), self._operator(receiver_name, *receiver),
                                     '%s:%s' % (protocol, message_name), error, 'received')
-        for i in reversed(range(len(self.sequence))):
-            if self._matches(self.sequence[i], receiver, sender):
-                self.sequence[i] = row
-                return
+        if self.is_named_operator(sender_ip_name):
+            for i in reversed(range(len(self.sequence))):
+                if self._matches(self.sequence[i], receiver, sender):
+                    self.sequence[i] = row
+                    return
         self.sequence.append(row)
 
     def _matches(self, msg, receiver, sender):
@@ -45,6 +47,9 @@ class MessageSequence(object):
 
     def get(self):
         return ((str(elem) for elem in row) for row in self.sequence)
+
+    def is_named_operator(self, ip_name):
+        return ip_name in self.operators and ip_name != self.operators[ip_name].name
 
 
 class Operator(object):

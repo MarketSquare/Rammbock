@@ -7,7 +7,7 @@ TCP_BUFFER_SIZE = 1000000
 TCP_MAX_QUEUED_CONNECTIONS = 5
 
 
-class _WithTimeouts(object):
+class _WithConnections(object):
 
     _default_timeout = 10
 
@@ -20,6 +20,14 @@ class _WithTimeouts(object):
 
     def _set_default_timeout(self, timeout):
         self._default_timeout = self._get_timeout(timeout)
+
+    def get_own_address(self):
+        return self._socket.getsockname()
+
+    def get_peer_address(self, alias=None):
+        if alias:
+            raise AssertionError('Named connections not supported.')
+        return self._socket.getpeername()
 
 
 class _WithMessageStreams(object):
@@ -44,7 +52,7 @@ class _WithMessageStreams(object):
             self._message_stream.empty()
 
 
-class _Server(_WithTimeouts, _WithMessageStreams):
+class _Server(_WithConnections, _WithMessageStreams):
 
     def __init__(self, ip, port, timeout=None):
         self._ip = ip
@@ -109,6 +117,11 @@ class UDPServer(_Server):
             raise Exception('Server can not send to default client, because it has not received messages from clients.')
         self.send_to(msg, *self._last_client)
 
+    def get_peer_address(self, alias=None):
+        if alias:
+            raise AssertionError('Named connections not supported.')
+        return self._last_client
+
 
 class TCPServer(_Server):
 
@@ -160,8 +173,12 @@ class TCPServer(_Server):
         for connection in self._connections:
             connection.empty()
 
+    def get_peer_address(self, alias=None):
+        connection = self._connections.get(alias)
+        return connection.get_peer_address()
 
-class _Connection(_WithTimeouts, _WithMessageStreams):
+
+class _Connection(_WithConnections, _WithMessageStreams):
 
     _transport_layer_name = 'TCP'
 
@@ -196,7 +213,7 @@ class _Connection(_WithTimeouts, _WithMessageStreams):
         self._socket.close()
 
 
-class _Client(_WithTimeouts, _WithMessageStreams):
+class _Client(_WithConnections, _WithMessageStreams):
 
     def __init__(self, timeout=None, protocol=None):
         self._is_connected = False
@@ -247,9 +264,6 @@ class _Client(_WithTimeouts, _WithMessageStreams):
             self._socket.close()
             self._message_stream = None
 
-    def get_address(self):
-        return self._socket.getsockname()
-
 
 class UDPClient(_Client):
 
@@ -299,7 +313,7 @@ class _NamedCache(object):
         return self._cache.itervalues()
 
 
-class BufferedStream(_WithTimeouts):
+class BufferedStream(_WithConnections):
 
     def __init__(self, connection, default_timeout):
         self._connection = connection
@@ -329,4 +343,3 @@ class BufferedStream(_WithTimeouts):
 
     def empty(self):
         self._buffer = ''
-        # TODO: Socket should be reset also
