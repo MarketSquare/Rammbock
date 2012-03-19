@@ -3,18 +3,31 @@ from Message import Struct, Field
 from binary_tools import to_bin
 
 
+def uint_field(value='0x00'):
+    return Field('uint', 'name', to_bin(value))
+
 class TestMessages(unittest.TestCase):
 
     def test_in(self):
         msg = Struct('foo', 'foo_type')
-        msg['a'] = 1
-        msg['b'] = 1
-        msg['c'] = 1
+        msg['a'] = uint_field()
+        msg['b'] = uint_field()
+        msg['c'] = uint_field()
         self.assertTrue('a' in msg)
         self.assertFalse('d' in msg)
 
+    def test_parent_references(self):
+        msg = Struct('foo', 'foo_type')
+        child = Struct('sub', 'subelement_type')
 
-class TestFields(unittest.TestCase):
+        child['field'] = uint_field()
+
+        msg['subbi'] = child
+        self.assertEquals(msg, child._parent)
+        self.assertEquals(msg, child['field']._parent._parent)
+
+
+class TestFieldAlignment(unittest.TestCase):
 
     def _assert_align(self, value, length, raw):
         field = Field('uint', 'name', to_bin(value), aligned_len=length)
@@ -54,3 +67,4 @@ class TestLittleEndian(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

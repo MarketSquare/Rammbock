@@ -7,9 +7,11 @@ class _StructuredElement(object):
     def __init__(self, name):
         self._name = '%s %s' % (self._type, name)
         self._fields = OrderedDict()
+        self._parent = None
 
-    def __setitem__(self, name, value):
-        self._fields[name] = value
+    def __setitem__(self, name, child):
+        self._fields[name] = child
+        child._parent = self
 
     def __getitem__(self, name):
         return self._fields[str(name)]
@@ -70,11 +72,10 @@ class Union(_StructuredElement):
         _StructuredElement.__init__(self, name)
 
     def _get_raw_bytes(self):
-        raw_bytes = [field._raw for field in self._fields.values()]
         max_raw = ''
-        for raw in raw_bytes:
-            if len(raw) > len(max_raw):
-                max_raw = raw
+        for field in self._fields.values():
+            if len(field._raw) > len(max_raw):
+                max_raw = field._raw
         return max_raw.ljust(self._length, '\x00')
 
 
@@ -101,6 +102,7 @@ class Field(object):
         self._original_value = value
         self._length = aligned_len if aligned_len else len(value)
         self._little_endian = little_endian
+        self._parent = None
 
     @property
     def _value(self):

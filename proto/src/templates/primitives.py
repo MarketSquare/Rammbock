@@ -6,6 +6,7 @@ class _TemplateField(object):
 
     has_length = True
     can_be_little_endian = False
+    referenced_later = False
     
     def get_static_length(self):
         if not self.length.static:
@@ -16,11 +17,14 @@ class _TemplateField(object):
         return paramdict.get(self._get_name(name), self.default_value)
 
     def _get_element_value_and_remove_from_params(self, paramdict, name=None):
+        wild_card = paramdict.get('*') if not self.referenced_later else None
         return paramdict.pop(self._get_name(name),
-            self.default_value or paramdict.get('*'))
+            self.default_value or wild_card)
 
     def encode(self, paramdict, parent, name=None, little_endian=False):
         value = self._get_element_value_and_remove_from_params(paramdict, name)
+        if not value and self.referenced_later:
+            return PlaceHolderField(self)
         field_name, field_value = self._encode_value(value, parent, little_endian=little_endian)
         return Field(self.type,self._get_name(name), field_name, field_value, little_endian=little_endian)
 
@@ -68,6 +72,15 @@ class _TemplateField(object):
         return name or self.name or self.type
 
 
+class PlaceHolderField(object):
+
+    _type = 'referenced_later'
+    _parent = None
+
+    def __init__(self, template):
+        self.template = template
+
+
 class UInt(_TemplateField):
 
     type = 'uint'
@@ -84,7 +97,7 @@ class UInt(_TemplateField):
         length, aligned_length = self.length.decode_lengths(message)
         binary = to_bin_of_length(length, value)
         binary = binary[::-1] if little_endian else binary
-        return binary, aligned_length 
+        return binary, aligned_length
 
 
 class Char(_TemplateField):
@@ -98,7 +111,7 @@ class Char(_TemplateField):
 
     def _encode_value(self, value, message, little_endian=False):
         value = value if value else ''
-        length, aligned_length = self.length.decode_lengths(message)
+        length, aligned_length = self.length.find_length_and_set_if_necessary(message, len(value))
         return str(value).ljust(length,'\x00'), aligned_length
 
 
@@ -145,6 +158,10 @@ class _StaticLength(_Length):
     def decode_lengths(self, message):
         return self._get_aligned_lengths(self.value)
 
+    def find_length_and_set_if_necessary(self, message, min_length):
+        return self.decode_lengths(message)
+
+
 class _DynamicLength(_Length):
     static = False
 
@@ -162,8 +179,30 @@ class _DynamicLength(_Length):
     def solve_parameter(self, length):
         return length + self.subtractor
 
-    def decode_lengths(self, message):
-        return self._get_aligned_lengths(self.calc_value(message[self.field].int))
+    def decode_lengths(self, parent):
+        reference = self._find_reference(parent)
+        if not self._has_been_set(reference):
+            raise AssertionError('Value of %s not set' % self.field)
+        return self._get_aligned_lengths(self.calc_value(parent[self.field].int))
+
+    def _find_reference(self, parent):
+        if self.field in parent:
+            return parent[self.field]
+        return self._find_reference(parent._parent) if parent._parent else None
+
+    def _has_been_set(self, reference):
+        return reference._type != 'referenced_later'
+
+    def _set_length(self, reference, min_length):
+        value_len, aligned_len = self._get_aligned_lengths(min_length)
+        reference._parent[self.field] = reference.template.encode({self.field:str(aligned_len)}, reference._parent)
+        return value_len, aligned_len
+
+    def find_length_and_set_if_necessary(self, parent, min_length):
+        reference = self._find_reference(parent)
+        if self._has_been_set(reference):
+            return self.decode_lengths(parent)
+        return self._set_length(reference, min_length)
 
     @property
     def value(self):

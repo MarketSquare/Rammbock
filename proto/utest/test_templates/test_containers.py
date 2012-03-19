@@ -50,6 +50,7 @@ def _get_struct_list():
     list.add(_get_pair())
     return list
 
+
 class _WithValidation(object):
     
     def _should_pass(self, validation):
@@ -343,7 +344,7 @@ class TestDynamicMessageTemplate(unittest.TestCase):
         self.assertEquals(decoded.chars.ascii, 'abcd')
         self.assertEquals(decoded.chars2.ascii, 'ef')
 
-    def test_encode_dynamic_primitive(self):
+    def test_encode_dynamic_primitive_with_defined_value(self):
         tmp = MessageTemplate('Dymagic', self._protocol, {})
         tmp.add(UInt(4, 'len', '4'))
         tmp.add(Char('len', 'chars', 'abcd'))
@@ -354,6 +355,14 @@ class TestDynamicMessageTemplate(unittest.TestCase):
         self.assertEquals(len(encoded.chars), 4)
         self.assertEquals(encoded.chars2.ascii, 'ef')
         self.assertEquals(len(encoded.chars2), 6)
+
+    def test_encode_dynamic_primitive_automatically(self):
+        tmp = MessageTemplate('Dymagic', self._protocol, {})
+        tmp.add(UInt(4, 'len', None))
+        tmp.add(Char('len', 'chars', 'abcd'))
+        encoded = tmp.encode({}, {})
+        self.assertEquals(encoded.chars.ascii, 'abcd')
+        self.assertEquals(encoded.len.int, 4)
 
     def test_decode_dynamic_list(self):
         tmp = MessageTemplate('Dymagic', self._protocol, {})

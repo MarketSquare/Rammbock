@@ -101,7 +101,7 @@ Use struct length in field
 
 Get dynamic length from value when encoding
     [tags]
-    New message FooExample  Example   messageType:0xb0b0
+    New message   FooExample  Example   messageType:0xb0b0
     u8    length_field
     chars    length_field     name
     ${msg}=    get message    name:ilmari

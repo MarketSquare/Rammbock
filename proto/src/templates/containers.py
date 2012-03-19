@@ -20,8 +20,10 @@ class _Template(object):
         if self._get_field(field.name):
             raise AssertionError('Duplicate field %s in %s' % (field.name, self.name))
         if field.has_length and not field.length.static:
-            if not self._get_field_recursive(field.length.field):
+            ref_field = self._get_field_recursive(field.length.field)
+            if not ref_field:
                 raise AssertionError('Length field %s unknown' % field.length.field)
+            ref_field.referenced_later = True
         self._fields[field.name] = field
 
     def _get_field(self, field_name):
