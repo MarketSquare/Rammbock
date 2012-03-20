@@ -29,8 +29,19 @@ class _WithConnections(object):
             raise AssertionError('Named connections not supported.')
         return self._socket.getpeername()
 
+    def close(self):
+        if self._is_connected:
+            self._is_connected = False
+            self._socket.close()
+            self._message_stream = None
+
 
 class _WithMessageStreams(object):
+
+    def _get_message_stream(self):
+        if not self._protocol:
+            return None
+        return self._protocol.get_message_stream(BufferedStream(self, self._default_timeout))
 
     def get_message(self, message_template, timeout=None, header_filter=None):
         return self._get_from_stream(message_template, self._message_stream, timeout=timeout, header_filter=header_filter)
@@ -63,17 +74,6 @@ class _Server(_WithConnections, _WithMessageStreams):
         self._socket.bind((self._ip, self._port))
         self._is_connected = True
 
-    def close(self):
-        if self._is_connected:
-            self._is_connected = False
-            self._socket.close()
-            self._message_stream = None
-
-    def _get_message_stream(self, connection):
-        if not self._protocol:
-            return None
-        return self._protocol.get_message_stream(BufferedStream(connection, self._default_timeout))
-
 
 class UDPServer(_Server):
 
@@ -88,7 +88,7 @@ class UDPServer(_Server):
     def _init_socket(self):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._bind_socket()
-        self._message_stream = self._get_message_stream(self)
+        self._message_stream = self._get_message_stream()
 
     def receive_from(self, timeout=None, alias=None):
         self._check_no_alias(alias)
@@ -182,16 +182,11 @@ class _Connection(_WithConnections, _WithMessageStreams):
 
     _transport_layer_name = 'TCP'
 
-    # TODO: cleanup (lots of duplicated code, and default timeout should be inherited)
     def __init__(self, socket, protocol=None):
         self._socket = socket
         self._protocol = protocol
         self._message_stream = self._get_message_stream()
-
-    def _get_message_stream(self):
-        if not self._protocol:
-            return None
-        return self._protocol.get_message_stream(BufferedStream(self, self._default_timeout))
+        self._is_connected = True
 
     def receive(self, timeout=None):
         return self.receive_from(timeout)[0]
@@ -209,9 +204,6 @@ class _Connection(_WithConnections, _WithMessageStreams):
         self.log_send(msg, ip, port)
         self._socket.sendall(msg)
 
-    def close(self):
-        self._socket.close()
-
 
 class _Client(_WithConnections, _WithMessageStreams):
 
@@ -221,11 +213,6 @@ class _Client(_WithConnections, _WithMessageStreams):
         self._set_default_timeout(timeout)
         self._protocol = protocol
         self._message_stream = None
-
-    def _get_message_stream(self):
-        if not self._protocol:
-            return None
-        return self._protocol.get_message_stream(BufferedStream(self, self._default_timeout))
 
     def set_own_ip_and_port(self, ip=None, port=None):
         if ip and port:
@@ -257,12 +244,6 @@ class _Client(_WithConnections, _WithMessageStreams):
         msg = self._socket.recv(self._size_limit)
         print "*DEBUG* Read %s" % to_hex(msg)
         return msg
-
-    def close(self):
-        if self._is_connected:
-            self._is_connected = False
-            self._socket.close()
-            self._message_stream = None
 
 
 class UDPClient(_Client):
