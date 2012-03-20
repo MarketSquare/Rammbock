@@ -111,15 +111,13 @@ class UDPServer(_Server):
         self._socket.sendto(msg, (ip,int(port)))
 
     def send(self, msg, alias=None):
-        if alias:
-            raise Exception('UDP Server does not have connection aliases. Tried to use connection %s.' % alias)
+        self._check_no_alias(alias)
         if not self._last_client:
             raise Exception('Server can not send to default client, because it has not received messages from clients.')
         self.send_to(msg, *self._last_client)
 
     def get_peer_address(self, alias=None):
-        if alias:
-            raise AssertionError('Named connections not supported.')
+        self._check_no_alias(alias)
         return self._last_client
 
 
@@ -161,6 +159,7 @@ class TCPServer(_Server):
             for connection in self._connections:
                 connection.close()
             self._socket.close()
+            self._connections = _NamedCache('connection')
 
     def close_connection(self, alias=None):
         raise Exception("Not yet implemented")
