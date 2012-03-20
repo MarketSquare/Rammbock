@@ -117,9 +117,9 @@ Use struct length in field with value too large
 Use struct length in field with value too small
     [tags]
     New message   FooExample   Example    messageType:0xb0b0
-    u8    length_field
+    u8    length_field    1
     container    container    length_field    u16    field    0x00
-    Should fail    get message   length_field:1
+    Should fail    get message
 
 Get dynamic length from value when encoding
     New message   FooExample  Example   messageType:0xb0b0
@@ -129,7 +129,6 @@ Get dynamic length from value when encoding
     Should be equal as integers    ${msg.length_field.int}    6
 
 Too short dynamic length fails
-    [tags]
     New message   FooExample  Example   messageType:0xb0b0
     u8    length_field    1
     chars    length_field     name

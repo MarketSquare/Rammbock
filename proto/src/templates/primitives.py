@@ -201,8 +201,14 @@ class _DynamicLength(_Length):
     def find_length_and_set_if_necessary(self, parent, min_length):
         reference = self._find_reference(parent)
         if self._has_been_set(reference):
+            if self._check_enough_space(parent, reference, min_length):
+                raise Exception("Value for length is too short")
             return self.decode_lengths(parent)
         return self._set_length(reference, min_length)
+
+    def _check_enough_space(self, parent, reference, min_length):
+        return reference._length < min_length if not parent[self.field] else\
+        parent[self.field].int < min_length > reference._length
 
     @property
     def value(self):
