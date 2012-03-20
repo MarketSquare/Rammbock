@@ -63,6 +63,18 @@ class _NetworkNode(_WithTimeouts):
             self._message_stream.empty()
 
 
+class _TCPNode(object):
+
+    _transport_layer_name = 'TCP'
+    _size_limit = TCP_BUFFER_SIZE
+
+
+class _UDPNode(object):
+
+    _transport_layer_name = 'UDP'
+    _size_limit = UDP_BUFFER_SIZE
+
+
 class _Server(_NetworkNode):
 
     def __init__(self, ip, port, timeout=None):
@@ -75,9 +87,7 @@ class _Server(_NetworkNode):
         self._is_connected = True
 
 
-class UDPServer(_Server):
-
-    _transport_layer_name = 'UDP'
+class UDPServer(_Server, _UDPNode):
 
     def __init__(self, ip, port, timeout=None, protocol=None):
         _Server.__init__(self, ip, port, timeout)
@@ -94,7 +104,7 @@ class UDPServer(_Server):
         self._check_no_alias(alias)
         timeout = self._get_timeout(timeout)
         self._socket.settimeout(timeout)
-        msg, (ip, host) = self._socket.recvfrom(UDP_BUFFER_SIZE)
+        msg, (ip, host) = self._socket.recvfrom(self._size_limit)
         print "*DEBUG* Read %s" % to_hex(msg)
         self._last_client = (ip, host)
         return msg, ip, host
@@ -121,9 +131,7 @@ class UDPServer(_Server):
         return self._last_client
 
 
-class TCPServer(_Server):
-
-    _transport_layer_name = 'TCP'
+class TCPServer(_Server, _TCPNode):
 
     def __init__(self, ip, port, timeout=None, protocol=None):
         _Server.__init__(self, ip, port, timeout)
@@ -177,9 +185,7 @@ class TCPServer(_Server):
         return connection.get_peer_address()
 
 
-class _Connection(_NetworkNode):
-
-    _transport_layer_name = 'TCP'
+class _Connection(_NetworkNode, _TCPNode):
 
     def __init__(self, socket, protocol=None):
         self._socket = socket
@@ -193,7 +199,7 @@ class _Connection(_NetworkNode):
     def receive_from(self, timeout=None):
         timeout = self._get_timeout(timeout)
         self._socket.settimeout(timeout)
-        msg = self._socket.recv(TCP_BUFFER_SIZE)
+        msg = self._socket.recv(self._size_limit)
         print "*DEBUG* Read %s" % to_hex(msg)
         ip, port = self._socket.getpeername()
         return msg, ip, port
@@ -245,20 +251,14 @@ class _Client(_NetworkNode):
         return msg
 
 
-class UDPClient(_Client):
-
-    _transport_layer_name = 'UDP'
-    _size_limit = UDP_BUFFER_SIZE
+class UDPClient(_Client, _UDPNode):
 
     def _init_socket(self):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 
-class TCPClient(_Client):
-
-    _transport_layer_name = 'TCP'
-    _size_limit = TCP_BUFFER_SIZE
+class TCPClient(_Client, _TCPNode):
 
     def _init_socket(self):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
