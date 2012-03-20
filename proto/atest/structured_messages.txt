@@ -117,22 +117,26 @@ Use struct length in field with value too large
 Use struct length in field with value too small
     [tags]
     New message   FooExample   Example    messageType:0xb0b0
-    u8    length_field    1
+    u8    length_field
     container    container    length_field    u16    field    0x00
-    Should fail    get message
+    Should fail    get message   length_field:1
 
 Get dynamic length from value when encoding
-    New message   FooExample  Example   messageType:0xb0b0
-    u8    length_field
-    chars    length_field     name
-    ${msg}=    get message    name:ilmari
-    Should be equal as integers    ${msg.length_field.int}    6
+    [Template]    Dynamic length fields with different parameters
+    #static length field value     kw for dynamic content creation    kw to validate outcome and params
+    ${none}                        static named chars field           get message and validate length field      ilmari        6
+    8                              static named chars field           get message and validate length field      ilmari        8
+    1                              static named chars field           get message and validate length field      ilmari        8    length_field:8
+    1                              static named chars field           get message and validate length field      ilmari        6    length_field:6
+    6                              static named chars field           get message and validate length field      ilmari        6
 
 Too short dynamic length fails
-    New message   FooExample  Example   messageType:0xb0b0
-    u8    length_field    1
-    chars    length_field     name
-    Should fail   get message    name:ilmari
+    [Template]    Dynamic length fields with different parameters
+    #static length field value     kw for dynamic content creation    kw to validate outcome and params
+    1                              static named chars field           should fail    get message        name:ilmari
+    0                              static named chars field           should fail    get message        name:ilmari
+    1                              static named chars field           should fail    get message        name:ilmari  length_field:2
+    6                              static named chars field           should fail    get message        name:ilmari  length_field:2
 
 Variable length container with multiple fields
     [tags]
@@ -273,7 +277,7 @@ Bar
     End struct
 
 Get message fails because '${name}' is not completed
-    Run keyword and expect error   Message definition not complete. ${name} not completed.  Get message    
+    Run keyword and expect error   Message definition not complete. ${name} not completed.  Get message
 
 Should fail    [Arguments]    @{args}
     run keyword and expect error   *   @{args}
@@ -285,3 +289,18 @@ define struct
    u8    second     0xff
    u8    third      0xff
    End Struct
+
+Dynamic length fields with different parameters
+    [arguments]    ${static length field value}    ${kw for dynamic content creation}    @{kw to validate outcome and params}
+    New message   FooExample  Example   messageType:0xb0b0
+    u8    length_field    ${static length field value}
+    Run keyword    ${kw for dynamic content creation}
+    run keyword    @{kw to validate outcome and params}
+
+static named chars field
+    run keyword    chars    length_field    name
+
+get message and validate length field
+    [arguments]       ${value}    ${valid length}    @{args for get msg}
+    ${msg}=   get message    name:${value}    @{args for get msg}
+    should be equal as integers    ${msg.length_field.int}    ${valid length}
