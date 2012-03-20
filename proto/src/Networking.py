@@ -7,7 +7,7 @@ TCP_BUFFER_SIZE = 1000000
 TCP_MAX_QUEUED_CONNECTIONS = 5
 
 
-class _WithConnections(object):
+class _WithTimeouts(object):
 
     _default_timeout = 10
 
@@ -20,6 +20,9 @@ class _WithConnections(object):
 
     def _set_default_timeout(self, timeout):
         self._default_timeout = self._get_timeout(timeout)
+
+
+class _NetworkNode(_WithTimeouts):
 
     def get_own_address(self):
         return self._socket.getsockname()
@@ -34,9 +37,6 @@ class _WithConnections(object):
             self._is_connected = False
             self._socket.close()
             self._message_stream = None
-
-
-class _WithMessageStreams(object):
 
     def _get_message_stream(self):
         if not self._protocol:
@@ -63,7 +63,7 @@ class _WithMessageStreams(object):
             self._message_stream.empty()
 
 
-class _Server(_WithConnections, _WithMessageStreams):
+class _Server(_NetworkNode):
 
     def __init__(self, ip, port, timeout=None):
         self._ip = ip
@@ -177,7 +177,7 @@ class TCPServer(_Server):
         return connection.get_peer_address()
 
 
-class _Connection(_WithConnections, _WithMessageStreams):
+class _Connection(_NetworkNode):
 
     _transport_layer_name = 'TCP'
 
@@ -204,7 +204,7 @@ class _Connection(_WithConnections, _WithMessageStreams):
         self._socket.sendall(msg)
 
 
-class _Client(_WithConnections, _WithMessageStreams):
+class _Client(_NetworkNode):
 
     def __init__(self, timeout=None, protocol=None):
         self._is_connected = False
@@ -293,7 +293,7 @@ class _NamedCache(object):
         return self._cache.itervalues()
 
 
-class BufferedStream(_WithConnections):
+class BufferedStream(_WithTimeouts):
 
     def __init__(self, connection, default_timeout):
         self._connection = connection
