@@ -62,6 +62,22 @@ class _NetworkNode(_WithTimeouts):
         if self._message_stream:
             self._message_stream.empty()
 
+    def receive(self, timeout=None, alias=None):
+        return self.receive_from(timeout, alias)[0]
+
+    def receive_from(self, timeout=None, alias=None):
+        if alias:
+            raise AssertionError('Connection aliases not supported.')
+        timeout = self._get_timeout(timeout)
+        self._socket.settimeout(timeout)
+        return self._receive_msg_ip_port()
+
+    def _receive_msg_ip_port(self):
+        msg = self._socket.recv(self._size_limit)
+        print "*DEBUG* Read %s" % to_hex(msg)
+        ip, port = self._socket.getpeername()
+        return msg, ip, port
+
 
 class _TCPNode(object):
 
@@ -100,10 +116,7 @@ class UDPServer(_Server, _UDPNode):
         self._bind_socket()
         self._message_stream = self._get_message_stream()
 
-    def receive_from(self, timeout=None, alias=None):
-        self._check_no_alias(alias)
-        timeout = self._get_timeout(timeout)
-        self._socket.settimeout(timeout)
+    def _receive_msg_ip_port(self):
         msg, (ip, host) = self._socket.recvfrom(self._size_limit)
         print "*DEBUG* Read %s" % to_hex(msg)
         self._last_client = (ip, host)
@@ -112,9 +125,6 @@ class UDPServer(_Server, _UDPNode):
     def _check_no_alias(self, alias):
         if alias:
             raise Exception('Connection aliases are not supported on UDP Servers')
-
-    def receive(self, timeout=None, alias=None):
-        return self.receive_from(timeout, alias)[0]
 
     def send_to(self, msg, ip, port):
         self.log_send(msg, ip, port)
@@ -141,9 +151,6 @@ class TCPServer(_Server, _TCPNode):
         self._socket.listen(TCP_MAX_QUEUED_CONNECTIONS)
         self._connections = _NamedCache('connection')
         self._protocol = protocol
-
-    def receive(self, timeout=None, alias=None):
-        return self.receive_from(timeout, alias)[0]
 
     def receive_from(self, timeout=None, alias=None):
         connection = self._connections.get(alias)
@@ -193,17 +200,6 @@ class _Connection(_NetworkNode, _TCPNode):
         self._message_stream = self._get_message_stream()
         self._is_connected = True
 
-    def receive(self, timeout=None):
-        return self.receive_from(timeout)[0]
-
-    def receive_from(self, timeout=None):
-        timeout = self._get_timeout(timeout)
-        self._socket.settimeout(timeout)
-        msg = self._socket.recv(self._size_limit)
-        print "*DEBUG* Read %s" % to_hex(msg)
-        ip, port = self._socket.getpeername()
-        return msg, ip, port
-
     def send(self, msg):
         ip, port = self._socket.getpeername()
         self.log_send(msg, ip, port)
@@ -242,13 +238,6 @@ class _Client(_NetworkNode):
         ip, port = self._socket.getpeername()
         self.log_send(msg, ip, port)
         self._socket.sendall(msg)
-
-    def receive(self, timeout=None):
-        timeout = self._get_timeout(timeout)
-        self._socket.settimeout(timeout)
-        msg = self._socket.recv(self._size_limit)
-        print "*DEBUG* Read %s" % to_hex(msg)
-        return msg
 
 
 class UDPClient(_Client, _UDPNode):
