@@ -78,17 +78,35 @@ class _NetworkNode(_WithTimeouts):
         ip, port = self._socket.getpeername()
         return msg, ip, port
 
+    def send(self, msg, alias=None):
+        if alias:
+            raise AssertionError('Connection aliases not supported.')
+        ip, port = self.get_peer_address()
+        self.log_send(msg, ip, port)
+        self._sendall(msg)
+
+    def _sendall(self, msg):
+        self._socket.sendall(msg)
+
 
 class _TCPNode(object):
 
     _transport_layer_name = 'TCP'
     _size_limit = TCP_BUFFER_SIZE
 
+    def _init_socket(self):
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
 
 class _UDPNode(object):
 
     _transport_layer_name = 'UDP'
     _size_limit = UDP_BUFFER_SIZE
+
+    def _init_socket(self):
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 
 class _Server(_NetworkNode):
@@ -110,34 +128,30 @@ class UDPServer(_Server, _UDPNode):
         self._protocol = protocol
         self._last_client = None
         self._init_socket()
-
-    def _init_socket(self):
-        self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._bind_socket()
         self._message_stream = self._get_message_stream()
 
     def _receive_msg_ip_port(self):
-        msg, (ip, host) = self._socket.recvfrom(self._size_limit)
+        msg, (ip, port) = self._socket.recvfrom(self._size_limit)
         print "*DEBUG* Read %s" % to_hex(msg)
-        self._last_client = (ip, host)
-        return msg, ip, host
+        self._last_client = (ip, int(port))
+        return msg, ip, port
 
     def _check_no_alias(self, alias):
         if alias:
             raise Exception('Connection aliases are not supported on UDP Servers')
 
     def send_to(self, msg, ip, port):
-        self.log_send(msg, ip, port)
-        self._socket.sendto(msg, (ip,int(port)))
+        self._last_client = (ip, int(port))
+        self.send(msg)
 
-    def send(self, msg, alias=None):
-        self._check_no_alias(alias)
-        if not self._last_client:
-            raise Exception('Server can not send to default client, because it has not received messages from clients.')
-        self.send_to(msg, *self._last_client)
+    def _sendall(self, msg):
+        self._socket.sendto(msg, self.get_peer_address())
 
     def get_peer_address(self, alias=None):
         self._check_no_alias(alias)
+        if not self._last_client:
+            raise Exception('Server has no default client, because it has not received messages from clients yet.')
         return self._last_client
 
 
@@ -145,8 +159,7 @@ class TCPServer(_Server, _TCPNode):
 
     def __init__(self, ip, port, timeout=None, protocol=None):
         _Server.__init__(self, ip, port, timeout)
-        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self._init_socket()
         self._bind_socket()
         self._socket.listen(TCP_MAX_QUEUED_CONNECTIONS)
         self._connections = _NamedCache('connection')
@@ -158,7 +171,7 @@ class TCPServer(_Server, _TCPNode):
 
     def accept_connection(self, alias=None):
         connection, client_address = self._socket.accept()
-        self._connections.add(_Connection(connection, protocol=self._protocol), alias)
+        self._connections.add(_TCPConnection(connection, protocol=self._protocol), alias)
         return client_address
 
     def send(self, msg, alias=None):
@@ -192,18 +205,13 @@ class TCPServer(_Server, _TCPNode):
         return connection.get_peer_address()
 
 
-class _Connection(_NetworkNode, _TCPNode):
+class _TCPConnection(_NetworkNode, _TCPNode):
 
     def __init__(self, socket, protocol=None):
         self._socket = socket
         self._protocol = protocol
         self._message_stream = self._get_message_stream()
         self._is_connected = True
-
-    def send(self, msg):
-        ip, port = self._socket.getpeername()
-        self.log_send(msg, ip, port)
-        self._socket.sendall(msg)
 
 
 class _Client(_NetworkNode):
@@ -234,24 +242,13 @@ class _Client(_NetworkNode):
         self._is_connected = True
         return self
 
-    def send(self, msg):
-        ip, port = self._socket.getpeername()
-        self.log_send(msg, ip, port)
-        self._socket.sendall(msg)
-
 
 class UDPClient(_Client, _UDPNode):
-
-    def _init_socket(self):
-        self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    pass
 
 
 class TCPClient(_Client, _TCPNode):
-
-    def _init_socket(self):
-        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    pass
 
 
 class _NamedCache(object):
