@@ -241,9 +241,9 @@ Array
 
 Container
     [arguments]    ${name}    ${length field}    ${type}    @{params to type}
-    struct    Container    ${name}
+    struct    Container    ${name}    length=${length field}
     Run keyword    ${type}    @{params to type}
-    end struct    ${length field}
+    end struct
 
 Pair
     [arguments]     ${name}=     ${value}=

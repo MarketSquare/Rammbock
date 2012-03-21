@@ -232,13 +232,11 @@ class Rammbock(object):
             self._current_container.add(field)
 
     def struct(self, type, name, *parameters):
-        _, parameters, _ = self._get_parameters_with_defaults(parameters)
-        self._message_stack.append(StructTemplate(type, name, self._current_container, parameters))
+        configs, parameters, _ = self._get_parameters_with_defaults(parameters)
+        self._message_stack.append(StructTemplate(type, name, self._current_container, parameters, length=configs.get('length')))
 
-    def end_struct(self, length_field=None):
+    def end_struct(self):
         struct = self._message_stack.pop()
-        if length_field:
-            struct.set_length(length_field)
         self._add_field(struct)
 
     def new_list(self, size, name):

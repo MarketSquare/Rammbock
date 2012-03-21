@@ -156,12 +156,14 @@ class StructTemplate(_Template):
 
     has_length = False
     
-    def __init__(self, type, name, parent, parameters=None):
+    def __init__(self, type, name, parent, parameters=None, length=None):
         self._parameters = parameters if parameters else {}
         self.type = type
+        if length:
+            self._set_length(length)
         _Template.__init__(self, name, parent)
 
-    def set_length(self, length):
+    def _set_length(self, length):
         self.has_length = True
         self.length = Length(length)
 
