@@ -93,18 +93,21 @@ Pass value dict to Struct but replace it in Get Message
 
 Length in 2byte struct matches
     [Template]       2byte struct with given length
-    #length          #arguments
+    #struct length    #length field value
     length_field
-    length_field     length_field:2
-    2                length_field:2
+    length_field      2
+    2                 2
+    length_field-10   12
 
 Length in 2byte struct does not match
     [Template]       2byte struct with given length should fail
-    #length          #arguments
-    length_field     length_field:5
-    length_field     length_field:1
-    3                length_field:2
-    1                length_field:2
+    #struct length   #length field value
+    length_field     5
+    length_field     1
+    3                2
+    1                2
+    length_field-10  2
+    length_field-10  13
 
 Get dynamic length from value when encoding
     [Template]    Dynamic length fields with different parameters
@@ -141,15 +144,16 @@ Variable length container with dynamic length content
 
 *** Keywords ***
 2byte struct with given length
-    [Arguments]     ${length}    @{arguments}
-    define 2byte struct    ${length}
-    ${msg}    get message   @{arguments}
-    Should be equal as integers    ${msg.length_field.int}   2
+    [Arguments]     ${struct length}    ${length field value}=
+    define 2byte struct    ${struct length}
+    ${msg}    get message   length_field:${length field value}
+    ${length field value}=    Evaluate    '${length field value}' or 2
+    Should be equal as integers    ${msg.length_field.int}   ${length field value}
 
 2byte struct with given length should fail
-    [Arguments]     ${length}    @{arguments}
+    [Arguments]     ${length}    ${length field value}
     define 2byte struct    ${length}
-    Should fail    get message   @{arguments}
+    Should fail    get message   length_field:${length field value}
 
 define 2byte struct
     [Arguments]     ${length}
