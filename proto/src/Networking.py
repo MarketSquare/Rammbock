@@ -52,6 +52,9 @@ class _NetworkNode(_WithTimeouts):
     def log_send(self, binary, ip, port):
         print '*DEBUG* Send %s to %s:%s over %s' % (to_hex(binary), ip, port, self._transport_layer_name)
 
+    def log_receive(self, binary, ip, port):
+        print "*DEBUG* Read %s from %s:%s over %s" % (to_hex(binary), ip, port, self._transport_layer_name)
+
     def empty(self):
         result = True
         try:
@@ -74,8 +77,8 @@ class _NetworkNode(_WithTimeouts):
 
     def _receive_msg_ip_port(self):
         msg = self._socket.recv(self._size_limit)
-        print "*DEBUG* Read %s" % to_hex(msg)
         ip, port = self._socket.getpeername()
+        self.log_receive(msg, ip, port)
         return msg, ip, port
 
     def send(self, msg, alias=None):
@@ -133,7 +136,7 @@ class UDPServer(_Server, _UDPNode):
 
     def _receive_msg_ip_port(self):
         msg, (ip, port) = self._socket.recvfrom(self._size_limit)
-        print "*DEBUG* Read %s" % to_hex(msg)
+        self.log_receive(msg, ip, port)
         self._last_client = (ip, int(port))
         return msg, ip, port
 
