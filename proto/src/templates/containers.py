@@ -71,7 +71,7 @@ class _Template(object):
                 result[ending] = params.pop(key)
         return result
 
-
+#TODO: Refactor the pdu to use the same dynamic length strategy as structs in encoding
 class Protocol(_Template):
 
     def __init__(self, name):
@@ -184,9 +184,14 @@ class StructTemplate(_Template):
         return Struct(name if name else self.name, self.type)
 
     def validate(self, parent, message_fields, name=None):
+        errors = []
         name = name if name else self.name
         message = parent[name]
-        return _Template.validate(self, message, self._get_params_sub_tree(message_fields, name))
+        if self.has_length:
+            length = self.length.decode(message)
+            if len(message) != length:
+                errors.append('Length of struct %s does not match defined length. defined length:%s struct length:%s' % (message._name, length, len(message)))
+        return errors + _Template.validate(self, message, self._get_params_sub_tree(message_fields, name))
 
     def _add_struct_params(self, params):
         for key in self._parameters.keys():

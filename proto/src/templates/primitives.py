@@ -183,7 +183,7 @@ class _DynamicLength(_Length):
         reference = self._find_reference(parent)
         if not self._has_been_set(reference):
             raise AssertionError('Value of %s not set' % self.field)
-        return self._get_aligned_lengths(self.calc_value(parent[self.field].int))
+        return self._get_aligned_lengths(self.calc_value(reference.int))
 
     def _find_reference(self, parent):
         if self.field in parent:
