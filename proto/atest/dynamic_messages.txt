@@ -22,7 +22,7 @@ Encode dynamic message
     Should be equal    ${msg.pairList[0].second.hex}    0x02
     Should be equal    ${msg.pairList[1].first.hex}     0x11
 
-Encoding dynamic message without length fails
+Encoding dynamic list without defined length fails
     # TODO: This should perhaps work?
     Populate dynamic message  ${EMPTY}  0x01  0x02  0x11  0x22
     Run keyword and expect error   Value of numberOfPairs not set    Get message

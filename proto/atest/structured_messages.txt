@@ -33,12 +33,12 @@ Message with list validation fails
 
 Reuse struct in another message
     [Tags]
-    Populate dynamic message  2  0x01  0x02  0x11  0x22
-    ${list msg} =    Get message
-    Value       pair     ${list msg.pairList[0]}
-    Message with struct
+    Message with struct     42
+    ${struct msg} =    Get message
+    Message with struct     1
+    Value       pair     ${struct msg.pair}
     ${pair msg} =    Get message
-    Should be equal    ${pair msg.pair.first.hex}     0x01
+    Should be equal as integers    ${pair msg.pair.first.int}     42
 
 Struct containing struct
     Client sends struct with struct   structstruct.mollyMalones.closesAt:4
@@ -115,8 +115,9 @@ List message
     Array   5    u32    someList    3
 
 Message with struct
+    [arguments]    ${pair values}=
     New Message    StructRequest  Example    messageType:0xaaaa
-    Pair    pair
+    Pair    pair   ${pair values}
 
 Pair
     [arguments]     ${name}=     ${value}=
