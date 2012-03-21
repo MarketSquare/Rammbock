@@ -91,47 +91,20 @@ Pass value dict to Struct but replace it in Get Message
    Should be equal     ${msg.fooName.second.hex}   0x22
    Should be equal     ${msg.fooName.third.hex}    0xff
 
-Use struct length in field
-    New message   FooExample   Example    messageType:0xb0b0
-    u8    length_field
-    container    container    length_field    u8    field    0x00
-    ${msg}    get message
-    should be equal as integers    ${msg.length_field.int}    1
+Length in 2byte struct matches
+    [Template]       2byte struct with given length
+    #length          #arguments
+    length_field
+    length_field     length_field:2
+    2                length_field:2
 
-Use struct length in field with value set and matching
-    New message   FooExample   Example    messageType:0xb0b0
-    u8    length_field
-    container    container    length_field    u8    field    0x00
-    ${msg}    get message   length_field:1
-    should be equal as integers    ${msg.length_field.int}    1
-
-Use struct length in field with value too large
-    New message   FooExample   Example    messageType:0xb0b0
-    u8    length_field
-    container    container    length_field    u8    field    0x00
-    Should fail    get message   length_field:5
-
-Use struct length in field with value too small
-    New message   FooExample   Example    messageType:0xb0b0
-    u8    length_field
-    container    container    length_field    u16    field    0x00
-    Should fail    get message   length_field:1
-
-Use fixed struct length
-    New message   FooExample   Example    messageType:0xb0b0
-    container    container    1    u8    field    0x00
-    ${msg}    get message
-    should be equal as integers    ${msg.container.field.int}    0
-
-Use fixed struct length with value too small
-    New message   FooExample   Example    messageType:0xb0b0
-    container    container    1    u16    field    0x00
-    Should fail    get message
-
-Use fixed struct length with value too large
-    New message   FooExample   Example    messageType:0xb0b0
-    container    container    3    u16    field    0x00
-    Should fail    get message
+Length in 2byte struct does not match
+    [Template]       2byte struct with given length should fail
+    #length          #arguments
+    length_field     length_field:5
+    length_field     length_field:1
+    3                length_field:2
+    1                length_field:2
 
 Get dynamic length from value when encoding
     [Template]    Dynamic length fields with different parameters
@@ -167,6 +140,23 @@ Variable length container with dynamic length content
 
 
 *** Keywords ***
+2byte struct with given length
+    [Arguments]     ${length}    @{arguments}
+    define 2byte struct    ${length}
+    ${msg}    get message   @{arguments}
+    Should be equal as integers    ${msg.length_field.int}   2
+
+2byte struct with given length should fail
+    [Arguments]     ${length}    @{arguments}
+    define 2byte struct    ${length}
+    Should fail    get message   @{arguments}
+
+define 2byte struct
+    [Arguments]     ${length}
+    New message   FooExample   Example    messageType:0xb0b0
+    u8    length_field
+    container    container    ${length}    u16    field    0x00
+
 multiple fields
     u8    value1    1
     u8    value2    2
