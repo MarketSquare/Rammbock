@@ -177,7 +177,7 @@ class StructTemplate(_Template):
         if self.has_length:
             length, aligned_length = self.length.find_length_and_set_if_necessary(parent, len(struct))
             if len(struct) != length:
-                raise AssertionError('Length of struct %s does not match defined length.' % self.name)
+                raise AssertionError('Length of struct %s does not match defined length. defined length:%s Struct:\n%s' % (self.name, length, repr(struct)))
         return struct
 
     def _get_struct(self, name):
