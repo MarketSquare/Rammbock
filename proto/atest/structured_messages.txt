@@ -127,7 +127,7 @@ Decoding length in 2byte struct does not match
     length_field-10  2
     length_field-10  13
 
-Get dynamic length from value when encoding
+Encoding dynamic length from value
     [Template]    Dynamic length fields with different parameters
     #static length field value     kw for dynamic content creation    kw to validate outcome and params
     ${none}                        static named chars field           get message and validate length field      ilmari        6
@@ -136,7 +136,7 @@ Get dynamic length from value when encoding
     1                              static named chars field           get message and validate length field      ilmari        6    length_field:6
     6                              static named chars field           get message and validate length field      ilmari        6
 
-Too short dynamic length fails
+Encoding too short dynamic length fails
     [Template]    Dynamic length fields with different parameters
     #static length field value     kw for dynamic content creation    kw to validate outcome and params
     1                              static named chars field           should fail    get message        name:ilmari
@@ -144,23 +144,33 @@ Too short dynamic length fails
     1                              static named chars field           should fail    get message        name:ilmari  length_field:2
     6                              static named chars field           should fail    get message        name:ilmari  length_field:2
 
-Variable length container with multiple fields
-    New message   FooExample   Example    messageType:0xb0b0
-    u8    length_field
-    container    container    length_field    multiple fields
+Encoding variable length container with multiple fields
+    Define variable length container    multiple fields
     ${msg}=    get message
     should be equal as integers    ${msg.length_field.int}    10
 
-Variable length container with dynamic length content
-    New message   FooExample   Example    messageType:0xb0b0
-    u8    length_field
-    container    container    length_field    Dynamic string
+Encoding variable length container with dynamic length content
+    Define variable length container    Dynamic string
     ${msg}=    get message    container.name:fobbabobba
+    should be equal as integers    ${msg.length_field.int}    11
+    should be equal as integers    ${msg.container.stringLen.int}   10
+
+Decoding variable length container with dynamic length content
+    Define variable length container    Dynamic string
+    Client sends message    container.name:fobbabobba
+    ${msg} =       Server receives message
     should be equal as integers    ${msg.length_field.int}    11
     should be equal as integers    ${msg.container.stringLen.int}   10
 
 
 *** Keywords ***
+Define variable length container
+    [Arguments]    ${content}
+    New message   FooExample   Example    messageType:0xb0b0
+    u8    length_field
+    container    container    length_field     ${content}
+    u16   field_after_container       0xcafe
+
 2byte struct with given length
     [Arguments]     ${struct length}    ${length field value}=
     define 2byte struct    ${struct length}
