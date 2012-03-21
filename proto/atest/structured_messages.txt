@@ -117,6 +117,22 @@ Use struct length in field with value too small
     container    container    length_field    u16    field    0x00
     Should fail    get message   length_field:1
 
+Use fixed struct length
+    New message   FooExample   Example    messageType:0xb0b0
+    container    container    1    u8    field    0x00
+    ${msg}    get message
+    should be equal as integers    ${msg.container.field.int}    0
+
+Use fixed struct length with value too small
+    New message   FooExample   Example    messageType:0xb0b0
+    container    container    1    u16    field    0x00
+    Should fail    get message
+
+Use fixed struct length with value too large
+    New message   FooExample   Example    messageType:0xb0b0
+    container    container    3    u16    field    0x00
+    Should fail    get message
+
 Get dynamic length from value when encoding
     [Template]    Dynamic length fields with different parameters
     #static length field value     kw for dynamic content creation    kw to validate outcome and params
