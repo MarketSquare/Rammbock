@@ -1,5 +1,5 @@
 *** Settings ***
-Library     Rammbock
+Library     RammbockLibrary
 Variables   ports.py
 
 
@@ -123,22 +123,6 @@ Client Sends hex
     [Arguments]    ${hex}    @{params}
     ${binary} =    Hex to bin    ${hex}
     Client Sends binary    ${binary}    @{params}
-
-U8
-    [Arguments]    ${name}    ${value}=${NONE}  ${align}=${NONE}
-    uint     1     ${name}    ${value}      align=${align}
-
-U16
-    [Arguments]    ${name}    ${value}=${NONE}  ${align}=${NONE}
-    uint     2     ${name}    ${value}     align=${align}
-
-U24
-    [Arguments]    ${name}    ${value}=${NONE}  ${align}=${NONE}
-    uint     3     ${name}    ${value}    align=${align}
-
-U32
-    [Arguments]    ${name}    ${value}=${NONE}  ${align}=${NONE}
-    uint     4     ${name}    ${value}    align=${align}
 
 Teardown rammbock and increment port numbers
     Reset Rammbock

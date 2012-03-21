@@ -2,7 +2,6 @@
 Default Tags    regression
 Test Setup      Create server and client, and define protocol
 Test Teardown   Reset Rammbock
-Library         Rammbock
 Resource        Protocols.txt
 
 *** Variables ***

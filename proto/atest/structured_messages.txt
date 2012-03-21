@@ -1,7 +1,6 @@
 *** Settings ***
 Test Setup        Setup protocol, UDP server, and client
 Test teardown     Teardown rammbock and increment port numbers
-Library           Rammbock.py
 Resource          Protocols.txt
 Default Tags      Regression
 
@@ -285,18 +284,6 @@ Dynamic string
 Message with struct
     New Message    StructRequest  Example    messageType:0xaaaa
     Pair    pair
-
-Array
-    [arguments]    ${size}    ${type}    ${name}    ${value}=
-    New List       ${size}    ${name}
-    Run keyword    ${type}    ${EMPTY}   ${value}
-    End List
-
-Container
-    [arguments]    ${name}    ${length field}    ${type}    @{params to type}
-    struct    Container    ${name}    length=${length field}
-    Run keyword    ${type}    @{params to type}
-    end struct
 
 Pair
     [arguments]     ${name}=     ${value}=
