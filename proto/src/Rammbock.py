@@ -145,7 +145,7 @@ class Rammbock(object):
 
         * Send Message -keywords are convenience methods, that will call this to get the message object and then send it.
         Parameters have to be pdu fields."""
-        _, message_fields, header_fields = self._get_paramaters_with_defaults(parameters)
+        _, message_fields, header_fields = self._get_parameters_with_defaults(parameters)
         return self._encode_message(message_fields, header_fields)
 
     def _encode_message(self, message_fields, header_fields):
@@ -172,7 +172,7 @@ class Rammbock(object):
         self._send_message(self.server_sends_binary, parameters)
 
     def _send_message(self, callback, parameters):
-        configs, message_fields, header_fields = self._get_paramaters_with_defaults(parameters)
+        configs, message_fields, header_fields = self._get_parameters_with_defaults(parameters)
         msg = self._encode_message(message_fields, header_fields)
         callback(msg._raw, **configs)
 
@@ -201,7 +201,7 @@ class Rammbock(object):
             return msg
 
     def validate_message(self, msg, *parameters):
-        _, message_fields, _ = self._get_paramaters_with_defaults(parameters)
+        _, message_fields, _ = self._get_parameters_with_defaults(parameters)
         self._validate_message(msg, message_fields)
 
     def _validate_message(self, msg, message_fields):
@@ -213,7 +213,7 @@ class Rammbock(object):
 
     @contextmanager
     def _receive(self, nodes, *parameters):
-        configs, message_fields, _ = self._get_paramaters_with_defaults(parameters)
+        configs, message_fields, _ = self._get_parameters_with_defaults(parameters)
         node = nodes.get(configs.pop('name', None))
         msg = node.get_message(self._get_message_template(), **configs)
         yield msg, message_fields
@@ -232,11 +232,13 @@ class Rammbock(object):
             self._current_container.add(field)
 
     def struct(self, type, name, *parameters):
-        _, parameters, _ = self._get_paramaters_with_defaults(parameters)
+        _, parameters, _ = self._get_parameters_with_defaults(parameters)
         self._message_stack.append(StructTemplate(type, name, self._current_container, parameters))
 
     def end_struct(self, length_field=None):
         struct = self._message_stack.pop()
+        if length_field:
+            struct.set_length(length_field)
         self._add_field(struct)
 
     def new_list(self, size, name):
@@ -265,7 +267,7 @@ class Rammbock(object):
     def bin_to_hex(self, bin_value):
         return to_0xhex(bin_value)
 
-    def _get_paramaters_with_defaults(self, parameters):
+    def _get_parameters_with_defaults(self, parameters):
         config, fields, headers = self._parse_parameters(parameters)
         fields = self._populate_defaults(fields)
         return config, fields, headers

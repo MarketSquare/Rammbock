@@ -161,6 +161,10 @@ class StructTemplate(_Template):
         self.type = type
         _Template.__init__(self, name, parent)
 
+    def set_length(self, length):
+        self.has_length = True
+        self.length = Length(length)
+
     def get_static_length(self):
         return sum(field.get_static_length() for field in self._fields.values())
 
@@ -168,6 +172,10 @@ class StructTemplate(_Template):
         struct = self._get_struct(name)
         self._add_struct_params(message_params)
         self._encode_fields(struct, self._get_params_sub_tree(message_params, name), little_endian=little_endian)
+        if self.has_length:
+            length, aligned_length = self.length.find_length_and_set_if_necessary(parent, len(struct))
+            if len(struct) != length:
+                raise AssertionError('Length of struct %s does not match defined length.' % self.name)
         return struct
 
     def _get_struct(self, name):
@@ -181,6 +189,7 @@ class StructTemplate(_Template):
     def _add_struct_params(self, params):
         for key in self._parameters.keys():
             params[key] = self._parameters.pop(key) if key not in params else params[key]
+
 
 class UnionTemplate(_Template):
     

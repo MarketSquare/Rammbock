@@ -92,7 +92,6 @@ Pass value dict to Struct but replace it in Get Message
    Should be equal     ${msg.fooName.third.hex}    0xff
 
 Use struct length in field
-    [tags]
     New message   FooExample   Example    messageType:0xb0b0
     u8    length_field
     container    container    length_field    u8    field    0x00
@@ -100,7 +99,6 @@ Use struct length in field
     should be equal as integers    ${msg.length_field.int}    1
 
 Use struct length in field with value set and matching
-    [tags]
     New message   FooExample   Example    messageType:0xb0b0
     u8    length_field
     container    container    length_field    u8    field    0x00
@@ -108,14 +106,12 @@ Use struct length in field with value set and matching
     should be equal as integers    ${msg.length_field.int}    1
 
 Use struct length in field with value too large
-    [tags]
     New message   FooExample   Example    messageType:0xb0b0
     u8    length_field
     container    container    length_field    u8    field    0x00
     Should fail    get message   length_field:5
 
 Use struct length in field with value too small
-    [tags]
     New message   FooExample   Example    messageType:0xb0b0
     u8    length_field
     container    container    length_field    u16    field    0x00
@@ -139,7 +135,6 @@ Too short dynamic length fails
     6                              static named chars field           should fail    get message        name:ilmari  length_field:2
 
 Variable length container with multiple fields
-    [tags]
     New message   FooExample   Example    messageType:0xb0b0
     u8    length_field
     container    container    length_field    multiple fields
@@ -147,7 +142,6 @@ Variable length container with multiple fields
     should be equal as integers    ${msg.length_field.int}    10
 
 Variable length container with dynamic length content
-    [tags]
     New message   FooExample   Example    messageType:0xb0b0
     u8    length_field
     container    container    length_field    Dynamic string
