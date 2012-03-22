@@ -20,6 +20,25 @@ Using same field name twice fails
     u8     bar
     Run keyword and expect error    *     u8    foo
 
+Binary fields
+    [Tags]
+    [Setup]    Define Simple Protocol
+    New message   Foo    Example
+    bin  2   firstTwo    0b11
+    bin  4   nextFour    0b1010
+    bin  10  lastTen     0b0
+    ${msg}   get message
+    Should be equal   ${msg.nextFour.bin}    0x1010
+
+Binary fields must be aligned
+    [Tags]
+    [Setup]    Define Simple Protocol
+    New message   Foo    Example
+    bin  2   firstTwo    0b11
+    bin  4   nextFour    0b1010
+    bin  11  lastTen     0b1010101010
+    Should fail   get message
+
 Client uses protocol and sends
     Client Sends simple request    value:0xcafebabe
     Verify server gets hex    0x 01 00 dddd 000c ffff cafebabe
