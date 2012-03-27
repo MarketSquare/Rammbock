@@ -88,6 +88,7 @@ class TestLittleEndian(unittest.TestCase):
         self.assertEquals(field.int, 1)
         self.assertEquals(field.bytes, to_bin('0x0001'))
 
+
 class TestTemplateFieldValidation(unittest.TestCase):
 
     def test_validate_uint(self):

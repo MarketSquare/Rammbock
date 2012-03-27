@@ -10,7 +10,8 @@ def to_bin(string_value):
         if len(value)%2==1:
             value='0'+value
         return binascii.unhexlify(value)
-    return LONGLONG.pack(int(string_value)).lstrip('\x00')
+    result = LONGLONG.pack(int(string_value)).lstrip('\x00')
+    return result or '\x00'
 
 def to_bin_of_length(length, string_value):
     bin = to_bin(string_value)
