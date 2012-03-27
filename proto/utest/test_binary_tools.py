@@ -18,18 +18,18 @@ class TestBinaryConversions(unittest.TestCase):
         self.assertEquals(to_bin('18446744073709551615'), '\xff\xff\xff\xff\xff\xff\xff\xff')
 
     def test_binary_to_bin(self):
-        self.assertEquals(to_bin('0b00'), '\x00')
-        self.assertEquals(to_bin('0b01'), '\x01')
+        self.assertEquals(to_bin('0b0'), '\x00')
+        self.assertEquals(to_bin('0b1'), '\x01')
         self.assertEquals(to_bin('0b1111 1111'), '\xff')
-        self.assertEquals(to_bin('0b01 0000 0000'), '\x01\x00')
+        self.assertEquals(to_bin('0b1 0000 0000'), '\x01\x00')
         self.assertEquals(to_bin('0b01 0b01 0b01'), '\x15')
         self.assertEquals(to_bin('0b11'*32), '\xff\xff\xff\xff\xff\xff\xff\xff')
 
     def test_hex_to_bin(self):
-        self.assertEquals(to_bin('0x00'), '\x00')
-        self.assertEquals(to_bin('0x05'), '\x05')
+        self.assertEquals(to_bin('0x0'), '\x00')
+        self.assertEquals(to_bin('0x5'), '\x05')
         self.assertEquals(to_bin('0xff'), '\xff')
-        self.assertEquals(to_bin('0x0100'), '\x01\x00')
+        self.assertEquals(to_bin('0x100'), '\x01\x00')
         self.assertEquals(to_bin('0x01 0x02 0x03'), '\x01\x02\x03')
 
     def test_integer_larger_than_8_bytes_fails(self):
