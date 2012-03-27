@@ -13,7 +13,7 @@ def to_bin(string_value):
         return _int_to_bin(int(string_value))
 
 def _int_to_bin(integer):
-    if integer >= 2**64:
+    if integer >= 18446744073709551616L:
         raise AssertionError('Values larger than 2^64 are supported only in hex format. Given value %d' % integer)
     result = LONGLONG.pack(integer).lstrip('\x00')
     return result or '\x00'
