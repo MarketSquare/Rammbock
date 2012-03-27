@@ -17,12 +17,26 @@ class TestBinaryConversions(unittest.TestCase):
         self.assertEquals(to_bin('256'), '\x01\x00')
         self.assertEquals(to_bin('18446744073709551615'), '\xff\xff\xff\xff\xff\xff\xff\xff')
 
+    def test_binary_to_bin(self):
+        self.assertEquals(to_bin('0b00'), '\x00')
+        self.assertEquals(to_bin('0b01'), '\x01')
+        self.assertEquals(to_bin('0b1111 1111'), '\xff')
+        self.assertEquals(to_bin('0b01 0000 0000'), '\x01\x00')
+        self.assertEquals(to_bin('0b01 0b01 0b01'), '\x15')
+        self.assertEquals(to_bin('0b11'*32), '\xff\xff\xff\xff\xff\xff\xff\xff')
+
     def test_hex_to_bin(self):
         self.assertEquals(to_bin('0x00'), '\x00')
         self.assertEquals(to_bin('0x05'), '\x05')
         self.assertEquals(to_bin('0xff'), '\xff')
         self.assertEquals(to_bin('0x0100'), '\x01\x00')
         self.assertEquals(to_bin('0x01 0x02 0x03'), '\x01\x02\x03')
+
+    def test_integer_larger_than_8_bytes_fails(self):
+        self.assertRaises(AssertionError, to_bin, '18446744073709551616')
+        self.assertRaises(AssertionError, to_bin, '0b11'*33)
+
+    def test_hex_larger_than_8_bytes_works(self):
         self.assertEquals(to_bin('0xcafebabe f00dd00d deadbeef'), '\xca\xfe\xba\xbe\xf0\x0d\xd0\x0d\xde\xad\xbe\xef')
 
     def test_to_bin_of_length(self):
@@ -40,3 +54,4 @@ class TestBinaryConversions(unittest.TestCase):
     def test_to_0xhex(self):
         self.assertEquals(to_0xhex('\x00'), '0x00')
         self.assertEquals(to_0xhex('\xca\xfe\xba\xbe\xf0\x0d\xd0\x0d\xde\xad\xbe\xef'), '0xcafebabef00dd00ddeadbeef')
+
