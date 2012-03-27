@@ -1,6 +1,6 @@
 import unittest
 
-from templates.primitives import Length, Char, UInt, PDU
+from templates.primitives import Length, Char, UInt, PDU, Binary
 from Message import Struct, Field
 from binary_tools import to_bin
 
@@ -23,6 +23,21 @@ class TestTemplateFields(unittest.TestCase):
         self.assertEquals(field.type, 'char')
         self.assertEquals(field.encode({}, {}, None)._raw, 'foo\x00\x00')
         self.assertEquals(field.encode({}, {}, None).bytes, 'foo\x00\x00')
+
+    def test_binary_field(self):
+        field = Binary(3, 'field', 1)
+        self.assertTrue(field.length.static)
+        self.assertEquals(field.name, "field")
+        self.assertEquals(field.default_value, '1')
+        self.assertEquals(field.type, 'binary')
+        self.assertEquals(field.encode({}, {}, None).hex, '0x01')
+
+    def test_long_binary_field_value(self):
+        field = Binary(23, 'field', '0b1 1111 1111')
+        self.assertEquals(field.encode({}, {}, None).hex, '0x0001ff')
+
+    def test_binary_field_length_must_be_static(self):
+        self.assertRaises(AssertionError, Binary, 'length', 'field', None)
 
     def test_encoding_missing_value_fails(self):
         field = UInt(2, 'foo', None)

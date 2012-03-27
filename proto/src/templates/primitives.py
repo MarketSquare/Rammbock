@@ -1,4 +1,5 @@
 from Message import Field
+import math
 from binary_tools import to_bin_of_length, to_0xhex
 
 
@@ -113,6 +114,28 @@ class Char(_TemplateField):
         value = value if value else ''
         length, aligned_length = self.length.find_length_and_set_if_necessary(message, len(value))
         return str(value).ljust(length,'\x00'), aligned_length
+
+
+class Binary(_TemplateField):
+
+    type = 'binary'
+
+    def __init__(self, length, name, default_value=None):
+        self.length = Length(length)
+        if not self.length.static:
+            raise AssertionError('Binary field length must be static. Length: %s' % length)
+        self.name = name
+        self.default_value = str(default_value) if default_value and default_value != '""' else None
+
+    def _encode_value(self, value, message, little_endian=False):
+        if not value:
+            raise AssertionError('Value of %s not set' % self._get_name())
+        length, aligned = self.length.decode_lengths(message)
+        binary = to_bin_of_length(self._byte_length(length), value)
+        return binary, self._byte_length(aligned)
+
+    def _byte_length(self, length):
+        return int(math.ceil(length/8.0))
 
 
 class PDU(_TemplateField):
