@@ -24,20 +24,23 @@ Binary fields
     [Tags]
     [Setup]    Define Simple Protocol
     New message   Foo    Example
-    bin  2   firstTwo    0b11
-    bin  4   nextFour    0b1010
-    bin  10  lastTen     0b0
+    New Binary Field    flags
+    Bin  2   firstTwo    0b11
+    Bin  4   nextFour    0b1010
+    Bin  10  lastTen     0
+    End Binary Field
     ${msg}   get message
-    Should be equal   ${msg.nextFour.bin}    0x1010
+    Should be equal   ${msg.flags.nextFour.bin}    0b1010
 
 Binary fields must be aligned
     [Tags]
     [Setup]    Define Simple Protocol
     New message   Foo    Example
-    bin  2   firstTwo    0b11
-    bin  4   nextFour    0b1010
-    bin  11  lastTen     0b1010101010
-    Should fail   get message
+    New Binary Field    flags
+    Bin  2   firstTwo    0b11
+    Bin  4   nextFour    0b1010
+    Bin  11  lastTen     0
+    Should fail   End Binary Field
 
 Client uses protocol and sends
     Client Sends simple request    value:0xcafebabe
