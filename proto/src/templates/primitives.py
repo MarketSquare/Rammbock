@@ -175,8 +175,8 @@ class _StaticLength(_Length):
     static = True
 
     def __init__(self, value, align):
-        self.value = value
-        self.align = align
+        self.value = int(value)
+        self.align = int(align)
 
     def decode_lengths(self, message):
         return self._get_aligned_lengths(self.value)
@@ -194,7 +194,7 @@ class _DynamicLength(_Length):
         else:
             self.field, subtractor = value, 0
         self.subtractor = int(subtractor)
-        self.align = align
+        self.align = int(align)
 
     def calc_value(self, param):
         return param - self.subtractor

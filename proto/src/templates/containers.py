@@ -4,6 +4,7 @@ from Message import Field, Union, Message, Header, List, Struct
 from message_stream import MessageStream
 from primitives import Length
 from OrderedDict import OrderedDict
+from templates.primitives import Binary
 
 
 class _Template(object):
@@ -302,3 +303,22 @@ class ListTemplate(_Template):
                 if prefix == name or prefix == '*':
                     result[child_name + ending] =  params.pop(key)
         return result
+
+
+class BinaryFieldTemplate(_Template):
+
+    def __init__(self, name, parent):
+        _Template.__init__(self, name, parent)
+
+    def add(self, field):
+        if not isinstance(field, Binary):
+            raise AssertionError('Binary field can only have binary values.')
+        _Template.add(self, field)
+
+    @property
+    def binlength(self):
+        return sum(field.length.value for field in self._fields.values())
+
+    def verify(self):
+        if self.binlength % 8:
+            raise AssertionError('Length of binary field %s has to divisible by 8. Length %s' % (self.name, self.binlength))

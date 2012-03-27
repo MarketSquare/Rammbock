@@ -1,7 +1,7 @@
 import unittest
 
-from templates.containers import Protocol, MessageTemplate, StructTemplate, ListTemplate, UnionTemplate
-from templates.primitives import UInt, PDU, Char
+from templates.containers import Protocol, MessageTemplate, StructTemplate, ListTemplate, UnionTemplate, BinaryFieldTemplate
+from templates.primitives import UInt, PDU, Char, Binary
 from binary_tools import to_bin_of_length, to_bin
 
 
@@ -564,6 +564,27 @@ class TestUnions(unittest.TestCase, _WithValidation):
         struct.add(union)
         decoded = struct.decode(to_bin('0xcafebabe f00dd00d'))
         self._should_fail(struct.validate({'pair':decoded}, {}), 3)
+
+
+class TestBinaryFieldTemplate(unittest.TestCase):
+
+    def test_verify_field_length_fails(self):
+        field = BinaryFieldTemplate('foo', None)
+        field.add(Binary(3, 'threeBits', None))
+        self.assertRaises(AssertionError, field.verify)
+
+    def test_verify_field_length_passes(self):
+        field = BinaryFieldTemplate('foo', None)
+        field.add(Binary(1, 'oneBit', None))
+        field.add(Binary(3, 'threeBits', None))
+        field.add(Binary(12, 'twelveBits', None))
+        field.verify()
+
+    def test_verify_only_binary_field_passes(self):
+        field = BinaryFieldTemplate('foo', None)
+        field.add(Binary(1, 'oneBit', None))
+        field.add(Binary(3, 'threeBits', None))
+        self.assertRaises(AssertionError, field.add, UInt(2,'intsNotAllowed', None))
 
 
 class TestLittleEndian(unittest.TestCase):
