@@ -1,4 +1,5 @@
-from binary_tools import to_0xhex, to_binary_of_length
+import math
+from binary_tools import to_0xhex, to_binary_of_length, to_bin_of_length
 from OrderedDict import OrderedDict
 
 
@@ -79,6 +80,21 @@ class Union(_StructuredElement):
         return max_raw.ljust(self._length, '\x00')
 
 
+class BinaryContainer(_StructuredElement):
+
+    _type = 'BinaryContainer'
+
+    def _binlength(self):
+        return sum(field.binlength for field in self._fields.values())
+
+    def __len__(self):
+        return self._binlength()/8
+
+    def _get_raw_bytes(self):
+        # TODO: faster implementation...
+        return to_bin_of_length(len(self), ' '.join((field.bin for field in self._fields.values())))
+
+
 class Message(_StructuredElement):
 
     _type = 'Message'
@@ -138,6 +154,9 @@ class Field(object):
 
     @property
     def bin(self):
+        return self._bin()
+
+    def _bin(self):
         return to_binary_of_length(self._length*8, self._value)
 
     @property
@@ -156,3 +175,25 @@ class Field(object):
 
     def __len__(self):
         return self._length
+
+
+class BinaryField(Field):
+
+    _type = 'binary'
+
+    def __init__(self, length, name, value, aligned_len=None, little_endian=False):
+        self._name = name
+        self._original_value = value
+        self._binlength = length
+        self._length = int(math.ceil(length/8.0))
+        self._parent = None
+        self._little_endian = False
+        if aligned_len or little_endian:
+            raise AssertionError('Not implemented yet')
+
+    def _bin(self):
+        return to_binary_of_length(self._binlength, self._value)
+
+    @property
+    def binlength(self):
+        return self._binlength

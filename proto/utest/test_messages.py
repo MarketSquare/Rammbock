@@ -1,5 +1,5 @@
 import unittest
-from Message import Struct, Field
+from Message import Struct, Field, BinaryContainer, BinaryField
 from binary_tools import to_bin
 
 
@@ -33,6 +33,32 @@ class TestMessages(unittest.TestCase):
         self.assertEquals(field.bytes, '\x00\x61\x62\x00')
         self.assertEquals(field.chars, '\x00\x61\x62\x00')
         self.assertEquals(field.bin, '0b00000000'+'01100001'+'01100010'+'00000000')
+
+
+class TestBinaryContainer(unittest.TestCase):
+
+    def setUp(self):
+        cont = BinaryContainer('foo')
+        cont['three'] = BinaryField(3, 'three', to_bin('0b101'))
+        cont['six'] = BinaryField(6, 'six', to_bin('0b101010'))
+        cont['seven'] = BinaryField(7, 'seven', to_bin('0b0101010'))
+        self.cont = cont
+
+    def test_create_binary_container(self):
+        self.assertEquals(self.cont.three.bin,'0b101')
+        self.assertEquals(self.cont.six.bin,'0b101010')
+        self.assertEquals(self.cont.seven.bin,'0b0101010')
+
+    def test_conversions(self):
+        self.assertEquals(self.cont.seven.int,42)
+        self.assertEquals(self.cont.seven.bytes,to_bin(42))
+        self.assertEquals(self.cont.seven.ascii,'*')
+
+    def test_get_binary_container_bytes(self):
+        self.assertEquals(self.cont._raw, to_bin('0b1011 0101 0010 1010'))
+
+    def test_binary_container_length(self):
+        self.assertEquals(len(self.cont), 2)
 
 
 class TestFieldAlignment(unittest.TestCase):
