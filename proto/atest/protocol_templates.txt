@@ -22,23 +22,13 @@ Using same field name twice fails
 
 Binary field encoding
     [Setup]    Define example protocol
-    New message   Foo    Example    messageType:0xdddd
-    New Binary Container    flags
-    Bin  2   firstTwo    0b11
-    Bin  4   nextFour    0b1010
-    Bin  10  lastTen     0
-    End Binary Container
+    Binary Message
     ${msg}   get message
     Should be equal   ${msg.flags.nextFour.bin}    0b1010
 
 Binary field decoding
     [Tags]
-    New message   Foo    Example    messageType:0xdddd
-    New Binary Container    flags
-    Bin  2   firstTwo    0b11
-    Bin  4   nextFour    0b1010
-    Bin  10  lastTen     0
-    End Binary Container
+    Binary Message
     Client sends message
     ${msg}   Server receives message
     Should be equal   ${msg.flags.nextFour.bin}    0b1010
@@ -201,6 +191,14 @@ Resetting message stream cache
     Server receive for simple request will timeout
 
 *** Keywords ***
+Binary Message
+    New message   Foo    Example    messageType:0xdddd
+    New Binary Container    flags
+    Bin  2   firstTwo    0b11
+    Bin  4   nextFour    0b1010
+    Bin  10  lastTen     0
+    End Binary Container
+
 Client Sends simple request
     [Arguments]    @{params}
     New message    ValueRequest    Example    messageType:0xdddd    flags:0xffff
