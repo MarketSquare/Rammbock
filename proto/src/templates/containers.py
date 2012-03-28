@@ -1,6 +1,6 @@
 import re
 
-from Message import Field, Union, Message, Header, List, Struct
+from Message import Field, Union, Message, Header, List, Struct, BinaryContainer
 from message_stream import MessageStream
 from primitives import Length
 from OrderedDict import OrderedDict
@@ -307,8 +307,7 @@ class ListTemplate(_Template):
 
 class BinaryContainerTemplate(_Template):
 
-    def __init__(self, name, parent):
-        _Template.__init__(self, name, parent)
+    has_length = False
 
     def add(self, field):
         if not isinstance(field, Binary):
@@ -322,3 +321,11 @@ class BinaryContainerTemplate(_Template):
     def verify(self):
         if self.binlength % 8:
             raise AssertionError('Length of binary container %s has to divisible by 8. Length %s' % (self.name, self.binlength))
+
+    def encode(self, message_params, parent=None, name=None, little_endian=False):
+        container = self._get_struct(name)
+        self._encode_fields(container, self._get_params_sub_tree(message_params, name), little_endian=little_endian)
+        return container
+
+    def _get_struct(self, name):
+        return BinaryContainer(name if name else self.name)

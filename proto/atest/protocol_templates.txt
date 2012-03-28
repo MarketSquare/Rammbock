@@ -21,9 +21,8 @@ Using same field name twice fails
     Run keyword and expect error    *     u8    foo
 
 Binary fields
-    [Tags]
-    [Setup]    Define Simple Protocol
-    New message   Foo    Example
+    [Setup]    Define example protocol
+    New message   Foo    Example    messageType:0xdddd
     New Binary Container    flags
     Bin  2   firstTwo    0b11
     Bin  4   nextFour    0b1010
@@ -33,14 +32,13 @@ Binary fields
     Should be equal   ${msg.flags.nextFour.bin}    0b1010
 
 Binary fields must be aligned
-    [Tags]
-    [Setup]    Define Simple Protocol
-    New message   Foo    Example
+    [Setup]    Define example protocol
+    New message   Foo    Example   messageType:0xdddd
     New Binary Container    flags
     Bin  2   firstTwo    0b11
     Bin  4   nextFour    0b1010
     Bin  11  lastTen     0
-    Should fail   End Binary Container
+    Run keyword and expect error    *    End Binary Container
 
 Client uses protocol and sends
     Client Sends simple request    value:0xcafebabe

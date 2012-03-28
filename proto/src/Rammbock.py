@@ -1,7 +1,7 @@
 from __future__ import with_statement
 from contextlib import contextmanager
 from Networking import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
-from templates import Protocol, UInt, PDU, MessageTemplate, Char, \
+from templates import Protocol, UInt, PDU, MessageTemplate, Char, Binary, \
     StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate
 from binary_tools import to_0xhex, to_bin
 
@@ -253,6 +253,9 @@ class Rammbock(object):
         binary_container = self._message_stack.pop()
         binary_container.verify()
         self._add_field(binary_container)
+
+    def bin(self, size, name, value):
+        self._add_field(Binary(size,name, value))
 
     def union(self, type, name):
         self._message_stack.append(UnionTemplate(type, name, self._current_container))

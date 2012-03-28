@@ -1,4 +1,4 @@
-from Message import Field
+from Message import Field, BinaryField
 import math
 from binary_tools import to_bin_of_length, to_0xhex
 
@@ -26,8 +26,11 @@ class _TemplateField(object):
         value = self._get_element_value_and_remove_from_params(paramdict, name)
         if not value and self.referenced_later:
             return PlaceHolderField(self)
+        return self._to_field(name, value, parent, little_endian=little_endian)
+
+    def _to_field(self, name, value, parent, little_endian=False):
         field_name, field_value = self._encode_value(value, parent, little_endian=little_endian)
-        return Field(self.type,self._get_name(name), field_name, field_value, little_endian=little_endian)
+        return Field(self.type, self._get_name(name), field_name, field_value, little_endian=little_endian)
 
     def decode(self, value, message, name=None, little_endian=False):
         length, aligned_length = self.length.decode_lengths(message)
@@ -133,6 +136,10 @@ class Binary(_TemplateField):
         length, aligned = self.length.decode_lengths(message)
         binary = to_bin_of_length(self._byte_length(length), value)
         return binary, self._byte_length(aligned)
+
+    def _to_field(self, name, value, parent, little_endian=False):
+        field_name, field_value = self._encode_value(value, parent, little_endian=little_endian)
+        return BinaryField(self.length.value, self._get_name(name), field_name, field_value, little_endian=little_endian)
 
     def _byte_length(self, length):
         return int(math.ceil(length/8.0))

@@ -184,11 +184,11 @@ class BinaryField(Field):
     def __init__(self, length, name, value, aligned_len=None, little_endian=False):
         self._name = name
         self._original_value = value
-        self._binlength = length
-        self._length = int(math.ceil(length/8.0))
+        self._binlength = int(length)
+        self._length = int(math.ceil(self._binlength/8.0))
         self._parent = None
         self._little_endian = False
-        if aligned_len or little_endian:
+        if little_endian:
             raise AssertionError('Not implemented yet')
 
     def _bin(self):
