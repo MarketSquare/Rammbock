@@ -1,5 +1,5 @@
 import unittest
-from binary_tools import to_bin, to_bin_of_length, to_hex, to_0xhex
+from binary_tools import to_bin, to_bin_of_length, to_hex, to_0xhex, to_binary_of_length
 
 class TestBinaryConversions(unittest.TestCase):
 
@@ -55,3 +55,8 @@ class TestBinaryConversions(unittest.TestCase):
         self.assertEquals(to_0xhex('\x00'), '0x00')
         self.assertEquals(to_0xhex('\xca\xfe\xba\xbe\xf0\x0d\xd0\x0d\xde\xad\xbe\xef'), '0xcafebabef00dd00ddeadbeef')
 
+    def test_to_0bbinary(self):
+        self.assertEquals(to_binary_of_length(1,'\x00'), '0b0')
+        self.assertEquals(to_binary_of_length(3,'\x00'), '0b000')
+        self.assertEquals(to_binary_of_length(9,'\x01\xff'), '0b111111111')
+        self.assertEquals(to_binary_of_length(12,'\x01\xff'), '0b000111111111')

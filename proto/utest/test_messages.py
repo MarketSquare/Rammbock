@@ -26,6 +26,14 @@ class TestMessages(unittest.TestCase):
         self.assertEquals(msg, child._parent)
         self.assertEquals(msg, child['field']._parent._parent)
 
+    def test_conversions(self):
+        field = Field('unit', 'name', to_bin('0x00616200'))
+        self.assertEquals(field.int, 0x00616200)
+        self.assertEquals(field.hex, '0x00616200')
+        self.assertEquals(field.ascii, 'ab')
+        self.assertEquals(field.bytes, '\x00\x61\x62\x00')
+        self.assertEquals(field.chars, '\x00\x61\x62\x00')
+        self.assertEquals(field.bin, '0b00000000'+'01100001'+'01100010'+'00000000')
 
 class TestFieldAlignment(unittest.TestCase):
 

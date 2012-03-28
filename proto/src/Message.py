@@ -1,4 +1,4 @@
-from binary_tools import to_0xhex
+from binary_tools import to_0xhex, to_binary_of_length
 from OrderedDict import OrderedDict
 
 
@@ -135,6 +135,10 @@ class Field(object):
     @property
     def chars(self):
         return str(self._value)
+
+    @property
+    def bin(self):
+        return to_binary_of_length(self._length*8, self._value)
 
     @property
     def ascii(self):
