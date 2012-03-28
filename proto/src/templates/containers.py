@@ -305,14 +305,14 @@ class ListTemplate(_Template):
         return result
 
 
-class BinaryFieldTemplate(_Template):
+class BinaryContainerTemplate(_Template):
 
     def __init__(self, name, parent):
         _Template.__init__(self, name, parent)
 
     def add(self, field):
         if not isinstance(field, Binary):
-            raise AssertionError('Binary field can only have binary values.')
+            raise AssertionError('Binary container can only have binary fields.')
         _Template.add(self, field)
 
     @property
@@ -321,4 +321,4 @@ class BinaryFieldTemplate(_Template):
 
     def verify(self):
         if self.binlength % 8:
-            raise AssertionError('Length of binary field %s has to divisible by 8. Length %s' % (self.name, self.binlength))
+            raise AssertionError('Length of binary container %s has to divisible by 8. Length %s' % (self.name, self.binlength))

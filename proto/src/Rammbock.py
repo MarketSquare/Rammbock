@@ -2,7 +2,7 @@ from __future__ import with_statement
 from contextlib import contextmanager
 from Networking import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 from templates import Protocol, UInt, PDU, MessageTemplate, Char, \
-    StructTemplate, ListTemplate, UnionTemplate, BinaryFieldTemplate
+    StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate
 from binary_tools import to_0xhex, to_bin
 
 
@@ -246,13 +246,13 @@ class Rammbock(object):
         list = self._message_stack.pop()
         self._add_field(list)
 
-    def new_binary_field(self, name):
-        self._message_stack.append(BinaryFieldTemplate(size, name, self._current_container))
+    def new_binary_container(self, name):
+        self._message_stack.append(BinaryContainerTemplate(name, self._current_container))
 
-    def end_binary_field(self):
-        binary_field = self._message_stack.pop()
-        binary_field.verify()
-        self._add_field(binary_field)
+    def end_binary_container(self):
+        binary_container = self._message_stack.pop()
+        binary_container.verify()
+        self._add_field(binary_container)
 
     def union(self, type, name):
         self._message_stack.append(UnionTemplate(type, name, self._current_container))

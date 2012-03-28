@@ -1,6 +1,6 @@
 import unittest
 
-from templates.containers import Protocol, MessageTemplate, StructTemplate, ListTemplate, UnionTemplate, BinaryFieldTemplate
+from templates.containers import Protocol, MessageTemplate, StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate
 from templates.primitives import UInt, PDU, Char, Binary
 from binary_tools import to_bin_of_length, to_bin
 
@@ -566,25 +566,25 @@ class TestUnions(unittest.TestCase, _WithValidation):
         self._should_fail(struct.validate({'pair':decoded}, {}), 3)
 
 
-class TestBinaryFieldTemplate(unittest.TestCase):
+class TestBinaryContainerTemplate(unittest.TestCase):
 
     def test_verify_field_length_fails(self):
-        field = BinaryFieldTemplate('foo', None)
-        field.add(Binary(3, 'threeBits', None))
-        self.assertRaises(AssertionError, field.verify)
+        container = BinaryContainerTemplate('foo', None)
+        container.add(Binary(3, 'threeBits', None))
+        self.assertRaises(AssertionError, container.verify)
 
     def test_verify_field_length_passes(self):
-        field = BinaryFieldTemplate('foo', None)
-        field.add(Binary(1, 'oneBit', None))
-        field.add(Binary(3, 'threeBits', None))
-        field.add(Binary(12, 'twelveBits', None))
-        field.verify()
+        container = BinaryContainerTemplate('foo', None)
+        container.add(Binary(1, 'oneBit', None))
+        container.add(Binary(3, 'threeBits', None))
+        container.add(Binary(12, 'twelveBits', None))
+        container.verify()
 
     def test_verify_only_binary_field_passes(self):
-        field = BinaryFieldTemplate('foo', None)
-        field.add(Binary(1, 'oneBit', None))
-        field.add(Binary(3, 'threeBits', None))
-        self.assertRaises(AssertionError, field.add, UInt(2,'intsNotAllowed', None))
+        container = BinaryContainerTemplate('foo', None)
+        container.add(Binary(1, 'oneBit', None))
+        container.add(Binary(3, 'threeBits', None))
+        self.assertRaises(AssertionError, container.add, UInt(2,'intsNotAllowed', None))
 
 
 class TestLittleEndian(unittest.TestCase):
