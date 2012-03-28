@@ -32,6 +32,7 @@ Binary field encoding
     Should be equal   ${msg.flags.nextFour.bin}    0b1010
 
 Binary field decoding
+    [Tags]
     New message   Foo    Example    messageType:0xdddd
     New Binary Container    flags
     Bin  2   firstTwo    0b11
