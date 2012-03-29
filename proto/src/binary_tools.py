@@ -1,6 +1,26 @@
 import binascii
 import struct
 
+try:
+    if bin(0): pass
+except NameError, ne:
+    def bin(x):
+        """
+        Support for Python 2.5
+        Based on a recipe by Benjamin Wiley Sittler.
+        http://code.activestate.com/recipes/219300-format-integer-as-binary-string/
+        """
+        if x < 0: return '-' + bin(-x)
+        out = []
+        if x == 0: out.append('0')
+        while x > 0:
+            out.append('01'[x & 1])
+            x >>= 1
+            pass
+        try: return '0b' + ''.join(reversed(out))
+        except NameError, ne2: out.reverse()
+        return '0b' + ''.join(out)
+
 LONGLONG = struct.Struct('>Q')
 
 def to_bin(string_value):
