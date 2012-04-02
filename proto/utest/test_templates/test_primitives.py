@@ -1,11 +1,10 @@
-import unittest
-
-from templates.primitives import Length, Char, UInt, PDU, Binary
+from unittest import TestCase, main
+from templates.primitives import Length, Char, UInt, PDU, Binary, TBCD
 from Message import Struct, Field
 from binary_tools import to_bin
 
 
-class TestTemplateFields(unittest.TestCase):
+class TestTemplateFields(TestCase):
 
     def test_uint_static_field(self):
         field = UInt(5, "field", 8)
@@ -80,7 +79,7 @@ class TestTemplateFields(unittest.TestCase):
         self.assertEquals(len(decoded), 2)
 
 
-class TestLittleEndian(unittest.TestCase):
+class TestLittleEndian(TestCase):
 
     def test_little_endian_uint_decode(self):
         template = UInt(2, 'field', None)
@@ -103,8 +102,7 @@ class TestLittleEndian(unittest.TestCase):
         self.assertEquals(field.int, 1)
         self.assertEquals(field.bytes, to_bin('0x0001'))
 
-
-class TestTemplateFieldValidation(unittest.TestCase):
+class TestTemplateFieldValidation(TestCase):
 
     def test_validate_uint(self):
         template = UInt(2, 'field', 4)
@@ -123,7 +121,7 @@ class TestTemplateFieldValidation(unittest.TestCase):
         self._should_fail(template.validate({'field':field}, {'field':'42'}), 1)
 
 
-class TestLength(unittest.TestCase):
+class TestLength(TestCase):
 
     def test_create_length(self):
         length = Length('5')
@@ -188,7 +186,7 @@ class TestLength(unittest.TestCase):
         self.assertRaises(Exception, Length, 'foo-1', '-1')
 
 
-class TestAlignment(unittest.TestCase):
+class TestAlignment(TestCase):
 
     def test_encode_aligned_uint(self):
         uint = UInt(1,'foo', '0xff', align='4')
@@ -208,5 +206,6 @@ class TestAlignment(unittest.TestCase):
 
     #TODO: more combinations, handling chars
 
+
 if __name__ == '__main__':
-    unittest.main()
+    main()

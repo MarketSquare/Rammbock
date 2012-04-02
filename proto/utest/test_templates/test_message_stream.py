@@ -1,6 +1,5 @@
-import unittest
+from unittest import TestCase, main
 import socket
-
 from templates.message_stream import MessageStream
 from templates import Protocol, MessageTemplate, UInt, PDU
 from binary_tools import to_bin 
@@ -25,7 +24,7 @@ class _MockStream(object):
         self.data = ''
 
 
-class TestProtocolMessageReceiving(unittest.TestCase):
+class TestProtocolMessageReceiving(TestCase):
 
     def setUp(self):
         self._protocol = Protocol('Test')
@@ -40,7 +39,7 @@ class TestProtocolMessageReceiving(unittest.TestCase):
         self.assertEquals(data, '\xca\xfe')
 
 
-class TestMessageStream(unittest.TestCase):
+class TestMessageStream(TestCase):
 
     def setUp(self):
         self._protocol = Protocol('Test')
@@ -78,4 +77,4 @@ class TestMessageStream(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

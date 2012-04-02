@@ -1,10 +1,10 @@
-import unittest
+from unittest import TestCase, main
 from message_sequence import MessageSequence
 
 CLIENT = ('11.11.11.11', 11)
 SERVER = ('11.11.11.11', 2222)
 
-class TestMessageSequence(unittest.TestCase):
+class TestMessageSequence(TestCase):
 
     def _send(self, seq):
         seq.send('Sender', CLIENT, SERVER, 'Protocol', 'Msg')
@@ -60,3 +60,6 @@ class TestMessageSequence(unittest.TestCase):
     def _operators_should_equal(self, operator_generator, expected):
         self.assertEquals(list(operator_generator), expected)
 
+
+if __name__ == "__main__":
+    main()

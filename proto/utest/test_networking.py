@@ -1,4 +1,4 @@
-import unittest
+from unittest import TestCase, main
 import time
 import socket
 from threading import Timer
@@ -13,7 +13,7 @@ ports = {'SERVER_PORT': 12345,
          'CLIENT_PORT': 54321}
 
 
-class _NetworkingTests(unittest.TestCase):
+class _NetworkingTests(TestCase):
 
     def setUp(self):
         self.sockets = []
@@ -23,7 +23,7 @@ class _NetworkingTests(unittest.TestCase):
     def tearDown(self, *args, **kwargs):
         for sock in self.sockets:
             sock.close()
-        return unittest.TestCase.tearDown(self, *args, **kwargs)
+        return TestCase.tearDown(self, *args, **kwargs)
 
     def _verify_emptying(self, server, client):
         client.send('to connect')
@@ -189,7 +189,7 @@ def _get_template():
     return protocol
 
 
-class TestBufferedStream(unittest.TestCase):
+class TestBufferedStream(TestCase):
 
     DATA = 'foobardiibadaa'
     
@@ -217,6 +217,6 @@ class MockConnection(object):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    main()
 
 

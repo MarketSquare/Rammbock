@@ -1,4 +1,4 @@
-import unittest
+from unittest import TestCase, main
 from Message import Struct, Field, BinaryContainer, BinaryField
 from binary_tools import to_bin
 
@@ -7,7 +7,7 @@ def uint_field(value='0x00'):
     return Field('uint', 'name', to_bin(value))
 
 
-class TestMessages(unittest.TestCase):
+class TestMessages(TestCase):
 
     def test_in(self):
         msg = Struct('foo', 'foo_type')
@@ -35,7 +35,7 @@ class TestMessages(unittest.TestCase):
         self.assertEquals(field.bin, '0b00000000'+'01100001'+'01100010'+'00000000')
 
 
-class TestBinaryContainer(unittest.TestCase):
+class TestBinaryContainer(TestCase):
 
     def setUp(self):
         cont = BinaryContainer('foo')
@@ -61,7 +61,7 @@ class TestBinaryContainer(unittest.TestCase):
         self.assertEquals(len(self.cont), 2)
 
 
-class TestFieldAlignment(unittest.TestCase):
+class TestFieldAlignment(TestCase):
 
     def _assert_align(self, value, length, raw):
         field = Field('uint', 'name', to_bin(value), aligned_len=length)
@@ -82,7 +82,7 @@ class TestFieldAlignment(unittest.TestCase):
         self._assert_align('0xff', 1, '0xff')
 
 
-class TestLittleEndian(unittest.TestCase):
+class TestLittleEndian(TestCase):
 
     def test_little_endian(self):
         field = Field('uint', 'name', to_bin('0x0100'), little_endian=True)
@@ -100,5 +100,5 @@ class TestLittleEndian(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    main()
 

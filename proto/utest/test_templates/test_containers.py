@@ -1,5 +1,4 @@
-import unittest
-
+from unittest import TestCase, main
 from templates.containers import Protocol, MessageTemplate, StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate
 from templates.primitives import UInt, PDU, Char, Binary
 from binary_tools import to_bin_of_length, to_bin
@@ -60,7 +59,7 @@ class _WithValidation(object):
         self.assertEquals(len(validation), number_of_errors)
 
 
-class TestProtocol(unittest.TestCase):
+class TestProtocol(TestCase):
 
     def setUp(self):
         self._protocol = Protocol('Test')
@@ -89,7 +88,7 @@ class TestProtocol(unittest.TestCase):
         self.assertEquals(self._protocol.header_length(), 3)
 
 
-class TestMessageTemplate(unittest.TestCase):
+class TestMessageTemplate(TestCase):
 
     def setUp(self):
         self._protocol = Protocol('TestProtocol')
@@ -154,7 +153,7 @@ class TestMessageTemplate(unittest.TestCase):
         self.assertEquals(msg.field_1.hex, '0xcafe')
 
 
-class TestStructuredTemplate(unittest.TestCase):
+class TestStructuredTemplate(TestCase):
 
     def test_access_struct(self):
         self._protocol = Protocol('TestProtocol')
@@ -216,7 +215,7 @@ class TestStructuredTemplate(unittest.TestCase):
         self.assertEquals(decoded.second.hex, '0xbabe')
 
 
-class TestDefaultValues(unittest.TestCase):
+class TestDefaultValues(TestCase):
 
     def test_default_values(self):
         pair = _get_empty_pair()
@@ -231,7 +230,7 @@ class TestDefaultValues(unittest.TestCase):
         self.assertEquals(encoded.pair3.first.int, 3)
 
 
-class TestListTemplate(unittest.TestCase):
+class TestListTemplate(TestCase):
 
     def test_create_list(self):
         list = _get_list_of_three()
@@ -315,7 +314,7 @@ List listlist[]
         self.assertRaises(Exception, template.decode, to_bin('0x00010002'))
 
 
-class TestDynamicMessageTemplate(unittest.TestCase):
+class TestDynamicMessageTemplate(TestCase):
 
     def setUp(self):
         self._protocol = Protocol('TestProtocol')
@@ -396,7 +395,7 @@ class TestDynamicMessageTemplate(unittest.TestCase):
         self.assertRaises(AssertionError, str.add, Char('notfound', "bar"))
 
 
-class TestMessageTemplateValidation(unittest.TestCase):
+class TestMessageTemplateValidation(TestCase):
 
     def setUp(self):
         self._protocol = Protocol('TestProtocol')
@@ -448,7 +447,7 @@ class TestMessageTemplateValidation(unittest.TestCase):
         self.assertEquals(len(errors), 1)
 
 
-class TestTemplateFieldValidation(unittest.TestCase, _WithValidation):
+class TestTemplateFieldValidation(TestCase, _WithValidation):
 
     def test_validate_struct_passes(self):
         template = _get_pair()
@@ -491,7 +490,7 @@ class TestTemplateFieldValidation(unittest.TestCase, _WithValidation):
         self._should_fail(struct.validate({'foo':encoded}, {'foo.text':'fob'}), 1)
 
 
-class TestUnions(unittest.TestCase, _WithValidation):
+class TestUnions(TestCase, _WithValidation):
 
     def _check_length(self, length, *fields):
         union = UnionTemplate('Foo', 'foo', parent=None)
@@ -566,7 +565,7 @@ class TestUnions(unittest.TestCase, _WithValidation):
         self._should_fail(struct.validate({'pair':decoded}, {}), 3)
 
 
-class TestBinaryContainerTemplate(unittest.TestCase):
+class TestBinaryContainerTemplate(TestCase):
 
     def test_verify_field_length_fails(self):
         container = BinaryContainerTemplate('foo', None)
@@ -587,7 +586,7 @@ class TestBinaryContainerTemplate(unittest.TestCase):
         self.assertRaises(AssertionError, container.add, UInt(2,'intsNotAllowed', None))
 
 
-class TestLittleEndian(unittest.TestCase):
+class TestLittleEndian(TestCase):
 
     def test_little_endian_struct_decode(self):
         pair = _get_pair()
@@ -613,4 +612,4 @@ class TestLittleEndian(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

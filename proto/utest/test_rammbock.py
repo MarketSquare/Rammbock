@@ -1,9 +1,8 @@
-import unittest
-
+from unittest import TestCase, main
 from Rammbock import Rammbock
 
 
-class TestParamParsing(unittest.TestCase):
+class TestParamParsing(TestCase):
 
     def setUp(self):
         self.rammbock = Rammbock()
@@ -26,3 +25,7 @@ class TestParamParsing(unittest.TestCase):
         self.assertEquals(headers['doo'], 'dar')
         self.assertEquals(headers['foo'], 'bar')
         self.assertEquals(pdus['header'], 'poo')
+
+
+if __name__ == "__main__":
+    main()
