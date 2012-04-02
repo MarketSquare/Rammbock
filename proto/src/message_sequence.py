@@ -56,7 +56,7 @@ class Operator(object):
 
     def __init__(self, ip_name, name=None):
         self.ip_name = ip_name
-        self.name = name if name else ip_name
+        self.name = name or ip_name
 
     def __str__(self):
         return self.name

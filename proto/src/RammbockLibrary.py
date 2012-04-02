@@ -25,6 +25,6 @@ class RammbockLibrary(Rammbock):
         self.end_list()
 
     def container(self, name, length, type, *params):
-        self.struct('Container', name, 'length=%s'% length)
+        self.struct('Container', name, 'length=%s' % length)
         BuiltIn().run_keyword(type, *params)
         self.end_struct()

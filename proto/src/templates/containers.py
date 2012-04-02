@@ -65,7 +65,7 @@ class _Template(object):
 
     def _get_params_sub_tree(self, params, name=None):
         result = {'*': params['*']} if '*' in params else {}
-        name = name if name else self.name
+        name = name or self.name
         for key in params.keys():
             prefix, _, ending = key.partition('.')
             if prefix == name:
@@ -158,7 +158,7 @@ class StructTemplate(_Template):
     has_length = False
     
     def __init__(self, type, name, parent, parameters=None, length=None):
-        self._parameters = parameters if parameters else {}
+        self._parameters = parameters or {}
         self.type = type
         if length:
             self._set_length(length)
@@ -182,11 +182,11 @@ class StructTemplate(_Template):
         return struct
 
     def _get_struct(self, name):
-        return Struct(name if name else self.name, self.type)
+        return Struct(name or self.name, self.type)
 
     def validate(self, parent, message_fields, name=None):
         errors = []
-        name = name if name else self.name
+        name = name or self.name
         message = parent[name]
         if self.has_length:
             length = self.length.decode(message)
@@ -215,13 +215,13 @@ class UnionTemplate(_Template):
         return max(field.get_static_length() for field in self._fields.values())
 
     def decode(self, data, parent=None, name=None, little_endian=False):
-        union = Union(name if name else self.name, self.get_static_length())
+        union = Union(name or self.name, self.get_static_length())
         for field in self._fields.values():
             union[field.name] = field.decode(data, union, little_endian=little_endian)
         return union
     
     def encode(self, union_params, parent=None, name=None, little_endian=False):
-        name = name if name else self.name
+        name = name or self.name
         union = Union(name, self.get_static_length())
         if name not in union_params:
             raise AssertionError('Value not chosen for union %s' % name)
@@ -235,7 +235,7 @@ class UnionTemplate(_Template):
         return union
 
     def validate(self, parent, message_fields, name=None):
-        name = name if name else self.name
+        name = name or self.name
         message = parent[name]
         return _Template.validate(self, message, self._get_params_sub_tree(message_fields, name))
 
@@ -255,7 +255,7 @@ class ListTemplate(_Template):
         return self.length.value * self.field.get_static_length()
 
     def encode(self, message_params, parent, name=None, little_endian=False):
-        name = name if name else self.name
+        name = name or self.name
         params_subtree = self._get_params_sub_tree(message_params, name)
         list = self._get_struct(name)
         for index in range(0, self.length.decode(parent)):
@@ -271,10 +271,10 @@ class ListTemplate(_Template):
         return self._fields.values()[0]
 
     def _get_struct(self, name=None):
-        return List(name if name else self.name, self.field.type)
+        return List(name or self.name, self.field.type)
 
     def decode(self, data, parent, name=None, little_endian=False):
-        name = name if name else self.name
+        name = name or self.name
         message = self._get_struct(name)
         data_index = 0
         for index in range(0, self.length.decode(parent)):
@@ -283,7 +283,7 @@ class ListTemplate(_Template):
         return message
 
     def validate(self, parent, message_fields, name=None):
-        name = name if name else self.name
+        name = name or self.name
         params_subtree = self._get_params_sub_tree(message_fields, name)
         list = parent[name]
         errors = []
@@ -295,7 +295,7 @@ class ListTemplate(_Template):
     def _get_params_sub_tree(self, params, name=None):
         # TODO: Test for * syntax in array subfields
         result = {'*': params['*']} if '*' in params else {}
-        name = name if name else self.name
+        name = name or self.name
         for key in params.keys():
             match = self.param_pattern.match(key)
             if match:        
@@ -328,4 +328,4 @@ class BinaryContainerTemplate(_Template):
         return container
 
     def _get_struct(self, name):
-        return BinaryContainer(name if name else self.name)
+        return BinaryContainer(name or self.name)

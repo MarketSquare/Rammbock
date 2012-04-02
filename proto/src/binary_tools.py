@@ -27,10 +27,9 @@ def to_bin(string_value):
     string_value = str(string_value)
     if string_value.startswith('0x'):
         return _hex_to_bin(string_value)
-    if string_value.startswith('0b'):
+    elif string_value.startswith('0b'):
         return _int_to_bin(int(string_value.replace('0b','').replace(' ',''), 2))
-    else:
-        return _int_to_bin(int(string_value))
+    return _int_to_bin(int(string_value))
 
 def _int_to_bin(integer):
     if integer >= 18446744073709551616L:

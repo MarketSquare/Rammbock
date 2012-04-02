@@ -116,7 +116,7 @@ class Field(object):
         self._type = type
         self._name = name
         self._original_value = value
-        self._length = aligned_len if aligned_len else len(value)
+        self._length = aligned_len or len(value)
         self._little_endian = little_endian
         self._parent = None
 

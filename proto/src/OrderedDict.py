@@ -174,9 +174,7 @@ class OrderedDict(dict):
             raise TypeError('update() takes at least 1 argument (0 given)')
         self = args[0]
         # Make progressively weaker assumptions about "other"
-        other = ()
-        if len(args) == 2:
-            other = args[1]
+        other = args[1] if len(args) == 2 else ()
         if isinstance(other, dict):
             for key in other:
                 self[key] = other[key]

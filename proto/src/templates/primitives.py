@@ -43,16 +43,15 @@ class _TemplateField(object):
                      little_endian=little_endian and self.can_be_little_endian)
 
     def validate(self, parent, paramdict, name=None):
-        name = name if name else self.name
+        name = name or self.name
         field = parent[name]
         value = field.bytes
         forced_value = self._get_element_value_and_remove_from_params(paramdict, name)
         if not forced_value or forced_value == 'None':
             return []
-        if forced_value.startswith('('):
+        elif forced_value.startswith('('):
             return self._validate_pattern(forced_value, value, parent)
-        else:
-            return self._validate_exact_match(forced_value, value, parent)
+        return self._validate_exact_match(forced_value, value, parent)
 
     def _validate_pattern(self, forced_pattern, value, message):
         patterns = forced_pattern[1:-1].split('|')
@@ -114,7 +113,7 @@ class Char(_TemplateField):
         self.default_value = default_value if default_value and default_value != '""' else None
 
     def _encode_value(self, value, message, little_endian=False):
-        value = value if value else ''
+        value = value or ''
         length, aligned_length = self.length.find_length_and_set_if_necessary(message, len(value))
         return str(value).ljust(length,'\x00'), aligned_length
 
@@ -218,7 +217,7 @@ class _DynamicLength(_Length):
     def _find_reference(self, parent):
         if self.field in parent:
             return parent[self.field]
-        return self._find_reference(parent._parent) if parent._parent else None
+        return self._find_reference(parent._parent) or None
 
     def _has_been_set(self, reference):
         return reference._type != 'referenced_later'

@@ -18,8 +18,7 @@ class MessageStream(object):
             header, pdu_bytes = self._protocol.read(self._stream, timeout=timeout)
             if self._matches(header, header_fields, header_filter):
                 return self._to_msg(message_template, header, pdu_bytes)
-            else:
-                self._cache.append((header, pdu_bytes))
+            self._cache.append((header, pdu_bytes))
 
     def _get_from_cache(self, template, fields, header_filter):
         index = 0
