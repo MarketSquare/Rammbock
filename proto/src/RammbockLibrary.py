@@ -10,6 +10,9 @@ class RammbockLibrary(Rammbock):
     def u16(self, name, value=None, align=None):
         self.uint(2, name, value, align)
 
+    def u24(self, name, value=None, align=None):
+        self.uint(3, name, value, align)
+
     def u32(self, name, value=None, align=None):
         self.uint(4, name, value, align)
 
