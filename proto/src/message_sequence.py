@@ -60,3 +60,20 @@ class Operator(object):
 
     def __str__(self):
         return self.name
+
+
+class DotLanguageGenerator(object):
+
+    template = """diagram {
+%s}
+"""
+
+    def generate(self, operators, sequence):
+        result = ''
+        operators = list(operators)
+        for row in sequence:
+            if operators.index(row[0]) < operators.index(row[1]):
+                result +='    %s -> %s [label = "%s"];\n' % (row[0],row[1], row[2])
+            else:
+                result +='    %s <- %s [label = "%s"];\n' % (row[1],row[0], row[2])
+        return self.template % result

@@ -1,5 +1,5 @@
 from unittest import TestCase, main
-from message_sequence import MessageSequence
+from message_sequence import MessageSequence, DotLanguageGenerator
 
 CLIENT = ('11.11.11.11', 11)
 SERVER = ('11.11.11.11', 2222)
@@ -60,6 +60,38 @@ class TestMessageSequence(TestCase):
     def _operators_should_equal(self, operator_generator, expected):
         self.assertEquals(list(operator_generator), expected)
 
+
+class TestDotLanguageGenerator(TestCase):
+
+    def test_request_response(self):
+        generator = DotLanguageGenerator()
+        self.assertEquals(generator.generate(['Sender', 'Receiver'],
+            [['Sender', 'Receiver', 'Protocol:Msg', '', 'received'],
+            ['Receiver', 'Sender', 'Protocol:Msg', '', 'received']]),
+        """diagram {
+    Sender -> Receiver [label = "Protocol:Msg"];
+    Sender <- Receiver [label = "Protocol:Msg"];
+}
+""")
+
+    def test_several_operators(self):
+        generator = DotLanguageGenerator()
+        self.assertEquals(generator.generate(['Client', 'Server', 'DB'],
+            [['Client', 'Server', 'Protocol:Req', '', 'received'],
+             ['Server', 'Client', 'Protocol:Resp', '', 'received'],
+             ['Client', 'DB', 'msg', '', 'received'],
+             ['DB', 'Client', 'another', '', 'received'],
+             ['Server', 'DB', 'HTTP:background', '', 'received'],
+             ['DB', 'Server', 'HTTP:response', '', 'received']]),
+        """diagram {
+    Client -> Server [label = "Protocol:Req"];
+    Client <- Server [label = "Protocol:Resp"];
+    Client -> DB [label = "msg"];
+    Client <- DB [label = "another"];
+    Server -> DB [label = "HTTP:background"];
+    Server <- DB [label = "HTTP:response"];
+}
+""")
 
 if __name__ == "__main__":
     main()
