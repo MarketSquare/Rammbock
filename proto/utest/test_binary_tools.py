@@ -1,6 +1,7 @@
 from unittest import TestCase, main
 from binary_tools import to_bin, to_bin_of_length, to_hex, to_0xhex, to_binary_of_length
 
+
 class TestBinaryConversions(TestCase):
 
     def test_integer_to_bin(self):
@@ -24,6 +25,7 @@ class TestBinaryConversions(TestCase):
         self.assertEquals(to_bin('0b1 0000 0000'), '\x01\x00')
         self.assertEquals(to_bin('0b01 0b01 0b01'), '\x15')
         self.assertEquals(to_bin('0b11'*32), '\xff\xff\xff\xff\xff\xff\xff\xff')
+        self.assertEquals(to_bin('0b11'*1024), '\xff\xff\xff\xff\xff\xff\xff\xff'*32)
 
     def test_hex_to_bin(self):
         self.assertEquals(to_bin('0x0'), '\x00')
