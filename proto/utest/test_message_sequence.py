@@ -1,5 +1,5 @@
 from unittest import TestCase, main
-from message_sequence import MessageSequence, DotLanguageGenerator
+from message_sequence import MessageSequence, SeqdiagGenerator
 
 CLIENT = ('11.11.11.11', 11)
 SERVER = ('11.11.11.11', 2222)
@@ -61,10 +61,10 @@ class TestMessageSequence(TestCase):
         self.assertEquals(list(operator_generator), expected)
 
 
-class TestDotLanguageGenerator(TestCase):
+class TestSeqdiagGenerator(TestCase):
 
     def test_request_response(self):
-        generator = DotLanguageGenerator()
+        generator = SeqdiagGenerator()
         self.assertEquals(generator.generate(['Sender', 'Receiver'],
             [['Sender', 'Receiver', 'Protocol:Msg', '', 'received'],
             ['Receiver', 'Sender', 'Protocol:Msg', '', 'received']]),
@@ -75,7 +75,7 @@ class TestDotLanguageGenerator(TestCase):
 """)
 
     def test_several_operators(self):
-        generator = DotLanguageGenerator()
+        generator = SeqdiagGenerator()
         self.assertEquals(generator.generate(['Client', 'Server', 'DB'],
             [['Client', 'Server', 'Protocol:Req', '', 'received'],
              ['Server', 'Client', 'Protocol:Resp', '', 'received'],

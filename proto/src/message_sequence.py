@@ -62,7 +62,7 @@ class Operator(object):
         return self.name
 
 
-class DotLanguageGenerator(object):
+class SeqdiagGenerator(object):
 
     template = """diagram {
 %s}
