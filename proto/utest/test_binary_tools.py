@@ -62,6 +62,7 @@ class TestBinaryConversions(TestCase):
         self.assertEquals(to_binary_of_length(9,'\x01\xff'), '0b111111111')
         self.assertEquals(to_binary_of_length(12,'\x01\xff'), '0b000111111111')
         self.assertEquals(to_binary_of_length(68,'\x01\x00\x00\x00\x00\x00\x00\x00\x00'), '0b0001'+('0000'*16))
+        self.assertEquals(to_binary_of_length(2048,'\xff\xff\xff\xff\xff\xff\xff\xff'*32), '0b'+('11'*1024))
 
 
 if __name__ == "__main__":
