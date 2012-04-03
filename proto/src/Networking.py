@@ -69,8 +69,7 @@ class _NetworkNode(_WithTimeouts):
         return self.receive_from(timeout, alias)[0]
 
     def receive_from(self, timeout=None, alias=None):
-        if alias:
-            raise AssertionError('Connection aliases not supported.')
+        self._raise_error_if_alias_given(alias)
         timeout = self._get_timeout(timeout)
         self._socket.settimeout(timeout)
         return self._receive_msg_ip_port()
@@ -82,8 +81,7 @@ class _NetworkNode(_WithTimeouts):
         return msg, ip, port
 
     def send(self, msg, alias=None):
-        if alias:
-            raise AssertionError('Connection aliases not supported.')
+        self._raise_error_if_alias_given(alias)
         ip, port = self.get_peer_address()
         self.log_send(msg, ip, port)
         self._sendall(msg)
@@ -91,6 +89,9 @@ class _NetworkNode(_WithTimeouts):
     def _sendall(self, msg):
         self._socket.sendall(msg)
 
+    def _raise_error_if_alias_given(self, alias):
+        if alias:
+            raise AssertionError('Connection aliases not supported.')
 
 class _TCPNode(object):
 
@@ -257,26 +258,24 @@ class TCPClient(_Client, _TCPNode):
 class _NamedCache(object):
 
     def __init__(self, basename):
-        self._basename=basename
-        self._counter=0
+        self._basename = basename
+        self._counter = 0
         self._cache = {}
         self._current = None
 
     def add(self, value, name=None):
-        if not name:
-            name=self._next_name()
+        name = name or self._next_name()
         self._cache[name] = value
         self._current = name
 
     def _next_name(self):
-        self._counter+=1
-        return self._basename+str(self._counter)
+        self._counter += 1
+        return self._basename + str(self._counter)
 
     def get(self, name=None):
         if not name:
             print '*DEBUG* Choosing %s by default' % self._current
-            return self._cache[self._current]
-        return self._cache[name]
+        return self._cache[name] if name else self._cache[self._current]
 
     def __iter__(self):
         return self._cache.itervalues()

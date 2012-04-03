@@ -74,6 +74,10 @@ class _TemplateField(object):
     def _get_name(self, name=None):
         return name or self.name or self.type
 
+    def _raise_error_if_no_value(self, value):
+        if not value:
+            raise AssertionError('Value of %s not set' % self._get_name())
+
 
 class PlaceHolderField(object):
 
@@ -95,8 +99,7 @@ class UInt(_TemplateField):
         self.default_value = str(default_value) if default_value and default_value != '""' else None
 
     def _encode_value(self, value, message, little_endian=False):
-        if not value:
-            raise AssertionError('Value of %s not set' % self._get_name())
+        self._raise_error_if_no_value(value)
         length, aligned_length = self.length.decode_lengths(message)
         binary = to_bin_of_length(length, value)
         binary = binary[::-1] if little_endian else binary
@@ -130,8 +133,7 @@ class Binary(_TemplateField):
         self.default_value = str(default_value) if default_value and default_value != '""' else None
 
     def _encode_value(self, value, message, little_endian=False):
-        if not value:
-            raise AssertionError('Value of %s not set' % self._get_name())
+        self._raise_error_if_no_value(value)
         length, aligned = self.length.decode_lengths(message)
         binary = to_bin_of_length(self._byte_length(length), value)
         return binary, self._byte_length(aligned)

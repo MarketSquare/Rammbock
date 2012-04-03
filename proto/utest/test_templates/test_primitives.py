@@ -1,5 +1,5 @@
 from unittest import TestCase, main
-from templates.primitives import Length, Char, UInt, PDU, Binary, TBCD
+from templates.primitives import Length, Char, UInt, PDU, Binary
 from Message import Struct, Field
 from binary_tools import to_bin
 
