@@ -1,10 +1,11 @@
 import re
 
-from Message import Field, Union, Message, Header, List, Struct, BinaryContainer
+from Message import Field, Union, Message, Header, List, Struct, BinaryContainer, BinaryField
 from message_stream import MessageStream
 from primitives import Length
 from OrderedDict import OrderedDict
-from templates.primitives import Binary
+from templates.primitives import Binary, UInt
+from binary_tools import to_binary_string_of_length, to_bin
 
 
 class _Template(object):
@@ -326,6 +327,22 @@ class BinaryContainerTemplate(_Template):
         container = self._get_struct(name)
         self._encode_fields(container, self._get_params_sub_tree(message_params, name), little_endian=little_endian)
         return container
+
+    def decode(self, data, parent=None, name=None, little_endian=False):
+        container = self._get_struct(name)
+        a = to_binary_string_of_length(self.binlength, data)
+        data_index = 2
+        for field in self._fields.values():
+            value = a[data_index:data_index + int(field.length.value)]
+            container[field.name] = BinaryField(field.length.value, field.name, to_bin("0b" + value))
+            data_index += int(field.length.value)
+        return container
+
+    def validate(self, parent, message_fields, name=None):
+        name = name or self.name
+        errors = []
+        message = parent[name]
+        return errors + _Template.validate(self, message, self._get_params_sub_tree(message_fields, name))
 
     def _get_struct(self, name):
         return BinaryContainer(name or self.name)

@@ -23,15 +23,16 @@ Using same field name twice fails
 Binary field encoding
     [Setup]    Define example protocol
     Binary Message
-    ${msg}   get message
+    ${msg}=   get message
     Should be equal   ${msg.flags.nextFour.bin}    0b1010
 
 Binary field decoding
-    [Tags]
     Binary Message
     Client sends message
-    ${msg}   Server receives message
-    Should be equal   ${msg.flags.nextFour.bin}    0b1010
+    ${msg}=   Server receives message
+    Should be equal   ${msg.flags.firstTwo.hex}                0x03
+    Should be equal   ${msg.flags.nextFour.bin}                0b1010
+    Should be equal as integers   ${msg.flags.lastTen.int}     0
 
 Binary fields must be aligned
     [Setup]    Define example protocol
@@ -196,7 +197,7 @@ Binary Message
     New Binary Container    flags
     Bin  2   firstTwo    0b11
     Bin  4   nextFour    0b1010
-    Bin  10  lastTen     0
+    Bin  10  lastTen     0b00
     End Binary Container
 
 Client Sends simple request
