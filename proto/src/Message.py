@@ -1,5 +1,5 @@
 import math
-from binary_tools import to_0xhex, to_binary_of_length, to_bin_of_length
+from binary_tools import to_0xhex, to_binary_string_of_length, to_bin_of_length
 from OrderedDict import OrderedDict
 
 
@@ -157,7 +157,7 @@ class Field(object):
         return self._bin()
 
     def _bin(self):
-        return to_binary_of_length(self._length*8, self._value)
+        return to_binary_string_of_length(self._length*8, self._value)
 
     @property
     def ascii(self):
@@ -192,7 +192,7 @@ class BinaryField(Field):
             raise AssertionError('Not implemented yet')
 
     def _bin(self):
-        return to_binary_of_length(self._binlength, self._value)
+        return to_binary_string_of_length(self._binlength, self._value)
 
     @property
     def binlength(self):

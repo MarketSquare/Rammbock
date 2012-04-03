@@ -63,7 +63,7 @@ def to_0xhex(binary):
 def log_hex(message, level='INFO'):
     print '*%s* %s' % (level, to_hex(message)) 
 
-def to_binary_of_length(length, bytes):
+def to_binary_string_of_length(length, bytes):
     result = bin(int(to_0xhex(bytes), 16))
     if len(result) < length+2:
         result = '0b' + '0' * (length - len(result) + 2) + result[2:]
