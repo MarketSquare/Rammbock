@@ -1,0 +1,19 @@
+*** Settings ***
+Test Setup        Setup protocol, UDP server, and client
+Test Teardown     Teardown rammbock and increment port numbers
+Default Tags      regression
+Resource          ../Protocols.txt
+
+*** Test Cases ***
+single value with even amount of numbers
+
+    [Tags]
+
+single value with odd amount of numbers
+    [Tags]
+
+multiple values with even amount of numbers
+    [Tags]
+
+multiple values with odd amount of numbers
+    [Tags]
