@@ -43,16 +43,16 @@ send Create Session Request
     u24    sequence number
     u8    spare    0
     IMSI    262120000000001
-    # MSISDN    358    6100000000001
-    ULI    value.flags:0b00011000    value.tai.tracking_area_code:1    value.tai.tracking_area_identity:1
+    MSISDN    358    6100000000001
+    #ULI    value.flags:0b00011000    value.tai.tracking_area_code:1    value.tai.tracking_area_identity:1
 
 IMSI
     [Arguments]    ${value}
     IE    imsi    83    u64    ${value}
 
 MSISDN
-    [Arguments]    @{values}
-    IE    msisdn    54    tbcd    @{value}
+    [Arguments]    ${country code}=358    ${address digits}=6100000000001
+    IE    msisdn    54    tbcd    ${country code}    ${address digits}
 
 ADDRESS
     [Arguments]    ${value}
@@ -92,4 +92,3 @@ TAI
     u8    mobile_network_code
     u8    tracking_area_identity
     end struct
-
