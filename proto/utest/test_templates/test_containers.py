@@ -585,6 +585,15 @@ class TestBinaryContainerTemplate(TestCase):
         container.add(Binary(3, 'threeBits', None))
         self.assertRaises(AssertionError, container.add, UInt(2,'intsNotAllowed', None))
 
+    def test_decode_container(self):
+        container = BinaryContainerTemplate('foo', None)
+        container.add(Binary(1, 'oneBit', 1))
+        container.add(Binary(3, 'threeBits', 7))
+        container.add(Binary(12, 'twelveBits', 4095))
+        decoded = container.decode(to_bin("0xffff"))
+        self.assertEqual(1, decoded.oneBit.int)
+        self.assertEqual(7, decoded.threeBits.int)
+        self.assertEqual(4095, decoded.twelveBits.int)
 
 class TestLittleEndian(TestCase):
 

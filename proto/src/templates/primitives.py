@@ -145,6 +145,9 @@ class Binary(_TemplateField):
     def _byte_length(self, length):
         return int(math.ceil(length/8.0))
 
+    def _is_match(self, forced_value, value, message):
+        forced_binary_val, _ = self._encode_value(forced_value, message)   # TODO: Should pass msg
+        return int(to_0xhex(forced_binary_val),16) == int(to_0xhex(value), 16)
 
 class PDU(_TemplateField):
 
