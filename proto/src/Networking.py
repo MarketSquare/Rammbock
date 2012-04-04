@@ -93,6 +93,11 @@ class _NetworkNode(_WithTimeouts):
         if alias:
             raise AssertionError('Connection aliases not supported.')
 
+    @property
+    def protocol_name(self):
+        return self._protocol.name if self._protocol else None
+
+
 class _TCPNode(object):
 
     _transport_layer_name = 'TCP'
@@ -272,10 +277,14 @@ class _NamedCache(object):
         self._counter += 1
         return self._basename + str(self._counter)
 
-    def get(self, name=None):
+    def get_with_name(self, name=None):
         if not name:
+            name = self._current
             print '*DEBUG* Choosing %s by default' % self._current
-        return self._cache[name] if name else self._cache[self._current]
+        return self._cache[name], name
+
+    def get(self, name=None):
+        return self.get_with_name(name)[0]
 
     def __iter__(self):
         return self._cache.itervalues()
