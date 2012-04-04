@@ -1,6 +1,7 @@
 from __future__ import with_statement
 from contextlib import contextmanager
 from Networking import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
+from message_sequence import MessageSequence
 from templates import Protocol, UInt, PDU, MessageTemplate, Char, Binary, \
     StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate
 from binary_tools import to_0xhex, to_bin
@@ -20,6 +21,7 @@ class Rammbock(object):
         self._clients = _NamedCache('client')
         self._message_stack = []
         self._field_values = None
+        self._message_sequence = MessageSequence()
 
     @property
     def _current_container(self):
@@ -104,30 +106,44 @@ class Rammbock(object):
         client = self._clients.get(name)
         client.connect_to(host, port)
 
-    def client_sends_binary(self, message, name=None):
+    def _register_send(self, sender, label, name, connection=None):
+        self._message_sequence.send(name, sender.get_own_address(), sender.get_peer_address(alias=connection),
+                                    sender.protocol_name, label)
+
+    def _register_receive(self, receiver, label, name, error='', connection=None):
+        self._message_sequence.receive(name, receiver.get_own_address(), receiver.get_peer_address(alias=connection),
+                                       receiver.protocol_name, label, error)
+
+    def client_sends_binary(self, message, name=None, label=None):
         """Send raw binary data."""
-        client = self._clients.get(name)
+        client, name = self._clients.get_with_name(name)
         client.send(message)
+        self._register_send(client, label, name)
 
     # FIXME: support "send to" somehow. A new keyword?
-    def server_sends_binary(self, message, name=None, connection=None):
+    def server_sends_binary(self, message, name=None, connection=None, label=None):
         """Send raw binary data."""
-        server = self._servers.get(name)
+        server, name = self._servers.get_with_name(name)
         server.send(message, alias=connection)
+        self._register_send(server, label, name, connection=connection)
 
-    def client_receives_binary(self, name=None, timeout=None):
+    def client_receives_binary(self, name=None, timeout=None, label=None):
         """Receive raw binary data."""
-        client = self._clients.get(name)
-        return client.receive(timeout=timeout)
+        client, name = self._clients.get_with_name(name)
+        msg = client.receive(timeout=timeout)
+        self._register_receive(client, label, name)
+        return msg
 
-    def server_receives_binary(self, name=None, timeout=None, connection=None):
+    def server_receives_binary(self, name=None, timeout=None, connection=None, label=None):
         """Receive raw binary data."""
-        return self.server_receives_binary_from(name, timeout, connection)[0]
+        return self.server_receives_binary_from(name, timeout, connection=connection)[0]
 
-    def server_receives_binary_from(self, name=None, timeout=None, connection=None):
+    def server_receives_binary_from(self, name=None, timeout=None, connection=None, label=None):
         """Receive raw binary data. Returns message, ip, port"""
-        server = self._servers.get(name)
-        return server.receive_from(timeout=timeout, alias=connection)
+        server, name = self._servers.get_with_name(name)
+        msg = server.receive_from(timeout=timeout, alias=connection)
+        self._register_receive(server, label, name, connection=connection)
+        return msg
 
     def new_message(self, message_name, protocol=None, *parameters):
         """Define a new message template.
@@ -174,7 +190,7 @@ class Rammbock(object):
     def _send_message(self, callback, parameters):
         configs, message_fields, header_fields = self._get_parameters_with_defaults(parameters)
         msg = self._encode_message(message_fields, header_fields)
-        callback(msg._raw, **configs)
+        callback(msg._raw, label=self._current_container.name, **configs)
 
     def client_receives_message(self, *parameters):
         """Receive a message object.
@@ -214,10 +230,16 @@ class Rammbock(object):
     @contextmanager
     def _receive(self, nodes, *parameters):
         configs, message_fields, _ = self._get_parameters_with_defaults(parameters)
-        node = nodes.get(configs.pop('name', None))
+        node, name = nodes.get_with_name(configs.pop('name', None))
         msg = node.get_message(self._get_message_template(), **configs)
-        yield msg, message_fields
-        print "*DEBUG* Received %s" % repr(msg)
+        try:
+            yield msg, message_fields
+            self._register_receive(node, self._current_container.name, name)
+            print "*DEBUG* Received %s" % repr(msg)
+        except AssertionError, e:
+            self._register_receive(node, self._current_container.name, name, error=e.args[0])
+            raise e
+
 
     def uint(self, length, name, value=None, align=None):
         self._add_field(UInt(length, name, value, align=align))

@@ -3,6 +3,11 @@ from OrderedDict import OrderedDict
 def ip_name(ip, port):
     return '%s:%s' % (ip,port)
 
+def msg_name(protocol, message_name):
+    if protocol and message_name:
+        return '%s:%s' % (protocol, message_name)
+    return message_name or 'binary'
+
 class MessageSequence(object):
 
     def __init__(self):
@@ -24,12 +29,12 @@ class MessageSequence(object):
 
     def send(self, sender_name, sender, receiver, protocol, message_name, error=''):
         self.sequence.append((self._operator(sender_name, *sender),self._get_operator(ip_name(*receiver)),
-                              '%s:%s' % (protocol, message_name), error, 'sent'))
+                              msg_name(protocol, message_name), error, 'sent'))
 
     def receive(self, receiver_name, receiver, sender, protocol, message_name, error=''):
         sender_ip_name = ip_name(*sender)
         row = (self._get_operator(sender_ip_name), self._operator(receiver_name, *receiver),
-                                    '%s:%s' % (protocol, message_name), error, 'received')
+                                  msg_name(protocol, message_name), error, 'received')
         if self.is_named_operator(sender_ip_name):
             for i in reversed(range(len(self.sequence))):
                 if self._matches(self.sequence[i], receiver, sender):
