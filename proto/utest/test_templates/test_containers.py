@@ -1,6 +1,6 @@
 from unittest import TestCase, main
-from templates.containers import Protocol, MessageTemplate, StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate
-from templates.primitives import UInt, PDU, Char, Binary
+from templates.containers import Protocol, MessageTemplate, StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate, TBCDContainerTemplate
+from templates.primitives import UInt, PDU, Char, Binary, TBCD
 from binary_tools import to_bin_of_length, to_bin
 
 
@@ -572,17 +572,21 @@ class TestBinaryContainerTemplate(TestCase):
         container.add(Binary(3, 'threeBits', None))
         self.assertRaises(AssertionError, container.verify)
 
-    def test_verify_field_length_passes(self):
+    def test_verify_single_byte_field_length_passes(self):
         container = BinaryContainerTemplate('foo', None)
-        container.add(Binary(1, 'oneBit', None))
-        container.add(Binary(3, 'threeBits', None))
-        container.add(Binary(12, 'twelveBits', None))
+        container.add(Binary(4, 'firstFour', None))
+        container.add(Binary(4, 'lastFour', None))
+        container.verify()
+
+    def test_verify_multi_byte_field_length_passes(self):
+        container = BinaryContainerTemplate('foo', None)
+        for length, name in zip([4,4,5,3,1,3,12],['a','b','c','d','e','f','g']):
+            container.add(Binary(length, name, None))
         container.verify()
 
     def test_verify_only_binary_field_passes(self):
         container = BinaryContainerTemplate('foo', None)
         container.add(Binary(1, 'oneBit', None))
-        container.add(Binary(3, 'threeBits', None))
         self.assertRaises(AssertionError, container.add, UInt(2,'intsNotAllowed', None))
 
     def test_decode_container(self):
@@ -594,6 +598,38 @@ class TestBinaryContainerTemplate(TestCase):
         self.assertEqual(1, decoded.oneBit.int)
         self.assertEqual(7, decoded.threeBits.int)
         self.assertEqual(4095, decoded.twelveBits.int)
+
+
+class TestTBCDContainerTemplate(TestCase):
+
+    def setUp(self):
+        self._protocol = Protocol('TestProtocol')
+        self._protocol.add(UInt(2, 'msgId', 5))
+        self._protocol.add(UInt(2, 'length', None))
+        self._protocol.add(PDU('length-4'))
+        self.tmp = MessageTemplate('FooRequest', self._protocol, {})
+        self.tmp.add(UInt(2, 'field_1', 1))
+        self.tmp.add(UInt(2, 'field_2', 2))
+
+    def test_verify_only_tbcd_number_passes(self):
+        container = TBCDContainerTemplate('tbcd', None)
+        container.add(TBCD('first', None))
+        self.assertRaises(AssertionError, container.add, UInt(2, 'not allowed', None))
+
+    def test_get_even_tbcd_field(self):
+        container = TBCDContainerTemplate('tbcd', None)
+        container.add(TBCD('first', '1234'))
+        self.tmp.add(container)
+        msg = self.tmp.encode({}, {})
+        self.assertEqual('1234', msg.tbcd.first.tbcd)
+
+    def test_get_odd_tbcd_field(self):
+        container = TBCDContainerTemplate('tbcd', None)
+        container.add(TBCD('first', '123'))
+        self.tmp.add(container)
+        msg = self.tmp.encode({}, {})
+        self.assertEqual('123', msg.tbcd.first.tbcd)
+
 
 class TestLittleEndian(TestCase):
 

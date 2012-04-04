@@ -1,6 +1,6 @@
 from Message import Field, BinaryField
 import math
-from binary_tools import to_bin_of_length, to_0xhex
+from binary_tools import to_bin_of_length, to_0xhex, to_bin_str_from_int_string
 
 
 class _TemplateField(object):
@@ -149,6 +149,29 @@ class Binary(_TemplateField):
         forced_binary_val, _ = self._encode_value(forced_value, message)   # TODO: Should pass msg
         return int(to_0xhex(forced_binary_val),16) == int(to_0xhex(value), 16)
 
+
+class TBCD(_TemplateField):
+
+    type = 'telephony binary coded decimals'
+
+    def __init__(self, name, default_value):
+        self.name = name
+        self.length = Length(len(default_value) if default_value else 0)
+        self.default_value = str(default_value) if default_value and default_value != '""' else None
+
+    def _encode_value(self, value, message, little_endian=False):
+        self._raise_error_if_no_value(value)
+        aligned = ""
+        for index in range(0, len(value), 2):
+            try:
+                aligned += to_bin_str_from_int_string(4, value[index + 1]) + to_bin_str_from_int_string(4, value[index])
+            except IndexError:
+                aligned += to_bin_str_from_int_string(4, value[index]) + "1111"
+        return "0b" + aligned, self._byte_length(len(aligned))
+
+    def _byte_length(self, length):
+        return int(math.ceil(length/8.0))
+
 class PDU(_TemplateField):
 
     type = 'pdu'
@@ -235,14 +258,14 @@ class _DynamicLength(_Length):
     def find_length_and_set_if_necessary(self, parent, min_length):
         reference = self._find_reference(parent)
         if self._has_been_set(reference):
-            if self._check_enough_space(parent, reference, min_length):
-                raise Exception("Value for length is too short")
+            self._raise_error_if_not_enough_space(parent, reference, min_length)
             return self.decode_lengths(parent)
         return self._set_length(reference, min_length)
 
-    def _check_enough_space(self, parent, reference, min_length):
-        return reference._length < min_length if not parent[self.field] else\
-        parent[self.field].int < min_length > reference._length
+    def _raise_error_if_not_enough_space(self, parent, reference, min_length):
+        if reference._length < min_length if not parent[self.field] else\
+        parent[self.field].int < min_length > reference._length:
+            raise Exception("Value for length is too short")
 
     @property
     def value(self):

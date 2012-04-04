@@ -1,10 +1,9 @@
 import re
 
-from Message import Field, Union, Message, Header, List, Struct, BinaryContainer, BinaryField
+from Message import Field, Union, Message, Header, List, Struct, BinaryContainer, BinaryField, TBCDContainer
 from message_stream import MessageStream
-from primitives import Length
+from primitives import Length, Binary, UInt, TBCD
 from OrderedDict import OrderedDict
-from templates.primitives import Binary, UInt
 from binary_tools import to_binary_string_of_length, to_bin
 
 
@@ -321,7 +320,7 @@ class BinaryContainerTemplate(_Template):
 
     def verify(self):
         if self.binlength % 8:
-            raise AssertionError('Length of binary container %s has to divisible by 8. Length %s' % (self.name, self.binlength))
+            raise AssertionError('Length of binary container %s has to be divisible by 8. Length %s' % (self.name, self.binlength))
 
     def encode(self, message_params, parent=None, name=None, little_endian=False):
         container = self._get_struct(name)
@@ -346,3 +345,22 @@ class BinaryContainerTemplate(_Template):
 
     def _get_struct(self, name):
         return BinaryContainer(name or self.name)
+
+
+class TBCDContainerTemplate(_Template):
+
+    has_length = False
+
+    def add(self, field):
+        if not isinstance(field, TBCD):
+            raise AssertionError('TBCD container can only have TBCD fields.')
+        _Template.add(self, field)
+
+    def encode(self, message_params, parent=None, name=None, little_endian=False):
+        container = self._get_struct(name)
+        self._encode_fields(container, self._get_params_sub_tree(message_params, name), little_endian=little_endian)
+        return container
+
+    def _get_struct(self, name):
+        return TBCDContainer(name or self.name)
+

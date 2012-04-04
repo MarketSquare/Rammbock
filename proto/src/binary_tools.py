@@ -68,3 +68,14 @@ def to_binary_string_of_length(length, bytes):
     if len(result) < length+2:
         result = '0b' + '0' * (length - len(result) + 2) + result[2:]
     return result
+
+def to_bin_str_from_int_string(length, value):
+    return to_binary_string_of_length(length, to_bin(value))[2:]
+
+def to_tbcd(binary_string):
+    value = ""
+    for index in range(2, len(binary_string), 8):
+        if int(binary_string[index + 4:index + 8], 2) == 15:
+            return value + str(int(binary_string[index: index + 4], 2))
+        value += "%s%s" % (int(binary_string[index + 4:index + 8], 2), int(binary_string[index: index + 4], 2))
+    return value

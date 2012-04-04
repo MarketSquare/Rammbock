@@ -1,5 +1,5 @@
 import math
-from binary_tools import to_0xhex, to_binary_string_of_length, to_bin_of_length
+from binary_tools import to_0xhex, to_binary_string_of_length, to_bin_of_length, to_tbcd
 from OrderedDict import OrderedDict
 
 
@@ -94,6 +94,13 @@ class BinaryContainer(_StructuredElement):
         # TODO: faster implementation...
         return to_bin_of_length(len(self), ' '.join((field.bin for field in self._fields.values())))
 
+class TBCDContainer(_StructuredElement):
+
+    _type = 'TBCDContainer'
+
+    def __len(selfs):
+        return len("123456789")/2+len("123456789")%2
+
 
 class Message(_StructuredElement):
 
@@ -140,6 +147,10 @@ class Field(object):
     @property
     def hex(self):
         return hex(self)
+
+    @property
+    def tbcd(self):
+        return to_tbcd(self._original_value)
 
     def __hex__(self):
         return to_0xhex(self._value)

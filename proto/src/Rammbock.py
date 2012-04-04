@@ -4,6 +4,8 @@ from Networking import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 from templates import Protocol, UInt, PDU, MessageTemplate, Char, Binary, \
     StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate
 from binary_tools import to_0xhex, to_bin
+from templates.containers import TBCDContainerTemplate
+from templates.primitives import TBCD
 
 
 class Rammbock(object):
@@ -249,13 +251,23 @@ class Rammbock(object):
     def new_binary_container(self, name):
         self._message_stack.append(BinaryContainerTemplate(name, self._current_container))
 
+    def new_tbcd_container(self, name):
+        self._message_stack.append(TBCDContainerTemplate(name, self._current_container))
+
     def end_binary_container(self):
         binary_container = self._message_stack.pop()
         binary_container.verify()
         self._add_field(binary_container)
 
+    def end_tbcd_container(self):
+        tbcd_container = self._message_stack.pop()
+        self._add_field(tbcd_container)
+
     def bin(self, size, name, value):
-        self._add_field(Binary(size,name, value))
+        self._add_field(Binary(size, name, value))
+
+    def tbcd(self, name, value):
+        self._add_field(TBCD(name, value))
 
     def union(self, type, name):
         self._message_stack.append(UnionTemplate(type, name, self._current_container))
@@ -304,8 +316,8 @@ class Rammbock(object):
             if name == 'header' and ':' in value:
                 headers.append(value.split(':', 1))
                 header_indexes.append(index)
-        fields = [field for index, field in enumerate(fields) 
-                  if index not in header_indexes]
+        fields = (field for index, field in enumerate(fields)
+                  if index not in header_indexes)
         return headers, fields
     
     def _to_dict(self, *lists):
