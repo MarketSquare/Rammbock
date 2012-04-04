@@ -27,5 +27,21 @@ class TestParamParsing(TestCase):
         self.assertEquals(pdus['header'], 'poo')
 
 
+LOCAL_IP = '127.0.0.1'
+
+ports = {'SERVER_PORT': 12345,
+         'CLIENT_PORT': 54321}
+
+
+class TestMessageSequence(TestCase):
+
+    def setUp(self):
+        self.rammbock = Rammbock()
+
+    def test_send_receive(self):
+        self.rammbock.start_udp_server(LOCAL_IP, ports['SERVER_PORT'])
+        self.rammbock.start_udp_client(LOCAL_IP, ports['CLIENT_PORT'])
+
+
 if __name__ == "__main__":
     main()
