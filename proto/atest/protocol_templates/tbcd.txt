@@ -1,19 +1,42 @@
 *** Settings ***
-Test Setup        Setup protocol, UDP server, and client
+Test Setup        Define example protocol
 Test Teardown     Teardown rammbock and increment port numbers
 Default Tags      regression
 Resource          ../Protocols.txt
 
 *** Test Cases ***
-single value with even amount of numbers
+encoding single value with even amount of numbers
+    New message    tbcd testing    Example    messageType:0xdddd
+    new tbcd container    tbcd
+    tbcd   digits    1234
+    end tbcd container
+    ${msg}=    Get Message
+    should be equal    ${msg.tbcd.digits.tbcd}    1234
 
-    [Tags]
+encoding single value with odd amount of numbers
+    New message    tbcd testing    Example    messageType:0xdddd
+    new tbcd container    tbcd
+    tbcd   digits    12345
+    end tbcd container
+    ${msg}=    Get Message
+    should be equal    ${msg.tbcd.digits.tbcd}    12345
 
-single value with odd amount of numbers
-    [Tags]
+encoding multiple values with even amount of numbers
+    New message    tbcd testing    Example    messageType:0xdddd
+    new tbcd container    tbcd
+    tbcd   first     1234
+    tbcd   second    5678
+    end tbcd container
+    ${msg}=    Get Message
+    should be equal    ${msg.tbcd.first.tbcd}     1234
+    should be equal    ${msg.tbcd.second.tbcd}    5678
 
-multiple values with even amount of numbers
-    [Tags]
-
-multiple values with odd amount of numbers
-    [Tags]
+encoding multiple values with odd amount of numbers
+    New message    tbcd testing    Example    messageType:0xdddd
+    new tbcd container    tbcd
+    tbcd   first     1234
+    tbcd   second    56789
+    end tbcd container
+    ${msg}=    Get Message
+    should be equal    ${msg.tbcd.first.tbcd}     1234
+    should be equal    ${msg.tbcd.second.tbcd}    56789
