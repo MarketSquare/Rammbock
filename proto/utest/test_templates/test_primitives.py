@@ -53,13 +53,13 @@ class TestTemplateFields(TestCase):
     def test_pdu_field_without_subtractor(self):
         field = PDU('value')
         self.assertEquals(field.length.field, 'value')
-        self.assertEquals(field.length.subtractor, 0)
+        self.assertEquals(field.length.calc_value(0), 0)
         self.assertEquals(field.type, 'pdu')
 
     def test_pdu_field_with_subtractor(self):
         field = PDU('value-8')
         self.assertEquals(field.length.field, 'value')
-        self.assertEquals(field.length.subtractor, 8)
+        self.assertEquals(field.length.calc_value(8), 0)
 
     def test_decode_uint(self):
         field_template = UInt(2, 'field', 6)
@@ -142,6 +142,11 @@ class TestLength(TestCase):
         length = Length('length-8')
         self.assertEquals(length.calc_value(18), 10)
         self.assertEquals(length.solve_parameter(10), 18)
+
+    def test_dynamic_length_with_addition(self):
+        length = Length('length+8')
+        self.assertEquals(length.calc_value(10), 18)
+        self.assertEquals(length.solve_parameter(18), 10)
 
     def test_dynamic_length(self):
         length = Length('length')

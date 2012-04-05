@@ -223,18 +223,14 @@ class _DynamicLength(_Length):
     static = False
 
     def __init__(self, value, align):
-        if "-" in value:
-            self.field, _, subtractor = value.rpartition('-')
-        else:
-            self.field, subtractor = value, 0
-        self.subtractor = int(subtractor)
+        self.field, self.value_calculator = parse_field_and_calculator(value)
         self.align = int(align)
 
     def calc_value(self, param):
-        return param - self.subtractor
+        return self.value_calculator.calc_value(param)
 
     def solve_parameter(self, length):
-        return length + self.subtractor
+        return self.value_calculator.solve_parameter(length)
 
     def decode_lengths(self, parent):
         reference = self._find_reference(parent)
@@ -256,6 +252,7 @@ class _DynamicLength(_Length):
         return value_len, aligned_len
 
     def find_length_and_set_if_necessary(self, parent, min_length):
+        min_length = self.solve_parameter(min_length)
         reference = self._find_reference(parent)
         if self._has_been_set(reference):
             self._raise_error_if_not_enough_space(parent, reference, min_length)
@@ -270,3 +267,47 @@ class _DynamicLength(_Length):
     @property
     def value(self):
         raise Exception('Length is dynamic.')
+
+
+def parse_field_and_calculator(value):
+    if "-" in value:
+        field, _, subtractor = value.rpartition('-')
+        return field, Subtract(int(subtractor))
+    if "+" in value:
+        field, _, add = value.rpartition('+')
+        return field, Adder(int(add))
+    else:
+        return value, SingleValue()
+
+
+class SingleValue(object):
+
+    def calc_value(self, param):
+        return param
+
+    def solve_parameter(self, length):
+        return length
+
+
+class Subtract(object):
+
+    def __init__(self, subtractor):
+        self.subtractor = subtractor
+
+    def calc_value(self, param):
+        return param - self.subtractor
+
+    def solve_parameter(self, length):
+        return length + self.subtractor
+
+
+class Adder(object):
+
+    def __init__(self, add):
+        self.add = add
+
+    def calc_value(self, param):
+        return param + self.add
+
+    def solve_parameter(self, length):
+        return length - self.add

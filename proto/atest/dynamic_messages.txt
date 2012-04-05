@@ -55,6 +55,7 @@ Decoding length in 2byte struct matches
     length_field
     length_field      2
     2                 2
+    length_field+1    1
     length_field-10   12
 
 Decoding length in 2byte struct does not match
@@ -66,6 +67,8 @@ Decoding length in 2byte struct does not match
     1                2
     length_field-10  2
     length_field-10  13
+    length_field+1   0
+    length_field+50  0
 
 Encoding dynamic length from value
     [Template]    Dynamic length fields with different parameters
