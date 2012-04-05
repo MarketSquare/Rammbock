@@ -1,0 +1,13 @@
+*** Settings ***
+Test Setup        Setup protocol, UDP server, and client
+Test Teardown     Teardown rammbock and increment port numbers
+Resource          Protocols.txt
+
+*** Test Cases ***
+Seqdiag diagram
+    [tags]    Not-ready
+    New message    ValueRequest    Example    messageType:0
+    u32    value    0
+    Client sends message
+    Server receives message
+    Embed seqdiag sequence
