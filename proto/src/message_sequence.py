@@ -1,3 +1,4 @@
+import subprocess
 from OrderedDict import OrderedDict
 
 def ip_name(ip, port):
@@ -77,8 +78,16 @@ class SeqdiagGenerator(object):
         result = ''
         operators = list(operators)
         for row in sequence:
+            row = list(row)
             if operators.index(row[0]) < operators.index(row[1]):
                 result +='    %s -> %s [label = "%s"];\n' % (row[0],row[1], row[2])
             else:
                 result +='    %s <- %s [label = "%s"];\n' % (row[1],row[0], row[2])
         return self.template % result
+
+    def compile(self, path, sequence):
+        diagram = self.generate(sequence.get_operators(), sequence.get())
+        with open(path, 'w') as output:
+            output.write(diagram)
+        rc = subprocess.call(["seqdiag", '-o', path+'.png', path])
+        print '*HTML* <img src="%s">' % (path+'.png')

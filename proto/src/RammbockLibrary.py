@@ -1,5 +1,7 @@
+import os
 from Rammbock import Rammbock
 from robot.libraries.BuiltIn import BuiltIn
+from message_sequence import SeqdiagGenerator
 
 
 class RammbockLibrary(Rammbock):
@@ -31,3 +33,9 @@ class RammbockLibrary(Rammbock):
         self.struct('Container', name, 'length=%s' % length)
         BuiltIn().run_keyword(type, *params)
         self.end_struct()
+
+    def embed_seqdiag_sequence(self):
+        test_name = BuiltIn().replace_variables('${TEST NAME}')
+        outputdir = BuiltIn().replace_variables('${OUTPUTDIR}')
+        path = os.path.join(outputdir, test_name+'.seqdiag')
+        SeqdiagGenerator().compile(path, self._message_sequence)
