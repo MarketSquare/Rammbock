@@ -77,7 +77,8 @@ class SeqdiagGenerator(object):
     def generate(self, operators, sequence):
         result = ''
         operators = list(operators)
-        for row in sequence:
+        sequence = list(sequence)
+        for row in sequence[-15:]:
             row = list(row)
             if operators.index(row[0]) < operators.index(row[1]):
                 result +='    %s -> %s [label = "%s"];\n' % (row[0],row[1], row[2])
@@ -90,4 +91,5 @@ class SeqdiagGenerator(object):
         with open(path, 'w') as output:
             output.write(diagram)
         rc = subprocess.call(["seqdiag", '-o', path+'.png', path])
-        print '*HTML* <img src="%s">' % (path+'.png')
+        name = path+'.png'
+        print '*HTML* <a href="%s"><img src="%s"></a>' % (name, name)

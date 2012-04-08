@@ -93,5 +93,35 @@ class TestSeqdiagGenerator(TestCase):
 }
 """)
 
+    def test_cutoff_at_15_operations(self):
+        generator = SeqdiagGenerator()
+        self.assertEquals(generator.generate(['Client', 'Server', 'DB'],
+            [['Client', 'Server', 'Protocol:Req', '', 'received'],
+                ['Server', 'Client', 'Protocol:Resp', '', 'received'],
+                ['Client', 'DB', 'msg', '', 'received'],
+                ['DB', 'Client', 'another', '', 'received'],
+                ['Server', 'DB', 'HTTP:background', '', 'received'],
+                ['DB', 'Server', 'HTTP:response', '', 'received']]*10),
+            """diagram {
+    Client <- DB [label = "another"];
+    Server -> DB [label = "HTTP:background"];
+    Server <- DB [label = "HTTP:response"];
+    Client -> Server [label = "Protocol:Req"];
+    Client <- Server [label = "Protocol:Resp"];
+    Client -> DB [label = "msg"];
+    Client <- DB [label = "another"];
+    Server -> DB [label = "HTTP:background"];
+    Server <- DB [label = "HTTP:response"];
+    Client -> Server [label = "Protocol:Req"];
+    Client <- Server [label = "Protocol:Resp"];
+    Client -> DB [label = "msg"];
+    Client <- DB [label = "another"];
+    Server -> DB [label = "HTTP:background"];
+    Server <- DB [label = "HTTP:response"];
+}
+""")
+
+
+
 if __name__ == "__main__":
     main()
