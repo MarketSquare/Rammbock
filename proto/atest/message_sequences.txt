@@ -2,12 +2,18 @@
 Test Setup        Setup protocol, UDP server, and client
 Test Teardown     Teardown rammbock and increment port numbers
 Resource          Protocols.txt
+Library           OperatingSystem
 
 *** Test Cases ***
 Seqdiag diagram
-    [tags]    Not-ready
+    [tags]    seqdiag
     New message    ValueRequest    Example    messageType:0
     u32    value    0
     Client sends message
     Server receives message
     Embed seqdiag sequence
+    Sequence diagram should exist
+
+*** Keywords ***
+Sequence diagram should exist
+    File Should exist    ${OUTPUT DIR}${/}${TEST NAME}.seqdiag.png
