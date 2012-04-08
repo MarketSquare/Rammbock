@@ -74,6 +74,15 @@ class TestSeqdiagGenerator(TestCase):
 }
 """)
 
+    def test_failure(self):
+        generator = SeqdiagGenerator()
+        self.assertEquals(generator.generate(['Sender', 'Receiver'],
+            [['Sender', 'Receiver', 'Protocol:Msg', 'This failed', 'received']]),
+            """diagram {
+    Sender -> Receiver [label = "Protocol:Msg - This failed", color = red];
+}
+""")
+
     def test_several_operators(self):
         generator = SeqdiagGenerator()
         self.assertEquals(generator.generate(['Client', 'Server', 'DB'],
