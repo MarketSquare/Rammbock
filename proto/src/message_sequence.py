@@ -96,6 +96,17 @@ class SeqdiagGenerator(object):
         diagram = self.generate(sequence.get_operators(), sequence.get())
         with open(path, 'w') as output:
             output.write(diagram)
-        rc = subprocess.call(["seqdiag", '-o', path+'.png', path])
-        name = path+'.png'
-        print '*HTML* <a href="%s"><img src="%s"></a>' % (name, name)
+        rc = 1
+        try :
+            rc = subprocess.call(["seqdiag", '-o', path+'.png', path])
+        except:
+            pass
+        self._print_link(path, rc)
+
+    def _print_link(self, path, rc):
+        if rc == 0:
+            name = path + '.png'
+            print '*HTML* <a href="%s"><img src="%s"></a>' % (name, name)
+        else:
+            print '*DEBUG* Message sequence generation with seqdiag failed. Linking sequence file instead.'
+            print '*HTML* <a href="%s">Message sequence</a>' % path

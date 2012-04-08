@@ -17,3 +17,7 @@ Seqdiag diagram
 *** Keywords ***
 Sequence diagram should exist
     File Should exist    ${OUTPUT DIR}${/}${TEST NAME}.seqdiag.png
+    [Teardown]    Remove sequence diagram
+
+Remove Sequence diagram
+    Remove file     ${OUTPUT DIR}${/}${TEST NAME}.seqdiag.png
