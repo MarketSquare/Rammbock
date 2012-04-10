@@ -314,27 +314,49 @@ class Rammbock(object):
             self._current_container.add(field)
 
     def struct(self, type, name, *parameters):
+        """Defines a new struct to template.
+
+        You must call `End Struct` to end struct definition. `type` is the name for generic type and `name` is the field
+        name in containing structure. Possible parameters are values for struct fields separated with colon and
+        optional struct length defined with `length=`. Length can be used in receiveing to validate that struct matches
+        predfeined length. When sending, the struct length can refer to other message field which will then be set
+        dynamically.
+        """
         configs, parameters, _ = self._get_parameters_with_defaults(parameters)
         self._message_stack.append(StructTemplate(type, name, self._current_container, parameters, length=configs.get('length')))
 
     def end_struct(self):
+        """End struct definition. See `Struct`."""
         struct = self._message_stack.pop()
         self._add_field(struct)
 
     def new_list(self, size, name):
+        """Defines a new list to template of `size` and with `name`.
+
+        List type must be given after this keyword by defining one field. Then the list definition has to be closed using
+        `End List`.
+        """
         self._message_stack.append(ListTemplate(size, name, self._current_container))
 
     def end_list(self):
+        """End list definition. See `New List`.
+        """
         list = self._message_stack.pop()
         self._add_field(list)
 
     def new_binary_container(self, name):
+        """Defines a new binary container to template.
+
+        Binary container can only contain binary fields defined with `Bin` keyword.
+        """
         self._message_stack.append(BinaryContainerTemplate(name, self._current_container))
 
     def new_tbcd_container(self, name):
         self._message_stack.append(TBCDContainerTemplate(name, self._current_container))
 
     def end_binary_container(self):
+        """End binary container. See `New Binary Container`.
+        """
         binary_container = self._message_stack.pop()
         binary_container.verify()
         self._add_field(binary_container)
@@ -343,16 +365,26 @@ class Rammbock(object):
         tbcd_container = self._message_stack.pop()
         self._add_field(tbcd_container)
 
-    def bin(self, size, name, value):
+    def bin(self, size, name, value=None):
+        """Add new binary field to template.
+
+        This keyword has to be called within a binary container. See `New Binary Container`.
+        """
         self._add_field(Binary(size, name, value))
 
     def tbcd(self, name, value):
         self._add_field(TBCD(name, value))
 
     def union(self, type, name):
+        """Defines a new union to template of `type` and `name`.
+
+        Fields inside the union are alternatives and the length of the union is the length of its longest field.
+        """
         self._message_stack.append(UnionTemplate(type, name, self._current_container))
 
     def end_union(self):
+        """End union definition. See `Union`.
+        """
         union = self._message_stack.pop()
         self._add_field(union)
 
@@ -363,9 +395,13 @@ class Rammbock(object):
         self._add_field(PDU(length))
 
     def hex_to_bin(self, hex_value):
+        """Converts given hex value to binary.
+        """
         return to_bin(hex_value)
 
     def bin_to_hex(self, bin_value):
+        """Converts given binary to hex string.
+        """
         return to_0xhex(bin_value)
 
     def _get_parameters_with_defaults(self, parameters):
@@ -380,6 +416,8 @@ class Rammbock(object):
         return ret_val 
 
     def value(self, name, value):
+        """Defines a default `value` for a template field identified by `name`.
+        """
         self._field_values[name] = value
 
     def _parse_parameters(self, parameters):
