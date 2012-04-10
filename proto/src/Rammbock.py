@@ -55,7 +55,6 @@ class Rammbock(object):
         """Start defining a new protocol template.
 
         All messages sent and received from a connection that uses a protocol have to conform to this protocol template.
-        Protocol template fields can be used to search messages from buffer.
         """
         if self._protocol_in_progress:
             raise Exception('Can not start a new protocol definition in middle of old.')
@@ -69,9 +68,18 @@ class Rammbock(object):
         self._protocol_in_progress = None
 
     def start_udp_server(self, ip, port, name=None, timeout=None, protocol=None):
+        """Starts a new UDP server to given `ip` and `port`.
+
+        Server can be given a `name`, default `timeout` and a `protocol`.
+        """
         self._start_server(UDPServer, ip, port, name, timeout, protocol)
 
     def start_tcp_server(self, ip, port, name=None, timeout=None, protocol=None):
+        """Starts a new TCP server to given `ip` and `port`.
+
+        Server can be given a `name`, default `timeout` and a `protocol`. Notice that you have to use
+        `Accept Connection` keyword for server to receive connections.
+        """
         self._start_server(TCPServer, ip, port, name, timeout, protocol)
 
     def _start_server(self, server_class, ip, port, name=None, timeout=None, protocol=None):
@@ -80,9 +88,19 @@ class Rammbock(object):
         return self._servers.add(server, name)
 
     def start_udp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None):
+        """Starts a new UDP client.
+
+        Client can be optionally given `ip` and `port` to bind to, as well as `name`, default `timeout` and a `protocol`.
+        You should use `Connect` keyword to connect client to a host.
+        """
         self._start_client(UDPClient, ip, port, name, timeout, protocol)
 
     def start_tcp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None):
+        """Starts a new TCP client.
+
+        Client can be optionally given `ip` and `port` to bind to, as well as `name`, default `timeout` and a `protocol`.
+        You should use `Connect` keyword to connect client to a host.
+        """
         self._start_client(TCPClient, ip, port, name, timeout, protocol)
 
     def _start_client(self, client_class, ip=None, port=None, name=None, timeout=None, protocol=None):
@@ -96,15 +114,21 @@ class Rammbock(object):
         protocol = self._protocols[protocol] if protocol else None
         return protocol
 
-    def get_client_protocol(self, name):
-        return self._clients.get(name).protocol
+    def get_client_protocol(self, name=None):
+        """Returns name of the protocol client uses or empty if client does not use a protocol.
+        """
+        return self._clients.get(name).protocol_name or ''
 
     def accept_connection(self, name=None, alias=None):
+        """Accepts a connection to server identified by `name` or the latest server if `name` is empty.
+
+        If given an `alias`, the connection is named and can be later referenced with that name.
+        """
         server = self._servers.get(name)
         server.accept_connection(alias)
 
     def connect(self, host, port, name=None):
-        """Connect a client to certain host and port."""
+        """Connects a client to given `host` and `port`. If client `name` is not given then connects the latest client."""
         client = self._clients.get(name)
         client.connect_to(host, port)
 
@@ -117,40 +141,51 @@ class Rammbock(object):
                                        receiver.protocol_name, label, error)
 
     def client_sends_binary(self, message, name=None, label=None):
-        """Send raw binary data."""
+        """Send raw binary `message`.
+
+        If client `name` is not given, uses the latest client. Optional message `label` is shown on logs."""
         client, name = self._clients.get_with_name(name)
         client.send(message)
         self._register_send(client, label, name)
 
     # FIXME: support "send to" somehow. A new keyword?
     def server_sends_binary(self, message, name=None, connection=None, label=None):
-        """Send raw binary data."""
+        """Send raw binary `message`.
+
+        If server `name` is not given, uses the latest server. Optional message `label` is shown on logs."""
         server, name = self._servers.get_with_name(name)
         server.send(message, alias=connection)
         self._register_send(server, label, name, connection=connection)
 
     def client_receives_binary(self, name=None, timeout=None, label=None):
-        """Receive raw binary data."""
+        """Receive raw binary message.
+
+        If client `name` is not given, uses the latest client. Optional message `label` is shown on logs."""
         client, name = self._clients.get_with_name(name)
         msg = client.receive(timeout=timeout)
         self._register_receive(client, label, name)
         return msg
 
     def server_receives_binary(self, name=None, timeout=None, connection=None, label=None):
-        """Receive raw binary data."""
+        """Receive raw binary message.
+
+        If server `name` is not given, uses the latest server. Optional message `label` is shown on logs."""
         return self.server_receives_binary_from(name, timeout, connection=connection)[0]
 
     def server_receives_binary_from(self, name=None, timeout=None, connection=None, label=None):
-        """Receive raw binary data. Returns message, ip, port"""
+        """Receive raw binary message. Returns message, ip, and port
+
+        If server `name` is not given, uses the latest server. Optional message `label` is shown on logs."""
         server, name = self._servers.get_with_name(name)
-        msg = server.receive_from(timeout=timeout, alias=connection)
+        msg, ip, port = server.receive_from(timeout=timeout, alias=connection)
         self._register_receive(server, label, name, connection=connection)
-        return msg
+        return msg, ip, port
 
     def new_message(self, message_name, protocol=None, *parameters):
-        """Define a new message template.
+        """Define a new message template with `message_name`.
 
-        Parameters have to be header fields."""
+        `protocol` has to be defined earlier with `Start Protocol Description`. Optional parameters are
+        default values for message header separated with colon."""
         if self._protocol_in_progress:
             raise Exception("Protocol definition in progress. Please finish it before starting to define a message.")
         proto = self._get_protocol(protocol)
@@ -162,7 +197,7 @@ class Rammbock(object):
         """Get encoded message.
 
         * Send Message -keywords are convenience methods, that will call this to get the message object and then send it.
-        Parameters have to be pdu fields."""
+        Optional parameters are message field values separated with colon."""
         _, message_fields, header_fields = self._get_parameters_with_defaults(parameters)
         return self._encode_message(message_fields, header_fields)
 
@@ -177,16 +212,18 @@ class Rammbock(object):
         return self._message_stack[0]
 
     def client_sends_message(self, *parameters):
-        """Send a message.
+        """Send a message defined with `New Message`.
 
-        Parameters have to be message fields."""
+        Optional parameters are client `name` separated with equals and message field values separated with colon.
+        Protocol header values can be set with syntax header:header_field_name:value."""
         self._send_message(self.client_sends_binary, parameters)
 
     # FIXME: support "send to" somehow. A new keyword?
     def server_sends_message(self, *parameters):
-        """Send a message.
+        """Send a message defined with `New Message`.
 
-        Parameters have to be message fields."""
+        Optional parameters are server `name` and possible connection `alias` separated with equals and message field
+        values separated with colon. Protocol header values can be set with syntax header:header_field_name:value."""
         self._send_message(self.server_sends_binary, parameters)
 
     def _send_message(self, callback, parameters):
@@ -195,30 +232,42 @@ class Rammbock(object):
         callback(msg._raw, label=self._current_container.name, **configs)
 
     def client_receives_message(self, *parameters):
-        """Receive a message object.
+        """Receive a message with template defined using `New Message` and validate field values.
 
-        Parameters that have been given are validated against message fields."""
+        Message template has to be defined with `New Message` before calling this. Optional parameters are client `name`
+        and possible `timeout` separated with equals and message field values for validation separated with colon."""
         with self._receive(self._clients, *parameters) as (msg, message_fields):
             self._validate_message(msg, message_fields)
             return msg
 
     def client_receives_without_validation(self, *parameters):
+        """Receive a message with template defined using `New Message`.
+
+        Message template has to be defined with `New Message` before calling this. Optional parameters are client `name`
+        and possible `timeout` separated with equals and message field values for validation separated with colon."""
         with self._receive(self._clients, *parameters) as (msg, _):
             return msg
 
     def server_receives_message(self, *parameters):
-        """Receive a message object.
+        """Receive a message with template defined using `New Message` and validate field values.
 
-        Parameters that have been given are validated against message fields."""
+        Message template has to be defined with `New Message` before calling this. Optional parameters are server `name`
+        and possible `timeout` separated with equals and message field values for validation separated with colon."""
         with self._receive(self._servers, *parameters) as (msg, message_fields):
             self._validate_message(msg, message_fields)
             return msg
 
     def server_receives_without_validation(self, *parameters):
+        """Receive a message with template defined using `New Message`.
+
+        Message template has to be defined with `New Message` before calling this. Optional parameters are server `name`
+        and possible `timeout` separated with equals and message field values for validation separated with colon."""
         with self._receive(self._servers, *parameters) as (msg, _):
             return msg
 
     def validate_message(self, msg, *parameters):
+        """Validates given message using template defined with `New Message` and field values given as optional arguments.
+        """
         _, message_fields, _ = self._get_parameters_with_defaults(parameters)
         self._validate_message(msg, message_fields)
 
@@ -244,9 +293,18 @@ class Rammbock(object):
 
 
     def uint(self, length, name, value=None, align=None):
+        """Add an unsigned integer to template.
+
+        `length` is given in bytes and `value` is optional. `align` can be used to align the field to longer byte length.
+        """
         self._add_field(UInt(length, name, value, align=align))
 
     def chars(self, length, name, value=None):
+        """Add a char array to template.
+
+        `length` is given in bytes and can refer to earlier numeric fields in template. `value` is optional.
+        """
+
         self._add_field(Char(length, name, value))
 
     def _add_field(self, field):
