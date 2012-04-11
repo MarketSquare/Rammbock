@@ -1,0 +1,40 @@
+*** Settings ***
+Test Setup        Setup protocol, UDP server, and client
+Test Teardown     Teardown rammbock and increment port numbers
+Default Tags      regression
+Resource          template_resources.txt
+
+*** Test Cases ***
+Define And Use A Message Template
+    [Setup]    Define Simple Protocol
+    Start TCP Client  protocol=Example
+
+Undefined protocol cannot be used
+    [Setup]    Define Simple Protocol
+    Should fail    Start TCP Client    protocol=Invalid
+
+Access header
+    Client Sends hex    0x 01 00 dddd 000c 0000 000000ff
+    ${msg} =    Server Receives simple request
+    Should be equal    ${msg._header.version.hex}    0x01
+    Should be equal as integers    ${msg._header.length.int}    12
+
+Starting new protocol in middle of old protocol definition fails
+    start protocol description    foo
+    Run keyword and expect error    *    start protocol description    bar
+
+Redifining protocol fails
+    start protocol description    foo
+    uint    1    length
+    pdu    length
+    end protocol description
+    run keyword and expect error    *    start protocol description    foo
+
+Defining message while defining protocol fails
+    start protocol description    foo
+    run keyword and expect error    *    new message    foo
+
+Overriding header parameters in send
+    Client sends simple request    header:flags:0xcafe
+    ${msg}=    Server receives simple request
+    Should be equal    0xcafe    ${msg._header.flags.hex}

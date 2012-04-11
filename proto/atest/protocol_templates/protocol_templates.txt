@@ -4,15 +4,8 @@ Test Teardown     Teardown rammbock and increment port numbers
 Default Tags      regression
 Resource          template_resources.txt
 
+
 *** Test Cases ***
-Define And Use A Message Template
-    [Setup]    Define Simple Protocol
-    Start TCP Client  protocol=Example
-
-Undefined protocol cannot be used
-    [Setup]    Define Simple Protocol
-    Should fail    Start TCP Client    protocol=Invalid
-
 Using same field name twice fails
     [Setup]    Define Simple Protocol
     New message   Foo    Example
@@ -61,12 +54,6 @@ Message field type conversions
     Should be equal    ${msg.value.hex}    0x000000ff
     Should be equal as integers    ${msg.value.int}    255
 
-Access header
-    Client Sends hex    0x 01 00 dddd 000c 0000 000000ff
-    ${msg} =    Server Receives simple request
-    Should be equal    ${msg._header.version.hex}    0x01
-    Should be equal as integers    ${msg._header.length.int}    12
-
 Char fields
     Client sends charred request
     ${msg} =    Server receives charred request
@@ -78,28 +65,8 @@ Field alignment
     Should be equal    ${msg.aligned_8bit_field.hex}    0xff
     Binary should equal hex    ${msg.aligned_8bit_field._raw}    0xff000000
 
-Starting new protocol in middle of old protocol definition fails
-    start protocol description    foo
-    Run keyword and expect error    *    start protocol description    bar
-
-Redifining protocol fails
-    start protocol description    foo
-    uint    1    length
-    pdu    length
-    end protocol description
-    run keyword and expect error    *    start protocol description    foo
-
-Defining message while defining protocol fails
-    start protocol description    foo
-    run keyword and expect error    *    new message    foo
-
 Error when giving non-ascii parameters
     Run keyword and expect error    Only ascii characters are supported in parameters.    New message    ValueRequest    Example    messägeType:0xdddd
-
-Overriding header parameters in send
-    Client sends simple request    header:flags:0xcafe
-    ${msg}=    Server receives simple request
-    Should be equal    0xcafe    ${msg._header.flags.hex}
 
 Resetting message stream cache
     Client sends simple request
