@@ -21,18 +21,18 @@ Access header
 
 Starting new protocol in middle of old protocol definition fails
     start protocol description    foo
-    Run keyword and expect error    *    start protocol description    bar
+    Should fail    start protocol description    bar
 
 Redifining protocol fails
     start protocol description    foo
     uint    1    length
     pdu    length
     end protocol description
-    run keyword and expect error    *    start protocol description    foo
+    Should fail    start protocol description    foo
 
 Defining message while defining protocol fails
     start protocol description    foo
-    run keyword and expect error    *    new message    foo
+    Should fail    new message    foo
 
 Overriding header parameters in send
     Client sends simple request    header:flags:0xcafe
