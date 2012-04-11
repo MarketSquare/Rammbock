@@ -43,7 +43,7 @@ def _int_to_bin(integer):
 
 def _hex_to_bin(string_value):
     value = string_value.replace('0x','').replace(' ','').replace('L','')
-    if len(value) %2 == 1:
+    if len(value) % 2 == 1:
         value = '0' + value
     return binascii.unhexlify(value)
 
@@ -65,17 +65,31 @@ def log_hex(message, level='INFO'):
 
 def to_binary_string_of_length(length, bytes):
     result = bin(int(to_0xhex(bytes), 16))
-    if len(result) < length+2:
+    if len(result) < length + 2:
         result = '0b' + '0' * (length - len(result) + 2) + result[2:]
     return result
 
 def to_bin_str_from_int_string(length, value):
     return to_binary_string_of_length(length, to_bin(value))[2:]
 
-def to_tbcd(binary_string):
+def to_tbcd_value(binary_string):
     value = ""
     for index in range(2, len(binary_string), 8):
         if int(binary_string[index + 4:index + 8], 2) == 15:
             return value + str(int(binary_string[index: index + 4], 2))
         value += "%s%s" % (int(binary_string[index + 4:index + 8], 2), int(binary_string[index: index + 4], 2))
     return value
+
+def to_tbcd_binary(tbcd_string):
+    value = "0b"
+    index = 0
+    while index <= len(tbcd_string) - 2:
+        value += to_bin_str_from_int_string(4, tbcd_string[index + 1]) + \
+                 to_bin_str_from_int_string(4, tbcd_string[index])
+        index += 2
+    return value if index == len(tbcd_string) else value + \
+                 to_bin_str_from_int_string(4, tbcd_string[index]) + \
+                 to_bin_str_from_int_string(4, 15)
+
+
+

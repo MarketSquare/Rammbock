@@ -154,7 +154,7 @@ class TBCD(_TemplateField):
 
     type = 'telephony binary coded decimals'
 
-    def __init__(self, name, default_value):
+    def __init__(self, size, name, default_value):
         self.name = name
         self.length = Length(len(default_value) if default_value else 0)
         self.default_value = str(default_value) if default_value and default_value != '""' else None

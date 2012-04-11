@@ -1,5 +1,5 @@
 import math
-from binary_tools import to_0xhex, to_binary_string_of_length, to_bin_of_length, to_tbcd
+from binary_tools import to_0xhex, to_binary_string_of_length, to_bin_of_length, to_tbcd_value
 from OrderedDict import OrderedDict
 
 
@@ -150,7 +150,7 @@ class Field(object):
 
     @property
     def tbcd(self):
-        return to_tbcd(self._original_value)
+        return to_tbcd_value(self._original_value)
 
     def __hex__(self):
         return to_0xhex(self._value)
