@@ -1,8 +1,8 @@
 *** Settings ***
 Test Setup        Setup protocol, UDP server, and client
 Test teardown     Teardown rammbock and increment port numbers
-Library           message_tools.py
-Resource          Protocols.txt
+Library           ../message_tools.py
+Resource          ../Protocols.txt
 Default Tags      Regression
 
 
