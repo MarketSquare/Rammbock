@@ -2,7 +2,7 @@
 Test Setup        Setup protocol, UDP server, and client
 Test Teardown     Teardown rammbock and increment port numbers
 Default Tags      regression
-Resource          ../Protocols.txt
+Resource          template_resources.txt
 
 *** Test Cases ***
 Define And Use A Message Template
@@ -44,35 +44,10 @@ Server uses protocol and receives
     ${msg} =    Server Receives simple request
     Should be equal    ${msg.value.hex}    0xcafebabe
 
-UDP Server uses protocol and receives with pattern validation
-    Client Sends hex    0x 01 00 dddd 000c 0000 00000005
-    ${msg} =    Server Receives simple request    value:(4|5)
-    Should be equal    ${msg.value.hex}    0x00000005
-
-TCP server uses protocol and receives with pattern validation
-    [Setup]    Setup protocol, TCP server, and client
-    Client Sends simple request
-    Server Receives simple request
-
-TCP server receives from two clients with pattern validation
-    [Setup]    Define protocol, start tcp server and two clients    Example
-    Named client sends simple request    ExampleClient1    value:0xcafebabe
-    Named client sends simple request    ExampleClient2    value:0xdeadbeef
-    Server Receives simple request from named connection    Connection2    value:0xdeadbeef
-    Server Receives simple request from named connection    Connection1    value:0xcafebabe
-
-Server uses protocol and receives with pattern validation failing
-    Client Sends hex    0x 01 00 dddd 000c 0000 00000005
-    Run keyword and expect error    Value of field value does not match *    Server Receives simple request    value:(4|6)
-
 Server uses protocol with header field values and receives
     Client Sends hex    0x 01 00 dddd 000c 0000 cafebabe
     ${msg} =    Server Receives simple request with header    messageType:0xdddd
     Should be equal    ${msg.value.hex}    0xcafebabe
-
-Server uses protocol and value validation fails
-    Client Sends hex    0x 01 00 dddd 000c 0000 cafebabe
-    Run keyword and expect error    Value of field value does not match *    Server Receives simple request    value:0xffffff
 
 Server uses protocol and messages arrive out of order
     Client Sends hex    0x 01 00 aaaa 000c 0000 deadbeef
@@ -97,20 +72,6 @@ Char fields
     ${msg} =    Server receives charred request
     Should be equal    ${msg.string_value.ascii}    foo
 
-Char field validation passes
-    Client sends charred request
-    ${msg} =    Server receives charred request    string_value:foo
-    Should be equal    ${msg.string_value.ascii}    foo
-
-Char field validation fails
-    Client sends charred request
-    Run keyword and expect error    Value of field string_value does not match *    Server receives charred request    string_value:bar
-
-Char field validation passes with pattern
-    Client sends charred request
-    ${msg} =    Server receives charred request    string_value:(bar|foo)
-    Should be equal    ${msg.string_value.ascii}    foo
-
 Field alignment
     Client sends aligned request    aligned_8bit_field:0xff
     ${msg}=    Server receives aligned request
@@ -132,33 +93,6 @@ Defining message while defining protocol fails
     start protocol description    foo
     run keyword and expect error    *    new message    foo
 
-Server receive and validate separately
-    Client Sends simple request
-    ${msg}=    Server receives without validation
-    Validate message    ${msg}
-
-Client receive and validate separately
-    Client sends request and server receives it
-    Server Sends simple request
-    ${msg}=    Client receives without validation
-    Validate message    ${msg}
-
-Client receive and validate fails
-    Client sends request and server receives it
-    Server Sends simple request
-    ${msg}=    Client receives without validation
-    Validation fails    ${msg}    Value of field value does not match*    value:0xfeedd00d
-
-Server receive and validate fails
-    Client sends simple request
-    ${msg}=    Server receives without validation
-    Validation fails    ${msg}    Value of field value does not match*    value:0xfeedd00d
-
-Validate fails when trying to validate nonexistent field
-    Client sends simple request
-    ${msg}=    Server receives without validation
-    Validation fails    ${msg}    Unknown fields in ValueRequest foo:0xfeedd00d    foo:0xfeedd00d
-
 Error when giving non-ascii parameters
     Run keyword and expect error    Only ascii characters are supported in parameters.    New message    ValueRequest    Example    messägeType:0xdddd
 
@@ -172,71 +106,16 @@ Resetting message stream cache
     Reset message streams
     Server receive for simple request will timeout
 
+
 *** Keywords ***
-Client Sends simple request
-    [Arguments]    @{params}
-    New message    ValueRequest    Example    messageType:0xdddd    flags:0xffff
-    u32    value    0xdeadbeef
-    Client Sends message    @{params}
-
-Named client sends simple request
-    [Arguments]    ${client}=    @{params}
-    New message    ValueRequest    Example    messageType:0xdddd    flags:0xffff
-    u32    value    0xdeadbeef
-    Client Sends message    name=${client}    @{params}
-
-Server Sends simple request
-    [Arguments]    @{params}
-    New message    ValueRequest    Example    messageType:0xdddd    flags:0xffff
-    u32    value    0xdeadbeef
-    Server Sends message    @{params}
-
-Server Receives simple request from named connection
-    [Arguments]    ${connection}=    @{params}
-    New message    ValueRequest    Example
-    u32    value
-    ${msg} =    Server receives message    alias=${connection}    @{params}
-    [Return]    ${msg}
-
 Server receive for simple request will timeout
     Run keyword and expect error    timeout: timed out    Server Receives simple request    timeout=0.1
-
-Server Receives simple request
-    [Arguments]    @{params}
-    New message    ValueRequest    Example
-    u32    value
-    ${msg} =    Server receives message    @{params}
-    [Return]    ${msg}
 
 Server Receives simple request with header
     [Arguments]    @{header params}
     New message    ValueRequest    Example    @{header params}
     u32    value
     ${msg} =    Server receives message    header_filter=messageType
-    [Return]    ${msg}
-
-Client Receives simple request
-    [Arguments]    @{params}
-    New message    ValueRequest    Example
-    u32    value
-    ${msg} =    Client receives message    @{params}
-    [Return]    ${msg}
-
-Client sends request and server receives it
-    Client Sends simple request
-    Verify server gets hex    0x 01 00 dddd 000c ffff deadbeef
-
-Client sends charred request
-    [Arguments]    @{params}
-    New message    CharredRequest    Example    messageType:0xf000
-    chars    16    string_value    foo
-    Client sends message    @{params}
-
-Server receives charred request
-    [Arguments]    @{params}
-    New message    CharredRequest    Example    messageType:0xf000
-    chars    16    string_value
-    ${msg} =    Server receives message    @{params}
     [Return]    ${msg}
 
 AlignedRequest
@@ -254,7 +133,4 @@ Server receives aligned request
     ${msg}=    Server receives message    @{params}
     [Return]    ${msg}
 
-Validation fails
-    [Arguments]    ${msg}    ${error}    @{parameters}
-    Run keyword and expect error    ${error}    Validate message    ${msg}    @{parameters}
 

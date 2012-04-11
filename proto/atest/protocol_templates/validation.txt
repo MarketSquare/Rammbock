@@ -1,0 +1,91 @@
+*** Settings ***
+Test Setup        Setup protocol, UDP server, and client
+Test Teardown     Teardown rammbock and increment port numbers
+Default Tags      regression
+Resource          template_resources.txt
+
+*** Test Cases ***
+UDP Server uses protocol and receives with pattern validation
+    Client Sends hex    0x 01 00 dddd 000c 0000 00000005
+    ${msg} =    Server Receives simple request    value:(4|5)
+    Should be equal    ${msg.value.hex}    0x00000005
+
+TCP server uses protocol and receives with pattern validation
+    [Setup]    Setup protocol, TCP server, and client
+    Client Sends simple request
+    Server Receives simple request
+
+TCP server receives from two clients with pattern validation
+    [Setup]    Define protocol, start tcp server and two clients    Example
+    Named client sends simple request    ExampleClient1    value:0xcafebabe
+    Named client sends simple request    ExampleClient2    value:0xdeadbeef
+    Server Receives simple request from named connection    Connection2    value:0xdeadbeef
+    Server Receives simple request from named connection    Connection1    value:0xcafebabe
+
+Server uses protocol and receives with pattern validation failing
+    Client Sends hex    0x 01 00 dddd 000c 0000 00000005
+    Run keyword and expect error    Value of field value does not match *    Server Receives simple request    value:(4|6)
+
+Server uses protocol and value validation fails
+    Client Sends hex    0x 01 00 dddd 000c 0000 cafebabe
+    Run keyword and expect error    Value of field value does not match *    Server Receives simple request    value:0xffffff
+
+Char field validation passes
+    Client sends charred request
+    ${msg} =    Server receives charred request    string_value:foo
+    Should be equal    ${msg.string_value.ascii}    foo
+
+Char field validation fails
+    Client sends charred request
+    Run keyword and expect error    Value of field string_value does not match *    Server receives charred request    string_value:bar
+
+Char field validation passes with pattern
+    Client sends charred request
+    ${msg} =    Server receives charred request    string_value:(bar|foo)
+    Should be equal    ${msg.string_value.ascii}    foo
+
+Server receive and validate separately
+    Client Sends simple request
+    ${msg}=    Server receives without validation
+    Validate message    ${msg}
+
+Client receive and validate separately
+    Client sends request and server receives it
+    Server Sends simple request
+    ${msg}=    Client receives without validation
+    Validate message    ${msg}
+
+Client receive and validate fails
+    Client sends request and server receives it
+    Server Sends simple request
+    ${msg}=    Client receives without validation
+    Validation fails    ${msg}    Value of field value does not match*    value:0xfeedd00d
+
+Server receive and validate fails
+    Client sends simple request
+    ${msg}=    Server receives without validation
+    Validation fails    ${msg}    Value of field value does not match*    value:0xfeedd00d
+
+Validate fails when trying to validate nonexistent field
+    Client sends simple request
+    ${msg}=    Server receives without validation
+    Validation fails    ${msg}    Unknown fields in ValueRequest foo:0xfeedd00d    foo:0xfeedd00d
+
+
+*** Keywords ***
+Named client sends simple request
+    [Arguments]    ${client}=    @{params}
+    New message    ValueRequest    Example    messageType:0xdddd    flags:0xffff
+    u32    value    0xdeadbeef
+    Client Sends message    name=${client}    @{params}
+
+Server Receives simple request from named connection
+    [Arguments]    ${connection}=    @{params}
+    New message    ValueRequest    Example
+    u32    value
+    ${msg} =    Server receives message    alias=${connection}    @{params}
+    [Return]    ${msg}
+
+Validation fails
+    [Arguments]    ${msg}    ${error}    @{parameters}
+    Run keyword and expect error    ${error}    Validate message    ${msg}    @{parameters}
