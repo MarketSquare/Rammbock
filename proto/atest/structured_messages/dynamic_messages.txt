@@ -187,9 +187,6 @@ multiple fields
     u32   value3    2
     u32   value4    2
 
-Should fail    [Arguments]    @{args}
-    run keyword and expect error   *   @{args}
-
 Dynamic length fields with different parameters
     [arguments]    ${static length field value}    ${kw for dynamic content creation}    @{kw to validate outcome and params}
     New message   FooExample  Example   messageType:0xb0b0

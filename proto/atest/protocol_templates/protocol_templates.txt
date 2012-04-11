@@ -7,11 +7,11 @@ Resource          template_resources.txt
 *** Test Cases ***
 Define And Use A Message Template
     [Setup]    Define Simple Protocol
-    Defined Protocol is usable in client
+    Start TCP Client  protocol=Example
 
 Undefined protocol cannot be used
     [Setup]    Define Simple Protocol
-    Using undefined protocol in client fails
+    Should fail    Start TCP Client    protocol=Invalid
 
 Using same field name twice fails
     [Setup]    Define Simple Protocol

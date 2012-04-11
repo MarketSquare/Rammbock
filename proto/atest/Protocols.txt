@@ -25,12 +25,6 @@ Define simple protocol
     uint  1  field  16
     End Protocol Description
 
-Defined Protocol is usable in client
-    Start TCP Client  protocol=Example
-
-Using undefined protocol in client fails
-    Run keyword and expect error  *  Start TCP Client  protocol=Invalid
-
 Setup TCP server and client  [arguments]   ${protocol}=
     Start TCP server    ${SERVER}    ${SERVER PORT}    name=ExampleServer   protocol=${protocol}
     Start TCP client    name=ExampleClient
@@ -137,3 +131,6 @@ Increment ports
 Increment port   [Arguments]   ${name}
     ${new} =    Evaluate   ${${name}}+2
     Set suite variable    ${${name}}    ${new}
+
+Should fail    [Arguments]    @{args}
+    run keyword and expect error   *   @{args}
