@@ -42,3 +42,11 @@ Overriding header parameters in send
 Getting protocol name from client
     ${protocol}     get client protocol
     Should be equal    ${protocol}     Example
+
+Protocol with fixed pdu length
+    [Setup]         Define simple protocol
+    New Message     Ploo    Example
+    u16  first     0xcafe
+    u16  second    0xd00d
+    ${msg}   Get message
+    Should be equal    ${msg.first.hex}   0xcafe

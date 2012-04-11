@@ -88,21 +88,18 @@ class Protocol(_Template):
 
     def encode(self, message, header_params, little_endian=False):
         header_params = header_params.copy()
-        self._insert_length_to_header_parameters(header_params, message)
         header = Header(self.name)
         self._encode_fields(header, header_params, little_endian=little_endian)
         return header
-
-    def _insert_length_to_header_parameters(self, header_params, message):
-        pdu_field = self._get_pdu_field()
-        pdu_length = len(message._raw)
-        header_params[pdu_field.length.field] = pdu_field.length.solve_parameter(pdu_length)
 
     def _get_pdu_field(self):
         for field in self._fields.values():
             if field.type == 'pdu':
                 return field
         return None
+
+    def pdu_length(self):
+        return self._get_pdu_field().length
 
     # TODO: fields after the pdu
     def read(self, stream, timeout=None):
@@ -133,6 +130,7 @@ class MessageTemplate(_Template):
         _Template.__init__(self, message_name, None)
         self._protocol = protocol
         self.header_parameters = header_params
+        self.length = protocol.pdu_length()
 
     def encode(self, message_params, header_params, little_endian=False):
         message_params = message_params.copy()
@@ -140,7 +138,9 @@ class MessageTemplate(_Template):
         self._encode_fields(msg, message_params, little_endian=little_endian)
         if self._protocol:
             # TODO: little endian support for protocol header
-            msg._add_header(self._protocol.encode(msg, self._headers(header_params)))
+            header = self._protocol.encode(msg, self._headers(header_params))
+            length, aligned_length = self.length.find_length_and_set_if_necessary(header, len(msg._raw))
+            msg._add_header(header)
         return msg
 
     def _headers(self, header_params):

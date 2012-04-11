@@ -23,6 +23,7 @@ Define example protocol
 Define simple protocol
     Start Protocol Description   Example
     uint  1  field  16
+    pdu   4
     End Protocol Description
 
 Setup TCP server and client  [arguments]   ${protocol}=
