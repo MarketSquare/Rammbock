@@ -22,20 +22,6 @@ Fail validation with struct
     Client sends request with struct     pair.first:0xba   pair.second:0xbe
     Server should fail validation with struct    pair.first:0xff
 
-Message with list
-    Client sends request with list
-    ${msg} =    Server receives request with list    someList[2]:3
-    Should be equal as integers    ${msg.someList[4].int}     3
-
-Message with list containing structs
-    Client sends request with list containing structs   someList[0].first:2
-    ${msg}=     Server receives request with list containing structs  someList[0].first:2
-    Should be equal as integers   ${msg.someList[1].second.int}    3
-
-Message with list validation fails
-    Client sends request with list
-    Server should fail validation with list   someList[2]:4
-
 Reuse struct in another message
     [Tags]
     Message with struct     42
@@ -79,15 +65,7 @@ Client sends request with struct
     Message with struct
     Client sends message   @{params}
 
-Client sends request with list
-    [Arguments]    @{params}
-    List message
-    Client sends message   @{params}
 
-Client sends request with list containing structs
-    [Arguments]    @{params}
-    Message with list containing struct
-    Client sends message   @{params}
 
 Client sends struct with struct
     [Arguments]    @{params}
@@ -110,34 +88,13 @@ Server should fail validation with struct
     [Arguments]    @{params}
     Run keyword and expect error     Value of field first does not *    Server receives request with struct    @{params}
 
-Server receives request with list
-    [Arguments]    @{params}
-    List message
-    ${msg} =    Server Receives message    @{params}
-    [return]    ${msg}
 
-Server receives request with list containing structs
-    [Arguments]   @{params}
-    Message with list containing struct
-    ${msg}=       Server Receives message    @{params}
-    [return]      ${msg}
-
-Server should fail validation with list
-    [Arguments]    @{params}
-    Run keyword and expect error     Value of field *    Server receives request with list    @{params}
-
-List message
-    New message    ListRequest    Example    messageType:0xaaaa
-    Array   5    u32    someList    3
 
 Message with struct
     [arguments]    ${pair values}=
     New Message    StructRequest  Example    messageType:0xaaaa
     Pair    pair   ${pair values}
 
-Message with list containing struct
-    New message    ListRequestWithStruct    Example    messageType:0xaaaa
-    Array   5    Pair    someList    3
 
 Pair
     [arguments]     ${name}=     ${value}=
