@@ -612,19 +612,19 @@ class TestTBCDContainerTemplate(TestCase):
 
     def test_verify_only_tbcd_number_passes(self):
         container = TBCDContainerTemplate('tbcd', None)
-        container.add(TBCD('first', None))
+        container.add(TBCD('4', 'first', None))
         self.assertRaises(AssertionError, container.add, UInt(2, 'not allowed', None))
 
     def test_get_even_tbcd_field(self):
         container = TBCDContainerTemplate('tbcd', None)
-        container.add(TBCD('first', '1234'))
+        container.add(TBCD('4', 'first', '1234'))
         self.tmp.add(container)
         msg = self.tmp.encode({}, {})
         self.assertEqual('1234', msg.tbcd.first.tbcd)
 
     def test_get_odd_tbcd_field(self):
         container = TBCDContainerTemplate('tbcd', None)
-        container.add(TBCD('first', '123'))
+        container.add(TBCD('3', 'first', '123'))
         self.tmp.add(container)
         msg = self.tmp.encode({}, {})
         self.assertEqual('123', msg.tbcd.first.tbcd)

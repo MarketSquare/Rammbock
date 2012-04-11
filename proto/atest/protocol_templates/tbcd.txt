@@ -8,15 +8,26 @@ Resource          ../Protocols.txt
 encoding single value with even amount of numbers
     New message    tbcd testing    Example    messageType:0xdddd
     new tbcd container    tbcd
-    tbcd   digits    1234
+    tbcd   4    digits    1234
     end tbcd container
     ${msg}=    Get Message
+    should be equal    ${msg.tbcd.digits.tbcd}    1234
+
+decoding single value with even amount of numbers
+    [Tags]
+    [Setup]    Define protocol, start tcp server and two clients    Example
+    New message    tbcd testing    Example    messageType:0xdddd
+    new tbcd container    tbcd
+    tbcd   4    digits    1234
+    end tbcd container
+    client sends message
+    ${msg}=    server receives message
     should be equal    ${msg.tbcd.digits.tbcd}    1234
 
 encoding single value with odd amount of numbers
     New message    tbcd testing    Example    messageType:0xdddd
     new tbcd container    tbcd
-    tbcd   digits    12345
+    tbcd   5    digits    12345
     end tbcd container
     ${msg}=    Get Message
     should be equal    ${msg.tbcd.digits.tbcd}    12345
@@ -24,8 +35,8 @@ encoding single value with odd amount of numbers
 encoding multiple values with even amount of numbers
     New message    tbcd testing    Example    messageType:0xdddd
     new tbcd container    tbcd
-    tbcd   first     1234
-    tbcd   second    5678
+    tbcd   4    first     1234
+    tbcd   4    second    5678
     end tbcd container
     ${msg}=    Get Message
     should be equal    ${msg.tbcd.first.tbcd}     1234
@@ -34,8 +45,8 @@ encoding multiple values with even amount of numbers
 encoding multiple values with odd amount of numbers
     New message    tbcd testing    Example    messageType:0xdddd
     new tbcd container    tbcd
-    tbcd   first     1234
-    tbcd   second    56789
+    tbcd   4    first     1234
+    tbcd   5    second    56789
     end tbcd container
     ${msg}=    Get Message
     should be equal    ${msg.tbcd.first.tbcd}     1234

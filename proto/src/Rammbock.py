@@ -373,8 +373,8 @@ class Rammbock(object):
         """
         self._add_field(Binary(size, name, value))
 
-    def tbcd(self, name, value):
-        self._add_field(TBCD(name, value))
+    def tbcd(self, size, name, value):
+        self._add_field(TBCD(size, name, value))
 
     def union(self, type, name):
         """Defines a new union to template of `type` and `name`.
