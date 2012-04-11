@@ -5,6 +5,8 @@ from message_sequence import SeqdiagGenerator
 
 
 class RammbockLibrary(Rammbock):
+    """RammbockLibrary is a binary protocol testing library for Robot Test Automation Framework.
+    """
 
     def u8(self, name, value=None, align=None):
         """Add an unsigned 1 byte integer field to template.
