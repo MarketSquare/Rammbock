@@ -73,7 +73,6 @@ class TestProtocol(TestCase):
         self._protocol.add(UInt(2, 'name2', 5))
         self._protocol.add(UInt(2, 'length', None))
         self._protocol.add(PDU('length'))
-        self._protocol.add(UInt(1, 'checksum', None))
         self.assertEquals(self._protocol.header_length(), 5)
 
     def test_verify_undefined_length(self):

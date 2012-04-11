@@ -16,16 +16,24 @@ class _Template(object):
 
     def _pretty_print_fields(self, fields):
         return ', '.join('%s:%s' % (key, value) for key, value in fields.items())
-            
+
+    def _mark_referenced_field(self, field):
+        ref_field = self._get_field_recursive(field.length.field)
+        if not ref_field:
+            raise AssertionError('Length field %s unknown' % field.length.field)
+        ref_field.referenced_later = True
+
     def add(self, field):
+        if field.type == 'pdu':
+            self._handle_pdu_field(field)
         if self._get_field(field.name):
             raise AssertionError('Duplicate field %s in %s' % (field.name, self.name))
         if field.has_length and not field.length.static:
-            ref_field = self._get_field_recursive(field.length.field)
-            if not ref_field:
-                raise AssertionError('Length field %s unknown' % field.length.field)
-            ref_field.referenced_later = True
+            self._mark_referenced_field(field)
         self._fields[field.name] = field
+
+    def _handle_pdu_field(self, field):
+        raise AssertionError('PDU field not allowed')
 
     def _get_field(self, field_name):
         return self._fields.get(field_name)
@@ -77,6 +85,7 @@ class Protocol(_Template):
 
     def __init__(self, name):
         _Template.__init__(self, name, None)
+        self.pdu = None
 
     def header_length(self):
         length = 0
@@ -92,14 +101,19 @@ class Protocol(_Template):
         self._encode_fields(header, header_params, little_endian=little_endian)
         return header
 
-    def _get_pdu_field(self):
-        for field in self._fields.values():
-            if field.type == 'pdu':
-                return field
-        return None
+    def _handle_pdu_field(self, field):
+        if self.pdu:
+            raise AssertionError('Duplicate PDU field not allowed in protocol definition.')
+        self.pdu = field
 
+    @property
     def pdu_length(self):
-        return self._get_pdu_field().length
+        return self.pdu.length
+
+    def add(self, field):
+        if self.pdu:
+            raise AssertionError('Fields after PDU not supported.')
+        _Template.add(self, field)
 
     # TODO: fields after the pdu
     def read(self, stream, timeout=None):
@@ -113,13 +127,16 @@ class Protocol(_Template):
             header[field.name] = Field(field.type, field.name, data[data_index:data_index+field.length.value])
             data_index += field.length.value
             field_index +=1
-        pdu_field = self._get_pdu_field()
-        length_param = header[pdu_field.length.field].int
-        pdu_bytes = stream.read(pdu_field.length.calc_value(length_param))
+        length_param = header[self.pdu_length.field].int
+        pdu_bytes = stream.read(self.pdu_length.calc_value(length_param))
         return (header, pdu_bytes)
 
     def get_message_stream(self, buffered_stream):
         return MessageStream(buffered_stream, self)
+
+    def verify(self):
+        if not self.pdu:
+            raise AssertionError('Protocol definition must include a pdu field.')
 
 
 class MessageTemplate(_Template):
@@ -130,7 +147,7 @@ class MessageTemplate(_Template):
         _Template.__init__(self, message_name, None)
         self._protocol = protocol
         self.header_parameters = header_params
-        self.length = protocol.pdu_length()
+        self.length = protocol.pdu_length
 
     def encode(self, message_params, header_params, little_endian=False):
         message_params = message_params.copy()
@@ -308,6 +325,7 @@ class ListTemplate(_Template):
 class BinaryContainerTemplate(_Template):
 
     has_length = False
+    type = 'BinaryContainer'
 
     def add(self, field):
         if not isinstance(field, Binary):
@@ -350,6 +368,7 @@ class BinaryContainerTemplate(_Template):
 class TBCDContainerTemplate(_Template):
 
     has_length = False
+    type = 'TBCDContainer'
 
     def add(self, field):
         if not isinstance(field, TBCD):

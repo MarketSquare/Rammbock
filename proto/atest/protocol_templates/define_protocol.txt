@@ -50,3 +50,20 @@ Protocol with fixed pdu length
     u16  second    0xd00d
     ${msg}   Get message
     Should be equal    ${msg.first.hex}   0xcafe
+
+Protocol without PDU fails
+    Start Protocol Description   Failing
+    u8  field  16
+    Should fail   End Protocol Description
+
+Protocol with fields after PDU fail
+    Start Protocol Description   Failing
+    u8  field  16
+    pdu   1
+    Should fail  u8   second_field   16
+
+Protocol with several PDU fields fails
+    Start Protocol Description   Failing
+    u8  field  16
+    pdu   1
+    Should fail   pdu    1
