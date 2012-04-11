@@ -38,3 +38,7 @@ Overriding header parameters in send
     Client sends simple request    header:flags:0xcafe
     ${msg}=    Server receives simple request
     Should be equal    0xcafe    ${msg._header.flags.hex}
+
+Getting protocol name from client
+    ${protocol}     get client protocol
+    Should be equal    ${protocol}     Example

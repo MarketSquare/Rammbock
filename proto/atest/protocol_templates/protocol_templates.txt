@@ -13,10 +13,6 @@ Using same field name twice fails
     u8     bar
     Run keyword and expect error    *     u8    foo
 
-Getting protocol name from client
-    ${protocol}     get client protocol
-    Should be equal    ${protocol}     Example
-
 Client uses protocol and sends
     Client Sends simple request    value:0xcafebabe
     Verify server gets hex    0x 01 00 dddd 000c ffff cafebabe
