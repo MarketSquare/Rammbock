@@ -371,6 +371,10 @@ class Rammbock(object):
 
     def validate_message(self, msg, *parameters):
         """Validates given message using template defined with `New Message` and field values given as optional arguments.
+
+        Examples:
+        | Validate message | ${msg} |
+        | Validate message | ${msg} | status:0 |
         """
         _, message_fields, _ = self._get_parameters_with_defaults(parameters)
         self._validate_message(msg, message_fields)
@@ -400,6 +404,11 @@ class Rammbock(object):
         """Add an unsigned integer to template.
 
         `length` is given in bytes and `value` is optional. `align` can be used to align the field to longer byte length.
+
+        Examples:
+        | uint | 2 | foo |
+        | uint | 2 | foo | 42 |
+        | uint | 2 | fourByteFoo | 42 | align=4 |
         """
         self._add_field(UInt(length, name, value, align=align))
 
@@ -407,6 +416,12 @@ class Rammbock(object):
         """Add a char array to template.
 
         `length` is given in bytes and can refer to earlier numeric fields in template. `value` is optional.
+
+        Examples:
+        | chars | 16 | field | Hello World! |
+
+        | u8 | charLength |
+        | chars | charLength | field |
         """
 
         self._add_field(Char(length, name, value))
@@ -425,6 +440,12 @@ class Rammbock(object):
         optional struct length defined with `length=`. Length can be used in receiveing to validate that struct matches
         predfeined length. When sending, the struct length can refer to other message field which will then be set
         dynamically.
+
+        Examples:
+        | Struct | Pair | myPair |
+        | u8     | first |
+        | u8     | second |
+        | End Struct |
         """
         configs, parameters, _ = self._get_parameters_with_defaults(parameters)
         self._message_stack.append(StructTemplate(type, name, self._current_container, parameters, length=configs.get('length')))
@@ -439,6 +460,16 @@ class Rammbock(object):
 
         List type must be given after this keyword by defining one field. Then the list definition has to be closed using
         `End List`.
+
+        Examples:
+        | New list | 5 | myIntList |
+        | u16 |
+        | End List |
+
+        | u8 | listLength |
+        | New list | listLength | myIntList |
+        | u16 |
+        | End List |
         """
         self._message_stack.append(ListTemplate(size, name, self._current_container))
 
