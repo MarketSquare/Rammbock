@@ -245,7 +245,11 @@ class Rammbock(object):
         """Define a new message template with `message_name`.
 
         `protocol` has to be defined earlier with `Start Protocol Description`. Optional parameters are
-        default values for message header separated with colon."""
+        default values for message header separated with colon.
+
+        Examples:
+        | New message | MyMessage | MyProtocol | header_field:value |
+        """
         if self._protocol_in_progress:
             raise Exception("Protocol definition in progress. Please finish it before starting to define a message.")
         proto = self._get_protocol(protocol)
@@ -257,7 +261,12 @@ class Rammbock(object):
         """Get encoded message.
 
         * Send Message -keywords are convenience methods, that will call this to get the message object and then send it.
-        Optional parameters are message field values separated with colon."""
+        Optional parameters are message field values separated with colon.
+
+        Examples:
+        | ${msg} = | Get message |
+        | ${msg} = | Get message | field_name:value |
+        """
         _, message_fields, header_fields = self._get_parameters_with_defaults(parameters)
         return self._encode_message(message_fields, header_fields)
 
@@ -275,15 +284,27 @@ class Rammbock(object):
         """Send a message defined with `New Message`.
 
         Optional parameters are client `name` separated with equals and message field values separated with colon.
-        Protocol header values can be set with syntax header:header_field_name:value."""
+        Protocol header values can be set with syntax header:header_field_name:value.
+
+        Examples:
+        | Client sends message |
+        | Client sends message | field_name:value | field_name2:value |
+        | Client sends message | name=Client1 | header:message_code:0x32 |
+        """
         self._send_message(self.client_sends_binary, parameters)
 
     # FIXME: support "send to" somehow. A new keyword?
     def server_sends_message(self, *parameters):
         """Send a message defined with `New Message`.
 
-        Optional parameters are server `name` and possible connection `alias` separated with equals and message field
-        values separated with colon. Protocol header values can be set with syntax header:header_field_name:value."""
+        Optional parameters are server `name` and possible `connection` alias separated with equals and message field
+        values separated with colon. Protocol header values can be set with syntax header:header_field_name:value.
+
+        Examples:
+        | Server sends message |
+        | Server sends message | field_name:value | field_name2:value |
+        | Server sends message | name=Server1 | connection=my_connection | header:message_code:0x32 |
+        """
         self._send_message(self.server_sends_binary, parameters)
 
     def _send_message(self, callback, parameters):
@@ -295,7 +316,13 @@ class Rammbock(object):
         """Receive a message with template defined using `New Message` and validate field values.
 
         Message template has to be defined with `New Message` before calling this. Optional parameters are client `name`
-        and possible `timeout` separated with equals and message field values for validation separated with colon."""
+        and possible `timeout` separated with equals and message field values for validation separated with colon.
+
+        Examples:
+        | ${msg} = | Client receives message |
+        | ${msg} = | Client receives message | name=Client1 | timeout=5 |
+        | ${msg} = | Client receives message | message_field:(0|1) |
+        """
         with self._receive(self._clients, *parameters) as (msg, message_fields):
             self._validate_message(msg, message_fields)
             return msg
@@ -304,15 +331,27 @@ class Rammbock(object):
         """Receive a message with template defined using `New Message`.
 
         Message template has to be defined with `New Message` before calling this. Optional parameters are client `name`
-        and possible `timeout` separated with equals and message field values for validation separated with colon."""
+        and possible `timeout` separated with equals and message field values for validation separated with colon.
+
+        Examples:
+        | ${msg} = | Client receives without validation |
+        | ${msg} = | Client receives without validation | name=Client1 | timeout=5 |
+        """
         with self._receive(self._clients, *parameters) as (msg, _):
             return msg
 
     def server_receives_message(self, *parameters):
         """Receive a message with template defined using `New Message` and validate field values.
 
-        Message template has to be defined with `New Message` before calling this. Optional parameters are server `name`
-        and possible `timeout` separated with equals and message field values for validation separated with colon."""
+        Message template has to be defined with `New Message` before calling this. Optional parameters are server `name`,
+        `connection` alias and possible `timeout` separated with equals and message field values for validation
+        separated with colon.
+
+        Examples:
+        | ${msg} = | Server receives message |
+        | ${msg} = | Server receives message | name=Server1 | alias=my_connection | timeout=5 |
+        | ${msg} = | Server receives message | message_field:(0|1) |
+        """
         with self._receive(self._servers, *parameters) as (msg, message_fields):
             self._validate_message(msg, message_fields)
             return msg
@@ -321,7 +360,12 @@ class Rammbock(object):
         """Receive a message with template defined using `New Message`.
 
         Message template has to be defined with `New Message` before calling this. Optional parameters are server `name`
-        and possible `timeout` separated with equals and message field values for validation separated with colon."""
+        and possible `timeout` separated with equals and message field values for validation separated with colon.
+
+        Examples:
+        | ${msg} = | Server receives without validation |
+        | ${msg} = | Server receives without validation | name=Server1 | alias=my_connection | timeout=5 |
+        """
         with self._receive(self._servers, *parameters) as (msg, _):
             return msg
 
