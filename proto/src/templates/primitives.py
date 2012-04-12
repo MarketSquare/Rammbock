@@ -1,6 +1,6 @@
 from Message import Field, BinaryField
 from math import ceil
-from binary_tools import to_bin_of_length, to_0xhex, to_tbcd_binary
+from binary_tools import to_bin_of_length, to_0xhex, to_tbcd_binary, to_tbcd_value, to_binary_string_of_length
 
 
 class _TemplateField(object):
@@ -68,8 +68,11 @@ class _TemplateField(object):
     def _validate_exact_match(self, forced_value, value, message):
         if not self._is_match(forced_value, value, message):
             return ['Value of field %s does not match %s!=%s' %
-                    (self._get_name(), to_0xhex(value), forced_value)]
+                    (self._get_name(), self._default_presentation_format(value), forced_value)]
         return []
+
+    def _default_presentation_format(self, value):
+        return to_0xhex(value)
 
     def _get_name(self, name=None):
         return name or self.name or self.type
@@ -143,16 +146,16 @@ class Binary(_TemplateField):
         return BinaryField(self.length.value, self._get_name(name), field_name, field_value, little_endian=little_endian)
 
     def _byte_length(self, length):
-        return int(ceil(length/8.0))
+        return int(ceil(length / 8.0))
 
     def _is_match(self, forced_value, value, message):
         forced_binary_val, _ = self._encode_value(forced_value, message)   # TODO: Should pass msg
-        return int(to_0xhex(forced_binary_val),16) == int(to_0xhex(value), 16)
+        return int(to_0xhex(forced_binary_val), 16) == int(to_0xhex(value), 16)
 
 
 class TBCD(_TemplateField):
 
-    type = 'telephony binary coded decimals'
+    type = 'tbcd'
 
     def __init__(self, size, name, default_value):
         self.name = name
@@ -163,6 +166,9 @@ class TBCD(_TemplateField):
         self._raise_error_if_no_value(value)
         binary = to_bin_of_length(self._byte_length(self.length.value), to_tbcd_binary(value))
         return binary, self._byte_length(self.length.value)
+
+    def _default_presentation_format(self, value):
+        return to_tbcd_value(to_binary_string_of_length(self._byte_length(self.length.value) * 8, value))
 
     def _byte_length(self, length):
         return int(ceil(length / 2.0))

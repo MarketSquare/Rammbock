@@ -393,8 +393,7 @@ class TBCDContainerTemplate(_Template):
     def validate(self, parent, message_fields, name=None):
         name = name or self.name
         errors = []
-        message = parent[name]
-        return errors + _Template.validate(self, message, self._get_params_sub_tree(message_fields, name))
+        return errors + _Template.validate(self, parent[name], self._get_params_sub_tree(message_fields, name))
 
     @property
     def binlength(self):

@@ -5,6 +5,7 @@ Default Tags      regression
 Resource          ../Protocols.txt
 
 *** Test Cases ***
+
 encoding single value with even amount of numbers
     New message    tbcd testing    Example    messageType:0xdddd
     new tbcd container    tbcd_cont
@@ -12,62 +13,6 @@ encoding single value with even amount of numbers
     end tbcd container
     ${msg}=    Get Message
     should be equal    ${msg.tbcd_cont.digits.tbcd}    1234
-
-decoding single value with even amount of numbers
-    [Setup]    Define protocol, start tcp server and two clients    Example
-    New message    tbcd testing    Example    messageType:0xdddd
-    new tbcd container    tbcd_cont
-    tbcd   4    digits    1234
-    end tbcd container
-    client sends message
-    ${msg}=    server receives message
-    should be equal    ${msg.tbcd_cont.digits.tbcd}    1234
-
-decoding single value with odd amount of numbers
-    [Setup]    Define protocol, start tcp server and two clients    Example
-    New message    tbcd testing    Example    messageType:0xdddd
-    new tbcd container    tbcd_cont
-    tbcd   3    digits    123
-    end tbcd container
-    client sends message
-    ${msg}=    server receives message
-    should be equal    ${msg.tbcd_cont.digits.tbcd}    123
-
-decoding multiple values with even amount of numbers
-    [Setup]    Define protocol, start tcp server and two clients    Example
-    New message    tbcd testing    Example    messageType:0xdddd
-    new tbcd container    tbcd_cont
-    tbcd   4    first_four    1234
-    tbcd   4    last_four     5678
-    end tbcd container
-    client sends message
-    ${msg}=    server receives message
-    should be equal    ${msg.tbcd_cont.first_four.tbcd}    1234
-    should be equal    ${msg.tbcd_cont.last_four.tbcd}     5678
-
-decoding multiple values with odd amount of numbers
-    [Setup]    Define protocol, start tcp server and two clients    Example
-    New message    tbcd testing    Example    messageType:0xdddd
-    new tbcd container    tbcd_cont
-    tbcd   4    first_four    1234
-    tbcd   3    last_four     567
-    end tbcd container
-    client sends message
-    ${msg}=    server receives message
-    should be equal    ${msg.tbcd_cont.first_four.tbcd}    1234
-    should be equal    ${msg.tbcd_cont.last_four.tbcd}     567
-
-decoding multiple values with odd amount of numbers in another way
-    [Setup]    Define protocol, start tcp server and two clients    Example
-    New message    tbcd testing    Example    messageType:0xdddd
-    new tbcd container    tbcd_cont
-    tbcd   3    first_four    123
-    tbcd   4    last_four     4567
-    end tbcd container
-    client sends message
-    ${msg}=    server receives message
-    should be equal    ${msg.tbcd_cont.first_four.tbcd}    123
-    should be equal    ${msg.tbcd_cont.last_four.tbcd}     4567
 
 encoding single value with odd amount of numbers
     New message    tbcd testing    Example    messageType:0xdddd
@@ -96,3 +41,38 @@ encoding multiple values with odd amount of numbers
     ${msg}=    Get Message
     should be equal    ${msg.tbcd_cont.first.tbcd}     1234
     should be equal    ${msg.tbcd_cont.second.tbcd}    56789
+
+Validation error
+    [Setup]    Define protocol, start tcp server and two clients    Example
+    New message    tbcd testing    Example    messageType:0xdddd
+    new tbcd container    tbcd_cont
+    tbcd   3    digits    123
+    end tbcd container
+    client sends message
+    run keyword and expect error    *123!=124*    server receives message    tbcd_cont.digits:124
+
+Decoding two tbcd values
+    [Template]    decoding two value tbcd
+    [setup]
+    [teardown]
+    #first   #second
+    123      456
+    123      4567
+    1234     567
+    1234     4567
+    1        2
+
+*** Keywords ***
+decoding two value tbcd
+    [Arguments]    ${val 1}     ${val 2}
+    [Teardown]    Teardown rammbock and increment port numbers
+    ${len 1}=    Get length    ${val 1}
+    ${len 2}=    Get length    ${val 2}
+    Define protocol, start tcp server and two clients    Example
+    New message    tbcd testing    Example    messageType:0xdddd
+    new tbcd container    tbcd_cont
+    tbcd   ${len 1}    first    ${val 1}
+    tbcd   ${len 2}    last     ${val 2}
+    end tbcd container
+    client sends message
+    ${msg}=    server receives message
