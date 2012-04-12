@@ -1,3 +1,4 @@
+from math import ceil
 import re
 
 from Message import Field, Union, Message, Header, List, Struct, BinaryContainer, BinaryField, TBCDContainer
@@ -385,19 +386,18 @@ class TBCDContainerTemplate(_Template):
         a = to_tbcd_value(to_binary_string_of_length(self.binlength, data))
         index = 0
         for field in self._fields.values():
-            container[field.name] = Field(field.length.value, field.name, to_bin(to_tbcd_binary(a[index:field.length.value])))
+            container[field.name] = Field(field.length.value, field.name, to_bin(to_tbcd_binary(a[index:index + int(field.length.value)])))
             index += int(field.length.value)
         return container
 
     def validate(self, parent, message_fields, name=None):
         name = name or self.name
         errors = []
-        message = parent[name]
-        return errors + _Template.validate(self, message, self._get_params_sub_tree(message_fields, name))
+        return errors + _Template.validate(self, parent[name], self._get_params_sub_tree(message_fields, name))
 
     @property
     def binlength(self):
-        return sum(field.length.value * 4 for field in self._fields.values())
+        return int(ceil(sum(field.length.value * 4 for field in self._fields.values()) / 8.0) * 8)
 
     def _get_struct(self, name):
         return TBCDContainer(name or self.name)
