@@ -6,6 +6,42 @@ from message_sequence import SeqdiagGenerator
 
 class RammbockLibrary(Rammbock):
     """RammbockLibrary is a binary protocol testing library for Robot Test Automation Framework.
+
+    To use Rammbock you need to first define a protocol or protocols, start the clients and servers you are going to mock
+    ,and then define a message template for each message you are going to send or receive.
+
+    Example:
+
+    | *Test Cases*  |
+    |  Send message |  Define simple protocol  |
+    |               |  Start server     |
+    |               |  Start client     |
+    |               |  Send message     | status:0xcafebabe |
+    |               |  Verify server gets status |  0xcafebabe |
+    |               |  [Teardown]       |   `Reset Rammbock` |
+
+    | *Keywords*      |
+    | Define simple protocol  |  `Start protocol description` | SimpleProtocol |
+    |                 |  `u8`                       | msgId             |
+    |                 |  `u8`                       | messageLength     |
+    |                 |  `pdu`                      | messageLength - 2 |
+    |                 |  `End protocol description`            |
+    |  |
+    | Start server    |  `Start UDP server` | 127.0.0.1 |  8282 |
+    |  |
+    | Start client    |  `Start UDP client` | protocol=SimpleProtocol |
+    |                 |  `Connect`          | 127.0.0.1 |  8282 |
+    |     |   |    |  |  |
+    | Send message    | [Arguments] | @{params} |
+    |                 | `New message` | SimpleRequest | SimpleProtocol |  msgId:0xff |
+    |                 |  `u32`         | status        |
+    |                 |  `Client sends message` | @{params} |
+    |  |
+    | Verify server gets status | [Arguments] | ${status} |
+    |                 | ${msg} = | `Server receives message` |
+    |                 | Should be equal | ${msg.status.hex} | ${status} |
+
+
     """
 
     def u8(self, name, value=None, align=None):
