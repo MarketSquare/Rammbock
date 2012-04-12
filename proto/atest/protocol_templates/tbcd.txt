@@ -14,7 +14,6 @@ encoding single value with even amount of numbers
     should be equal    ${msg.tbcd_cont.digits.tbcd}    1234
 
 decoding single value with even amount of numbers
-    [Tags]
     [Setup]    Define protocol, start tcp server and two clients    Example
     New message    tbcd testing    Example    messageType:0xdddd
     new tbcd container    tbcd_cont
