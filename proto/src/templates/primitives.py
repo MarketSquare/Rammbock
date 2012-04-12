@@ -1,6 +1,6 @@
 from Message import Field, BinaryField
-import math
-from binary_tools import to_bin_of_length, to_0xhex, to_bin_str_from_int_string
+from math import ceil
+from binary_tools import to_bin_of_length, to_0xhex, to_tbcd_binary
 
 
 class _TemplateField(object):
@@ -143,7 +143,7 @@ class Binary(_TemplateField):
         return BinaryField(self.length.value, self._get_name(name), field_name, field_value, little_endian=little_endian)
 
     def _byte_length(self, length):
-        return int(math.ceil(length/8.0))
+        return int(ceil(length/8.0))
 
     def _is_match(self, forced_value, value, message):
         forced_binary_val, _ = self._encode_value(forced_value, message)   # TODO: Should pass msg
@@ -156,21 +156,17 @@ class TBCD(_TemplateField):
 
     def __init__(self, size, name, default_value):
         self.name = name
-        self.length = Length(len(default_value) if default_value else 0)
+        self.length = Length(size)
         self.default_value = str(default_value) if default_value and default_value != '""' else None
 
     def _encode_value(self, value, message, little_endian=False):
         self._raise_error_if_no_value(value)
-        aligned = ""
-        for index in range(0, len(value), 2):
-            try:
-                aligned += to_bin_str_from_int_string(4, value[index + 1]) + to_bin_str_from_int_string(4, value[index])
-            except IndexError:
-                aligned += to_bin_str_from_int_string(4, value[index]) + "1111"
-        return "0b" + aligned, self._byte_length(len(aligned))
+        binary = to_bin_of_length(self._byte_length(self.length.value), to_tbcd_binary(value))
+        return binary, self._byte_length(self.length.value)
 
     def _byte_length(self, length):
-        return int(math.ceil(length/8.0))
+        return int(ceil(length / 2.0))
+
 
 class PDU(_TemplateField):
 
