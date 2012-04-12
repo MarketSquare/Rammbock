@@ -86,6 +86,12 @@ class RammbockLibrary(Rammbock):
         `name` if the name of this array element. The `type` is the name of keyword that is executed as the contents of
         the array and optional extra parameters are passed as arguments to this keyword. This is a convenience method for
         calling `New List` and `End List` with `type` between them.
+
+        Examples:
+        | Array | 8 | u16 | myArray |
+
+        | u32 | length |
+        | Array | length | someStruct | myArray | <argument for someStruct> |
         """
         self.new_list(size, name)
         BuiltIn().run_keyword(type, '', *parameters)

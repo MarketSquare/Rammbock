@@ -483,6 +483,12 @@ class Rammbock(object):
         """Defines a new binary container to template.
 
         Binary container can only contain binary fields defined with `Bin` keyword.
+
+        Examples:
+        | New binary container | flags |
+        | bin | 2 | foo |
+        | bin | 6 | bar |
+        | End binary container |
         """
         self._message_stack.append(BinaryContainerTemplate(name, self._current_container))
 
@@ -526,16 +532,30 @@ class Rammbock(object):
     def pdu(self, length):
         """Defines the message in protocol template.
 
-        Length must be the name of a previous field in template definition or a static value for fixed length protocols."""
+        Length must be the name of a previous field in template definition or a static value for fixed length protocols.
+
+        Examples:
+        | pdu | 5 |
+
+        | u8  | length |
+        | pdu | length - 1 |
+        """
         self._add_field(PDU(length))
 
     def hex_to_bin(self, hex_value):
         """Converts given hex value to binary.
+
+        Examples:
+        | ${bin} = | Hex to bin | 0xcafe |
         """
         return to_bin(hex_value)
 
     def bin_to_hex(self, bin_value):
         """Converts given binary to hex string.
+
+        Examples:
+        | ${hex} = | Bin to hex | Hello! |
+        | ${hex} = | Bin to hex | ${binary} |
         """
         return to_0xhex(bin_value)
 
@@ -552,6 +572,10 @@ class Rammbock(object):
 
     def value(self, name, value):
         """Defines a default `value` for a template field identified by `name`.
+
+        Examples:
+        | Value | foo | 42 |
+        | Value | struct.sub_field | 0xcafe |
         """
         self._field_values[name] = value
 
