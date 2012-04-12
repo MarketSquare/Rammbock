@@ -72,6 +72,12 @@ class Rammbock(object):
         """Starts a new UDP server to given `ip` and `port`.
 
         Server can be given a `name`, default `timeout` and a `protocol`.
+
+        Examples:
+        | Start UDP server | 10.10.10.2 | 53 |
+        | Start UDP server | 10.10.10.2 | 53 | Server1 |
+        | Start UDP server | 10.10.10.2 | 53 | name=Server1 | protocol=GTPV2 |
+        | Start UDP server | 10.10.10.2 | 53 | timeout=5 |
         """
         self._start_server(UDPServer, ip, port, name, timeout, protocol)
 
@@ -80,6 +86,12 @@ class Rammbock(object):
 
         Server can be given a `name`, default `timeout` and a `protocol`. Notice that you have to use
         `Accept Connection` keyword for server to receive connections.
+
+        Examples:
+        | Start TCP server | 10.10.10.2 | 53 |
+        | Start TCP server | 10.10.10.2 | 53 | Server1 |
+        | Start TCP server | 10.10.10.2 | 53 | name=Server1 | protocol=GTPV2 |
+        | Start TCP server | 10.10.10.2 | 53 | timeout=5 |
         """
         self._start_server(TCPServer, ip, port, name, timeout, protocol)
 
@@ -93,6 +105,12 @@ class Rammbock(object):
 
         Client can be optionally given `ip` and `port` to bind to, as well as `name`, default `timeout` and a `protocol`.
         You should use `Connect` keyword to connect client to a host.
+
+        Examples:
+        | Start UDP client |
+        | Start UDP client | name=Client1 | protocol=GTPV2 |
+        | Start UDP client | 10.10.10.2 | 53 | name=Server1 | protocol=GTPV2 |
+        | Start UDP client | timeout=5 |
         """
         self._start_client(UDPClient, ip, port, name, timeout, protocol)
 
@@ -101,6 +119,12 @@ class Rammbock(object):
 
         Client can be optionally given `ip` and `port` to bind to, as well as `name`, default `timeout` and a `protocol`.
         You should use `Connect` keyword to connect client to a host.
+
+        Examples:
+        | Start TCP client |
+        | Start TCP client | name=Client1 | protocol=GTPV2 |
+        | Start TCP client | 10.10.10.2 | 53 | name=Server1 | protocol=GTPV2 |
+        | Start TCP client | timeout=5 |
         """
         self._start_client(TCPClient, ip, port, name, timeout, protocol)
 
@@ -124,12 +148,21 @@ class Rammbock(object):
         """Accepts a connection to server identified by `name` or the latest server if `name` is empty.
 
         If given an `alias`, the connection is named and can be later referenced with that name.
+
+        Examples:
+        | Accept connection |
+        | Accept connection | Server1 | my_connection |
         """
         server = self._servers.get(name)
         server.accept_connection(alias)
 
     def connect(self, host, port, name=None):
-        """Connects a client to given `host` and `port`. If client `name` is not given then connects the latest client."""
+        """Connects a client to given `host` and `port`. If client `name` is not given then connects the latest client.
+
+        Examples:
+        | Connect | 127.0.0.1 | 8080 |
+        | Connect | 127.0.0.1 | 8080 | Client1 |
+        """
         client = self._clients.get(name)
         client.connect_to(host, port)
 
@@ -144,7 +177,12 @@ class Rammbock(object):
     def client_sends_binary(self, message, name=None, label=None):
         """Send raw binary `message`.
 
-        If client `name` is not given, uses the latest client. Optional message `label` is shown on logs."""
+        If client `name` is not given, uses the latest client. Optional message `label` is shown on logs.
+
+        Examples:
+        | Client sends binary | Hello! |
+        | Client sends binary | ${some binary} | Client1 | label=DebugMessage |
+        """
         client, name = self._clients.get_with_name(name)
         client.send(message)
         self._register_send(client, label, name)
@@ -153,7 +191,13 @@ class Rammbock(object):
     def server_sends_binary(self, message, name=None, connection=None, label=None):
         """Send raw binary `message`.
 
-        If server `name` is not given, uses the latest server. Optional message `label` is shown on logs."""
+        If server `name` is not given, uses the latest server. Optional message `label` is shown on logs.
+
+        Examples:
+        | Server sends binary | Hello! |
+        | Server sends binary | ${some binary} | Server1 | label=DebugMessage |
+        | Server sends binary | ${some binary} | connection=my_connection |
+        """
         server, name = self._servers.get_with_name(name)
         server.send(message, alias=connection)
         self._register_send(server, label, name, connection=connection)
@@ -161,7 +205,12 @@ class Rammbock(object):
     def client_receives_binary(self, name=None, timeout=None, label=None):
         """Receive raw binary message.
 
-        If client `name` is not given, uses the latest client. Optional message `label` is shown on logs."""
+        If client `name` is not given, uses the latest client. Optional message `label` is shown on logs.
+
+        Examples:
+        | ${binary} = | Client receives binary |
+        | ${binary} = | Client receives binary | Client1 | timeout=5 |
+        """
         client, name = self._clients.get_with_name(name)
         msg = client.receive(timeout=timeout)
         self._register_receive(client, label, name)
@@ -170,13 +219,23 @@ class Rammbock(object):
     def server_receives_binary(self, name=None, timeout=None, connection=None, label=None):
         """Receive raw binary message.
 
-        If server `name` is not given, uses the latest server. Optional message `label` is shown on logs."""
-        return self.server_receives_binary_from(name, timeout, connection=connection)[0]
+        If server `name` is not given, uses the latest server. Optional message `label` is shown on logs.
+
+        Examples:
+        | ${binary} = | Server receives binary |
+        | ${binary} = | Server receives binary | Server1 | connection=my_connection | timeout=5 |
+        """
+        return self.server_receives_binary_from(name, timeout, connection=connection, label=label)[0]
 
     def server_receives_binary_from(self, name=None, timeout=None, connection=None, label=None):
         """Receive raw binary message. Returns message, ip, and port
 
-        If server `name` is not given, uses the latest server. Optional message `label` is shown on logs."""
+        If server `name` is not given, uses the latest server. Optional message `label` is shown on logs.
+
+        Examples:
+        | ${binary} | ${ip} | ${port} = | Server receives binary from |
+        | ${binary} | ${ip} | ${port} = | Server receives binary from | Server1 | connection=my_connection | timeout=5 |
+        """
         server, name = self._servers.get_with_name(name)
         msg, ip, port = server.receive_from(timeout=timeout, alias=connection)
         self._register_receive(server, label, name, connection=connection)
