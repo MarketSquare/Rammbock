@@ -1,5 +1,5 @@
-import math
-from binary_tools import to_0xhex, to_binary_string_of_length, to_bin_of_length, to_tbcd_value
+from math import ceil
+from binary_tools import to_0xhex, to_binary_string_of_length, to_bin_of_length, to_tbcd_value, to_tbcd_binary, to_bin_str_from_int_string, to_hex
 from OrderedDict import OrderedDict
 
 
@@ -94,13 +94,15 @@ class BinaryContainer(_StructuredElement):
         # TODO: faster implementation...
         return to_bin_of_length(len(self), ' '.join((field.bin for field in self._fields.values())))
 
-class TBCDContainer(_StructuredElement):
+class TBCDContainer(BinaryContainer):
 
     _type = 'TBCDContainer'
 
-    def __len(selfs):
-        return len("123456789")/2+len("123456789")%2
+    def _get_raw_bytes(self):
+        return to_bin_of_length(len(self), to_tbcd_binary("".join(field.tbcd for field in self._fields.values())))
 
+    def __len__(self):
+        return sum(field._length for field in self._fields.values())
 
 class Message(_StructuredElement):
 
@@ -150,7 +152,7 @@ class Field(object):
 
     @property
     def tbcd(self):
-        return to_tbcd_value(self._original_value)
+        return to_tbcd_value(to_binary_string_of_length(self._length * 8, self._original_value))
 
     def __hex__(self):
         return to_0xhex(self._value)
@@ -196,7 +198,7 @@ class BinaryField(Field):
         self._name = name
         self._original_value = value
         self._binlength = int(length)
-        self._length = int(math.ceil(self._binlength/8.0))
+        self._length = int(ceil(self._binlength/8.0))
         self._parent = None
         self._little_endian = False
         if little_endian:
