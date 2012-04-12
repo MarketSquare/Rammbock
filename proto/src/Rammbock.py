@@ -392,7 +392,7 @@ class Rammbock(object):
     def pdu(self, length):
         """Defines the message in protocol template.
 
-        Length must be the name of a previous field in template definition."""
+        Length must be the name of a previous field in template definition or a static value for fixed length protocols."""
         self._add_field(PDU(length))
 
     def hex_to_bin(self, hex_value):
