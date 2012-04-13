@@ -42,7 +42,7 @@ class RammbockLibrary(Rammbock):
     |                 |  `pdu`                      | messageLength - 2 |
     |                 |  `End protocol description`            |
     |  |
-    | Start server    |  `Start UDP server` | 127.0.0.1 |  8282 |
+    | Start server    |  `Start UDP server` | 127.0.0.1 |  8282 | protocol=SimpleProtocol |
     |  |
     | Start client    |  `Start UDP client` | protocol=SimpleProtocol |
     |                 |  `Connect`          | 127.0.0.1 |  8282 |
