@@ -534,6 +534,12 @@ class Rammbock(object):
         """Defines a new union to template of `type` and `name`.
 
         Fields inside the union are alternatives and the length of the union is the length of its longest field.
+
+        Example:
+        | Union | IntOrAddress | foo |
+        | Chars | 16 | ipAddress |
+        | u32   | int |
+        | End union |
         """
         self._message_stack.append(UnionTemplate(type, name, self._current_container))
 
