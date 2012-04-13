@@ -285,15 +285,18 @@ class _DynamicLength(_Length):
         raise Exception('Length is dynamic.')
 
 
+def _partition(operator, value):
+    return (val.strip() for val in value.rpartition(operator))
+
 def parse_field_and_calculator(value):
     if "-" in value:
-        field, _, subtractor = value.rpartition('-')
+        field, _, subtractor = _partition('-', value)
         return field, Subtract(int(subtractor))
     if "+" in value:
-        field, _, add = value.rpartition('+')
+        field, _, add = _partition('+', value)
         return field, Adder(int(add))
     else:
-        return value, SingleValue()
+        return value.strip(), SingleValue()
 
 
 class SingleValue(object):
