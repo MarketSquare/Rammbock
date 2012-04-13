@@ -67,3 +67,16 @@ Protocol with several PDU fields fails
     u8  field  16
     pdu   1
     Should fail   pdu    1
+
+Node protocol and template protocol must be equal
+    Define example protocol     FirstProtocol
+    Define example protocol     SecondProtocol
+    Setup TCP server and client  FirstProtocol
+    Simple Request with 'SecondProtocol'
+    Client sends message
+    Run keyword and expect error    Template protocol *    Server receives message
+
+*** Keywords ***
+Simple Request with '${protocol}'
+    New message    ValueRequest    ${protocol}    messageType:0xdddd    flags:0xffff
+    u32    value    0xdeadbeef

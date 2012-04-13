@@ -11,7 +11,8 @@ ${CLIENT}         ${TEST MACHINE}
 
 *** Keywords ***
 Define example protocol
-    Start Protocol Description    Example
+    [Arguments]     ${name}=Example
+    Start Protocol Description    ${name}
     u8    version    0x01
     u8    reserved    0x00
     u16    messageType    # Empty on purpose, each message template defines the type for it
@@ -28,15 +29,15 @@ Define simple protocol
 
 Setup TCP server and client  [arguments]   ${protocol}=
     Start TCP server    ${SERVER}    ${SERVER PORT}    name=ExampleServer   protocol=${protocol}
-    Start TCP client    name=ExampleClient
+    Start TCP client    name=ExampleClient    protocol=${protocol}
     connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient
     Accept connection  name=ExampleServer
 
 Define protocol, start tcp server and two clients  [arguments]   ${protocol}=
     Define example protocol
     Start TCP server    ${SERVER}    ${SERVER PORT}    name=ExampleServer   protocol=${protocol}
-    Start TCP client    name=ExampleClient1
-    Start TCP client    name=ExampleClient2
+    Start TCP client    name=ExampleClient1    protocol=${protocol}
+    Start TCP client    name=ExampleClient2    protocol=${protocol}
     connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient1
     Accept connection  alias=Connection1
     connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient2
