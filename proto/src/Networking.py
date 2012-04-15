@@ -1,3 +1,17 @@
+#  Copyright 2012 Nokia Siemens Networks Oyj
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
 import socket
 import time
 from binary_tools import to_hex
@@ -44,6 +58,10 @@ class _NetworkNode(_WithTimeouts):
         return self._protocol.get_message_stream(BufferedStream(self, self._default_timeout))
 
     def get_message(self, message_template, timeout=None, header_filter=None):
+        if not self._protocol:
+            raise AssertionError('Can not receive messages without protocol. Initialize network node with "protocol=<protocl name>"')
+        if self._protocol != message_template._protocol:
+            raise AssertionError('Template protocol does not match network node protocol %s!=%s' % (self.protocol_name, message_template._protocol.name))
         return self._get_from_stream(message_template, self._message_stream, timeout=timeout, header_filter=header_filter)
 
     def _get_from_stream(self, message_template, stream, timeout, header_filter):

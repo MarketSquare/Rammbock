@@ -1,4 +1,19 @@
+#  Copyright 2012 Nokia Siemens Networks Oyj
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
 import os
+
 from Rammbock import Rammbock
 from robot.libraries.BuiltIn import BuiltIn
 from message_sequence import SeqdiagGenerator
@@ -27,7 +42,7 @@ class RammbockLibrary(Rammbock):
     |                 |  `pdu`                      | messageLength - 2 |
     |                 |  `End protocol description`            |
     |  |
-    | Start server    |  `Start UDP server` | 127.0.0.1 |  8282 |
+    | Start server    |  `Start UDP server` | 127.0.0.1 |  8282 | protocol=SimpleProtocol |
     |  |
     | Start client    |  `Start UDP client` | protocol=SimpleProtocol |
     |                 |  `Connect`          | 127.0.0.1 |  8282 |
