@@ -184,7 +184,7 @@ class Field(object):
         return self._bin()
 
     def _bin(self):
-        return to_binary_string_of_length(self._length*8, self._value)
+        return to_binary_string_of_length(self._length * 8, self._value)
 
     @property
     def ascii(self):
@@ -212,7 +212,7 @@ class BinaryField(Field):
         self._name = name
         self._original_value = value
         self._binlength = int(length)
-        self._length = int(ceil(self._binlength/8.0))
+        self._length = int(ceil(self._binlength / 8.0))
         self._parent = None
         self._little_endian = False
         if little_endian:

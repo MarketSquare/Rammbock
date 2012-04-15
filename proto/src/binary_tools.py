@@ -52,8 +52,7 @@ def to_bin(string_value):
 def _int_to_bin(integer):
     if integer >= 18446744073709551616L:
         return to_bin(hex(integer))
-    result = LONGLONG.pack(integer).lstrip('\x00')
-    return result or '\x00'
+    return LONGLONG.pack(integer).lstrip('\x00') or '\x00'
 
 def _hex_to_bin(string_value):
     value = string_value.replace('0x','').replace(' ','').replace('L','')
@@ -95,8 +94,7 @@ def to_tbcd_value(binary):
     return value
 
 def to_tbcd_binary(tbcd_string):
-    value = "0b"
-    index = 0
+    value, index = "0b", 0
     while index <= len(tbcd_string) - 2:
         value += to_bin_str_from_int_string(4, tbcd_string[index + 1]) + \
                  to_bin_str_from_int_string(4, tbcd_string[index])

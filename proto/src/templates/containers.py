@@ -290,7 +290,7 @@ class ListTemplate(_Template):
         name = name or self.name
         params_subtree = self._get_params_sub_tree(message_params, name)
         list = self._get_struct(name)
-        for index in range(0, self.length.decode(parent)):
+        for index in range(self.length.decode(parent)):
             list[str(index)] = self.field.encode(params_subtree,
                                                  parent,
                                                  name=str(index), 
@@ -319,7 +319,7 @@ class ListTemplate(_Template):
         params_subtree = self._get_params_sub_tree(message_fields, name)
         list = parent[name]
         errors = []
-        for index in range(0, self.length.decode(parent)):
+        for index in range(self.length.decode(parent)):
             errors += self.field.validate(list, params_subtree, name=str(index))
         self._check_params_empty(params_subtree, name)
         return errors
@@ -365,9 +365,9 @@ class BinaryContainerTemplate(_Template):
         a = to_binary_string_of_length(self.binlength, data)
         data_index = 2
         for field in self._fields.values():
-            value = a[data_index:data_index + int(field.length.value)]
-            container[field.name] = BinaryField(field.length.value, field.name, to_bin("0b" + value))
-            data_index += int(field.length.value)
+            container[field.name] = BinaryField(field.length.value, field.name,
+                to_bin("0b" + a[data_index:data_index + field.length.value]))
+            data_index += field.length.value
         return container
 
     def validate(self, parent, message_fields, name=None):
@@ -400,8 +400,8 @@ class TBCDContainerTemplate(_Template):
         a = to_tbcd_value(data)
         index = 0
         for field in self._fields.values():
-            container[field.name] = Field(field.length.value, field.name, to_tbcd_binary(a[index:index + int(field.length.value)]))
-            index += int(field.length.value)
+            container[field.name] = Field(field.length.value, field.name, to_tbcd_binary(a[index:index + field.length.value]))
+            index += field.length.value
         return container
 
     def validate(self, parent, message_fields, name=None):

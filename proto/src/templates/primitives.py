@@ -207,7 +207,7 @@ def Length(value, align=None):
         align = 1
     if align < 1:
         raise Exception('Illegal alignment %d' % align)
-    if str(value).isdigit():
+    elif str(value).isdigit():
         return _StaticLength(int(value), align)
     return _DynamicLength(value, align)
 
@@ -292,11 +292,10 @@ def parse_field_and_calculator(value):
     if "-" in value:
         field, _, subtractor = _partition('-', value)
         return field, Subtract(int(subtractor))
-    if "+" in value:
+    elif "+" in value:
         field, _, add = _partition('+', value)
         return field, Adder(int(add))
-    else:
-        return value.strip(), SingleValue()
+    return value.strip(), SingleValue()
 
 
 class SingleValue(object):
