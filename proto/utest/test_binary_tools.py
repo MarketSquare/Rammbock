@@ -65,18 +65,18 @@ class TestBinaryConversions(TestCase):
         self.assertEquals(to_binary_string_of_length(2048,'\xff\xff\xff\xff\xff\xff\xff\xff'*32), '0b'+('11'*1024))
 
     def test_to_tbcd_value(self):
-        self.assertEquals('1', to_tbcd_value('0b00011111'))
-        self.assertEquals('11', to_tbcd_value('0b00010001'))
-        self.assertEquals('2', to_tbcd_value('0b00101111'))
-        self.assertEquals('23', to_tbcd_value('0b00110010'))
-        self.assertEquals('123', to_tbcd_value('0b0010000100111111'))
+        self.assertEquals('1', to_tbcd_value(to_bin('0b00011111')))
+        self.assertEquals('11', to_tbcd_value(to_bin('0b00010001')))
+        self.assertEquals('2', to_tbcd_value(to_bin('0b00101111')))
+        self.assertEquals('23', to_tbcd_value(to_bin('0b00110010')))
+        self.assertEquals('123', to_tbcd_value(to_bin('0b0010000100111111')))
 
     def test_to_tbcd_binary(self):
-        self.assertEquals('0b00011111', to_tbcd_binary('1'))
-        self.assertEquals('0b00010001', to_tbcd_binary('11'))
-        self.assertEquals('0b00101111', to_tbcd_binary('2'))
-        self.assertEquals('0b00110010', to_tbcd_binary('23'))
-        self.assertEquals('0b0010000100111111', to_tbcd_binary('123'))
+        self.assertEquals(to_bin('0b00011111'), to_tbcd_binary('1'))
+        self.assertEquals(to_bin('0b00010001'), to_tbcd_binary('11'))
+        self.assertEquals(to_bin('0b00101111'), to_tbcd_binary('2'))
+        self.assertEquals(to_bin('0b00110010'), to_tbcd_binary('23'))
+        self.assertEquals(to_bin('0b0010000100111111'), to_tbcd_binary('123'))
 
     def test_to_bin_str_from_int_string(self):
         self.assertEquals('00000001', to_bin_str_from_int_string(8, '1'))

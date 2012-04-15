@@ -99,7 +99,7 @@ class TBCDContainer(BinaryContainer):
     _type = 'TBCDContainer'
 
     def _get_raw_bytes(self):
-        return to_bin_of_length(len(self), to_tbcd_binary("".join(field.tbcd for field in self._fields.values())))
+        return to_tbcd_binary("".join(field.tbcd for field in self._fields.values()))
 
     def __len__(self):
         return sum(field._length for field in self._fields.values())
@@ -152,7 +152,7 @@ class Field(object):
 
     @property
     def tbcd(self):
-        return to_tbcd_value(to_binary_string_of_length(self._length * 8, self._original_value))
+        return to_tbcd_value(self._original_value)
 
     def __hex__(self):
         return to_0xhex(self._value)

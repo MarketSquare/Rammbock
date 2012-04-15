@@ -383,10 +383,10 @@ class TBCDContainerTemplate(_Template):
 
     def decode(self, data, parent=None, name=None, little_endian=False):
         container = self._get_struct(name)
-        a = to_tbcd_value(to_binary_string_of_length(self.binlength, data))
+        a = to_tbcd_value(data)
         index = 0
         for field in self._fields.values():
-            container[field.name] = Field(field.length.value, field.name, to_bin(to_tbcd_binary(a[index:index + int(field.length.value)])))
+            container[field.name] = Field(field.length.value, field.name, to_tbcd_binary(a[index:index + int(field.length.value)]))
             index += int(field.length.value)
         return container
 

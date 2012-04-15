@@ -164,11 +164,11 @@ class TBCD(_TemplateField):
 
     def _encode_value(self, value, message, little_endian=False):
         self._raise_error_if_no_value(value)
-        binary = to_bin_of_length(self._byte_length(self.length.value), to_tbcd_binary(value))
+        binary = to_tbcd_binary(value)
         return binary, self._byte_length(self.length.value)
 
     def _default_presentation_format(self, value):
-        return to_tbcd_value(to_binary_string_of_length(self._byte_length(self.length.value) * 8, value))
+        return to_tbcd_value(value)
 
     def _byte_length(self, length):
         return int(ceil(length / 2.0))
