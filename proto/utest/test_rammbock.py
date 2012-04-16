@@ -42,11 +42,11 @@ class TestMessageSequence(TestCase):
         self.rammbock.reset_rammbock()
 
     def _example_protocol(self):
-        self.rammbock.start_protocol_description('TestProtocol')
+        self.rammbock.new_protocol('TestProtocol')
         self.rammbock.uint(2, 'msgId', 5)
         self.rammbock.uint(2, 'length', None)
         self.rammbock.pdu('length-4')
-        self.rammbock.end_protocol_description()
+        self.rammbock.end_protocol()
 
     def _foo_message(self):
         self.rammbock.new_message('FooRequest', 'TestProtocol')

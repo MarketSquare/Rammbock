@@ -12,20 +12,20 @@ ${CLIENT}         ${TEST MACHINE}
 *** Keywords ***
 Define example protocol
     [Arguments]     ${name}=Example
-    Start Protocol Description    ${name}
+    New protocol    ${name}
     u8    version    0x01
     u8    reserved    0x00
     u16    messageType    # Empty on purpose, each message template defines the type for it
     u16    length         # Empty on purpose, the length is pdu length
     u16    flags    0x0000
     pdu    length-8
-    End protocol description
+    End protocol
 
 Define simple protocol
-    Start Protocol Description   Example
+    New protocol   Example
     uint  1  field  16
     pdu   4
-    End Protocol Description
+    End protocol
 
 Setup TCP server and client  [arguments]   ${protocol}=
     Start TCP server    ${SERVER}    ${SERVER PORT}    name=ExampleServer   protocol=${protocol}

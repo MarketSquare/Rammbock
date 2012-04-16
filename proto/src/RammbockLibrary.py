@@ -99,8 +99,7 @@ class RammbockLibrary(Rammbock):
         """Define a new array of given `size` and containing fields of type `type`.
 
         `name` if the name of this array element. The `type` is the name of keyword that is executed as the contents of
-        the array and optional extra parameters are passed as arguments to this keyword. This is a convenience method for
-        calling `New List` and `End List` with `type` between them.
+        the array and optional extra parameters are passed as arguments to this keyword.
 
         Examples:
         | Array | 8 | u16 | myArray |
@@ -108,16 +107,16 @@ class RammbockLibrary(Rammbock):
         | u32 | length |
         | Array | length | someStruct | myArray | <argument for someStruct> |
         """
-        self.new_list(size, name)
+        self._new_list(size, name)
         BuiltIn().run_keyword(type, '', *parameters)
-        self.end_list()
+        self._end_list()
 
     def container(self, name, length, type, *parameters):
         """Define a container with given length.
 
         This is a convenience method creating a `Struct` with `length` containing fields defined in `type`.
         """
-        self.struct('Container', name, 'length=%s' % length)
+        self.new_struct('Container', name, 'length=%s' % length)
         BuiltIn().run_keyword(type, *parameters)
         self.end_struct()
 

@@ -30,12 +30,12 @@ Create server and client, and define protocol
     start udp client    ip=${LOCALHOST IP}    protocol=gtpv2
 
 define gtpv2 protocol
-    start protocol description    gtpv2
+    new protocol    gtpv2
     u8    flags    72
     u8    message type
     u16    message length
     pdu    message length-4
-    end protocol description
+    end protocol
 
 send Create Session Request
     new message    create session request    gtpv2    message type:${CREATE SESSION REQUEST}
