@@ -38,6 +38,7 @@ class Rammbock(object):
         self._message_stack = []
         self._field_values = None
         self._message_sequence = MessageSequence()
+        self._message_templates = {}
 
     @property
     def _current_container(self):
@@ -255,6 +256,12 @@ class Rammbock(object):
         self._register_receive(server, label, name, connection=connection)
         return msg, ip, port
 
+    def _init_new_message_stack(self, message):
+        if self._protocol_in_progress:
+            raise Exception("Protocol definition in progress. Please finish it before starting to define a message.")
+        self._field_values = {}
+        self._message_stack = [message]
+
     def new_message(self, message_name, protocol=None, *parameters):
         """Define a new message template with `message_name`.
 
@@ -264,12 +271,15 @@ class Rammbock(object):
         Examples:
         | New message | MyMessage | MyProtocol | header_field:value |
         """
-        if self._protocol_in_progress:
-            raise Exception("Protocol definition in progress. Please finish it before starting to define a message.")
         proto = self._get_protocol(protocol)
         _, header_fields, _ = self._parse_parameters(parameters)
-        self._message_stack = [MessageTemplate(message_name, proto, header_fields)]
-        self._field_values = {}
+        self._init_new_message_stack(MessageTemplate(message_name, proto, header_fields))
+
+    def save_template(self, name):
+        self._message_templates[name] = self._get_message_template()
+
+    def load_template(self, name):
+        self._init_new_message_stack(self._message_templates[name])
 
     def get_message(self, *parameters):
         """Get encoded message.

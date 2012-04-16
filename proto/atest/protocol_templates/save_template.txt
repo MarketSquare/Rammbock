@@ -1,0 +1,31 @@
+*** Settings ***
+Test Setup        Define Simple Protocol
+Test Teardown     Reset rammbock
+Default Tags      regression
+Resource          template_resources.txt
+
+
+*** Test Cases ***
+Save templates
+    Save single and double templates
+    Load template    single
+    ${msg}=          Get message
+    Should be equal as integers    ${msg.single.int}   1
+    Load template    double
+    ${msg}=          Get message
+    Should be equal as integers    ${msg.double_1.int}   22
+
+
+*** Keywords ***
+Save single and double templates
+    Single valued
+    Save template    single
+    Double valued
+    Save template    double
+Single valued
+    New message    SingleRequest    Example
+    u32    single    1
+Double valued
+    New message    DoubleRequest    Example
+    u16    double_1  22
+    u16    double_2  2222

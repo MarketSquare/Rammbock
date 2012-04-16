@@ -4,14 +4,12 @@ Resource          ../Protocols.txt
 *** Keywords ***
 Client Sends simple request
     [Arguments]    @{params}
-    New message    ValueRequest    Example    messageType:0xdddd    flags:0xffff
-    u32    value    0xdeadbeef
+    Simple request
     Client Sends message    @{params}
 
 Server Sends simple request
     [Arguments]    @{params}
-    New message    ValueRequest    Example    messageType:0xdddd    flags:0xffff
-    u32    value    0xdeadbeef
+    Simple request
     Server Sends message    @{params}
 
 Client Receives simple request
@@ -30,17 +28,24 @@ Server Receives simple request
 
 Client sends charred request
     [Arguments]    @{params}
-    New message    CharredRequest    Example    messageType:0xf000
-    chars    16    string_value    foo
+    Charred request    foo
     Client sends message    @{params}
 
 Server receives charred request
     [Arguments]    @{params}
-    New message    CharredRequest    Example    messageType:0xf000
-    chars    16    string_value
+    Charred request
     ${msg} =    Server receives message    @{params}
     [Return]    ${msg}
 
 Client sends request and server receives it
     Client Sends simple request
     Verify server gets hex    0x 01 00 dddd 000c ffff deadbeef
+
+Simple request
+    New message    ValueRequest    Example    messageType:0xdddd    flags:0xffff
+    u32    value    0xdeadbeef
+
+Charred request
+    [Arguments]    ${string_value}=
+    New message    CharredRequest    Example    messageType:0xf000
+    chars    16    string_value      ${string_value}
