@@ -88,8 +88,8 @@ def to_bin_str_from_int_string(length, value):
 def to_tbcd_value(binary):
     bin_str, value = to_binary_string_of_length(len(to_hex(binary)) * 4, binary), ""
     for index in range(2, len(bin_str), 8):
-        if int(bin_str[index + 4:index + 8], 2) == 15:
-            return value + str(int(bin_str[index: index + 4], 2))
+        if int(bin_str[index:index + 4], 2) == 15:
+            return value + str(int(bin_str[index + 4: index + 8], 2))
         value += "%s%s" % (int(bin_str[index + 4:index + 8], 2), int(bin_str[index: index + 4], 2))
     return value
 
@@ -99,9 +99,9 @@ def to_tbcd_binary(tbcd_string):
         value += to_bin_str_from_int_string(4, tbcd_string[index + 1]) + \
                  to_bin_str_from_int_string(4, tbcd_string[index])
         index += 2
-    return to_bin(value if index == len(tbcd_string) else value + \
-                 to_bin_str_from_int_string(4, tbcd_string[index]) + \
-                 to_bin_str_from_int_string(4, 15))
+    return to_bin(value if index == len(tbcd_string) else value +\
+          to_bin_str_from_int_string(4, 15) +\
+          to_bin_str_from_int_string(4, tbcd_string[index]))
 
 
 
