@@ -276,9 +276,13 @@ class Rammbock(object):
         self._init_new_message_stack(MessageTemplate(message_name, proto, header_fields))
 
     def save_template(self, name):
+        """Save a message template for later use with `Load template`.
+        """
         self._message_templates[name] = self._get_message_template()
 
     def load_template(self, name):
+        """Load a message template saved with `Save template`.
+        """
         self._init_new_message_stack(self._message_templates[name])
 
     def get_message(self, *parameters):
