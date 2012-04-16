@@ -42,17 +42,48 @@ send Create Session Request
     u32    tunnel endpoint identifier    0
     u24    sequence number
     u8    spare    0
-    IMSI    262120000000001
-    MSISDN    358    6100000000001
+    IMSI    15    262120000000001
+    MSISDN    3    358        13    6100000000001
     #ULI    value.flags:0b00011000    value.tai.tracking_area_code:1    value.tai.tracking_area_identity:1
 
 IMSI
-    [Arguments]    ${value}
-    IE    imsi    83    u64    ${value}
+    [Arguments]    ${len}    ${value}
+    IE    imsi    83    single value tbcd container    ${len}    ${value}
 
 MSISDN
-    [Arguments]    ${country code}=358    ${address digits}=6100000000001
-    IE    msisdn    54    tbcd    ${country code}    ${address digits}
+    [Arguments]    ${cc len}    ${country code}    ${ad len}    ${address digits}
+    IE    msisdn    54    two value tbcd container    ${cc len}    ${country code}    ${ad len}    ${address digits}
+
+two value tbcd container
+    [Arguments]    ${first len}    ${first value}    ${second len}    ${second value}
+    new tbcd container    container
+    tbcd    ${first len}     first     ${first value}
+    tbcd    ${second len}    second    ${second value}
+    end tbcd container
+
+single value tbcd container
+    [Arguments]  ${len}    ${value}
+    new tbcd container    container
+    tbcd   ${len}    value    ${value}
+    end tbcd container
+
+IE
+    [Arguments]    ${name}    ${type}    ${content}    @{values}
+    new Struct    IE    ${name}
+    u8    ie type    ${type}
+    u16    ie_length
+    u8    instance    0
+    container    value    ie_length    ${content}    @{values}
+    End struct
+
+TAI
+    new struct    tai    tai    @{args}
+    u8    mobile_country_code
+    u8    mobile_network_code
+    u8    tracking_area_identity
+    end struct
+
+
 
 ADDRESS
     [Arguments]    ${value}
@@ -68,27 +99,8 @@ ULI
 
 Uli fields
     [Arguments]    ${foobar}    @{args}
-    struct    contain    contain
+    new struct    contain    contain
     u8    flags
     TAI    tai
     ECGI    ecgi
-    end struct
-
-IE
-    [Arguments]    ${name}    ${type}    ${content}    @{values}
-    Struct    IE    ${name}
-    u8    ie type    ${type}
-    u16    ie_length
-    u8    instance    0
-    container    value    ie_length    ${content}    content    @{values}
-    End struct
-    # uli fields
-    # [arguments]    ${foobar}    @{args}
-    # u8    flags
-
-TAI
-    struct    tai    tai    @{args}
-    u8    mobile_country_code
-    u8    mobile_network_code
-    u8    tracking_area_identity
     end struct
