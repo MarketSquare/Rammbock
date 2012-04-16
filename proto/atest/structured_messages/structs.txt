@@ -38,7 +38,7 @@ Struct containing struct
 
 Unfinished struct fails
     New message   ExampleMessage   Example   messageType:0xbabe
-    Struct  MyStruct  myStruct
+    New Struct  MyStruct  myStruct
     u8    foo
     Get message fails because 'myStruct' is not completed
 
@@ -65,8 +65,6 @@ Client sends request with struct
     Message with struct
     Client sends message   @{params}
 
-
-
 Client sends struct with struct
     [Arguments]    @{params}
     Message with struct in struct
@@ -88,17 +86,14 @@ Server should fail validation with struct
     [Arguments]    @{params}
     Run keyword and expect error     Value of field first does not *    Server receives request with struct    @{params}
 
-
-
 Message with struct
     [arguments]    ${pair values}=
     New Message    StructRequest  Example    messageType:0xaaaa
     Pair    pair   ${pair values}
 
-
 Pair
     [arguments]     ${name}=     ${value}=
-    Struct    Pair    ${name}
+    New Struct    Pair    ${name}
     u8    first       ${value}
     u8    second      ${value}
     End struct
@@ -109,14 +104,14 @@ Message with struct in struct
 
 StructStruct
     [Arguments]    ${name}
-    Struct   StructStruct   ${name}
+    New Struct   StructStruct   ${name}
     u32      foo    6
     Bar      mollyMalones
     End struct
 
 Bar
     [Arguments]    ${name}
-    Struct   Bar   ${name}
+    New Struct   Bar   ${name}
     u8        opensAt    10
     u8        closesAt    2
     End struct
@@ -126,7 +121,7 @@ Get message fails because '${name}' is not completed
 
 define struct
    [arguments]     @{params}
-   Struct    FooType   fooName    @{params}
+   New Struct    FooType   fooName    @{params}
    u8    first      0xff
    u8    second     0xff
    u8    third      0xff

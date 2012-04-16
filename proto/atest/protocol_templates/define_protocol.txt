@@ -20,18 +20,18 @@ Access header
     Should be equal as integers    ${msg._header.length.int}    12
 
 Starting new protocol in middle of old protocol definition fails
-    start protocol description    foo
-    Should fail    start protocol description    bar
+    New Protocol    foo
+    Should fail    new protocol    bar
 
 Redifining protocol fails
-    start protocol description    foo
+    New Protocol    foo
     uint    1    length
     pdu    length
-    end protocol description
-    Should fail    start protocol description    foo
+    end protocol
+    Should fail    new protocol   foo
 
 Defining message while defining protocol fails
-    start protocol description    foo
+    New Protocol    foo
     Should fail    new message    foo
 
 Overriding header parameters in send
@@ -52,18 +52,18 @@ Protocol with fixed pdu length
     Should be equal    ${msg.first.hex}   0xcafe
 
 Protocol without PDU fails
-    Start Protocol Description   Failing
+    New Protocol   Failing
     u8  field  16
-    Should fail   End Protocol Description
+    Should fail   End Protocol
 
 Protocol with fields after PDU fail
-    Start Protocol Description   Failing
+    New Protocol   Failing
     u8  field  16
     pdu   1
     Should fail  u8   second_field   16
 
 Protocol with several PDU fields fails
-    Start Protocol Description   Failing
+    New Protocol   Failing
     u8  field  16
     pdu   1
     Should fail   pdu    1

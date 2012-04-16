@@ -55,8 +55,8 @@ class Rammbock(object):
             client.close()
         self._init_caches()
 
-    def reset_message_streams(self):
-        """ Resets streams of incoming messages.
+    def clear_message_streams(self):
+        """ Resets streams and sockets of incoming messages.
         
         You can use this method to reuse the same connections for several consecutive test cases.
         """
@@ -65,7 +65,7 @@ class Rammbock(object):
         for server in self._servers:
             server.empty()
 
-    def start_protocol_description(self, protocol_name):
+    def new_protocol(self, protocol_name):
         """Start defining a new protocol template.
 
         All messages sent and received from a connection that uses a protocol have to conform to this protocol template.
@@ -76,7 +76,7 @@ class Rammbock(object):
             raise Exception('Protocol %s already defined' % protocol_name)
         self._protocol_in_progress = Protocol(protocol_name)
 
-    def end_protocol_description(self):
+    def end_protocol(self):
         """End protocol definition."""
         self._protocol_in_progress.verify()
         self._protocols[self._protocol_in_progress.name] = self._protocol_in_progress
@@ -446,7 +446,7 @@ class Rammbock(object):
         else:
             self._current_container.add(field)
 
-    def struct(self, type, name, *parameters):
+    def new_struct(self, type, name, *parameters):
         """Defines a new struct to template.
 
         You must call `End Struct` to end struct definition. `type` is the name for generic type and `name` is the field
@@ -469,7 +469,7 @@ class Rammbock(object):
         struct = self._message_stack.pop()
         self._add_field(struct)
 
-    def new_list(self, size, name):
+    def _new_list(self, size, name):
         """Defines a new list to template of `size` and with `name`.
 
         List type must be given after this keyword by defining one field. Then the list definition has to be closed using
@@ -487,7 +487,7 @@ class Rammbock(object):
         """
         self._message_stack.append(ListTemplate(size, name, self._current_container))
 
-    def end_list(self):
+    def _end_list(self):
         """End list definition. See `New List`.
         """
         list = self._message_stack.pop()
@@ -530,7 +530,7 @@ class Rammbock(object):
     def tbcd(self, size, name, value):
         self._add_field(TBCD(size, name, value))
 
-    def union(self, type, name):
+    def new_union(self, type, name):
         """Defines a new union to template of `type` and `name`.
 
         Fields inside the union are alternatives and the length of the union is the length of its longest field.

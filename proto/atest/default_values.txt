@@ -86,7 +86,7 @@ ComplexMessage
     
 Product
     [Arguments]    ${name}
-    Struct   Product   ${name}
+    New Struct   Product   ${name}
     u32          id
     u32          price
     u32          category

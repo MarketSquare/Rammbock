@@ -82,7 +82,7 @@ Complex union message
 
 Simple union
    [arguments]    ${name}
-   Union          Simple   ${name}   
+   New Union          Simple   ${name}
    u32            fooBig
    u16            fooMiddle
    u8             fooShort
@@ -90,14 +90,14 @@ Simple union
 
 Complex union
    [arguments]   ${name}
-   Union         Complex   ${name}
+   New Union         Complex   ${name}
    u8            basicType
    Tuple         complexType
    End union
 
 Tuple
     [arguments]     ${name}
-    Struct    Tuple    ${name}
+    New Struct    Tuple    ${name}
     u16    first
     u16    second
     End struct
@@ -108,21 +108,21 @@ Hyper Complex union message
 
 HyperUnion
    [arguments]   ${name}
-   Union         Hyper   ${name}
+   New Union         Hyper   ${name}
    Machine       machine
    User          user
    End union
 
 Machine
     [arguments]     ${name}
-    Struct    Machine    ${name}
+    New Struct    Machine    ${name}
     u32       id
     u16       price
     End struct
 
 User
     [arguments]     ${name}
-    Struct    User    ${name}
+    New Struct    User    ${name}
     chars   10       name
     u32            age
     End struct

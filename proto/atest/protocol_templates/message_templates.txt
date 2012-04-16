@@ -66,7 +66,7 @@ Error when giving non-ascii parameters
 
 Resetting message stream cache
     Client sends simple request
-    Reset message streams
+    Clear message streams
     Server receive for simple request will timeout
 
 
