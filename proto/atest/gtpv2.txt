@@ -47,6 +47,40 @@ send Create Session Request
     ULI    contain.flags:0b00011000    contain.tai.mcc.mcc:262    contain.tai.mnc.mnc:12   contain.ecgi.mcc.mcc:262    contain.ecgi.mnc.mnc:12    contain.ecgi.eci.ecgi:234    contain.tai.tracking_area_code:1
     Serving network   contain.mcc.mcc:262    contain.mnc.mnc:12
     Rat type    6
+    Indication    fields.fields.DAF:1
+
+Indication
+    [Arguments]    @{args}
+    IE    indication    77    indication fields    @{args}
+
+indication fields
+    [Arguments]    @{args}
+    new struct    fields    fields    @{args}
+    new binary container    fields
+    Bin    1    DAF     0
+    Bin    1    DTF     0
+    Bin    1    HI      0
+    Bin    1    DFI     0
+    Bin    1    OI      0
+    Bin    1    ISRSI   0
+    Bin    1    ISRAI   0
+    Bin    1    SGWCI   0
+    Bin    1    SQCI    0
+    Bin    1    UIMSI   0
+    Bin    1    CFSI    0
+    Bin    1    CRSI    0
+    Bin    1    PS      0
+    Bin    1    PT      0
+    Bin    1    SI      0
+    Bin    1    MSV     0
+    Bin    3    SPARE   0
+    Bin    1    S6AF    0
+    Bin    1    S4AF    0
+    Bin    1    MBMDT   0
+    Bin    1    ISRAU   0
+    Bin    1    CCRSI   0
+    end binary container
+    end struct
 
 rat type
     [arguments]    ${type}
