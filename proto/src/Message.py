@@ -98,6 +98,10 @@ class BinaryContainer(_StructuredElement):
 
     _type = 'BinaryContainer'
 
+    def __init__(self, name, little_endian=False):
+        self._little_endian = little_endian
+        _StructuredElement.__init__(self, name)
+
     def _binlength(self):
         return sum(field.binlength for field in self._fields.values())
 
@@ -106,7 +110,11 @@ class BinaryContainer(_StructuredElement):
 
     def _get_raw_bytes(self):
         # TODO: faster implementation...
-        return to_bin_of_length(len(self), ' '.join((field.bin for field in self._fields.values())))
+        result = to_bin_of_length(len(self), ' '.join((field.bin for field in self._fields.values())))
+        if self._little_endian:
+            return result[::-1]
+        return result
+
 
 class TBCDContainer(BinaryContainer):
 
@@ -117,6 +125,7 @@ class TBCDContainer(BinaryContainer):
 
     def __len__(self):
         return sum(field._length for field in self._fields.values())
+
 
 class Message(_StructuredElement):
 
@@ -216,7 +225,7 @@ class BinaryField(Field):
         self._parent = None
         self._little_endian = False
         if little_endian:
-            raise AssertionError('Not implemented yet')
+            raise AssertionError('Internal error. Binary fields should always be big endian, the containers only are little endian')
 
     def _bin(self):
         return to_binary_string_of_length(self._binlength, self._value)

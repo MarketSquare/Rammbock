@@ -37,12 +37,15 @@ class TestMessages(TestCase):
 
 class TestBinaryContainer(TestCase):
 
-    def setUp(self):
-        cont = BinaryContainer('foo')
+    def _bin_container(self, little_endian=False):
+        cont = BinaryContainer('foo', little_endian=little_endian)
         cont['three'] = BinaryField(3, 'three', to_bin('0b101'))
         cont['six'] = BinaryField(6, 'six', to_bin('0b101010'))
         cont['seven'] = BinaryField(7, 'seven', to_bin('0b0101010'))
-        self.cont = cont
+        return cont
+
+    def setUp(self):
+        self.cont = self._bin_container()
 
     def test_create_binary_container(self):
         self.assertEquals(self.cont.three.bin,'0b101')
@@ -59,6 +62,13 @@ class TestBinaryContainer(TestCase):
 
     def test_binary_container_length(self):
         self.assertEquals(len(self.cont), 2)
+
+    def test_little_endian_bin_container(self):
+        little = self._bin_container(little_endian=True)
+        self.assertEquals(little.three.bin,'0b101')
+        self.assertEquals(little.six.bin,'0b101010')
+        self.assertEquals(little.seven.bin,'0b0101010')
+        self.assertEquals(little._raw, to_bin('0b0010 1010 1011 0101'))
 
 
 class TestFieldAlignment(TestCase):
@@ -101,4 +111,3 @@ class TestLittleEndian(TestCase):
 
 if __name__ == "__main__":
     main()
-
