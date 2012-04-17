@@ -589,14 +589,34 @@ class TestBinaryContainerTemplate(TestCase):
         self.assertRaises(AssertionError, container.add, UInt(2,'intsNotAllowed', None))
 
     def test_decode_container(self):
+        container = self._2_byte_container()
+        decoded = container.decode(to_bin("0x9001"))
+        self.assertEqual(1, decoded.oneBit.int)
+        self.assertEqual(1, decoded.threeBits.int)
+        self.assertEqual(1, decoded.twelveBits.int)
+
+    def test_decode_little_endian_container(self):
+        container = self._2_byte_container()
+        decoded = container.decode(to_bin("0x0190"), little_endian=True)
+        self.assertEqual(1, decoded.oneBit.int)
+        self.assertEqual(1, decoded.threeBits.int)
+        self.assertEqual(1, decoded.twelveBits.int)
+        self.assertEquals(decoded._raw, to_bin("0x0190"))
+
+    def test_encode_little_endian_container(self):
+        container = self._2_byte_container()
+        encoded = container.encode({'foo.threeBits':1, 'foo.twelveBits':1}, little_endian=True)
+        self.assertEqual(1, encoded.oneBit.int)
+        self.assertEqual(1, encoded.threeBits.int)
+        self.assertEqual(1, encoded.twelveBits.int)
+        self.assertEquals(encoded._raw, to_bin("0x0190"))
+
+    def _2_byte_container(self):
         container = BinaryContainerTemplate('foo', None)
         container.add(Binary(1, 'oneBit', 1))
         container.add(Binary(3, 'threeBits', 7))
         container.add(Binary(12, 'twelveBits', 4095))
-        decoded = container.decode(to_bin("0xffff"))
-        self.assertEqual(1, decoded.oneBit.int)
-        self.assertEqual(7, decoded.threeBits.int)
-        self.assertEqual(4095, decoded.twelveBits.int)
+        return container
 
 
 class TestTBCDContainerTemplate(TestCase):
@@ -642,6 +662,7 @@ class TestTBCDContainerTemplate(TestCase):
         container = TBCDContainerTemplate('tbcd', None)
         container.add(TBCD('4', 'first', '1234'))
         self.assertEquals(16, container.binlength)
+
 
 class TestLittleEndian(TestCase):
 
