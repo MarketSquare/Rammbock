@@ -663,6 +663,18 @@ class TestTBCDContainerTemplate(TestCase):
         container.add(TBCD('4', 'first', '1234'))
         self.assertEquals(16, container.binlength)
 
+    def test_decode(self):
+        container = TBCDContainerTemplate('tbcd', None)
+        container.add(TBCD('3', 'first', None))
+        decoded = container.decode(to_bin('0x21f3'))
+        self.assertEquals('123', decoded.first.tbcd)
+
+    def test_little_endian_tbcd_unsupported(self):
+        container = TBCDContainerTemplate('tbcd', None)
+        container.add(TBCD('3', 'first', '123'))
+        self.assertRaises(AssertionError, container.encode, {}, {}, little_endian=True)
+        self.assertRaises(AssertionError, container.decode, to_bin('0x21f3'), little_endian=True)
+
 
 class TestLittleEndian(TestCase):
 

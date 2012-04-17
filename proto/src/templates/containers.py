@@ -387,17 +387,23 @@ class TBCDContainerTemplate(_Template):
     has_length = False
     type = 'TBCDContainer'
 
+    def _verify_not_little_endian(self, little_endian):
+        if little_endian:
+            raise AssertionError('Little endian TBCD fields are not supported.')
+
     def add(self, field):
         if not isinstance(field, TBCD):
             raise AssertionError('TBCD container can only have TBCD fields.')
         _Template.add(self, field)
 
     def encode(self, message_params, parent=None, name=None, little_endian=False):
+        self._verify_not_little_endian(little_endian)
         container = self._get_struct(name)
-        self._encode_fields(container, self._get_params_sub_tree(message_params, name), little_endian=little_endian)
+        self._encode_fields(container, self._get_params_sub_tree(message_params, name))
         return container
 
     def decode(self, data, parent=None, name=None, little_endian=False):
+        self._verify_not_little_endian(little_endian)
         container = self._get_struct(name)
         a = to_tbcd_value(data)
         index = 0
