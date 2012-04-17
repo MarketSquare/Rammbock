@@ -44,27 +44,72 @@ send Create Session Request
     u8    spare    0
     IMSI    15    262120000000001
     MSISDN    3    358        13    6100000000001
-    #ULI    value.flags:0b00011000    value.tai.tracking_area_code:1    value.tai.tracking_area_identity:1
+    ULI    contain.flags:0b00011000    contain.tai.mcc.mcc:262    contain.tai.mnc.mnc:12   contain.ecgi.mcc.mcc:262    contain.ecgi.mnc.mnc:12    contain.ecgi.eci.ecgi:234    contain.tai.tracking_area_code:1
+    Serving network   contain.mcc.mcc:262    contain.mnc.mnc:12
+    Rat type    6
+
+rat type
+    [arguments]    ${type}
+    IE    rat type    82    u8    rat_type    6
+
+Serving network
+    [Arguments]    @{values}
+    IE    serving network   83    serving network fields    @{values}
+
+serving network fields
+    [Arguments]    @{arguments}
+    new struct     contain    contain   @{arguments}
+    single value tbcd container    mcc   3   ${none}
+    single value tbcd container    mnc   2   ${none}
+    end struct
+ULI
+    [Arguments]    @{values}
+    IE    uli    88    uli fields    @{values}
+
+UlI fields
+    [Arguments]       @{args}
+    new struct    contain    contain    @{args}
+    u8    flags
+    TAI
+    ECGI
+    end struct
+
+ECGI
+    new struct    E-UTRAN Cell Global Identifier    ecgi
+    single value tbcd container    mcc    3        ${none}
+    single value tbcd container    mnc    2        ${none}
+    new binary container   eci
+    Bin    4    spare    0
+    bin    28   ecgi
+    end binary container
+    end struct
+
+TAI
+    new struct    tai    tai
+    single value tbcd container    mcc    3        ${none}
+    single value tbcd container    mnc    2        ${none}
+    u16    tracking_area_code
+    end struct
 
 IMSI
     [Arguments]    ${len}    ${value}
-    IE    imsi    83    single value tbcd container    ${len}    ${value}
+    IE    imsi    83    single value tbcd container    imsi    ${len}    ${value}
 
 MSISDN
     [Arguments]    ${cc len}    ${country code}    ${ad len}    ${address digits}
-    IE    msisdn    54    two value tbcd container    ${cc len}    ${country code}    ${ad len}    ${address digits}
+    IE    msisdn    54    two value tbcd container    msisdn    ${cc len}    ${country code}    ${ad len}    ${address digits}
 
 two value tbcd container
-    [Arguments]    ${first len}    ${first value}    ${second len}    ${second value}
-    new tbcd container    container
+    [Arguments]    ${name}    ${first len}    ${first value}    ${second len}    ${second value}
+    new tbcd container    ${name}
     tbcd    ${first len}     first     ${first value}
     tbcd    ${second len}    second    ${second value}
     end tbcd container
 
 single value tbcd container
-    [Arguments]  ${len}    ${value}
-    new tbcd container    container
-    tbcd   ${len}    value    ${value}
+    [Arguments]    ${name}    ${len}    ${value}
+    new tbcd container    ${name}
+    tbcd   ${len}    ${name}    ${value}
     end tbcd container
 
 IE
@@ -76,31 +121,8 @@ IE
     container    value    ie_length    ${content}    @{values}
     End struct
 
-TAI
-    new struct    tai    tai    @{args}
-    u8    mobile_country_code
-    u8    mobile_network_code
-    u8    tracking_area_identity
-    end struct
-
-
-
 ADDRESS
     [Arguments]    ${value}
     IE    address    54    Chars    ie length    ${value}
 
-WOPPA
-    [Arguments]    ${value}
-    IE    wobba_flags    54    u8    ${value}
 
-ULI
-    [Arguments]    @{values}
-    IE    uli    88    uli fields    @{values}
-
-Uli fields
-    [Arguments]    ${foobar}    @{args}
-    new struct    contain    contain
-    u8    flags
-    TAI    tai
-    ECGI    ecgi
-    end struct
