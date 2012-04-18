@@ -105,6 +105,11 @@ Decoding variable length container with dynamic length content
     should be equal as integers    ${msg.length_field.int}    11
     should be equal as integers    ${msg.container.stringLen.int}   10
 
+Encode dynamic length string
+    New message     DynString   Example    messageType:0xaaaa
+    Dynamic string
+    ${msg} =     Get message    name:test
+    Should be equal as integers    ${msg.stringLen.int}    4
 
 *** Keywords ***
 Pair
