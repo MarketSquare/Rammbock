@@ -14,7 +14,7 @@
 
 from Message import Field, BinaryField
 from math import ceil
-from binary_tools import to_bin_of_length, to_0xhex, to_tbcd_binary, to_tbcd_value, to_binary_string_of_length
+from binary_tools import to_bin_of_length, to_0xhex, to_tbcd_binary, to_tbcd_value, to_binary_string_of_length, to_bin
 
 
 class _TemplateField(object):
@@ -47,7 +47,7 @@ class _TemplateField(object):
         return Field(self.type, self._get_name(name), field_name, field_value, little_endian=little_endian)
 
     def decode(self, value, message, name=None, little_endian=False):
-        length, aligned_length = self.length.decode_lengths(message)
+        length, aligned_length = self.length.decode_lengths(message, len(value))
         if len(value) < aligned_length: 
             raise Exception('Not enough data for %s. Needs %s bytes, given %s' % (self._get_name(name), aligned_length, len(value)))
         return Field(self.type, 
@@ -151,7 +151,8 @@ class Binary(_TemplateField):
 
     def _encode_value(self, value, message, little_endian=False):
         self._raise_error_if_no_value(value)
-        length, aligned = self.length.decode_lengths(message)
+        minimum_binary = to_bin(value)
+        length, aligned = self.length.decode_lengths(message, len(minimum_binary))
         binary = to_bin_of_length(self._byte_length(length), value)
         return binary, self._byte_length(aligned)
 
@@ -179,7 +180,8 @@ class TBCD(_TemplateField):
     def _encode_value(self, value, message, little_endian=False):
         self._raise_error_if_no_value(value)
         binary = to_tbcd_binary(value)
-        return binary, self._byte_length(self.length.value)
+        length = self.length.decode(message, len(binary))
+        return binary, self._byte_length(length)
 
     def _default_presentation_format(self, value):
         return to_tbcd_value(value)
@@ -201,14 +203,17 @@ class PDU(_TemplateField):
 
 
 def Length(value, align=None):
+    value = str(value)
     if align:
         align = int(align)
     else:
         align = 1
     if align < 1:
         raise Exception('Illegal alignment %d' % align)
-    elif str(value).isdigit():
+    elif value.isdigit():
         return _StaticLength(int(value), align)
+    elif value == '*':
+        return _FreeLength(align)
     return _DynamicLength(value, align)
 
 
@@ -217,26 +222,47 @@ class _Length(object):
     def _get_aligned_lengths(self, length):
         return (length, length + (self.align - length % self.align) % self.align)
 
-    def decode(self, message):
-        return self.decode_lengths(message)[0]
+    def decode(self, message, maximum_length=None):
+        """Decode the length of this field. Maximum length is the maximum length available from data
+        or None if maximum length is not known.
+        """
+        return self.decode_lengths(message, maximum_length)[0]
 
 
 class _StaticLength(_Length):
     static = True
+    has_references = False
 
     def __init__(self, value, align):
         self.value = int(value)
         self.align = int(align)
 
-    def decode_lengths(self, message):
+    def decode_lengths(self, message, max_length=None):
         return self._get_aligned_lengths(self.value)
 
     def find_length_and_set_if_necessary(self, message, min_length):
-        return self.decode_lengths(message)
+        return self._get_aligned_lengths(self.value)
+
+
+class _FreeLength(_Length):
+    static = False
+    has_references = False
+
+    def __init__(self, align):
+        self.align = int(align)
+
+    def decode_lengths(self, message, max_length=None):
+        if max_length is None:
+            raise AssertionError('Free length (*) can only be used on context where maximum byte length is unambiguous')
+        return self._get_aligned_lengths(max_length)
+
+    def find_length_and_set_if_necessary(self, message, min_length):
+        return self._get_aligned_lengths(min_length)
 
 
 class _DynamicLength(_Length):
     static = False
+    has_references = True
 
     def __init__(self, value, align):
         self.field, self.value_calculator = parse_field_and_calculator(value)
@@ -248,7 +274,7 @@ class _DynamicLength(_Length):
     def solve_parameter(self, length):
         return self.value_calculator.solve_parameter(length)
 
-    def decode_lengths(self, parent):
+    def decode_lengths(self, parent, max_length=None):
         reference = self._find_reference(parent)
         if not self._has_been_set(reference):
             raise AssertionError('Value of %s not set' % self.field)
@@ -272,7 +298,7 @@ class _DynamicLength(_Length):
         reference = self._find_reference(parent)
         if self._has_been_set(reference):
             self._raise_error_if_not_enough_space(parent, reference, min_length)
-            return self.decode_lengths(parent)
+            return self._get_aligned_lengths(self.calc_value(reference.int))
         return self._set_length(reference, min_length)
 
     def _raise_error_if_not_enough_space(self, parent, reference, min_length):

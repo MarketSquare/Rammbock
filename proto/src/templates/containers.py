@@ -43,7 +43,7 @@ class _Template(object):
             self._handle_pdu_field(field)
         if self._get_field(field.name):
             raise AssertionError('Duplicate field %s in %s' % (field.name, self.name))
-        if field.has_length and not field.length.static:
+        if field.has_length and field.length.has_references:
             self._mark_referenced_field(field)
         self._fields[field.name] = field
 
@@ -202,6 +202,12 @@ class StructTemplate(_Template):
 
     def get_static_length(self):
         return sum(field.get_static_length() for field in self._fields.values())
+
+    def decode(self, data, parent=None, name=None, little_endian=False):
+        if self.has_length:
+            length = self.length.decode(parent)
+            data = data[:length]
+        return _Template.decode(self, data, parent, name, little_endian)
 
     def encode(self, message_params, parent=None, name=None, little_endian=False):
         struct = self._get_struct(name)
@@ -408,8 +414,9 @@ class TBCDContainerTemplate(_Template):
         a = to_tbcd_value(data)
         index = 0
         for field in self._fields.values():
-            container[field.name] = Field(field.length.value, field.name, to_tbcd_binary(a[index:index + field.length.value]))
-            index += field.length.value
+            field_length = field.length.decode(container, len(data)*2-index)
+            container[field.name] = Field(field_length, field.name, to_tbcd_binary(a[index:index + field_length]))
+            index += field_length
         return container
 
     def validate(self, parent, message_fields, name=None):

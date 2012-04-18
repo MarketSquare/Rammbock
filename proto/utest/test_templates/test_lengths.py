@@ -71,7 +71,7 @@ class TestLength(TestCase):
         self._assert_alignment('25',None,25)
 
     def _assert_alignment(self, length, alignment, result):
-        self.assertEquals(Length(length, alignment).decode_lengths(None)[1], result)
+        self.assertEquals(Length(length, alignment).decode_lengths(None, None)[1], result)
 
     def test_align_must_be_int(self):
         self.assertRaises(Exception, Length, 'foo', 'len')

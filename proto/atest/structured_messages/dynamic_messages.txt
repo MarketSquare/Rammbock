@@ -111,6 +111,42 @@ Encode dynamic length string
     ${msg} =     Get message    name:test
     Should be equal as integers    ${msg.stringLen.int}    4
 
+Encoding free length
+    New message    FreeLength   Example    messageType:0xaaaa
+    Chars    *     foo
+    ${msg} =     Get message    foo:test
+    Should be equal    ${msg.foo.ascii}    test
+
+Decoding free length
+    New message    FreeLength   Example    messageType:0xaaaa
+    Chars    *     foo
+    Client sends message         foo:test
+    ${msg} =     Server receives message
+    Should be equal    ${msg.foo.ascii}    test
+
+Free length in struct
+    New message    FreeLength   Example    messageType:0xaaaa
+    u8      length
+    New struct   WithLength    struct    length=length
+    Chars    *     foo
+    End struct
+    u8      last    42
+    Client sends message         struct.foo:test
+    ${msg} =     Server receives message
+    Should be equal as integers   ${msg.length.int}    4
+    Should be equal    ${msg.struct.foo.ascii}    test
+    Should be equal as integers   ${msg.last.int}    42
+
+Free length in tbcd
+    New message   FreeLength   Example     messageType:0xaaaa
+    new tbcd container    tbcd_cont
+    tbcd   4    first     1234
+    tbcd   *    second    5678
+    end tbcd container
+    Client sends message
+    ${msg} =     Server receives message
+    Should be equal as integers   ${msg.tbcd_cont.second.tbcd}    5678
+
 *** Keywords ***
 Pair
     [arguments]     ${name}=     ${value}=
