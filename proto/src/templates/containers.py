@@ -64,9 +64,9 @@ class _Template(object):
 
     def _encode_fields(self, struct, params, little_endian=False):
         for field in self._fields.values():
+            encoded = field.encode(params, struct, little_endian=little_endian)
             # TODO: clean away this ugly hack that makes it possible to skip PDU
             # (now it is a 0 length place holder in header)
-            encoded = field.encode(params, struct, little_endian=little_endian)
             if encoded:
                 struct[field.name] = encoded
         self._check_params_empty(params, self.name)
@@ -290,7 +290,7 @@ class ListTemplate(_Template):
         name = name or self.name
         params_subtree = self._get_params_sub_tree(message_params, name)
         list = self._get_struct(name)
-        for index in range(0, self.length.decode(parent)):
+        for index in range(self.length.decode(parent)):
             list[str(index)] = self.field.encode(params_subtree,
                                                  parent,
                                                  name=str(index), 
@@ -319,7 +319,7 @@ class ListTemplate(_Template):
         params_subtree = self._get_params_sub_tree(message_fields, name)
         list = parent[name]
         errors = []
-        for index in range(0, self.length.decode(parent)):
+        for index in range(self.length.decode(parent)):
             errors += self.field.validate(list, params_subtree, name=str(index))
         self._check_params_empty(params_subtree, name)
         return errors
@@ -356,18 +356,20 @@ class BinaryContainerTemplate(_Template):
             raise AssertionError('Length of binary container %s has to be divisible by 8. Length %s' % (self.name, self.binlength))
 
     def encode(self, message_params, parent=None, name=None, little_endian=False):
-        container = self._get_struct(name)
-        self._encode_fields(container, self._get_params_sub_tree(message_params, name), little_endian=little_endian)
+        container = self._get_struct(name, little_endian=little_endian)
+        self._encode_fields(container, self._get_params_sub_tree(message_params, name))
         return container
 
     def decode(self, data, parent=None, name=None, little_endian=False):
-        container = self._get_struct(name)
+        container = self._get_struct(name, little_endian=little_endian)
+        if little_endian:
+            data = data[::-1]
         a = to_binary_string_of_length(self.binlength, data)
         data_index = 2
         for field in self._fields.values():
-            value = a[data_index:data_index + int(field.length.value)]
-            container[field.name] = BinaryField(field.length.value, field.name, to_bin("0b" + value))
-            data_index += int(field.length.value)
+            container[field.name] = BinaryField(field.length.value, field.name,
+                to_bin("0b" + a[data_index:data_index + field.length.value]))
+            data_index += field.length.value
         return container
 
     def validate(self, parent, message_fields, name=None):
@@ -376,8 +378,8 @@ class BinaryContainerTemplate(_Template):
         message = parent[name]
         return errors + _Template.validate(self, message, self._get_params_sub_tree(message_fields, name))
 
-    def _get_struct(self, name):
-        return BinaryContainer(name or self.name)
+    def _get_struct(self, name, little_endian=False):
+        return BinaryContainer(name or self.name, little_endian=little_endian)
 
 
 class TBCDContainerTemplate(_Template):
@@ -385,23 +387,29 @@ class TBCDContainerTemplate(_Template):
     has_length = False
     type = 'TBCDContainer'
 
+    def _verify_not_little_endian(self, little_endian):
+        if little_endian:
+            raise AssertionError('Little endian TBCD fields are not supported.')
+
     def add(self, field):
         if not isinstance(field, TBCD):
             raise AssertionError('TBCD container can only have TBCD fields.')
         _Template.add(self, field)
 
     def encode(self, message_params, parent=None, name=None, little_endian=False):
+        self._verify_not_little_endian(little_endian)
         container = self._get_struct(name)
-        self._encode_fields(container, self._get_params_sub_tree(message_params, name), little_endian=little_endian)
+        self._encode_fields(container, self._get_params_sub_tree(message_params, name))
         return container
 
     def decode(self, data, parent=None, name=None, little_endian=False):
+        self._verify_not_little_endian(little_endian)
         container = self._get_struct(name)
-        a = to_tbcd_value(to_binary_string_of_length(self.binlength, data))
+        a = to_tbcd_value(data)
         index = 0
         for field in self._fields.values():
-            container[field.name] = Field(field.length.value, field.name, to_bin(to_tbcd_binary(a[index:index + int(field.length.value)])))
-            index += int(field.length.value)
+            container[field.name] = Field(field.length.value, field.name, to_tbcd_binary(a[index:index + field.length.value]))
+            index += field.length.value
         return container
 
     def validate(self, parent, message_fields, name=None):

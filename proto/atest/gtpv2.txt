@@ -30,65 +30,133 @@ Create server and client, and define protocol
     start udp client    ip=${LOCALHOST IP}    protocol=gtpv2
 
 define gtpv2 protocol
-    start protocol description    gtpv2
+    new protocol    gtpv2
     u8    flags    72
     u8    message type
     u16    message length
     pdu    message length-4
-    end protocol description
+    end protocol
 
 send Create Session Request
     new message    create session request    gtpv2    message type:${CREATE SESSION REQUEST}
     u32    tunnel endpoint identifier    0
     u24    sequence number
     u8    spare    0
-    IMSI    262120000000001
-    MSISDN    358    6100000000001
-    #ULI    value.flags:0b00011000    value.tai.tracking_area_code:1    value.tai.tracking_area_identity:1
+    IMSI    15    262120000000001
+    MSISDN    3    358        13    6100000000001
+    ULI    contain.flags:0b00011000    contain.tai.mcc.mcc:262    contain.tai.mnc.mnc:12   contain.ecgi.mcc.mcc:262    contain.ecgi.mnc.mnc:12    contain.ecgi.eci.ecgi:234    contain.tai.tracking_area_code:1
+    Serving network   contain.mcc.mcc:262    contain.mnc.mnc:12
+    Rat type    6
+    Indication    fields.fields.DAF:1
+
+Indication
+    [Arguments]    @{args}
+    IE    indication    77    indication fields    @{args}
+
+indication fields
+    [Arguments]    @{args}
+    new struct    fields    fields    @{args}
+    new binary container    fields
+    Bin    1    DAF     0
+    Bin    1    DTF     0
+    Bin    1    HI      0
+    Bin    1    DFI     0
+    Bin    1    OI      0
+    Bin    1    ISRSI   0
+    Bin    1    ISRAI   0
+    Bin    1    SGWCI   0
+    Bin    1    SQCI    0
+    Bin    1    UIMSI   0
+    Bin    1    CFSI    0
+    Bin    1    CRSI    0
+    Bin    1    PS      0
+    Bin    1    PT      0
+    Bin    1    SI      0
+    Bin    1    MSV     0
+    Bin    3    SPARE   0
+    Bin    1    S6AF    0
+    Bin    1    S4AF    0
+    Bin    1    MBMDT   0
+    Bin    1    ISRAU   0
+    Bin    1    CCRSI   0
+    end binary container
+    end struct
+
+rat type
+    [arguments]    ${type}
+    IE    rat type    82    u8    rat_type    6
+
+Serving network
+    [Arguments]    @{values}
+    IE    serving network   83    serving network fields    @{values}
+
+serving network fields
+    [Arguments]    @{arguments}
+    new struct     contain    contain   @{arguments}
+    single value tbcd container    mcc   3   ${none}
+    single value tbcd container    mnc   2   ${none}
+    end struct
+ULI
+    [Arguments]    @{values}
+    IE    uli    88    uli fields    @{values}
+
+UlI fields
+    [Arguments]       @{args}
+    new struct    contain    contain    @{args}
+    u8    flags
+    TAI
+    ECGI
+    end struct
+
+ECGI
+    new struct    E-UTRAN Cell Global Identifier    ecgi
+    single value tbcd container    mcc    3        ${none}
+    single value tbcd container    mnc    2        ${none}
+    new binary container   eci
+    Bin    4    spare    0
+    bin    28   ecgi
+    end binary container
+    end struct
+
+TAI
+    new struct    tai    tai
+    single value tbcd container    mcc    3        ${none}
+    single value tbcd container    mnc    2        ${none}
+    u16    tracking_area_code
+    end struct
 
 IMSI
-    [Arguments]    ${value}
-    IE    imsi    83    u64    ${value}
+    [Arguments]    ${len}    ${value}
+    IE    imsi    83    single value tbcd container    imsi    ${len}    ${value}
 
 MSISDN
-    [Arguments]    ${country code}=358    ${address digits}=6100000000001
-    IE    msisdn    54    tbcd    ${country code}    ${address digits}
+    [Arguments]    ${cc len}    ${country code}    ${ad len}    ${address digits}
+    IE    msisdn    54    two value tbcd container    msisdn    ${cc len}    ${country code}    ${ad len}    ${address digits}
+
+two value tbcd container
+    [Arguments]    ${name}    ${first len}    ${first value}    ${second len}    ${second value}
+    new tbcd container    ${name}
+    tbcd    ${first len}     first     ${first value}
+    tbcd    ${second len}    second    ${second value}
+    end tbcd container
+
+single value tbcd container
+    [Arguments]    ${name}    ${len}    ${value}
+    new tbcd container    ${name}
+    tbcd   ${len}    ${name}    ${value}
+    end tbcd container
+
+IE
+    [Arguments]    ${name}    ${type}    ${content}    @{values}
+    new Struct    IE    ${name}
+    u8    ie type    ${type}
+    u16    ie_length
+    u8    instance    0
+    container    value    ie_length    ${content}    @{values}
+    End struct
 
 ADDRESS
     [Arguments]    ${value}
     IE    address    54    Chars    ie length    ${value}
 
-WOPPA
-    [Arguments]    ${value}
-    IE    wobba_flags    54    u8    ${value}
 
-ULI
-    [Arguments]    @{values}
-    IE    uli    88    uli fields    @{values}
-
-Uli fields
-    [Arguments]    ${foobar}    @{args}
-    struct    contain    contain
-    u8    flags
-    TAI    tai
-    ECGI    ecgi
-    end struct
-
-IE
-    [Arguments]    ${name}    ${type}    ${content}    @{values}
-    Struct    IE    ${name}
-    u8    ie type    ${type}
-    u16    ie_length
-    u8    instance    0
-    container    value    ie_length    ${content}    content    @{values}
-    End struct
-    # uli fields
-    # [arguments]    ${foobar}    @{args}
-    # u8    flags
-
-TAI
-    struct    tai    tai    @{args}
-    u8    mobile_country_code
-    u8    mobile_network_code
-    u8    tracking_area_identity
-    end struct

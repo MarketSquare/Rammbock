@@ -178,11 +178,11 @@ class TBCD(_TemplateField):
 
     def _encode_value(self, value, message, little_endian=False):
         self._raise_error_if_no_value(value)
-        binary = to_bin_of_length(self._byte_length(self.length.value), to_tbcd_binary(value))
+        binary = to_tbcd_binary(value)
         return binary, self._byte_length(self.length.value)
 
     def _default_presentation_format(self, value):
-        return to_tbcd_value(to_binary_string_of_length(self._byte_length(self.length.value) * 8, value))
+        return to_tbcd_value(value)
 
     def _byte_length(self, length):
         return int(ceil(length / 2.0))
@@ -207,7 +207,7 @@ def Length(value, align=None):
         align = 1
     if align < 1:
         raise Exception('Illegal alignment %d' % align)
-    if str(value).isdigit():
+    elif str(value).isdigit():
         return _StaticLength(int(value), align)
     return _DynamicLength(value, align)
 
@@ -292,11 +292,10 @@ def parse_field_and_calculator(value):
     if "-" in value:
         field, _, subtractor = _partition('-', value)
         return field, Subtract(int(subtractor))
-    if "+" in value:
+    elif "+" in value:
         field, _, add = _partition('+', value)
         return field, Adder(int(add))
-    else:
-        return value.strip(), SingleValue()
+    return value.strip(), SingleValue()
 
 
 class SingleValue(object):

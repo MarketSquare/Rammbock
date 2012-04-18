@@ -114,7 +114,7 @@ Encode dynamic length string
 *** Keywords ***
 Pair
     [arguments]     ${name}=     ${value}=
-    Struct    Pair    ${name}
+    New Struct    Pair    ${name}
     u8    first       ${value}
     u8    second      ${value}
     End struct
