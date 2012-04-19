@@ -476,7 +476,12 @@ class Rammbock(object):
         | End Struct |
         """
         configs, parameters, _ = self._get_parameters_with_defaults(parameters)
+        self._add_struct_name_to_params(name, parameters)
         self._message_stack.append(StructTemplate(type, name, self._current_container, parameters, length=configs.get('length')))
+
+    def _add_struct_name_to_params(self, name, parameters):
+        for param_key in parameters.keys():
+            parameters[name + '.' + param_key] = parameters.pop(param_key)
 
     def end_struct(self):
         """End struct definition. See `Struct`."""
@@ -541,7 +546,7 @@ class Rammbock(object):
         """
         self._add_field(Binary(size, name, value))
 
-    def tbcd(self, size, name, value):
+    def tbcd(self, size, name, value=None):
         self._add_field(TBCD(size, name, value))
 
     def new_union(self, type, name):

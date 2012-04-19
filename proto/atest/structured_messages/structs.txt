@@ -44,7 +44,7 @@ Unfinished struct fails
 
 Pass value dict to Struct
    New message   FooExample   Example    messageType:0xb0b0
-   define struct    fooName.first:1    fooName.second:2
+   define struct    first:1    second:2
    ${msg}   Get message
    Should be equal     ${msg.fooName.first.hex}    0x01
    Should be equal     ${msg.fooName.second.hex}   0x02
@@ -52,7 +52,7 @@ Pass value dict to Struct
 
 Pass value dict to Struct but replace it in Get Message
    New message   FooExample   Example    messageType:0xb0b0
-   define struct    fooName.first:1    fooName.second:2
+   define struct    first:1    second:2
    ${msg}   Get message    fooName.second:0x22
    Should be equal     ${msg.fooName.first.hex}    0x01
    Should be equal     ${msg.fooName.second.hex}   0x22
