@@ -56,15 +56,41 @@ send Create Session Request
     PDN Address Allocation    value.pdn_type.value:1    value.pdn_address_and_prefix:0x00
     APN Restriction    value.apn_restriction:0
     Aggregate maximum bit rate    value.ambr_uplink:2    value.ambr_downlink:1
-    bearer context
-    recovery
-    ue time zone
-    charging characteristics
+    bearer context    value.eps_bearer_id.value.epsbid.value:5    value.bearer_level_qos.value.arp.pl:1   value.bearer_level_qos.value.label:9
+    recovery   value.recovery:1
+#    ue time zone
+#    charging characteristics
+
+recovery fields
+    u8    recovery
+
+recovery
+    [arguments]    @{args}
+    IE    Recovery    3    recovery fields    @{args}
+
+EPS bearer id fields
+    new binary container    epsbid
+    bin    4    spare   0
+    bin    4    value
+    end binary container
+
+Bearer level quality of service fields
+    new binary container   arp
+    bin   1    spare   0
+    bin   1    pci    0
+    bin   4    pl
+    bin   1    spare_2   0
+    bin   1    pvi     0
+    end binary container
+    u8    label
+    u32    mbr_uplink      0
+    u32    mbr_downlink    0
+    u32    gbr_uplink      0
+    u32    gbr_downlink    0
 
 bearer context fields
-    IE with named value      EPS bearer id    73    EPS bearer id    ${empty}
-    IE with named value      EPS bearer id    73    EPS bearer id    ${empty}
-    Bearer level quality of service
+    IE       eps_bearer_id    73    EPS bearer id fields
+    IE       bearer_level_qos    80    Bearer level quality of service fields
 
 bearer context
     [arguments]   @{args}
@@ -242,6 +268,12 @@ single value tbcd container
 
 IE
     [Arguments]    ${name}    ${type}    ${content}    @{values}
+    IE header   ${name}    ${type}    ${content}    @{values}
+    IE value    ${content}
+    End struct
+
+IE header
+    [Arguments]    ${name}    ${type}    ${content}    @{values}
     new Struct    IE    ${name}    @{values}
     u8    ie type    ${type}
     u16    ie_length
@@ -249,12 +281,10 @@ IE
     bin    4    spare    0
     bin    4    value    0
     end binary container
-    IE value    ${content}
-    End struct
 
 IE Value
-    [Arguments]    ${name}    ${kw}    @{args}
-    new struct    Container    value    length=ie_length    @{args}
+    [Arguments]    ${kw}    ${name}=value
+    new struct    Container    ${name}    length=ie_length
     run keyword    ${kw}
     end struct
 
