@@ -91,10 +91,14 @@ class _TemplateField(object):
     def _get_name(self, name=None):
         return name or self.name or self.type
 
-    def _raise_error_if_no_value(self, value):
+    def _raise_error_if_no_value(self, value, parent):
         if not value:
-            raise AssertionError('Value of %s not set' % self._get_name())
+            raise AssertionError('Value of %s not set' % self._get_recursive_name(parent))
 
+    def _get_recursive_name(self, parent):
+        if parent != None:
+            print "parent is", parent
+        return parent._get_recursive_name(parent) + '.' + self.name if parent != None else self.name
 
 class PlaceHolderField(object):
 
@@ -116,7 +120,7 @@ class UInt(_TemplateField):
         self.default_value = str(default_value) if default_value and default_value != '""' else None
 
     def _encode_value(self, value, message, little_endian=False):
-        self._raise_error_if_no_value(value)
+        self._raise_error_if_no_value(value, message)
         length, aligned_length = self.length.decode_lengths(message)
         binary = to_bin_of_length(length, value)
         binary = binary[::-1] if little_endian else binary
@@ -150,7 +154,7 @@ class Binary(_TemplateField):
         self.default_value = str(default_value) if default_value and default_value != '""' else None
 
     def _encode_value(self, value, message, little_endian=False):
-        self._raise_error_if_no_value(value)
+        self._raise_error_if_no_value(value, message)
         minimum_binary = to_bin(value)
         length, aligned = self.length.decode_lengths(message, len(minimum_binary))
         binary = to_bin_of_length(self._byte_length(length), value)
@@ -178,7 +182,7 @@ class TBCD(_TemplateField):
         self.default_value = str(default_value) if default_value and default_value != '""' else None
 
     def _encode_value(self, value, message, little_endian=False):
-        self._raise_error_if_no_value(value)
+        self._raise_error_if_no_value(value, message)
         binary = to_tbcd_binary(value)
         length = self.length.decode(message, len(binary))
         return binary, self._byte_length(length)

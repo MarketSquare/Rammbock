@@ -19,8 +19,10 @@ from OrderedDict import OrderedDict
 
 class _StructuredElement(object):
 
+    _type = None
+
     def __init__(self, name):
-        self._name = '%s %s' % (self._type, name)
+        self._name = name
         self._fields = OrderedDict()
         self._parent = None
 
@@ -35,12 +37,12 @@ class _StructuredElement(object):
         return self[name]
 
     def __str__(self):
-        return self._name
+        return self._get_name()
 
     def __repr__(self):
-        result = '%s\n' % self._name
+        result = '%s\n' % str(self._get_name())
         for field in self._fields.values():
-            result +=self._format_indented('%s' % repr(field))
+            result += self._format_indented('%s' % repr(field))
         return result
 
     def __contains__(self, key):
@@ -52,21 +54,30 @@ class _StructuredElement(object):
     @property
     def _raw(self):
         return self._get_raw_bytes()
-        
+
+    def _get_name(self):
+        return '%s %s' % (self._type, self._name)
+
     def _get_raw_bytes(self):
         return ''.join((field._raw for field in self._fields.values()))
 
     def __len__(self):
         return sum(len(field) for field in self._fields.values())
 
+    def _get_recursive_name(self, parent):
+        return self._parent._get_recursive_name(parent) + self._name \
+                        if self._parent != None else self._name
 
 class List(_StructuredElement):
 
     _type = 'List'
 
     def __init__(self, name, type_name):
-        self._name = '%s %s[]' % (type_name, name)
+        self._name, self._type = name, type_name
         self._fields = OrderedDict()
+
+    def _get_name(self):
+        return '%s %s[]' % (self._type, self._name)
 
 
 class Struct(_StructuredElement):
@@ -74,7 +85,8 @@ class Struct(_StructuredElement):
     _type = 'Struct'
 
     def __init__(self, name, type_name):
-        self._name = '%s %s' % (type_name, name)
+        self._name = name
+        self._type = type_name
         self._fields = OrderedDict()
 
 

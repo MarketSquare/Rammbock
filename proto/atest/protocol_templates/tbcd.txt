@@ -62,6 +62,15 @@ Decoding two tbcd values
     1234     4567
     1        2
 
+Get recursive name when field not found
+    New message    recursive field name    Example    messageType:0xdddd
+    new struct    struct   struct
+    new tbcd container    tbcd_cont
+    tbcd    3    value
+    end tbcd container
+    end struct
+    run keyword and expect error    *tbcd_cont.value*    get message
+
 *** Keywords ***
 decoding two value tbcd
     [Arguments]    ${val 1}     ${val 2}

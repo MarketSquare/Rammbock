@@ -60,7 +60,10 @@ class _Template(object):
         message_fields.pop('*', None)
         if message_fields:
             raise AssertionError('Unknown fields in %s %s' %
-                                 (name, self._pretty_print_fields(message_fields)))
+                                 (self._get_recursive_name(name), self._pretty_print_fields(message_fields)))
+
+    def _get_recursive_name(self, name):
+        return self.parent._get_recursive_name(name) if self.parent else name
 
     def _encode_fields(self, struct, params, little_endian=False):
         for field in self._fields.values():
