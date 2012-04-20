@@ -58,8 +58,22 @@ send Create Session Request
     Aggregate maximum bit rate    value.ambr_uplink:2    value.ambr_downlink:1
     bearer context    value.eps_bearer_id.value.epsbid.value:5    value.bearer_level_qos.value.arp.pl:1   value.bearer_level_qos.value.label:9
     recovery   value.recovery:1
-#    ue time zone
+    ue time zone   value.timezone.value:0
 #    charging characteristics
+
+ue time zone fields
+    new binary container    timezone
+    bin   6    spare   0b111111
+    bin   2    value
+    end binary container
+    new binary container    dst
+    bin   6    spare   0
+    bin   2    value   0
+    end binary container
+
+ue time zone
+    [arguments]    @{args}
+    IE    ue time zone    114    ue time zone fields    @{args}
 
 recovery fields
     u8    recovery
