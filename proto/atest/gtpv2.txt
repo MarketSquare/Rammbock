@@ -59,7 +59,14 @@ send Create Session Request
     bearer context    value.eps_bearer_id.value.epsbid.value:5    value.bearer_level_qos.value.arp.pl:1   value.bearer_level_qos.value.label:9
     recovery   value.recovery:1
     ue time zone   value.timezone.value:0
-#    charging characteristics
+    charging characteristics
+
+charging characteristics fields
+    u16    charging_characteristic    0x3200
+
+charging characteristics
+    [arguments]     @{args}
+    IE    charging characteristics    95    charging characteristics fields    @{args}
 
 ue time zone fields
     new binary container    timezone
