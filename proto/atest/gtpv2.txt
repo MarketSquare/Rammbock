@@ -52,14 +52,42 @@ send Create Session Request
     F-TEID    2    instance.value:1    value.f-teid_ipv4:0x0a66b6b8    value.values.interface type:10
     APN     value.access_point_name:sgw.foo.com.mnc012.mcc262.gprs
     Selection mode    value.selection_mode.value:0
-    PDN Type
-    PDN Address Allocation
-    APN Restriction
+    PDN Type    value.pdn_type.value:1
+    PDN Address Allocation    value.pdn_type.value:1    value.pdn_address_and_prefix:0x00
+    APN Restriction    value.apn_restriction:0
     Aggregate maximum bit rate
     bearer context
     recovery
     ue time zone
     charging characteristics
+
+APN Restriction fields
+    u8    apn_restriction
+
+APN Restriction
+    [arguments]    @{args}
+    IE    APN Restriction      127    APN Restriction fields    @{args}
+
+PDN Address Allocation
+    [arguments]    @{args}
+    IE    PDN Address Allocation    79    PDN Address Allocation fields    @{args}
+
+PDN Address Allocation fields
+    new Binary container    pdn_type
+    bin    5    spare    0
+    bin    3    value
+    end binary container
+    u32    pdn_address_and_prefix
+
+PDN Type
+    [arguments]    @{args}
+    IE    PDN Type    99    PDN Type field    @{args}
+
+PDN Type field
+    new Binary container    pdn_type
+    bin    5    spare    0
+    bin    3    value
+    end binary container
 
 Selection mode
     [arguments]    @{args}
