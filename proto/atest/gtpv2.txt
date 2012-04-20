@@ -42,20 +42,62 @@ send Create Session Request
     u32    tunnel endpoint identifier    0
     u24    sequence number
     u8    spare    0
-    IMSI    15    262120000000001
-    MSISDN    3    358        13    6100000000001
-    ULI    contain.flags:0b00011000    contain.tai.mcc.mcc:262    contain.tai.mnc.mnc:12   contain.ecgi.mcc.mcc:262    contain.ecgi.mnc.mnc:12    contain.ecgi.eci.ecgi:234    contain.tai.tracking_area_code:1
-    Serving network   contain.mcc.mcc:262    contain.mnc.mnc:12
-    Rat type    6
-    Indication    fields.fields.DAF:1
+    IMSI       instance.value:1    value.imsi.imsi:262120000000001
+    MSISDN    value.msisdn.country_code:358     value.msisdn.address_digits:6100000000001
+    ULI    value.flags:0b00011000    value.tai.mcc.value:262  value.tai.mnc.value:12       value.ecgi.mcc.value:262    value.ecgi.mnc.value:12    value.ecgi.eci.ecgi:234    value.tai.tracking_area_code:1
+    Serving network   value.mcc.value:262    value.mnc.value:12
+    Rat type    value.rat_type:6
+    Indication    value.fields.DAF:1
+    F-TEID    1    value.f-teid_ipv4:0xc0a8700a    value.values.interface type:7
+    F-TEID    2    instance.value:1    value.f-teid_ipv4:0x0a66b6b8    value.values.interface type:10
+    APN     value.access_point_name:sgw.foo.com.mnc012.mcc262.gprs
+    Selection mode    value.selection_mode.value:0
+    PDN Type
+    PDN Address Allocation
+    APN Restriction
+    Aggregate maximum bit rate
+    bearer context
+    recovery
+    ue time zone
+    charging characteristics
+
+Selection mode
+    [arguments]    @{args}
+    IE    Selection mode    128    Selection mode field    @{args}
+
+Selection mode field
+    new Binary container    selection_mode
+    bin    6    spare    0
+    bin    2    value
+    end binary container
+
+APN
+    [arguments]    @{args}
+    IE    APN    71    APN Field    @{args}
+
+apn field
+    chars  *  access_point_name
+
+F-TEID
+    [Arguments]   ${number}    @{args}
+    IE    F-TEID${number}    87    F-TEID fields    @{args}
+
+F-TEID fields
+    [Arguments]    @{args}
+    new binary container    values
+    bin    1    v4    1
+    bin    1    v6    0
+    bin    6    interface type
+    end binary container
+    u32    teid_gre_key    0x00
+    u32    f-teid_ipv4
+
 
 Indication
     [Arguments]    @{args}
     IE    indication    77    indication fields    @{args}
 
 indication fields
-    [Arguments]    @{args}
-    new struct    fields    fields    @{args}
     new binary container    fields
     Bin    1    DAF     0
     Bin    1    DTF     0
@@ -80,11 +122,13 @@ indication fields
     Bin    1    ISRAU   0
     Bin    1    CCRSI   0
     end binary container
-    end struct
 
 rat type
-    [arguments]    ${type}
-    IE    rat type    82    u8    rat_type    6
+    [arguments]    @{args}
+    IE    rat type    82    rat type value    @{args}
+
+rat type value
+    u8    rat_type
 
 Serving network
     [Arguments]    @{values}
@@ -92,21 +136,22 @@ Serving network
 
 serving network fields
     [Arguments]    @{arguments}
-    new struct     contain    contain   @{arguments}
-    single value tbcd container    mcc   3   ${none}
-    single value tbcd container    mnc   2   ${none}
-    end struct
+    new tbcd container    mcc
+    tbcd    3    value
+    end tbcd container
+    new tbcd container    mnc
+    tbcd    2    value
+    end tbcd container
+
 ULI
     [Arguments]    @{values}
     IE    uli    88    uli fields    @{values}
 
 UlI fields
     [Arguments]       @{args}
-    new struct    contain    contain    @{args}
     u8    flags
     TAI
     ECGI
-    end struct
 
 ECGI
     new struct    E-UTRAN Cell Global Identifier    ecgi
@@ -126,34 +171,48 @@ TAI
     end struct
 
 IMSI
-    [Arguments]    ${len}    ${value}
-    IE    imsi    83    single value tbcd container    imsi    ${len}    ${value}
+    [Arguments]    @{args}
+    IE    imsi    83    imsi fields  @{args}
+
+imsi fields
+    new tbcd container    imsi
+    tbcd    15    imsi
+    end tbcd container
 
 MSISDN
-    [Arguments]    ${cc len}    ${country code}    ${ad len}    ${address digits}
-    IE    msisdn    54    two value tbcd container    msisdn    ${cc len}    ${country code}    ${ad len}    ${address digits}
+    [Arguments]    @{args}
+    IE    msisdn    54    msisdn fields    @{args}
 
-two value tbcd container
-    [Arguments]    ${name}    ${first len}    ${first value}    ${second len}    ${second value}
-    new tbcd container    ${name}
-    tbcd    ${first len}     first     ${first value}
-    tbcd    ${second len}    second    ${second value}
+msisdn fields
+    new tbcd container    msisdn
+    tbcd    3    country_code       358
+    tbcd    *   address_digits
     end tbcd container
 
 single value tbcd container
     [Arguments]    ${name}    ${len}    ${value}
     new tbcd container    ${name}
-    tbcd   ${len}    ${name}    ${value}
+    tbcd   ${len}    value    ${value}
     end tbcd container
 
 IE
     [Arguments]    ${name}    ${type}    ${content}    @{values}
-    new Struct    IE    ${name}
+    new Struct    IE    ${name}    @{values}
     u8    ie type    ${type}
     u16    ie_length
-    u8    instance    0
-    container    value    ie_length    ${content}    @{values}
+    new binary container    instance
+    bin    4    spare    0
+    bin    4    value    0
+    end binary container
+    IE value    ${content}
     End struct
+
+IE Value
+    [Arguments]    ${kw}    @{args}
+    new struct    Container    value    length=ie_length    @{args}
+    run keyword    ${kw}
+    end struct
+
 
 ADDRESS
     [Arguments]    ${value}
