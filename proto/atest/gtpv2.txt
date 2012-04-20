@@ -13,7 +13,6 @@ ${CREATE SESSION REQUEST}    32
 Create Session Request
     [Tags]
     Create and send Create Session Request
-    get message    sequence number:48
     Receive and Validate Create Session Request
 
 *** Keywords ***
@@ -21,13 +20,13 @@ Create and send Create Session Request
     send Create Session Request
 
 Receive and Validate Create Session Request
-    Server Receives Data
-    Validate Create Session Request
+    Server Receives message
 
 Create server and client, and define protocol
     define gtpv2 protocol
     start udp server    ${LOCALHOST IP}    ${GTP CONTROL PORT}    protocol=gtpv2
     start udp client    ip=${LOCALHOST IP}    protocol=gtpv2
+    connect    ${LOCALHOST IP}    ${GTP CONTROL PORT}
 
 define gtpv2 protocol
     new protocol    gtpv2
@@ -60,6 +59,7 @@ send Create Session Request
     recovery   value.recovery:1
     ue time zone   value.timezone.value:0
     charging characteristics
+    client sends message   sequence number:48
 
 charging characteristics fields
     u16    charging_characteristic    0x3200
