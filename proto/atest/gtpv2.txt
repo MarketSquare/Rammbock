@@ -61,6 +61,15 @@ send Create Session Request
     ue time zone
     charging characteristics
 
+bearer context fields
+    IE with named value      EPS bearer id    73    EPS bearer id    ${empty}
+    IE with named value      EPS bearer id    73    EPS bearer id    ${empty}
+    Bearer level quality of service
+
+bearer context
+    [arguments]   @{args}
+    IE     bearer context    93    bearer context fields    @{args}
+
 Aggregate maximum bit rate fields
     u32    ambr_uplink
     u32    ambr_downlink
@@ -244,7 +253,7 @@ IE
     End struct
 
 IE Value
-    [Arguments]    ${kw}    @{args}
+    [Arguments]    ${name}    ${kw}    @{args}
     new struct    Container    value    length=ie_length    @{args}
     run keyword    ${kw}
     end struct
