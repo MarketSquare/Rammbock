@@ -55,11 +55,19 @@ send Create Session Request
     PDN Type    value.pdn_type.value:1
     PDN Address Allocation    value.pdn_type.value:1    value.pdn_address_and_prefix:0x00
     APN Restriction    value.apn_restriction:0
-    Aggregate maximum bit rate
+    Aggregate maximum bit rate    value.ambr_uplink:2    value.ambr_downlink:1
     bearer context
     recovery
     ue time zone
     charging characteristics
+
+Aggregate maximum bit rate fields
+    u32    ambr_uplink
+    u32    ambr_downlink
+
+Aggregate maximum bit rate
+    [arguments]    @{args}
+    IE    Aggregate maximum bit rate    72    Aggregate maximum bit rate fields    @{args}
 
 APN Restriction fields
     u8    apn_restriction
