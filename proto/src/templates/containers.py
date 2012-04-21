@@ -373,11 +373,11 @@ class BinaryContainerTemplate(_Template):
         container = self._get_struct(name, little_endian=little_endian)
         if little_endian:
             data = data[::-1]
-        a = to_binary_string_of_length(self.binlength, data)
+        bin_str = to_binary_string_of_length(self.binlength, data[:self.binlength/8])
         data_index = 2
         for field in self._fields.values():
             container[field.name] = BinaryField(field.length.value, field.name,
-                to_bin("0b" + a[data_index:data_index + field.length.value]))
+                to_bin("0b" + bin_str[data_index:data_index + field.length.value]))
             data_index += field.length.value
         return container
 

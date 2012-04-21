@@ -611,6 +611,18 @@ class TestBinaryContainerTemplate(TestCase):
         self.assertEqual(1, encoded.twelveBits.int)
         self.assertEquals(encoded._raw, to_bin("0x0190"))
 
+    def test_decode_longer_data_than_field(self):
+        container = self._1_byte_container()
+        decoded = container.decode(to_bin("0b0000 0001 1111 1111"))
+        self.assertEqual(0, decoded.spare.int)
+        self.assertEqual(1, decoded.value.int)
+
+    def _1_byte_container(self):
+        container = BinaryContainerTemplate('foo', None)
+        container.add(Binary(4, 'spare', 0))
+        container.add(Binary(4, 'value', 1))
+        return container
+
     def _2_byte_container(self):
         container = BinaryContainerTemplate('foo', None)
         container.add(Binary(1, 'oneBit', 1))
