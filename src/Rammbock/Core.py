@@ -256,10 +256,10 @@ class RammbockCore(object):
         self._register_receive(server, label, name, connection=connection)
         return msg, ip, port
 
-    def _init_new_message_stack(self, message):
+    def _init_new_message_stack(self, message, fields=None):
         if self._protocol_in_progress:
             raise Exception("Protocol definition in progress. Please finish it before starting to define a message.")
-        self._field_values = {}
+        self._field_values = fields if fields else {}
         self._message_stack = [message]
 
     def new_message(self, message_name, protocol=None, *parameters):
@@ -278,12 +278,12 @@ class RammbockCore(object):
     def save_template(self, name):
         """Save a message template for later use with `Load template`.
         """
-        self._message_templates[name] = self._get_message_template()
+        self._message_templates[name] = (self._get_message_template(), self._field_values)
 
     def load_template(self, name):
         """Load a message template saved with `Save template`.
         """
-        self._init_new_message_stack(self._message_templates[name])
+        self._init_new_message_stack(*self._message_templates[name])
 
     def get_message(self, *parameters):
         """Get encoded message.
