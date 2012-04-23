@@ -71,6 +71,21 @@ Get recursive name when field not found
     end struct
     run keyword and expect error    *tbcd_cont.value*    get message
 
+Star length in tbcd field inside struct
+    New message    recursive field name    Example    messageType:0xdddd
+    u8    length
+    new struct    struct    struct    length=length
+    new tbcd container    tbcd
+    tbcd     3    static    358
+    tbcd     *    dynamic   6100000000001
+    end tbcd container
+    end struct
+    ${msg}=    get message
+    log many    ${msg.length.int}    ${msg.struct.tbcd.static.tbcd}    ${msg.struct.tbcd.dynamic.tbcd}
+    should be equal as integers   ${msg.length.int}    8
+    should be equal   ${msg.struct.tbcd.static.tbcd}    358
+    should be equal   ${msg.struct.tbcd.dynamic.tbcd}    6100000000001
+
 *** Keywords ***
 decoding two value tbcd
     [Arguments]    ${val 1}     ${val 2}

@@ -687,6 +687,34 @@ class TestTBCDContainerTemplate(TestCase):
         self.assertRaises(AssertionError, container.encode, {}, {}, little_endian=True)
         self.assertRaises(AssertionError, container.decode, to_bin('0x21f3'), little_endian=True)
 
+    def test_get_encoded_raw_bytes(self):
+        container = TBCDContainerTemplate('tbcd', None)
+        container.add(TBCD('3', 'first', '123'))
+        container.add(TBCD('13', 'second', '6100000000001'))
+        encoded = container.encode({}, {})
+        self.assertEquals(to_bin("0b0010000101100011000000010000000000000000000000000000000000010000"), encoded._get_raw_bytes())
+
+    def test_decode_raw_bytes_with_star_length(self):
+        container = TBCDContainerTemplate('tbcd', None)
+        container.add(TBCD('3', 'first', '123'))
+        container.add(TBCD('*', 'second', '6100000000001'))
+        decoded = container.decode(to_bin("0b0010000101100011000000010000000000000000000000000000000000010000"))
+        self.assertEquals('123', decoded.first.tbcd)
+        self.assertEquals('6100000000001', decoded.second.tbcd)
+
+    def test_encoded_even_value_container_returns_correct_length(self):
+        container = TBCDContainerTemplate('tbcd', None)
+        container.add(TBCD('3', 'first', '123'))
+        container.add(TBCD('13', 'second', '6100000000001'))
+        encoded = container.encode({})
+        self.assertEquals(8, len(encoded))
+
+    def test_encoded_odd_value_container_returns_correct_length(self):
+        container = TBCDContainerTemplate('tbcd', None)
+        container.add(TBCD('3', 'first', '456'))
+        container.add(TBCD('4', 'second', '1234'))
+        encoded = container.encode({})
+        self.assertEquals(4, len(encoded))
 
 class TestLittleEndian(TestCase):
 

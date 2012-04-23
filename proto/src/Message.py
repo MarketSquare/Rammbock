@@ -136,7 +136,7 @@ class TBCDContainer(BinaryContainer):
         return to_tbcd_binary("".join(field.tbcd for field in self._fields.values()))
 
     def __len__(self):
-        return sum(field._length for field in self._fields.values())
+        return int(ceil(sum(len(field.tbcd) for field in self._fields.values())/2.0))
 
 
 class Message(_StructuredElement):
