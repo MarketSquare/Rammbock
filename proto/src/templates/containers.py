@@ -226,6 +226,7 @@ class StructTemplate(_Template):
         return Struct(name or self.name, self.type)
 
     def validate(self, parent, message_fields, name=None):
+        self._add_struct_params(message_fields)
         errors = []
         name = name or self.name
         message = parent[name]
