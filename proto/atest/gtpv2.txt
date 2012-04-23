@@ -17,11 +17,11 @@ Create Session Request
 *** Keywords ***
 Create and send Create Session Request
     Create Session Request
-    client sends message   sequence number:48
+    client sends message   header:sequence number:48
 
 Receive and Validate Create Session Request
     Create Session Request
-    Server Receives message    sequence number:48
+    ${msg}=    Server Receives message    header:sequence number:48
 
 Create server and client, and define protocol
     define gtpv2 protocol
@@ -33,16 +33,16 @@ define gtpv2 protocol
     new protocol    gtpv2
     u8    flags    72
     u8    message type
-    u16    message length
-    pdu    message length-4
+    u16   message length
+    u32   tunnel endpoint identifier    0
+    u24   sequence number
+    u8    spare    0
+    pdu    message length-12
     end protocol
 
 Create Session Request
     new message    create session request    gtpv2    message type:${CREATE SESSION REQUEST}
-    u32    tunnel endpoint identifier    0
-    u24    sequence number
-    u8    spare    0
-    IMSI       instance.value:0x01    value.imsi.imsi:262120000000001
+    IMSI       instance.value:0x01    value.imsi.value:262120000000001
     MSISDN
     ULI    value.flags:0b00011000    value.tai.mcc.value:262  value.tai.mnc.value:12       value.ecgi.mcc.value:262    value.ecgi.mnc.value:12    value.ecgi.eci.ecgi:234    value.tai.tracking_area_code:1
     Serving network   value.mcc.value:262    value.mnc.value:12
@@ -60,7 +60,6 @@ Create Session Request
     recovery   value.recovery:1
     ue time zone   value.timezone.value:0
     charging characteristics
-
 
 charging characteristics fields
     u16    charging_characteristic    0x3200
@@ -105,10 +104,10 @@ Bearer level quality of service fields
     bin   1    pvi     0
     end binary container
     u8    label
-    u32    mbr_uplink      0
-    u32    mbr_downlink    0
-    u32    gbr_uplink      0
-    u32    gbr_downlink    0
+    u40    mbr_uplink      0
+    u40    mbr_downlink    0
+    u40    gbr_uplink      0
+    u40    gbr_downlink    0
 
 bearer context fields
     IE       eps_bearer_id    73    EPS bearer id fields
@@ -238,7 +237,7 @@ serving network fields
 
 ULI
     [Arguments]    @{values}
-    IE    uli    88    uli fields    @{values}
+    IE    uli    86    uli fields    @{values}
 
 UlI fields
     [Arguments]       @{args}
@@ -265,16 +264,16 @@ TAI
 
 IMSI
     [Arguments]    @{args}
-    IE    imsi    83    imsi fields  @{args}
+    IE    imsi    1    imsi fields  @{args}
 
 imsi fields
     new tbcd container    imsi
-    tbcd    15    imsi
+    tbcd    15    value
     end tbcd container
 
 MSISDN
     [Arguments]    @{args}
-    IE    msisdn    54    msisdn fields    @{args}
+    IE    msisdn    76    msisdn fields    @{args}
 
 msisdn fields
     new tbcd container    msisdn
@@ -290,13 +289,13 @@ single value tbcd container
 
 IE
     [Arguments]    ${name}    ${type}    ${content}    @{values}
-    IE header   ${name}    ${type}    ${content}    @{values}
+    new Struct    IE    ${name}    @{values}
+    IE header   ${name}    ${type}    ${content}
     IE value    ${content}
     End struct
 
 IE header
-    [Arguments]    ${name}    ${type}    ${content}    @{values}
-    new Struct    IE    ${name}    @{values}
+    [Arguments]    ${name}    ${type}    ${content}
     u8    ie type    ${type}
     u16    ie_length
     new binary container    instance
@@ -309,7 +308,6 @@ IE Value
     new struct    Container    ${name}    length=ie_length
     run keyword    ${kw}
     end struct
-
 
 ADDRESS
     [Arguments]    ${value}

@@ -83,6 +83,12 @@ class RammbockLibrary(Rammbock):
         This is an convenience method that simply calls `Uint` keyword with predefined length."""
         self.uint(4, name, value, align)
 
+    def u40(self, name, value=None, align=None):
+        """Add an unsigned 5 byte integer field to template.
+
+        This is an convenience method that simply calls `Uint` keyword with predefined length."""
+        self.uint(5, name, value, align)
+
     def u64(self, name, value=None, align=None):
         """Add an unsigned 8 byte integer field to template.
 
