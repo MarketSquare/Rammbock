@@ -11,16 +11,17 @@ ${CREATE SESSION REQUEST}    32
 
 *** Test Cases ***
 Create Session Request
-    [Tags]
     Create and send Create Session Request
     Receive and Validate Create Session Request
 
 *** Keywords ***
 Create and send Create Session Request
-    send Create Session Request
+    Create Session Request
+    client sends message   sequence number:48
 
 Receive and Validate Create Session Request
-    Server Receives message
+    Create Session Request
+    Server Receives message    sequence number:48
 
 Create server and client, and define protocol
     define gtpv2 protocol
@@ -36,13 +37,13 @@ define gtpv2 protocol
     pdu    message length-4
     end protocol
 
-send Create Session Request
+Create Session Request
     new message    create session request    gtpv2    message type:${CREATE SESSION REQUEST}
     u32    tunnel endpoint identifier    0
     u24    sequence number
     u8    spare    0
-    IMSI       instance.value:1    value.imsi.imsi:262120000000001
-    MSISDN    value.msisdn.country_code:358     value.msisdn.address_digits:6100000000001
+    IMSI       instance.value:0x01    value.imsi.imsi:262120000000001
+    MSISDN
     ULI    value.flags:0b00011000    value.tai.mcc.value:262  value.tai.mnc.value:12       value.ecgi.mcc.value:262    value.ecgi.mnc.value:12    value.ecgi.eci.ecgi:234    value.tai.tracking_area_code:1
     Serving network   value.mcc.value:262    value.mnc.value:12
     Rat type    value.rat_type:6
@@ -50,7 +51,7 @@ send Create Session Request
     F-TEID    1    value.f-teid_ipv4:0xc0a8700a    value.values.interface type:7
     F-TEID    2    instance.value:1    value.f-teid_ipv4:0x0a66b6b8    value.values.interface type:10
     APN     value.access_point_name:sgw.foo.com.mnc012.mcc262.gprs
-    Selection mode    value.selection_mode.value:0
+    Selection mode
     PDN Type    value.pdn_type.value:1
     PDN Address Allocation    value.pdn_type.value:1    value.pdn_address_and_prefix:0x00
     APN Restriction    value.apn_restriction:0
@@ -59,7 +60,7 @@ send Create Session Request
     recovery   value.recovery:1
     ue time zone   value.timezone.value:0
     charging characteristics
-    client sends message   sequence number:48
+
 
 charging characteristics fields
     u16    charging_characteristic    0x3200
@@ -159,8 +160,8 @@ Selection mode
 
 Selection mode field
     new Binary container    selection_mode
-    bin    6    spare    0
-    bin    2    value
+    bin    6    spare    0b111111
+    bin    2    value    0
     end binary container
 
 APN
@@ -278,7 +279,7 @@ MSISDN
 msisdn fields
     new tbcd container    msisdn
     tbcd    3    country_code       358
-    tbcd    *   address_digits
+    tbcd    *   address_digits      6100000000001
     end tbcd container
 
 single value tbcd container
