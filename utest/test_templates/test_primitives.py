@@ -1,7 +1,7 @@
 from unittest import TestCase, main
 from Rammbock.templates.primitives import Char, UInt, PDU, Binary
-from Message import Field
-from binary_tools import to_bin
+from Rammbock.message import Field
+from Rammbock.binary_tools import to_bin
 
 
 class TestTemplateFields(TestCase):

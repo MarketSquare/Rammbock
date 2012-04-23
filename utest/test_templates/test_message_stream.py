@@ -2,7 +2,7 @@ from unittest import TestCase, main
 import socket
 from Rammbock.templates.message_stream import MessageStream
 from Rammbock.templates import Protocol, MessageTemplate, UInt, PDU
-from binary_tools import to_bin 
+from Rammbock.binary_tools import to_bin
 
 
 class _MockStream(object):

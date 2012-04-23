@@ -1,5 +1,5 @@
 from unittest import TestCase, main
-from binary_tools import to_bin, to_bin_of_length, to_hex, to_0xhex, to_binary_string_of_length, to_tbcd_value, to_bin_str_from_int_string, to_tbcd_binary
+from Rammbock.binary_tools import to_bin, to_bin_of_length, to_hex, to_0xhex, to_binary_string_of_length, to_tbcd_value, to_bin_str_from_int_string, to_tbcd_binary
 
 
 class TestBinaryConversions(TestCase):

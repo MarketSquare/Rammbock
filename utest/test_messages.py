@@ -1,6 +1,6 @@
 from unittest import TestCase, main
-from Message import Struct, Field, BinaryContainer, BinaryField
-from binary_tools import to_bin
+from Rammbock.message import Struct, Field, BinaryContainer, BinaryField
+from Rammbock.binary_tools import to_bin
 
 
 def uint_field(value='0x00'):

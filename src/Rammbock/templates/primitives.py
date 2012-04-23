@@ -12,9 +12,10 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from Message import Field, BinaryField
 from math import ceil
-from binary_tools import to_bin_of_length, to_0xhex, to_tbcd_binary, to_tbcd_value, to_binary_string_of_length, to_bin
+
+from Rammbock.message import Field, BinaryField
+from Rammbock.binary_tools import to_bin_of_length, to_0xhex, to_tbcd_binary, to_tbcd_value, to_binary_string_of_length, to_bin
 
 
 class _TemplateField(object):

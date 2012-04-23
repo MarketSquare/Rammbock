@@ -1,5 +1,5 @@
 from unittest import TestCase, main
-from message_sequence import MessageSequence, SeqdiagGenerator
+from Rammbock.message_sequence import MessageSequence, SeqdiagGenerator
 
 CLIENT = ('11.11.11.11', 11)
 SERVER = ('11.11.11.11', 2222)

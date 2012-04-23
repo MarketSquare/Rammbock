@@ -2,7 +2,7 @@ from unittest import TestCase, main
 import time
 import socket
 from threading import Timer
-from Networking import UDPServer, TCPServer, UDPClient, TCPClient, BufferedStream
+from Rammbock.networking import UDPServer, TCPServer, UDPClient, TCPClient, BufferedStream
 from Rammbock.templates.containers import Protocol
 from Rammbock.templates.primitives import UInt, PDU
 

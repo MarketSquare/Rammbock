@@ -1,7 +1,7 @@
 from unittest import TestCase, main
 from Rammbock.templates.containers import Protocol, MessageTemplate, StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate, TBCDContainerTemplate
 from Rammbock.templates.primitives import UInt, PDU, Char, Binary, TBCD
-from binary_tools import to_bin_of_length, to_bin
+from Rammbock.binary_tools import to_bin_of_length, to_bin
 
 
 def _get_empty_pair(name='pair'):

@@ -15,11 +15,11 @@
 from math import ceil
 import re
 
-from Message import Field, Union, Message, Header, List, Struct, BinaryContainer, BinaryField, TBCDContainer
+from Rammbock.message import Field, Union, Message, Header, List, Struct, BinaryContainer, BinaryField, TBCDContainer
 from message_stream import MessageStream
 from primitives import Length, Binary, UInt, TBCD
-from OrderedDict import OrderedDict
-from binary_tools import to_binary_string_of_length, to_bin, to_tbcd_value, to_tbcd_binary
+from Rammbock.ordered_dict import OrderedDict
+from Rammbock.binary_tools import to_binary_string_of_length, to_bin, to_tbcd_value, to_tbcd_binary
 
 
 class _Template(object):

@@ -12,7 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from binary_tools import to_bin
+from Rammbock.binary_tools import to_bin
 
 class MessageStream(object):
 
