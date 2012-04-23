@@ -1,1 +1,0 @@
-LOOPBACK_DEVICE = 'lo'
