@@ -14,12 +14,12 @@
 
 import os
 
-from Rammbock import Rammbock
+from core import RammbockCore
 from robot.libraries.BuiltIn import BuiltIn
 from message_sequence import SeqdiagGenerator
 
 
-class RammbockLibrary(Rammbock):
+class Rammbock(RammbockCore):
     """RammbockLibrary is a binary protocol testing library for Robot Test Automation Framework.
 
     To use Rammbock you need to first define a protocol, start the clients and servers you are going to mock,

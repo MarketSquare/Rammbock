@@ -14,7 +14,7 @@
 
 from __future__ import with_statement
 from contextlib import contextmanager
-from Networking import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
+from networking import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 from message_sequence import MessageSequence
 from templates import Protocol, UInt, PDU, MessageTemplate, Char, Binary, \
     StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate
@@ -23,7 +23,7 @@ from templates.containers import TBCDContainerTemplate
 from templates.primitives import TBCD
 
 
-class Rammbock(object):
+class RammbockCore(object):
 
     ROBOT_LIBRARY_SCOPE = 'GLOBAL'
 

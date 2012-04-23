@@ -1,7 +1,7 @@
 from unittest import TestCase, main
 import socket
-from templates.message_stream import MessageStream
-from templates import Protocol, MessageTemplate, UInt, PDU
+from Rammbock.templates.message_stream import MessageStream
+from Rammbock.templates import Protocol, MessageTemplate, UInt, PDU
 from binary_tools import to_bin 
 
 

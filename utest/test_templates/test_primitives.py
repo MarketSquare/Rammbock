@@ -1,5 +1,5 @@
 from unittest import TestCase, main
-from templates.primitives import Char, UInt, PDU, Binary
+from Rammbock.templates.primitives import Char, UInt, PDU, Binary
 from Message import Field
 from binary_tools import to_bin
 

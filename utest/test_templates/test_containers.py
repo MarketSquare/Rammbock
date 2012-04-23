@@ -1,6 +1,6 @@
 from unittest import TestCase, main
-from templates.containers import Protocol, MessageTemplate, StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate, TBCDContainerTemplate
-from templates.primitives import UInt, PDU, Char, Binary, TBCD
+from Rammbock.templates.containers import Protocol, MessageTemplate, StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate, TBCDContainerTemplate
+from Rammbock.templates.primitives import UInt, PDU, Char, Binary, TBCD
 from binary_tools import to_bin_of_length, to_bin
 
 

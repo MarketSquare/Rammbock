@@ -1,6 +1,6 @@
 from unittest import TestCase, main
 from Message import Struct, Field
-from templates.primitives import Length
+from Rammbock.templates.primitives import Length
 from binary_tools import to_bin
 
 class TestLength(TestCase):

@@ -3,8 +3,8 @@ import time
 import socket
 from threading import Timer
 from Networking import UDPServer, TCPServer, UDPClient, TCPClient, BufferedStream
-from templates.containers import Protocol
-from templates.primitives import UInt, PDU
+from Rammbock.templates.containers import Protocol
+from Rammbock.templates.primitives import UInt, PDU
 
 LOCAL_IP = '127.0.0.1'
 CONNECTION_ALIAS = "Connection alias"

@@ -14,7 +14,7 @@
 
 from math import ceil
 from binary_tools import to_0xhex, to_binary_string_of_length, to_bin_of_length, to_tbcd_value, to_tbcd_binary, to_bin_str_from_int_string, to_hex
-from OrderedDict import OrderedDict
+from ordered_dict import OrderedDict
 
 
 class _StructuredElement(object):
