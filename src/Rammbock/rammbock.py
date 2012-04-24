@@ -17,6 +17,7 @@ import os
 from core import RammbockCore
 from robot.libraries.BuiltIn import BuiltIn
 from message_sequence import SeqdiagGenerator
+from version import VERSION
 
 
 class Rammbock(RammbockCore):
@@ -58,6 +59,8 @@ class Rammbock(RammbockCore):
 
 
     """
+
+    ROBOT_LIBRARY_VERSION = VERSION
 
     def u8(self, name, value=None, align=None):
         """Add an unsigned 1 byte integer field to template.
