@@ -2,4 +2,6 @@
 from robot.libdoc import libdoc
 from os.path import join, dirname
 
-libdoc(join(dirname(__file__),'src','Rammbock'), join(dirname(__file__),'doc','Rammbock.html'))
+execfile(join(dirname(__file__), 'src', 'Rammbock', 'version.py'))
+
+libdoc(join(dirname(__file__),'src','Rammbock'), join(dirname(__file__),'doc','Rammbock-%s.html' % VERSION))
