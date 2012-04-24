@@ -1,5 +1,4 @@
-Generic network protocol test library for Robot Framework, which offers easy way to specify network packets and
-inspect the results of sent / received packets. Library will offer Domain Specific Language for packet specification.
+Generic network protocol test library for Robot Framework, which offers easy way to specify network packets and inspect the results of sent / received packets. Library will offer Domain Specific Language for packet specification.
 
 1. Installation instructions:
 
