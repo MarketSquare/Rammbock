@@ -20,7 +20,7 @@ python setup.py install
 GTPv2
 
 Examples can be found from our Acceptance Test Cases:
-https://github.com/robotframework/Rammbock/atest/
+https://github.com/robotframework/Rammbock/tree/master/atest
 
 3. See the userguide at https://github.com/robotframework/Rammbock/wiki/RammbockUserGuide
 
