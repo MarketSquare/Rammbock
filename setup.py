@@ -11,5 +11,5 @@ setup(name         = 'robotframework-rammbock',
       author_email = 'robotframework-users@googlegroups.com',
       url          = 'http://github.com/robotframework/Rammbock/',
       package_dir  = {'' : 'src'},
-      packages     = ['Rammbock']
+      packages     = ['Rammbock', 'Rammbock.templates']
       )
