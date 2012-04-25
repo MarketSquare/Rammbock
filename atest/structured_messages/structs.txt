@@ -58,6 +58,10 @@ Pass value dict to Struct but replace it in Get Message
    Should be equal     ${msg.fooName.second.hex}   0x22
    Should be equal     ${msg.fooName.third.hex}    0xff
 
+Get full path in missing fields
+    Message with struct in struct
+    Value        structstruct.mollyMalones.closesAt     ${EMPTY}
+    Run keyword and expect error    Value of structstruct.mollyMalones.closesAt not set    Get message
 
 *** Keywords ***
 Client sends request with struct

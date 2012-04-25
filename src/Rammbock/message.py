@@ -64,9 +64,9 @@ class _StructuredElement(object):
     def __len__(self):
         return sum(len(field) for field in self._fields.values())
 
-    def _get_recursive_name(self, parent):
-        return self._parent._get_recursive_name(parent) + self._name \
-                        if self._parent != None else self._name
+    def _get_recursive_name(self):
+        return (self._parent._get_recursive_name() if self._parent else '') + self._name +'.'
+
 
 class List(_StructuredElement):
 
@@ -75,6 +75,7 @@ class List(_StructuredElement):
     def __init__(self, name, type_name):
         self._name, self._type = name, type_name
         self._fields = OrderedDict()
+        self._parent = None
 
     def _get_name(self):
         return '%s %s[]' % (self._type, self._name)
@@ -88,6 +89,7 @@ class Struct(_StructuredElement):
         self._name = name
         self._type = type_name
         self._fields = OrderedDict()
+        self._parent = None
 
 
 class Union(_StructuredElement):
@@ -147,6 +149,9 @@ class Message(_StructuredElement):
         new = OrderedDict({'_header':header})
         new.update(self._fields)
         self._fields = new
+
+    def _get_recursive_name(self):
+        return ''
 
 
 class Header(_StructuredElement):

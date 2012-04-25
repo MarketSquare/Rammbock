@@ -75,7 +75,7 @@ class _Template(object):
         self._check_params_empty(params, self.name)
 
     def decode(self, data, parent=None, name=None, little_endian=False):
-        message = self._get_struct(name)
+        message = self._get_struct(name, parent)
         data_index = 0
         for field in self._fields.values():
             message[field.name] = field.decode(data[data_index:], message, little_endian=little_endian)
@@ -184,7 +184,7 @@ class MessageTemplate(_Template):
         result.update(header_params)
         return result
 
-    def _get_struct(self, name):
+    def _get_struct(self, name, parent=None):
         return Message(self.name)
 
 
@@ -213,7 +213,7 @@ class StructTemplate(_Template):
         return _Template.decode(self, data, parent, name, little_endian)
 
     def encode(self, message_params, parent=None, name=None, little_endian=False):
-        struct = self._get_struct(name)
+        struct = self._get_struct(name, parent)
         self._add_struct_params(message_params)
         self._encode_fields(struct, self._get_params_sub_tree(message_params, name), little_endian=little_endian)
         if self.has_length:
@@ -222,8 +222,11 @@ class StructTemplate(_Template):
                 raise AssertionError('Length of struct %s does not match defined length. defined length:%s Struct:\n%s' % (self.name, length, repr(struct)))
         return struct
 
-    def _get_struct(self, name):
-        return Struct(name or self.name, self.type)
+    # TODO: Cleanup setting the parent to constructor of message -elements
+    def _get_struct(self, name, parent):
+        struct = Struct(name or self.name, self.type)
+        struct._parent = parent
+        return struct
 
     def validate(self, parent, message_fields, name=None):
         self._add_struct_params(message_fields)
@@ -257,23 +260,28 @@ class UnionTemplate(_Template):
         return max(field.get_static_length() for field in self._fields.values())
 
     def decode(self, data, parent=None, name=None, little_endian=False):
-        union = Union(name or self.name, self.get_static_length())
+        union = self._get_struct(name, parent)
         for field in self._fields.values():
             union[field.name] = field.decode(data, union, little_endian=little_endian)
         return union
     
     def encode(self, union_params, parent=None, name=None, little_endian=False):
         name = name or self.name
-        union = Union(name, self.get_static_length())
         if name not in union_params:
             raise AssertionError('Value not chosen for union %s' % name)
         chosen_one = union_params[name]
         if chosen_one not in self._fields:
             raise Exception('Unknown union field %s' % chosen_one)
         field = self._fields[chosen_one]
+        union = self._get_struct(name, parent)
         union[field.name] = field.encode(self._get_params_sub_tree(union_params, name),
                                          union,
                                          little_endian=little_endian)
+        return union
+
+    def _get_struct(self, name, parent):
+        union = Union(name or self.name, self.get_static_length())
+        union._parent = parent
         return union
 
     def validate(self, parent, message_fields, name=None):
@@ -299,7 +307,7 @@ class ListTemplate(_Template):
     def encode(self, message_params, parent, name=None, little_endian=False):
         name = name or self.name
         params_subtree = self._get_params_sub_tree(message_params, name)
-        list = self._get_struct(name)
+        list = self._get_struct(name, parent)
         for index in range(self.length.decode(parent)):
             list[str(index)] = self.field.encode(params_subtree,
                                                  parent,
@@ -312,12 +320,14 @@ class ListTemplate(_Template):
     def field(self):
         return self._fields.values()[0]
 
-    def _get_struct(self, name=None):
-        return List(name or self.name, self.field.type)
+    def _get_struct(self, name=None, parent=None):
+        ls = List(name or self.name, self.field.type)
+        ls._parent = parent
+        return ls
 
     def decode(self, data, parent, name=None, little_endian=False):
         name = name or self.name
-        message = self._get_struct(name)
+        message = self._get_struct(name, parent)
         data_index = 0
         for index in range(0, self.length.decode(parent)):
             message[str(index)] = self.field.decode(data[data_index:], message, name=str(index), little_endian=little_endian)
@@ -366,12 +376,12 @@ class BinaryContainerTemplate(_Template):
             raise AssertionError('Length of binary container %s has to be divisible by 8. Length %s' % (self.name, self.binlength))
 
     def encode(self, message_params, parent=None, name=None, little_endian=False):
-        container = self._get_struct(name, little_endian=little_endian)
+        container = self._get_struct(name, parent, little_endian=little_endian)
         self._encode_fields(container, self._get_params_sub_tree(message_params, name))
         return container
 
     def decode(self, data, parent=None, name=None, little_endian=False):
-        container = self._get_struct(name, little_endian=little_endian)
+        container = self._get_struct(name, parent, little_endian=little_endian)
         if little_endian:
             data = data[::-1]
         bin_str = to_binary_string_of_length(self.binlength, data[:self.binlength/8])
@@ -388,8 +398,10 @@ class BinaryContainerTemplate(_Template):
         message = parent[name]
         return errors + _Template.validate(self, message, self._get_params_sub_tree(message_fields, name))
 
-    def _get_struct(self, name, little_endian=False):
-        return BinaryContainer(name or self.name, little_endian=little_endian)
+    def _get_struct(self, name, parent, little_endian=False):
+        cont = BinaryContainer(name or self.name, little_endian=little_endian)
+        cont._parent = parent
+        return cont
 
 
 class TBCDContainerTemplate(_Template):
@@ -408,13 +420,13 @@ class TBCDContainerTemplate(_Template):
 
     def encode(self, message_params, parent=None, name=None, little_endian=False):
         self._verify_not_little_endian(little_endian)
-        container = self._get_struct(name)
+        container = self._get_struct(name, parent)
         self._encode_fields(container, self._get_params_sub_tree(message_params, name))
         return container
 
     def decode(self, data, parent=None, name=None, little_endian=False):
         self._verify_not_little_endian(little_endian)
-        container = self._get_struct(name)
+        container = self._get_struct(name, parent)
         a = to_tbcd_value(data)
         index = 0
         for field in self._fields.values():
@@ -432,6 +444,8 @@ class TBCDContainerTemplate(_Template):
     def binlength(self):
         return int(ceil(sum(field.length.value * 4 for field in self._fields.values()) / 8.0) * 8)
 
-    def _get_struct(self, name):
-        return TBCDContainer(name or self.name)
+    def _get_struct(self, name, parent):
+        tbcd = TBCDContainer(name or self.name)
+        tbcd._parent = parent
+        return tbcd
 

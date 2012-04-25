@@ -97,9 +97,10 @@ class _TemplateField(object):
             raise AssertionError('Value of %s not set' % self._get_recursive_name(parent))
 
     def _get_recursive_name(self, parent):
-        if parent != None:
-            print "parent is", parent
-        return parent._get_recursive_name(parent) + '.' + self.name if parent != None else self.name
+        if parent is None:
+            return self.name
+        return parent._get_recursive_name() + self.name
+
 
 class PlaceHolderField(object):
 
