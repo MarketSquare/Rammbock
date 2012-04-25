@@ -40,7 +40,7 @@ Create Session Request Values
     value   f-teid1.value.values.interface type                     7
     value   f-teid2.instance.value                                  1
     value   f-teid2.value.f-teid_ipv4                               0x0a66b6b8
-    value   ff-teid2.value.values.interface type                     10
+    value   f-teid2.value.values.interface type                     10
     value   APN.value.access_point_name                             sgw.foo.com.mnc012.mcc262.gprs
     value   Aggregate maximum bit rate.value.ambr_uplink            2
     value   Aggregate maximum bit rate.value.ambr_downlink          1
