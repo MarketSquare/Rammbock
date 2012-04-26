@@ -65,25 +65,25 @@ class _TemplateField(object):
         if not forced_value or forced_value == 'None':
             return []
         elif forced_value.startswith('('):
-            return self._validate_pattern(forced_value, value, parent)
-        return self._validate_exact_match(forced_value, value, parent)
+            return self._validate_pattern(forced_value, value, field)
+        return self._validate_exact_match(forced_value, value, field)
 
-    def _validate_pattern(self, forced_pattern, value, message):
+    def _validate_pattern(self, forced_pattern, value, field):
         patterns = forced_pattern[1:-1].split('|')
         for pattern in patterns:
-            if self._is_match(pattern, value, message):
+            if self._is_match(pattern, value, field._parent):
                 return []
         return ['Value of field %s does not match pattern %s!=%s' %
-                (self._get_name(), to_0xhex(value), forced_pattern)]
+                (field._get_recursive_name(), to_0xhex(value), forced_pattern)]
 
-    def _is_match(self, forced_value, value, message):
-        forced_binary_val, _ = self._encode_value(forced_value, message)   # TODO: Should pass msg
+    def _is_match(self, forced_value, value, parent):
+        forced_binary_val, _ = self._encode_value(forced_value, parent)   # TODO: Should pass msg
         return forced_binary_val == value
 
-    def _validate_exact_match(self, forced_value, value, message):
-        if not self._is_match(forced_value, value, message):
+    def _validate_exact_match(self, forced_value, value, field):
+        if not self._is_match(forced_value, value, field._parent):
             return ['Value of field %s does not match %s!=%s' %
-                    (self._get_name(), self._default_presentation_format(value), forced_value)]
+                    (field._get_recursive_name(), self._default_presentation_format(value), forced_value)]
         return []
 
     def _default_presentation_format(self, value):
@@ -97,7 +97,7 @@ class _TemplateField(object):
             raise AssertionError('Value of %s not set' % self._get_recursive_name(parent))
 
     def _get_recursive_name(self, parent):
-        if parent is None:
+        if not parent:
             return self.name
         return parent._get_recursive_name() + self.name
 

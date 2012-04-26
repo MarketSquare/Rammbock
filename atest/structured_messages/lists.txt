@@ -17,7 +17,7 @@ Message with list containing structs
 
 Message with list validation fails
     Client sends request with list
-    Server should fail validation with list   someList[2]:4
+    Server should fail validation with list   someList.2    someList[2]:4
 
 
 *** Keywords ***
@@ -44,8 +44,8 @@ Server receives request with list containing structs
     [return]      ${msg}
 
 Server should fail validation with list
-    [Arguments]    @{params}
-    Run keyword and expect error     Value of field *    Server receives request with list    @{params}
+    [Arguments]    ${field}    @{params}
+    Run keyword and expect error     Value of field ${field}*    Server receives request with list    @{params}
 
 List message
     New message    ListRequest    Example    messageType:0xaaaa

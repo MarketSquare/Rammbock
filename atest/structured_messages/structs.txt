@@ -63,6 +63,15 @@ Get full path in missing fields
     Value        structstruct.mollyMalones.closesAt     ${EMPTY}
     Run keyword and expect error    Value of structstruct.mollyMalones.closesAt not set    Get message
 
+Get full path when validating
+    Client sends struct with struct   structstruct.mollyMalones.closesAt:4
+    Run keyword and expect error    Value of field structstruct.mollyMalones.closesAt does not match 0x04!=9    Server Receives struct with struct  structstruct.mollyMalones.closesAt:9
+
+Get full path when validating against a pattern
+    Client sends struct with struct   structstruct.mollyMalones.closesAt:4
+    Run keyword and expect error    Value of field structstruct.mollyMalones.closesAt does not match pattern 0x04!=(0|1|2)    Server Receives struct with struct  structstruct.mollyMalones.closesAt:(0|1|2)
+
+
 *** Keywords ***
 Client sends request with struct
     [Arguments]    @{params}
@@ -88,7 +97,7 @@ Server Receives struct with struct
 
 Server should fail validation with struct
     [Arguments]    @{params}
-    Run keyword and expect error     Value of field first does not *    Server receives request with struct    @{params}
+    Run keyword and expect error     Value of field pair.first does not *    Server receives request with struct    @{params}
 
 Message with struct
     [arguments]    ${pair values}=

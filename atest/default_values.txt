@@ -54,7 +54,7 @@ Validate with wild cards fails
     Value      bonker.*     999
     ${msg}=    Get message
     Value      bonker.*     1
-    Validation of field fails     id    ${msg}
+    Validation of field fails     bonker.id    ${msg}
 
 
 *** Keywords ***

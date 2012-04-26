@@ -64,8 +64,11 @@ class _StructuredElement(object):
     def __len__(self):
         return sum(len(field) for field in self._fields.values())
 
+    def __nonzero__(self):
+        return True
+
     def _get_recursive_name(self):
-        return (self._parent._get_recursive_name() if self._parent else '') + self._name +'.'
+        return (self._parent._get_recursive_name() if self._parent else '') + self._name + '.'
 
 
 class List(_StructuredElement):
@@ -197,6 +200,9 @@ class Field(object):
     def __hex__(self):
         return to_0xhex(self._value)
 
+    def __nonzero__(self):
+        return True
+
     @property
     def bytes(self):
         return self._value
@@ -228,6 +234,10 @@ class Field(object):
 
     def __len__(self):
         return self._length
+
+    def _get_recursive_name(self):
+
+        return (self._parent._get_recursive_name() if self._parent else '') + self._name
 
 
 class BinaryField(Field):
