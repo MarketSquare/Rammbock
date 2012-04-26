@@ -83,7 +83,6 @@ MSISDN
     end tbcd container
 
 ULI
-    [Arguments]       @{args}
     u8    flags
     TAI
     ECGI
@@ -106,7 +105,6 @@ ECGI
     end struct
 
 Serving network
-    [Arguments]    @{arguments}
     new tbcd container    mcc
     tbcd    3    value
     end tbcd container
@@ -144,7 +142,6 @@ Indication
     end binary container
 
 F-TEID
-    [Arguments]    @{args}
     new binary container    values
     bin    1    v4    1
     bin    1    v6    0
