@@ -68,10 +68,12 @@ class _NetworkNode(_WithTimeouts):
         return stream.get(message_template, timeout=timeout, header_filter=header_filter)
 
     def log_send(self, binary, ip, port):
-        print '*DEBUG* Send %s to %s:%s over %s' % (to_hex(binary), ip, port, self._transport_layer_name)
+        pass
+        #print '*DEBUG* Send %s to %s:%s over %s' % (to_hex(binary), ip, port, self._transport_layer_name)
 
     def log_receive(self, binary, ip, port):
-        print "*DEBUG* Read %s from %s:%s over %s" % (to_hex(binary), ip, port, self._transport_layer_name)
+        pass
+        #print "*DEBUG* Read %s from %s:%s over %s" % (to_hex(binary), ip, port, self._transport_layer_name)
 
     def empty(self):
         result = True
@@ -298,7 +300,7 @@ class _NamedCache(object):
     def get_with_name(self, name=None):
         if not name:
             name = self._current
-            print '*DEBUG* Choosing %s by default' % self._current
+            #print '*DEBUG* Choosing %s by default' % self._current
         return self._cache[name], name
 
     def get(self, name=None):

@@ -200,7 +200,7 @@ class RammbockCore(object):
         """
         client, name = self._clients.get_with_name(name)
         client.send(message)
-        self._register_send(client, label, name)
+        #self._register_send(client, label, name)
 
     # FIXME: support "send to" somehow. A new keyword?
     def server_sends_binary(self, message, name=None, connection=None, label=None):
@@ -300,7 +300,7 @@ class RammbockCore(object):
 
     def _encode_message(self, message_fields, header_fields):
         msg = self._get_message_template().encode(message_fields, header_fields)
-        print '*DEBUG* %s' % repr(msg)
+        #print '*DEBUG* %s' % repr(msg)
         return msg
 
     def _get_message_template(self):
@@ -662,5 +662,12 @@ class RammbockCore(object):
         return (key, parameter[index + 1:].strip())
 
     def _log_msg(self, loglevel, log_msg):
-        print '*%s* %s' % (loglevel, log_msg)
+        pass
+        #print '*%s* %s' % (loglevel, log_msg)
 
+
+    def client_spam(self, count, *parameters):
+        msg = self.get_message(*parameters)
+        for i in range(int(count)):
+            binary = msg._raw
+            self.client_sends_binary(binary)
