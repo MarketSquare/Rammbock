@@ -359,7 +359,7 @@ class RammbockCore(object):
         """Receive a message with template defined using `New Message`.
 
         Message template has to be defined with `New Message` before calling this. Optional parameters are client `name`
-        and possible `timeout` separated with equals and message field values for validation separated with colon.
+        and possible `timeout` separated with equals.
 
         Examples:
         | ${msg} = | Client receives without validation |
@@ -388,7 +388,7 @@ class RammbockCore(object):
         """Receive a message with template defined using `New Message`.
 
         Message template has to be defined with `New Message` before calling this. Optional parameters are server `name`
-        and possible `timeout` separated with equals and message field values for validation separated with colon.
+        and possible `timeout` separated with equals.
 
         Examples:
         | ${msg} = | Server receives without validation |
