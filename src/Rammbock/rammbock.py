@@ -28,6 +28,9 @@ class Rammbock(RammbockCore):
 
     Example:
 
+    | *Settings * |
+    | Library     | Rammbock |
+
     | *Test Cases*  |
     |  Send message |  Define simple protocol  |
     |               |  Start server     |
@@ -37,11 +40,11 @@ class Rammbock(RammbockCore):
     |               |  [Teardown]       |   `Reset Rammbock` |
 
     | *Keywords*      |
-    | Define simple protocol  |  `Start protocol description` | SimpleProtocol |
-    |                 |  `u8`                       | msgId             |
-    |                 |  `u8`                       | messageLength     |
-    |                 |  `pdu`                      | messageLength - 2 |
-    |                 |  `End protocol description`            |
+    | Define simple protocol  |  `New protocol`   | SimpleProtocol |
+    |                 |  `u8`                     | msgId             |
+    |                 |  `u8`                     | messageLength     |
+    |                 |  `pdu`                    | messageLength - 2 |
+    |                 |  `End protocol`           |
     |  |
     | Start server    |  `Start UDP server` | 127.0.0.1 |  8282 | protocol=SimpleProtocol |
     |  |
