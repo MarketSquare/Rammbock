@@ -49,13 +49,13 @@ Create server and client, and define protocol
     connect    ${SERVER}    ${GTP CONTROL PORT}
 
 IE
-    [Arguments]    ${name}    @{values}
-    Named IE    ${name}    ${name}    @{values}
+    [Arguments]    ${name}
+    Named IE    ${name}    ${name}
 
 Named IE
-    [Arguments]    ${field name}  ${name}    @{values}
+    [Arguments]    ${field name}  ${name}
     ${type}     Find type if defined or empty    ${name}
-    New struct    IE    ${field name}    @{values}
+    New struct    IE    ${field name}
     IE header   ${name}    ${type}
     IE value    ${name}
     End struct
@@ -75,8 +75,8 @@ IE header
     end binary container
 
 IE Value
-    [Arguments]    ${kw}    ${name}=value
-    new struct    Container    ${name}    length=ie_length
+    [Arguments]    ${kw}    
+    new struct    Container    value    length=ie_length
     run keyword    ${kw}
     end struct
 
