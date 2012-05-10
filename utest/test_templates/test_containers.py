@@ -524,6 +524,11 @@ class TestUnions(TestCase, _WithValidation):
         self.assertEquals(decoded.medium.hex, '0xcafe')
         self.assertEquals(decoded.large.hex, '0xcafebabe')
         
+    def test_union_length(self):
+        union = self._get_foo_union()
+        decoded = union.decode(to_bin('0xcafebabe'))
+        self.assertEquals(4, len(decoded))
+        
     def test_get_bytes_from_decoded_union(self):
         union = self._get_foo_union()
         decoded = union.decode(to_bin('0xcafebabe'))

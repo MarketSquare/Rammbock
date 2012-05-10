@@ -110,6 +110,8 @@ class Union(_StructuredElement):
                 max_raw = field._raw
         return max_raw.ljust(self._length, '\x00')
 
+    def __len__(self):
+        return self._length
 
 class BinaryContainer(_StructuredElement):
 

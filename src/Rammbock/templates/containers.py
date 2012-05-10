@@ -281,6 +281,7 @@ class UnionTemplate(_Template):
 
     def _get_struct(self, name, parent):
         union = Union(name or self.name, self.get_static_length())
+        print '*TRACE* get_static_length returns %s' % self.get_static_length()
         union._parent = parent
         return union
 

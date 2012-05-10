@@ -21,7 +21,7 @@ from version import VERSION
 
 
 class Rammbock(RammbockCore):
-    """RammbockLibrary is a binary protocol testing library for Robot Test Automation Framework.
+    """Rammbock is a binary protocol testing library for Robot Test Automation Framework.
 
     To use Rammbock you need to first define a protocol, start the clients and servers you are going to mock,
     and then define a message template for each message you are going to send or receive.

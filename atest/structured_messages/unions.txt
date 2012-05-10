@@ -14,6 +14,17 @@ Simple union
     Should be equal    ${msg.simpleU.fooMiddle.hex}     0xf00d
     Should be equal    ${msg.simpleU.fooShort.hex}      0xf0
 
+Union in struct
+    Client sends simple union in struct   
+    ...  structField.structBeginField:0xbeba       
+    ...  structField.onion:fooMiddle   
+    ...  structField.onion.fooMiddle:0xf00d  
+    ...  structField.structEndField:0xabba       
+    ${msg} =    Server receives union in struct
+    Should be equal as integers   ${msg.structField.structBeginField.hex}  0xbeba
+    Should be equal as integers   ${msg.structField.onion.fooMiddle.hex}   0xf00d    
+    Should be equal as integers   ${msg.structField.structEndField.hex}    0xabba        
+
 Complex union
     Client sends complex union request     complexU:complexType  complexU.complexType.first:1    complexU.complexType.second:2
     ${msg} =    Server receives complex union request
@@ -40,12 +51,23 @@ Client sends simple union request
     Simple union message
     Client sends message   @{params}
 
+Client sends simple union in struct
+    [Arguments]     @{params}
+    Simple union in struct
+    Client sends message   @{params}
+
 Server receives simple union request
     [Arguments]    @{params}
     Simple union message
     ${msg} =    Server Receives message    @{params}
     [return]    ${msg}
-
+    
+Server receives union in struct
+    [Arguments]    @{params}
+    Simple union in struct
+    ${msg} =    Server Receives message    @{params}
+    [return]    ${msg}
+        
 Client sends complex union request
     [Arguments]    @{params}
     Complex union message
@@ -74,7 +96,19 @@ Server receives hyper complex union request
 
 Simple union message
    New message    UnionMessage   Example  messageType:0xb00b
-   SimpleUnion   simpleU
+   Simple union   simpleU
+
+Simple union in struct
+   New message    UnionInStruct   Example  messageType:0xbabe
+   SStructField   structField
+
+SStructField
+    [Arguments]    ${name}
+    New struct     SStructField    ${name}
+    u32            structBeginField     
+    Simple union   onion
+    u32            structEndField
+    End struct
 
 Complex union message
    New message   ComplexUnion    Example  messageType:0xb00b
@@ -82,7 +116,7 @@ Complex union message
 
 Simple union
    [arguments]    ${name}
-   New Union          Simple   ${name}
+   New Union      Simple   ${name}
    u32            fooBig
    u16            fooMiddle
    u8             fooShort
