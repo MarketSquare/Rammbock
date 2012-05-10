@@ -1,0 +1,37 @@
+*** Keywords ***
+dns query
+    new message   dns query
+    dns header
+    Array     questions    dns query    queries
+    Array     answers      dns answer    answers
+    Array     authority_rrs    authority_rr    authority_rrs
+    Array     additional_rrs    additional_rr    additional_rrs
+
+dns header
+    u16    transaction_id
+    dns flags
+    u16    questions
+    u16    answers
+    u16    authority_rrs    0
+    u16    additional_rrs
+
+dns query
+    new struct    DNS query    query
+    label sequence    name
+    u16    type
+    u16    class
+    end struct    
+
+dns flags
+    new binary container    flags
+    bin    1    response
+    bin    4    opcode       0
+    bin    1    spare        0
+    bin    1    truncated    0
+    bin    1    recursion_desired    0
+    bin    1    spare        0
+    bin    1    Z        0
+    bin    1    spare        0
+    bin    1    non_authenticated_data        0
+    bin    4    spare        0
+    end binary container
