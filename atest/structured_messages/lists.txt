@@ -19,6 +19,13 @@ Message with list validation fails
     Client sends request with list
     Server should fail validation with list   someList.2    someList[2]:4
 
+Message with list in list
+    New message     TwoDimensionalInts  Example    messageType:0xaaaa
+    List in List
+    value   *   0
+    ${msg} =    Get message     multiArray[1][0]:42
+    Should be equal as integers     ${msg.multiArray[1][0].int}     42
+    Should be equal as integers     ${msg.multiArray[1][1].int}     0
 
 *** Keywords ***
 Client sends request with list
@@ -61,3 +68,10 @@ Pair
     u8    first       ${value}
     u8    second      ${value}
     End struct
+
+List in List
+    Array   2   Inner List   multiArray    2   u8
+
+Inner list
+    [arguments]     ${name}=    ${size}=    ${type}=
+    Array       ${size}    ${type}      ${name}
