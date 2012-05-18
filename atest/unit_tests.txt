@@ -7,5 +7,5 @@ ${UNIT TEST DIR}=    ${CURDIR}${/}..${/}utest
 
 *** Test Cases ***
 Execute unit tests
-    ${rc}  ${output}  Run And Return Rc And Output  nosetests ${UNIT TEST DIR}
+    ${rc}  ${output}  Run And Return Rc And Output  nosetests --cover-erase --with-coverage --with-xunit --xunit-file=reports/nose-out.xml ${UNIT TEST DIR}
     Should Be Equal As Integers  ${rc}  0   ${output}
