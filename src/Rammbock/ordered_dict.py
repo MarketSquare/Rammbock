@@ -158,7 +158,7 @@ class OrderedDict(dict):
         for k in self:
             yield (k, self[k])
 
-    def update(*args, **kwds):
+    def update(self, *args, **kwds):
         '''od.update(E, **F) -> None.  Update od from dict/iterable E and F.
 
         If E is a dict instance, does:           for k in E: od[k] = E[k]
@@ -167,14 +167,11 @@ class OrderedDict(dict):
         In either case, this is followed by:     for k, v in F.items(): od[k] = v
 
         '''
-        if len(args) > 2:
+        if len(args) > 1:
             raise TypeError('update() takes at most 2 positional '
                             'arguments (%d given)' % (len(args),))
-        elif not args:
-            raise TypeError('update() takes at least 1 argument (0 given)')
-        self = args[0]
         # Make progressively weaker assumptions about "other"
-        other = args[1] if len(args) == 2 else ()
+        other = args[0] if args else ()
         if isinstance(other, dict):
             for key in other:
                 self[key] = other[key]
