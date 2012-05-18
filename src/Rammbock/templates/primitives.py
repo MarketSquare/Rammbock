@@ -224,13 +224,20 @@ def Length(value, align=None):
 
 
 class _Length(object):
-    
+
+    def __init__(self):
+        self.value = None
+        self.align = None
+
+    def decode_lengths(self, message, max_length=None):
+        raise Exception("Override this method in implementing class.")
+
     def _get_aligned_lengths(self, length):
-        return (length, length + (self.align - length % self.align) % self.align)
+        return length, length + (self.align - length % self.align) % self.align
 
     def decode(self, message, maximum_length=None):
-        """Decode the length of this field. Maximum length is the maximum length available from data
-        or None if maximum length is not known.
+        """Decode the length of this field. Maximum length is the maximum
+        length available from data or None if maximum length is not known.
         """
         return self.decode_lengths(message, maximum_length)[0]
 
@@ -240,6 +247,7 @@ class _StaticLength(_Length):
     has_references = False
 
     def __init__(self, value, align):
+        _Length.__init__(self)
         self.value = int(value)
         self.align = int(align)
 
@@ -296,7 +304,8 @@ class _DynamicLength(_Length):
 
     def _set_length(self, reference, min_length):
         value_len, aligned_len = self._get_aligned_lengths(min_length)
-        reference._parent[self.field] = reference.template.encode({self.field:str(aligned_len)}, reference._parent)
+        reference._parent[self.field] = reference.template.encode({self.field :
+                                        str(aligned_len)}, reference._parent)
         return value_len, aligned_len
 
     def find_length_and_set_if_necessary(self, parent, min_length):
@@ -319,6 +328,7 @@ class _DynamicLength(_Length):
 
 def _partition(operator, value):
     return (val.strip() for val in value.rpartition(operator))
+
 
 def parse_field_and_calculator(value):
     if "-" in value:
