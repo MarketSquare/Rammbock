@@ -2,4 +2,5 @@
 base=`dirname $0`
 export PATH=$PATH:/usr/local/bin
 pylint --rcfile=.pylintrc src/ > pylint.txt
+pep8 src/ > pep8.txt
 true
