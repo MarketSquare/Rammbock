@@ -666,16 +666,18 @@ class TestTBCDContainerTemplate(TestCase):
         msg = self.tmp.encode({}, {})
         self.assertEqual('123', msg.tbcd.first.tbcd)
 
-    def test_get_binlength(self):
+    def test_get_binlength_for_odd_value_tbcd_container(self):
         container = TBCDContainerTemplate('tbcd', None)
         container.add(TBCD('1', 'first', '1'))
         self.assertEquals(8, container.binlength)
         container = TBCDContainerTemplate('tbcd', None)
-        container.add(TBCD('2', 'first', '12'))
-        self.assertEquals(8, container.binlength)
-        container = TBCDContainerTemplate('tbcd', None)
         container.add(TBCD('3', 'first', '123'))
         self.assertEquals(16, container.binlength)
+
+    def test_get_binlength_for_even_value_tbcd_container(self):
+        container = TBCDContainerTemplate('tbcd', None)
+        container.add(TBCD('2', 'first', '12'))
+        self.assertEquals(8, container.binlength)
         container = TBCDContainerTemplate('tbcd', None)
         container.add(TBCD('4', 'first', '1234'))
         self.assertEquals(16, container.binlength)
