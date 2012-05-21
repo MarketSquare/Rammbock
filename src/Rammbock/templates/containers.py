@@ -197,7 +197,7 @@ class MessageTemplate(_Template):
 class StructTemplate(_Template):
 
     has_length = False
-    
+
     def __init__(self, type, name, parent, parameters=None, length=None):
         self._parameters = parameters or {}
         self.type = type
@@ -252,17 +252,17 @@ class StructTemplate(_Template):
 
 
 class UnionTemplate(_Template):
-    
+
     has_length = False
-    
+
     def __init__(self, type, name, parent):
         self.type = type
         _Template.__init__(self, name, parent)
-    
+
     def add(self, field):
         field.get_static_length()
         self._fields[field.name] = field
-            
+
     def get_static_length(self):
         return max(field.get_static_length() for field in self._fields.values())
 
@@ -271,7 +271,7 @@ class UnionTemplate(_Template):
         for field in self._fields.values():
             union[field.name] = field.decode(data, union, little_endian=little_endian)
         return union
-    
+
     def encode(self, union_params, parent=None, name=None, little_endian=False):
         name = name or self.name
         if name not in union_params:
@@ -318,7 +318,7 @@ class ListTemplate(_Template):
         for index in range(self.length.decode(parent)):
             list[str(index)] = self.field.encode(params_subtree,
                                                  parent,
-                                                 name=str(index), 
+                                                 name=str(index),
                                                  little_endian=little_endian)
         self._check_params_empty(params_subtree, name)
         return list
@@ -357,7 +357,7 @@ class ListTemplate(_Template):
         name = name or self.name
         for key in params.keys():
             match = self.param_pattern.match(key)
-            if match:        
+            if match:
                 prefix, child_name, ending = match.groups()
                 if prefix == name or prefix == '*':
                     result[child_name + ending] =  params.pop(key)

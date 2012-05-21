@@ -272,4 +272,3 @@ class OrderedDict(dict):
         "od.viewitems() -> a set-like object providing a view on od's items"
         return ItemsView(self)
     ## end of http://code.activestate.com/recipes/576693/ }}}
-

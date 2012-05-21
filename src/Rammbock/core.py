@@ -58,7 +58,7 @@ class RammbockCore(object):
 
     def clear_message_streams(self):
         """ Resets streams and sockets of incoming messages.
-        
+
         You can use this method to reuse the same connections for several consecutive test cases.
         """
         for client in self._clients:
@@ -607,7 +607,7 @@ class RammbockCore(object):
         ret_val = self._field_values
         ret_val.update(fields)
         self._field_values = {}
-        return ret_val 
+        return ret_val
 
     def value(self, name, value):
         """Defines a default `value` for a template field identified by `name`.
@@ -635,7 +635,7 @@ class RammbockCore(object):
         fields = (field for index, field in enumerate(fields)
                   if index not in header_indexes)
         return headers, fields
-    
+
     def _to_dict(self, *lists):
         return (dict(list) for list in lists)
 
@@ -663,4 +663,3 @@ class RammbockCore(object):
 
     def _log_msg(self, loglevel, log_msg):
         print '*%s* %s' % (loglevel, log_msg)
-

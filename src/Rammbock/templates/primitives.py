@@ -23,12 +23,12 @@ class _TemplateField(object):
     has_length = True
     can_be_little_endian = False
     referenced_later = False
-    
+
     def get_static_length(self):
         if not self.length.static:
             raise Exception('Length of %s is dynamic.' % self._get_name())
         return self.length.value
-    
+
     def _get_element_value(self, paramdict, name=None):
         return paramdict.get(self._get_name(name), self.default_value)
 
@@ -49,12 +49,12 @@ class _TemplateField(object):
 
     def decode(self, value, message, name=None, little_endian=False):
         length, aligned_length = self.length.decode_lengths(message, len(value))
-        if len(value) < aligned_length: 
+        if len(value) < aligned_length:
             raise Exception('Not enough data for %s. Needs %s bytes, given %s' % (self._get_name(name), aligned_length, len(value)))
-        return Field(self.type, 
-                     self._get_name(name), 
-                     value[:length], 
-                     aligned_len=aligned_length, 
+        return Field(self.type,
+                     self._get_name(name),
+                     value[:length],
+                     aligned_len=aligned_length,
                      little_endian=little_endian and self.can_be_little_endian)
 
     def validate(self, parent, paramdict, name=None):
@@ -77,7 +77,8 @@ class _TemplateField(object):
                 (field._get_recursive_name(), to_0xhex(value), forced_pattern)]
 
     def _is_match(self, forced_value, value, parent):
-        forced_binary_val, _ = self._encode_value(forced_value, parent)   # TODO: Should pass msg
+        #TODO: Should pass msg
+        forced_binary_val, _ = self._encode_value(forced_value, parent)
         return forced_binary_val == value
 
     def _validate_exact_match(self, forced_value, value, field):
@@ -114,7 +115,7 @@ class PlaceHolderField(object):
 class UInt(_TemplateField):
 
     type = 'uint'
-    can_be_little_endian = True    
+    can_be_little_endian = True
 
     def __init__(self, length, name, default_value=None, align=None):
         self.length = Length(length, align)
@@ -141,7 +142,7 @@ class Char(_TemplateField):
     def _encode_value(self, value, message, little_endian=False):
         value = value or ''
         length, aligned_length = self.length.find_length_and_set_if_necessary(message, len(value))
-        return str(value).ljust(length,'\x00'), aligned_length
+        return str(value).ljust(length, '\x00'), aligned_length
 
 
 class Binary(_TemplateField):
@@ -304,7 +305,7 @@ class _DynamicLength(_Length):
 
     def _set_length(self, reference, min_length):
         value_len, aligned_len = self._get_aligned_lengths(min_length)
-        reference._parent[self.field] = reference.template.encode({self.field :
+        reference._parent[self.field] = reference.template.encode({self.field:
                                         str(aligned_len)}, reference._parent)
         return value_len, aligned_len
 

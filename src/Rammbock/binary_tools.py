@@ -74,7 +74,7 @@ def to_0xhex(binary):
     return '0x' + to_hex(binary)
 
 def log_hex(message, level='INFO'):
-    print '*%s* %s' % (level, to_hex(message)) 
+    print '*%s* %s' % (level, to_hex(message))
 
 def to_binary_string_of_length(length, bytes):
     result = bin(int(to_0xhex(bytes), 16))
@@ -102,6 +102,3 @@ def to_tbcd_binary(tbcd_string):
     return to_bin(value if index == len(tbcd_string) else value +\
           to_bin_str_from_int_string(4, 15) +\
           to_bin_str_from_int_string(4, tbcd_string[index]))
-
-
-
