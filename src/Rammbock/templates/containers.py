@@ -17,7 +17,7 @@ import re
 
 from Rammbock.message import Field, Union, Message, Header, List, Struct, BinaryContainer, BinaryField, TBCDContainer
 from message_stream import MessageStream
-from primitives import Length, Binary, UInt, TBCD
+from primitives import Length, Binary, TBCD
 from Rammbock.ordered_dict import OrderedDict
 from Rammbock.binary_tools import to_binary_string_of_length, to_bin, to_tbcd_value, to_tbcd_binary
 
@@ -98,6 +98,9 @@ class _Template(object):
                 result[ending] = params.pop(key)
         return result
 
+    def _get_struct(self, name, parent):
+        return None
+
 #TODO: Refactor the pdu to use the same dynamic length strategy as structs in encoding
 class Protocol(_Template):
 
@@ -134,17 +137,20 @@ class Protocol(_Template):
         _Template.add(self, field)
 
     # TODO: fields after the pdu
-    def read(self, stream, timeout=None):
-        data = stream.read(self.header_length(), timeout=timeout)
+    def _extract_values_from_data(self, data, header, values):
         data_index = 0
         field_index = 0
-        header = Header(self.name)
-        values = self._fields.values()
         while len(data) > data_index:
             field = values[field_index]
-            header[field.name] = Field(field.type, field.name, data[data_index:data_index+field.length.value])
+            header[field.name] = Field(field.type, field.name,
+                data[data_index:data_index + field.length.value])
             data_index += field.length.value
-            field_index +=1
+            field_index += 1
+
+    def read(self, stream, timeout=None):
+        data = stream.read(self.header_length(), timeout=timeout)
+        header = Header(self.name)
+        self._extract_values_from_data(data, header, self._fields.values())
         length_param = header[self.pdu_length.field].int
         pdu_bytes = stream.read(self.pdu_length.calc_value(length_param))
         return (header, pdu_bytes)
@@ -158,7 +164,7 @@ class Protocol(_Template):
 
 
 class MessageTemplate(_Template):
-    
+
     type = 'Message'
 
     def __init__(self, message_name, protocol, header_params):
@@ -174,7 +180,7 @@ class MessageTemplate(_Template):
         if self._protocol:
             # TODO: little endian support for protocol header
             header = self._protocol.encode(msg, self._headers(header_params))
-            length, aligned_length = self.length.find_length_and_set_if_necessary(header, len(msg._raw))
+            self.length.find_length_and_set_if_necessary(header, len(msg._raw))
             msg._add_header(header)
         return msg
 
@@ -215,7 +221,8 @@ class StructTemplate(_Template):
     def encode(self, message_params, parent=None, name=None, little_endian=False):
         struct = self._get_struct(name, parent)
         self._add_struct_params(message_params)
-        self._encode_fields(struct, self._get_params_sub_tree(message_params, name), little_endian=little_endian)
+        self._encode_fields(struct, self._get_params_sub_tree(message_params,
+            name), little_endian=little_endian)
         if self.has_length:
             length, aligned_length = self.length.find_length_and_set_if_necessary(parent, len(struct))
             if len(struct) != length:
@@ -442,10 +449,10 @@ class TBCDContainerTemplate(_Template):
 
     @property
     def binlength(self):
-        return int(ceil(sum(field.length.value * 4 for field in self._fields.values()) / 8.0) * 8)
+        length = sum(field.length.value for field in self._fields.values())
+        return int(ceil(length / 2.0) * 8)
 
     def _get_struct(self, name, parent):
         tbcd = TBCDContainer(name or self.name)
         tbcd._parent = parent
         return tbcd
-

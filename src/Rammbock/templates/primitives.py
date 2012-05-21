@@ -15,7 +15,7 @@
 from math import ceil
 
 from Rammbock.message import Field, BinaryField
-from Rammbock.binary_tools import to_bin_of_length, to_0xhex, to_tbcd_binary, to_tbcd_value, to_binary_string_of_length, to_bin
+from Rammbock.binary_tools import to_bin_of_length, to_0xhex, to_tbcd_binary, to_tbcd_value, to_bin
 
 
 class _TemplateField(object):
