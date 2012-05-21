@@ -139,5 +139,5 @@ class Rammbock(RammbockCore):
         """
         test_name = BuiltIn().replace_variables('${TEST NAME}')
         outputdir = BuiltIn().replace_variables('${OUTPUTDIR}')
-        path = os.path.join(outputdir, test_name+'.seqdiag')
+        path = os.path.join(outputdir, test_name + '.seqdiag')
         SeqdiagGenerator().compile(path, self._message_sequence)

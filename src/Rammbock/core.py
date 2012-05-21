@@ -427,7 +427,6 @@ class RammbockCore(object):
             self._register_receive(node, self._current_container.name, name, error=e.args[0])
             raise e
 
-
     def uint(self, length, name, value=None, align=None):
         """Add an unsigned integer to template.
 

@@ -101,6 +101,7 @@ class _Template(object):
     def _get_struct(self, name, parent):
         return None
 
+
 #TODO: Refactor the pdu to use the same dynamic length strategy as structs in encoding
 class Protocol(_Template):
 
@@ -296,6 +297,7 @@ class UnionTemplate(_Template):
         message = parent[name]
         return _Template.validate(self, message, self._get_params_sub_tree(message_fields, name))
 
+
 #TODO: check that only one field is added to list
 #TODO: list field could be overriden
 class ListTemplate(_Template):
@@ -360,7 +362,7 @@ class ListTemplate(_Template):
             if match:
                 prefix, child_name, ending = match.groups()
                 if prefix == name or prefix == '*':
-                    result[child_name + ending] =  params.pop(key)
+                    result[child_name + ending] = params.pop(key)
         return result
 
 
@@ -391,7 +393,7 @@ class BinaryContainerTemplate(_Template):
         container = self._get_struct(name, parent, little_endian=little_endian)
         if little_endian:
             data = data[::-1]
-        bin_str = to_binary_string_of_length(self.binlength, data[:self.binlength/8])
+        bin_str = to_binary_string_of_length(self.binlength, data[:self.binlength / 8])
         data_index = 2
         for field in self._fields.values():
             container[field.name] = BinaryField(field.length.value, field.name,
@@ -437,7 +439,7 @@ class TBCDContainerTemplate(_Template):
         a = to_tbcd_value(data)
         index = 0
         for field in self._fields.values():
-            field_length = field.length.decode(container, len(data)*2-index)
+            field_length = field.length.decode(container, len(data) * 2 - index)
             container[field.name] = Field(field_length, field.name, to_tbcd_binary(a[index:index + field_length]))
             index += field_length
         return container

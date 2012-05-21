@@ -114,6 +114,7 @@ class Union(_StructuredElement):
     def __len__(self):
         return self._length
 
+
 class BinaryContainer(_StructuredElement):
 
     _type = 'BinaryContainer'
@@ -126,7 +127,7 @@ class BinaryContainer(_StructuredElement):
         return sum(field.binlength for field in self._fields.values())
 
     def __len__(self):
-        return self._binlength()/8
+        return self._binlength() / 8
 
     def _get_raw_bytes(self):
         # TODO: faster implementation...
@@ -144,7 +145,7 @@ class TBCDContainer(BinaryContainer):
         return to_tbcd_binary("".join(field.tbcd for field in self._fields.values()))
 
     def __len__(self):
-        return int(ceil(sum(len(field.tbcd) for field in self._fields.values())/2.0))
+        return int(ceil(sum(len(field.tbcd) for field in self._fields.values()) / 2.0))
 
 
 class Message(_StructuredElement):
@@ -152,7 +153,7 @@ class Message(_StructuredElement):
     _type = 'Message'
 
     def _add_header(self, header):
-        new = OrderedDict({'_header':header})
+        new = OrderedDict({'_header': header})
         new.update(self._fields)
         self._fields = new
 

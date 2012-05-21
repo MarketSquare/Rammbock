@@ -320,7 +320,7 @@ class BufferedStream(_WithTimeouts):
         timeout = float(timeout if timeout else self._default_timeout)
         cutoff = time.time() + timeout
         while time.time() < cutoff:
-            result += self._get(size-len(result))
+            result += self._get(size - len(result))
             if len(result) == size:
                 return result
             self._fill_buffer(timeout)

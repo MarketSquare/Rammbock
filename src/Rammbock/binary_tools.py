@@ -41,24 +41,28 @@ except NameError, name_error:
 
 LONGLONG = struct.Struct('>Q')
 
+
 def to_bin(string_value):
     string_value = str(string_value)
     if string_value.startswith('0x'):
         return _hex_to_bin(string_value)
     elif string_value.startswith('0b'):
-        return _int_to_bin(int(string_value.replace('0b','').replace(' ',''), 2))
+        return _int_to_bin(int(string_value.replace('0b', '').replace(' ', ''), 2))
     return _int_to_bin(int(string_value))
+
 
 def _int_to_bin(integer):
     if integer >= 18446744073709551616L:
         return to_bin(hex(integer))
     return LONGLONG.pack(integer).lstrip('\x00') or '\x00'
 
+
 def _hex_to_bin(string_value):
-    value = string_value.replace('0x','').replace(' ','').replace('L','')
+    value = string_value.replace('0x', '').replace(' ', '').replace('L', '')
     if len(value) % 2 == 1:
         value = '0' + value
     return binascii.unhexlify(value)
+
 
 def to_bin_of_length(length, string_value):
     bin = to_bin(string_value)
@@ -67,14 +71,18 @@ def to_bin_of_length(length, string_value):
             % (string_value, length))
     return bin.rjust(length, '\x00')
 
+
 def to_hex(binary):
     return binascii.hexlify(binary)
+
 
 def to_0xhex(binary):
     return '0x' + to_hex(binary)
 
+
 def log_hex(message, level='INFO'):
     print '*%s* %s' % (level, to_hex(message))
+
 
 def to_binary_string_of_length(length, bytes):
     result = bin(int(to_0xhex(bytes), 16))
@@ -82,8 +90,10 @@ def to_binary_string_of_length(length, bytes):
         result = '0b' + '0' * (length - len(result) + 2) + result[2:]
     return result
 
+
 def to_bin_str_from_int_string(length, value):
     return to_binary_string_of_length(length, to_bin(value))[2:]
+
 
 def to_tbcd_value(binary):
     bin_str, value = to_binary_string_of_length(len(to_hex(binary)) * 4, binary), ""
@@ -92,6 +102,7 @@ def to_tbcd_value(binary):
             return value + str(int(bin_str[index + 4: index + 8], 2))
         value += "%s%s" % (int(bin_str[index + 4:index + 8], 2), int(bin_str[index: index + 4], 2))
     return value
+
 
 def to_tbcd_binary(tbcd_string):
     value, index = "0b", 0

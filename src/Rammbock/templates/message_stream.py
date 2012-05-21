@@ -14,6 +14,7 @@
 
 from Rammbock.binary_tools import to_bin
 
+
 class MessageStream(object):
 
     def __init__(self, stream, protocol):
@@ -54,7 +55,7 @@ class MessageStream(object):
             if header_filter not in fields:
                 raise AssertionError('Trying to filter messages by header field %s, but no value has been set for %s' %
                                      (header_filter, header_filter))
-            if header[header_filter].bytes  != to_bin(fields[header_filter]):
+            if header[header_filter].bytes != to_bin(fields[header_filter]):
                 return False
         return True
 

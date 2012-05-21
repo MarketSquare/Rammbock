@@ -17,7 +17,8 @@ from ordered_dict import OrderedDict
 
 
 def ip_name(ip, port):
-    return '%s:%s' % (ip,port)
+    return '%s:%s' % (ip, port)
+
 
 def msg_name(protocol, message_name):
     if protocol and message_name:
@@ -32,7 +33,7 @@ class MessageSequence(object):
         self.sequence = []
 
     def _operator(self, name, ip, port):
-        ip_port = ip_name(ip,port)
+        ip_port = ip_name(ip, port)
         if ip_port not in self.operators:
             self.operators[ip_port] = Operator(ip_port, name)
         else:
@@ -45,7 +46,8 @@ class MessageSequence(object):
         return self.operators[ip_port]
 
     def send(self, sender_name, sender, receiver, protocol, message_name, error=''):
-        self.sequence.append((self._operator(sender_name, *sender),self._get_operator(ip_name(*receiver)),
+        self.sequence.append((self._operator(sender_name, *sender),
+                              self._get_operator(ip_name(*receiver)),
                               msg_name(protocol, message_name), error, 'sent'))
 
     def receive(self, receiver_name, receiver, sender, protocol, message_name, error=''):
@@ -97,9 +99,9 @@ class SeqdiagGenerator(object):
         for row in sequence[-15:]:
             row = list(row)
             if operators.index(row[0]) < operators.index(row[1]):
-                result +='    %s -> %s %s;\n' % (row[0],row[1], self._get_label(row))
+                result += '    %s -> %s %s;\n' % (row[0], row[1], self._get_label(row))
             else:
-                result +='    %s <- %s %s;\n' % (row[1],row[0], self._get_label(row))
+                result += '    %s <- %s %s;\n' % (row[1], row[0], self._get_label(row))
         return self.template % result
 
     def _get_label(self, row):
@@ -113,8 +115,8 @@ class SeqdiagGenerator(object):
         with open(path, 'w') as output:
             output.write(diagram)
         rc = 1
-        try :
-            rc = subprocess.call(["seqdiag", '-o', path+'.png', path])
+        try:
+            rc = subprocess.call(["seqdiag", '-o', path + '.png', path])
         except:
             pass
         self._print_link(path, rc)
