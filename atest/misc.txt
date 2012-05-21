@@ -9,3 +9,7 @@ ${UNIT TEST DIR}=    ${CURDIR}${/}..${/}utest
 Execute unit tests
     ${rc}  ${output}  Run And Return Rc And Output  nosetests --cover-erase --with-coverage --with-xunit --xunit-file=nose-out.xml ${UNIT TEST DIR}
     Should Be Equal As Integers  ${rc}  0   ${output}
+
+Execute pep8 without line length check
+    ${rc}  ${output}  Run And Return Rc And Output  pep8 --ignore=E501 src/
+    Should Be Equal As Integers  ${rc}  0   ${output}
