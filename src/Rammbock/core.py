@@ -79,7 +79,6 @@ class RammbockCore(object):
 
     def end_protocol(self):
         """End protocol definition."""
-        self._protocol_in_progress.verify()
         self._protocols[self._protocol_in_progress.name] = self._protocol_in_progress
         self._protocol_in_progress = None
 

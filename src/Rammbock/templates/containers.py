@@ -130,7 +130,7 @@ class Protocol(_Template):
 
     @property
     def pdu_length(self):
-        return self.pdu.length
+        return self.pdu.length if self.pdu else 0
 
     def add(self, field):
         if self.pdu:
@@ -152,16 +152,14 @@ class Protocol(_Template):
         data = stream.read(self.header_length(), timeout=timeout)
         header = Header(self.name)
         self._extract_values_from_data(data, header, self._fields.values())
-        length_param = header[self.pdu_length.field].int
-        pdu_bytes = stream.read(self.pdu_length.calc_value(length_param))
+        pdu_bytes = None
+        if self.pdu:
+            length_param = header[self.pdu_length.field].int
+            pdu_bytes = stream.read(self.pdu_length.calc_value(length_param))
         return (header, pdu_bytes)
 
     def get_message_stream(self, buffered_stream):
         return MessageStream(buffered_stream, self)
-
-    def verify(self):
-        if not self.pdu:
-            raise AssertionError('Protocol definition must include a pdu field.')
 
 
 class MessageTemplate(_Template):
@@ -176,6 +174,8 @@ class MessageTemplate(_Template):
 
     def encode(self, message_params, header_params, little_endian=False):
         message_params = message_params.copy()
+        if not self._fields:
+            return self._protocol.encode(None, message_params)
         msg = Message(self.name)
         self._encode_fields(msg, message_params, little_endian=little_endian)
         if self._protocol:
@@ -193,6 +193,11 @@ class MessageTemplate(_Template):
 
     def _get_struct(self, name, parent=None):
         return Message(self.name)
+
+    def validate(self, message, message_fields):
+        if not self._fields:
+            return self._protocol.validate(message, message_fields)
+        return _Template.validate(self, message, message_fields)
 
 
 class StructTemplate(_Template):

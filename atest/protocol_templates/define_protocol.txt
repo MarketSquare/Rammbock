@@ -51,10 +51,23 @@ Protocol with fixed pdu length
     ${msg}   Get message
     Should be equal    ${msg.first.hex}   0xcafe
 
-Protocol without PDU fails
-    New Protocol   Failing
+Protocol without PDU
+    New Protocol   NoPDU
     u8  field  16
-    Should fail   End Protocol
+    End Protocol
+    New message    message   protocol=NoPDU
+    ${msg}  Get message     field:4
+    Should be equal as integers     ${msg.field}    4
+
+Send and receive protocol without PDU
+    New Protocol   NoPDU
+    u8  field  16
+    End Protocol
+    New message    message   protocol=NoPDU
+    Setup TCP server and client     NoPDU
+    Client sends message    field:42
+    ${msg}  Server receives message     field:42
+    Should be equal as integers     ${msg.field}    42
 
 Protocol with fields after PDU fail
     New Protocol   Failing
