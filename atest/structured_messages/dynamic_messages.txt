@@ -111,6 +111,13 @@ Encode dynamic length string
     ${msg} =     Get message    name:test
     Should be equal as integers    ${msg.stringLen.int}    4
 
+Encoding multiplied length string
+    New message     DynString   Example     messageType:0xaaaa
+    u8      length      2
+    Chars   length*2    string  a
+    ${msg} =    Get message
+    Should be equal     ${msg.string.hex}   0x61000000
+
 Encoding free length
     New message    FreeLength   Example    messageType:0xaaaa
     Chars    *     foo

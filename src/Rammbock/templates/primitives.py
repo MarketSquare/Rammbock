@@ -338,6 +338,9 @@ def parse_field_and_calculator(value):
     elif "+" in value:
         field, _, add = _partition('+', value)
         return field, Adder(int(add))
+    elif "*" in value:
+        field, _, multiplier = _partition('*', value)
+        return field, Multiplier(int(multiplier))
     return value.strip(), SingleValue()
 
 
@@ -372,3 +375,15 @@ class Adder(object):
 
     def solve_parameter(self, length):
         return length - self.add
+
+
+class Multiplier(object):
+
+    def __init__(self, multiplier):
+        self.multiplier = multiplier
+
+    def calc_value(self, param):
+        return param * self.multiplier
+
+    def solve_parameter(self, length):
+        return length / self.multiplier
