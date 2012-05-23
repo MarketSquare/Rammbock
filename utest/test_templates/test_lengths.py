@@ -34,7 +34,8 @@ class TestLength(TestCase):
         length = Length('length*3')
         self.assertEquals(length.calc_value(4), 12)
         self.assertEquals(length.solve_parameter(12), 4)
-        self.assertRaises(Exception, length.solve_parameter, 13)
+        self.assertEquals(length.solve_parameter(13), 5)
+        self.assertEquals(length.solve_parameter(14), 5)
 
     def test_dynamic_length(self):
         length = Length('length')

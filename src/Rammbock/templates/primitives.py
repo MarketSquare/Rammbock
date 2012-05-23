@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 from math import ceil
+import math
 
 from Rammbock.message import Field, BinaryField
 from Rammbock.binary_tools import to_bin_of_length, to_0xhex, to_tbcd_binary, to_tbcd_value, to_bin
@@ -386,6 +387,4 @@ class Multiplier(object):
         return param * self.multiplier
 
     def solve_parameter(self, length):
-        if length % self.multiplier:
-            raise AssertionError('Length %s not divisible by %s' % (length, self.multiplier))
-        return length / self.multiplier
+        return math.ceil(length / float(self.multiplier))
