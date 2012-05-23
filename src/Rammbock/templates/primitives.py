@@ -386,4 +386,6 @@ class Multiplier(object):
         return param * self.multiplier
 
     def solve_parameter(self, length):
+        if length % self.multiplier:
+            raise AssertionError('Length %s not divisible by %s' % (length, self.multiplier))
         return length / self.multiplier
