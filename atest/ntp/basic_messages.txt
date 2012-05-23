@@ -12,8 +12,8 @@ ${clock synchronized}=    3
 Send and receive NTP message
     [tags]
     Define NTP protocol
-    New message    NTP
-    Protocol timestamp value    Origin timestamp    Sep 27, 2004 06:18:04.922896000
+    New message    NTP    time request
+    Datetime value    Origin timestamp    Sep 27, 2004 06:18:04.922896000
     client sends binary
     server receives binary
 
@@ -42,13 +42,14 @@ Flags
     end binary container
 
 Datetime
-    [arguments]    ${datetime}
-    [return]    ${converted}
+    [arguments]    ${name}    ${datetime}
     ${converted}=    Convert datetime to 8 byte NTP integer    ${datetime}
+    u64    ${name}    ${converted}
 
-Protocol timestamp value
-    [arguments]    ${datetime}
+Datetime value
+    [arguments]    ${name}    ${datetime}
     ${converted}=    Convert datetime to 8 byte NTP integer    ${datetime}
+    Value     ${name}    ${converted}
 
 IP
     [arguments]    ${name}    ${value}
