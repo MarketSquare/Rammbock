@@ -21,6 +21,10 @@ from Rammbock.binary_tools import to_bin_of_length, to_0xhex, to_tbcd_binary, to
 
 class _TemplateField(object):
 
+    def __init__(self, name, default_value):
+        self._set_default_value(default_value)
+        self.name = name
+
     has_length = True
     can_be_little_endian = False
     referenced_later = False
@@ -103,6 +107,9 @@ class _TemplateField(object):
             return self.name
         return parent._get_recursive_name() + self.name
 
+    def _set_default_value(self, value):
+        self.default_value = str(value) if value and value != '""' else None
+
 
 class PlaceHolderField(object):
 
@@ -119,9 +126,8 @@ class UInt(_TemplateField):
     can_be_little_endian = True
 
     def __init__(self, length, name, default_value=None, align=None):
+        _TemplateField.__init__(self, name, default_value)
         self.length = Length(length, align)
-        self.name = name
-        self.default_value = str(default_value) if default_value and default_value != '""' else None
 
     def _encode_value(self, value, message, little_endian=False):
         self._raise_error_if_no_value(value, message)
@@ -136,9 +142,8 @@ class Char(_TemplateField):
     type = 'char'
 
     def __init__(self, length, name, default_value=None):
+        _TemplateField.__init__(self, name, default_value)
         self.length = Length(length)
-        self.name = name
-        self.default_value = default_value if default_value and default_value != '""' else None
 
     def _encode_value(self, value, message, little_endian=False):
         value = value or ''
@@ -151,11 +156,10 @@ class Binary(_TemplateField):
     type = 'binary'
 
     def __init__(self, length, name, default_value=None):
+        _TemplateField.__init__(self, name, default_value)
         self.length = Length(length)
         if not self.length.static:
             raise AssertionError('Binary field length must be static. Length: %s' % length)
-        self.name = name
-        self.default_value = str(default_value) if default_value and default_value != '""' else None
 
     def _encode_value(self, value, message, little_endian=False):
         self._raise_error_if_no_value(value, message)
@@ -181,9 +185,8 @@ class TBCD(_TemplateField):
     type = 'tbcd'
 
     def __init__(self, size, name, default_value):
-        self.name = name
+        _TemplateField.__init__(self, name, default_value)
         self.length = Length(size)
-        self.default_value = str(default_value) if default_value and default_value != '""' else None
 
     def _encode_value(self, value, message, little_endian=False):
         self._raise_error_if_no_value(value, message)
