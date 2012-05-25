@@ -1,26 +1,62 @@
+*** Settings ***
+Suite teardown    Reset Rammbock
+Library    Rammbock
+Library    DNSLibrary.py
+
+
+*** Test cases ***
+DNS Query
+    define dns protocol
+    dns A query with one domain
+    ${msg}=    Get message
+
+
 *** Keywords ***
-dns query
-    new message   dns query
+dns A query with one domain
+    new message    DNS    questions=1
+    Value    questions[0].query.name=google.com
+    Value    questions[0].query.type=0x0001
+    Value    questions[0].query.class=0x0001
+
+
+define dns protocol
+    new protocol    DNS
     dns header
     Array     questions    dns query    queries
     Array     answers      dns answer    answers
     Array     authority_rrs    authority_rr    authority_rrs
     Array     additional_rrs    additional_rr    additional_rrs
+    end protocol
 
 dns header
     u16    transaction_id
     dns flags
-    u16    questions
-    u16    answers
+    u16    questions        0
+    u16    answers          0
     u16    authority_rrs    0
-    u16    additional_rrs
+    u16    additional_rrs   0
 
 dns query
     new struct    DNS query    query
-    label sequence    name
+    label sequence    *    name    end_sequence=0x00
     u16    type
     u16    class
-    end struct    
+    end struct
+
+dns answer with IPv4 address
+    new struct    DNS answer    answer
+    u16    name    0xc00c
+    u16    type
+    u16    class
+    u32    time to live
+    u16    data length    4
+    IPv4 Field
+    end struct
+
+
+Label sequence
+    ${converted}   sdshfdsjfhs
+
 
 dns flags
     new binary container    flags
