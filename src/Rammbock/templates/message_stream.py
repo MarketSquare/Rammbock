@@ -36,13 +36,11 @@ class MessageStream(object):
             self._cache.append((header, pdu_bytes))
 
     def _get_from_cache(self, template, fields, header_filter):
-        index = 0
-        while index < len(self._cache):
+        for index in range(len(self._cache)):
             header, pdu = self._cache[index]
             if self._matches(header, fields, header_filter):
                 self._cache.pop(index)
                 return self._to_msg(template, header, pdu)
-            index += 1
         return None
 
     def _to_msg(self, template, header, pdu_bytes):
