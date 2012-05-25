@@ -271,6 +271,8 @@ class RammbockCore(object):
         | New message | MyMessage | MyProtocol | header_field:value |
         """
         proto = self._get_protocol(protocol)
+        if not proto:
+            raise Exception("Protocol not defined! Please define a protocol before creating a message!")
         _, header_fields, _ = self._parse_parameters(parameters)
         self._init_new_message_stack(MessageTemplate(message_name, proto, header_fields))
 
