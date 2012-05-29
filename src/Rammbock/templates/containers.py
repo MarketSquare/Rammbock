@@ -448,7 +448,7 @@ class TBCDContainerTemplate(_Template):
         index = 0
         for field in self._fields.values():
             field_length = field.length.decode(container, len(data) * 2 - index)
-            container[field.name] = Field(field_length, field.name, to_tbcd_binary(a[index:index + field_length]))
+            container[field.name] = Field(field.type, field.name, to_tbcd_binary(a[index:index + field_length]))
             index += field_length
         return container
 
