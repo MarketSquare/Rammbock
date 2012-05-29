@@ -60,10 +60,12 @@ class _Template(object):
         message_fields.pop('*', None)
         if message_fields:
             raise AssertionError('Unknown fields in %s %s' %
-                                 (self._get_recursive_name(name), self._pretty_print_fields(message_fields)))
+                                 (self.name, self._pretty_print_fields(message_fields)))
 
-    def _get_recursive_name(self, name):
-        return self.parent._get_recursive_name(name) if self.parent else name
+    def _get_recursive_name(self):
+        return (self.parent._get_recursive_name() if self.parent else '') + self.name + '.'
+
+        #return self.parent._get_recursive_name(name) + "." + name if self.parent else self.name
 
     def _encode_fields(self, struct, params, little_endian=False):
         for field in self._fields.values():
@@ -199,6 +201,9 @@ class MessageTemplate(_Template):
             return self._protocol.validate(message, message_fields)
         return _Template.validate(self, message, message_fields)
 
+    def _get_recursive_name(self):
+        return ""
+
 
 class StructTemplate(_Template):
 
@@ -281,7 +286,7 @@ class UnionTemplate(_Template):
     def encode(self, union_params, parent=None, name=None, little_endian=False):
         name = name or self.name
         if name not in union_params:
-            raise AssertionError('Value not chosen for union %s' % name)
+            raise AssertionError('Value not chosen for union %s' % self._get_recursive_name())
         chosen_one = union_params[name]
         if chosen_one not in self._fields:
             raise Exception('Unknown union field %s' % chosen_one)
