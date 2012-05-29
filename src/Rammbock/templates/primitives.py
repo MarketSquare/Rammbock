@@ -139,7 +139,7 @@ class UInt(_TemplateField):
 
 class Char(_TemplateField):
 
-    type = 'char'
+    type = 'chars'
 
     def __init__(self, length, name, default_value=None):
         _TemplateField.__init__(self, name, default_value)
@@ -153,7 +153,7 @@ class Char(_TemplateField):
 
 class Binary(_TemplateField):
 
-    type = 'binary'
+    type = 'bin'
 
     def __init__(self, length, name, default_value=None):
         _TemplateField.__init__(self, name, default_value)

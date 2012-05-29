@@ -194,6 +194,10 @@ class Field(object):
         return int(to_0xhex(self._value), 16)
 
     @property
+    def uint(self):
+        return self.int
+
+    @property
     def hex(self):
         return hex(self)
 
@@ -231,7 +235,7 @@ class Field(object):
         return self._original_value.ljust(self._length, '\x00')
 
     def __str__(self):
-        return self.hex
+        return str(self.__getattribute__(self._type))
 
     def __repr__(self):
         return '%s = %s' % (self.name, str(self))
@@ -246,7 +250,7 @@ class Field(object):
 
 class BinaryField(Field):
 
-    _type = 'binary'
+    _type = 'bin'
 
     def __init__(self, length, name, value, aligned_len=None, little_endian=False):
         self._name = name

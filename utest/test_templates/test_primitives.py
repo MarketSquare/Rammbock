@@ -19,7 +19,7 @@ class TestTemplateFields(TestCase):
         self.assertTrue(field.length.static)
         self.assertEquals(field.name, "char_field")
         self.assertEquals(field.default_value, 'foo')
-        self.assertEquals(field.type, 'char')
+        self.assertEquals(field.type, 'chars')
         self.assertEquals(field.encode({}, {}, None)._raw, 'foo\x00\x00')
         self.assertEquals(field.encode({}, {}, None).bytes, 'foo\x00\x00')
 
@@ -28,7 +28,7 @@ class TestTemplateFields(TestCase):
         self.assertTrue(field.length.static)
         self.assertEquals(field.name, "field")
         self.assertEquals(field.default_value, '1')
-        self.assertEquals(field.type, 'binary')
+        self.assertEquals(field.type, 'bin')
         self.assertEquals(field.encode({}, {}, None).hex, '0x01')
 
     def test_long_binary_field_value(self):
