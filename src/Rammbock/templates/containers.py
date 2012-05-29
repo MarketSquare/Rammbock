@@ -65,8 +65,6 @@ class _Template(object):
     def _get_recursive_name(self):
         return (self.parent._get_recursive_name() if self.parent else '') + self.name + '.'
 
-        #return self.parent._get_recursive_name(name) + "." + name if self.parent else self.name
-
     def _encode_fields(self, struct, params, little_endian=False):
         for field in self._fields.values():
             encoded = field.encode(params, struct, little_endian=little_endian)
