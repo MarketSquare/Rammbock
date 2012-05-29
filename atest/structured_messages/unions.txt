@@ -45,10 +45,24 @@ Choosing union when receiving
     Field should not exist    ${msg.hyperU}     user
 
 Proper error message when union not chosen
-        Simple union in struct
-        Run keyword and expect error   Value not chosen for union structField.onion.    get message
-        ...  structField.structBeginField:0xbeba
-        ...  structField.structEndField:0xabba
+    Simple union in struct
+    Run keyword and expect error   Value not chosen for union structField.onion.    get message
+    ...  structField.structBeginField:0xbeba
+    ...  structField.structEndField:0xabba
+
+Proper error message when union field not set
+    Simple union in struct
+    Run keyword and expect error   Value of structField.onion.fooMiddle not set    get message
+    ...  structField.structBeginField:0xbeba
+    ...  structField.onion:fooMiddle
+    ...  structField.structEndField:0xabba
+
+Proper error message when Unknown union field
+    Simple union in struct
+    Run keyword and expect error   Unknown union field fooMiddlexxxx in structField.onion.     get message
+    ...  structField.structBeginField:0xbeba
+    ...  structField.onion:fooMiddlexxxx
+    ...  structField.structEndField:0xabba
 
 
 *** Keywords ***

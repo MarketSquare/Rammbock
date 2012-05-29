@@ -289,7 +289,7 @@ class UnionTemplate(_Template):
             raise AssertionError('Value not chosen for union %s' % self._get_recursive_name())
         chosen_one = union_params[name]
         if chosen_one not in self._fields:
-            raise Exception('Unknown union field %s' % chosen_one)
+            raise Exception('Unknown union field %s in %s' % (chosen_one, self._get_recursive_name()))
         field = self._fields[chosen_one]
         union = self._get_struct(name, parent)
         union[field.name] = field.encode(self._get_params_sub_tree(union_params, name),
