@@ -3,6 +3,7 @@ Suite setup    define dns protocol
 Suite teardown    Reset Rammbock
 Library    Rammbock
 Library    DNSLibrary.py
+Resource    ../Protocols.txt
 Default tags    Regression
 
 *** Test cases ***
@@ -13,6 +14,13 @@ DNS Query
 dns answer
     dns answer with one domain and IPv4 answer
     ${msg}=    Get message
+
+send and receive dns request
+    [tags]
+    Setup UDP server and client      DNS
+    dns A query with one domain
+    client sends message
+    server receives message
 
 
 *** Keywords ***
