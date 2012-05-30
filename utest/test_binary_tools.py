@@ -4,6 +4,10 @@ from Rammbock.binary_tools import to_bin, to_bin_of_length, to_hex, to_0xhex, to
 
 class TestBinaryConversions(TestCase):
 
+    def test_empty_values_to_bin(self):
+        self.assertEquals('', to_bin(None))
+        self.assertEquals('', to_bin(''))
+
     def test_integer_to_bin(self):
         self.assertEquals(to_bin(0), '\x00')
         self.assertEquals(to_bin(5), '\x05')
@@ -29,6 +33,7 @@ class TestBinaryConversions(TestCase):
 
     def test_hex_to_bin(self):
         self.assertEquals(to_bin('0x0'), '\x00')
+        self.assertEquals(to_bin('0x00'), '\x00')
         self.assertEquals(to_bin('0x5'), '\x05')
         self.assertEquals(to_bin('0xff'), '\xff')
         self.assertEquals(to_bin('0x100'), '\x01\x00')

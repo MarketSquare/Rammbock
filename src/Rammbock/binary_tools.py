@@ -43,6 +43,8 @@ LONGLONG = struct.Struct('>Q')
 
 
 def to_bin(string_value):
+    if string_value in (None, ''):
+        return ''
     string_value = str(string_value)
     if string_value.startswith('0x'):
         return _hex_to_bin(string_value)
