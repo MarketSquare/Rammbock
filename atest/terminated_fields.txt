@@ -1,0 +1,39 @@
+*** Settings ***
+Library           Rammbock
+Suite setup       Define protocol
+Suite teardown    Reset Rammbock
+Resource    Protocols.txt
+Default tags    Regression
+
+*** Variables ***
+${default terminator}=    0x00
+
+
+*** Test Cases ***
+Get message with chars and end byte
+    Message with chars and end byte
+    ${msg}    get message    arbitrary_length:foo.bar.zig
+    Should be equal    foo.bar.zig    ${msg.arbitrary_length.ascii}
+    should be equal as integers   12    ${msg.arbitrary_length.len}
+
+Send and receive message with chars with end byte
+    [tags]
+    Setup TCP server and client     Test
+    Message with chars and end byte
+    Client sends message    arbitrary_length:foo.bar.zig
+    ${msg}=    Server receives message
+    Should be equal    foo.bar.zig    ${msg.arbitrary_length.ascii}
+    should be equal as integers   12    ${msg.arbitrary_length.len}
+
+
+*** Keywords ***
+Define protocol
+    new protocol    Test
+    u8    length
+    pdu   length-1
+    end protocol
+
+Message with chars and end byte
+    new message    ExampleMessage    Test
+    chars    *    arbitrary_length    ${none}    terminator=${default terminator}
+    uint    8    field after    0x00

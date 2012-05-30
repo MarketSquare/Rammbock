@@ -141,12 +141,14 @@ class Char(_TemplateField):
 
     type = 'chars'
 
-    def __init__(self, length, name, default_value=None):
+    def __init__(self, length, name, default_value=None, terminator=None):
         _TemplateField.__init__(self, name, default_value)
+        self._terminator = to_bin(terminator)
         self.length = Length(length)
 
     def _encode_value(self, value, message, little_endian=False):
         value = value or ''
+        value += self._terminator
         length, aligned_length = self.length.find_length_and_set_if_necessary(message, len(value))
         return str(value).ljust(length, '\x00'), aligned_length
 

@@ -440,7 +440,7 @@ class RammbockCore(object):
         """
         self._add_field(UInt(length, name, value, align=align))
 
-    def chars(self, length, name, value=None):
+    def chars(self, length, name, value=None, terminator=None):
         """Add a char array to template.
 
         `length` is given in bytes and can refer to earlier numeric fields in template. `value` is optional.
@@ -452,7 +452,7 @@ class RammbockCore(object):
         | chars | charLength | field |
         """
 
-        self._add_field(Char(length, name, value))
+        self._add_field(Char(length, name, value, terminator))
 
     def _add_field(self, field):
         if self._protocol_in_progress:
