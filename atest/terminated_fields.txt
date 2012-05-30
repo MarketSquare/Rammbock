@@ -36,4 +36,4 @@ Define protocol
 Message with chars and end byte
     new message    ExampleMessage    Test
     chars    *    arbitrary_length    ${none}    terminator=${default terminator}
-    uint    8    field after    0x00
+    uint    8     some_integer    0x00

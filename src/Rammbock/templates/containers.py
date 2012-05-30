@@ -42,7 +42,7 @@ class _Template(object):
         if field.type == 'pdu':
             self._handle_pdu_field(field)
         if self._get_field(field.name):
-            raise AssertionError('Duplicate field %s in %s' % (field.name, self.name))
+            raise AssertionError("Duplicate field '%s' in '%s'" % (field.name, self._get_recursive_name()))
         if field.has_length and field.length.has_references:
             self._mark_referenced_field(field)
         self._fields[field.name] = field
@@ -59,11 +59,11 @@ class _Template(object):
     def _check_params_empty(self, message_fields, name):
         message_fields.pop('*', None)
         if message_fields:
-            raise AssertionError('Unknown fields in %s %s' %
-                                 (self.name, self._pretty_print_fields(message_fields)))
+            raise AssertionError("Unknown fields in '%s': %s" %
+                                 (self._get_recursive_name(), self._pretty_print_fields(message_fields)))
 
     def _get_recursive_name(self):
-        return (self.parent._get_recursive_name() if self.parent else '') + self.name + '.'
+        return (self.parent._get_recursive_name() + "." if self.parent else '') + self.name
 
     def _encode_fields(self, struct, params, little_endian=False):
         for field in self._fields.values():
@@ -175,7 +175,8 @@ class MessageTemplate(_Template):
     def encode(self, message_params, header_params, little_endian=False):
         message_params = message_params.copy()
         if not self._fields:
-            return self._protocol.encode(None, message_params)
+            parameters = self._headers(message_params)
+            return self._protocol.encode(None, parameters)
         msg = Message(self.name)
         self._encode_fields(msg, message_params, little_endian=little_endian)
         if self._protocol:
@@ -198,9 +199,6 @@ class MessageTemplate(_Template):
         if not self._fields:
             return self._protocol.validate(message, message_fields)
         return _Template.validate(self, message, message_fields)
-
-    def _get_recursive_name(self):
-        return ""
 
 
 class StructTemplate(_Template):
@@ -284,10 +282,10 @@ class UnionTemplate(_Template):
     def encode(self, union_params, parent=None, name=None, little_endian=False):
         name = name or self.name
         if name not in union_params:
-            raise AssertionError('Value not chosen for union %s' % self._get_recursive_name())
+            raise AssertionError("Value not chosen for union '%s'" % self._get_recursive_name())
         chosen_one = union_params[name]
         if chosen_one not in self._fields:
-            raise Exception('Unknown union field %s in %s' % (chosen_one, self._get_recursive_name()))
+            raise Exception("Unknown union field '%s' in '%s'" % (chosen_one, self._get_recursive_name()))
         field = self._fields[chosen_one]
         union = self._get_struct(name, parent)
         union[field.name] = field.encode(self._get_params_sub_tree(union_params, name),

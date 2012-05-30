@@ -36,7 +36,7 @@ class RammbockCore(object):
         self._servers = _NamedCache('server')
         self._clients = _NamedCache('client')
         self._message_stack = []
-        self._field_values = None
+        self._field_values = {}
         self._message_sequence = MessageSequence()
         self._message_templates = {}
 
@@ -75,12 +75,14 @@ class RammbockCore(object):
             raise Exception('Can not start a new protocol definition in middle of old.')
         if protocol_name in self._protocols:
             raise Exception('Protocol %s already defined' % protocol_name)
-        self._protocol_in_progress = Protocol(protocol_name)
+        self._init_new_message_stack(Protocol(protocol_name))
+        self._protocol_in_progress = True
 
     def end_protocol(self):
         """End protocol definition."""
-        self._protocols[self._protocol_in_progress.name] = self._protocol_in_progress
-        self._protocol_in_progress = None
+        protocol = self._get_message_template()
+        self._protocols[protocol.name] = protocol
+        self._protocol_in_progress = False
 
     def start_udp_server(self, ip, port, name=None, timeout=None, protocol=None):
         """Starts a new UDP server to given `ip` and `port`.
@@ -150,7 +152,10 @@ class RammbockCore(object):
         return self._clients.add(client, name)
 
     def _get_protocol(self, protocol):
-        protocol = self._protocols[protocol] if protocol else None
+        try:
+            protocol = self._protocols[protocol] if protocol else None
+        except KeyError:
+            raise Exception("No protocol '%s' defined!" % protocol)
         return protocol
 
     def get_client_protocol(self, name=None):
@@ -256,8 +261,6 @@ class RammbockCore(object):
         return msg, ip, port
 
     def _init_new_message_stack(self, message, fields=None):
-        if self._protocol_in_progress:
-            raise Exception("Protocol definition in progress. Please finish it before starting to define a message.")
         self._field_values = fields if fields else {}
         self._message_stack = [message]
 
@@ -273,6 +276,8 @@ class RammbockCore(object):
         proto = self._get_protocol(protocol)
         if not proto:
             raise Exception("Protocol not defined! Please define a protocol before creating a message!")
+        if self._protocol_in_progress:
+            raise Exception("Protocol definition in progress. Please finish it before starting to define a message.")
         _, header_fields, _ = self._parse_parameters(parameters)
         self._init_new_message_stack(MessageTemplate(message_name, proto, header_fields))
 
@@ -455,10 +460,7 @@ class RammbockCore(object):
         self._add_field(Char(length, name, value, terminator))
 
     def _add_field(self, field):
-        if self._protocol_in_progress:
-            self._protocol_in_progress.add(field)
-        else:
-            self._current_container.add(field)
+        self._current_container.add(field)
 
     def new_struct(self, type, name, *parameters):
         """Defines a new struct to template.

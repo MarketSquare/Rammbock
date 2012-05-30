@@ -52,15 +52,19 @@ class _TemplateField(object):
         field_name, field_value = self._encode_value(value, parent, little_endian=little_endian)
         return Field(self.type, self._get_name(name), field_name, field_value, little_endian=little_endian)
 
-    def decode(self, value, message, name=None, little_endian=False):
-        length, aligned_length = self.length.decode_lengths(message, len(value))
-        if len(value) < aligned_length:
-            raise Exception("Not enough data for '%s'. Needs %s bytes, given %s" % (self._get_recursive_name(message), aligned_length, len(value)))
+    def decode(self, data, message, name=None, little_endian=False):
+        data = self._prepare_data(data)
+        length, aligned_length = self.length.decode_lengths(message, len(data))
+        if len(data) < aligned_length:
+            raise Exception("Not enough data for '%s'. Needs %s bytes, given %s" % (self._get_recursive_name(message), aligned_length, len(data)))
         return Field(self.type,
                      self._get_name(name),
-                     value[:length],
+                     data[:length],
                      aligned_len=aligned_length,
                      little_endian=little_endian and self.can_be_little_endian)
+
+    def _prepare_data(self, data):
+        return data
 
     def validate(self, parent, paramdict, name=None):
         name = name or self.name
@@ -151,6 +155,11 @@ class Char(_TemplateField):
         value += self._terminator
         length, aligned_length = self.length.find_length_and_set_if_necessary(message, len(value))
         return str(value).ljust(length, '\x00'), aligned_length
+
+    def _prepare_data(self, data):
+        if self._terminator:
+            return data[0:data.index(self._terminator) + 1]
+        return data
 
 
 class Binary(_TemplateField):

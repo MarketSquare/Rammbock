@@ -69,7 +69,7 @@ Server receive and validate fails
 Validate fails when trying to validate nonexistent field
     Client sends simple request
     ${msg}=    Server receives without validation
-    Validation fails    ${msg}    Unknown fields in ValueRequest foo:0xfeedd00d    foo:0xfeedd00d
+    Validation fails    ${msg}    Unknown fields in 'ValueRequest': foo:0xfeedd00d    foo:0xfeedd00d
 
 
 *** Keywords ***

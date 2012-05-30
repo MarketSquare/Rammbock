@@ -29,7 +29,7 @@ Encoding dynamic list without defined length fails
 
 Encoding dynamic message with extra list entries fails
     Populate dynamic message  1  0x01  0x02  0x11  0x22
-    Run keyword and expect error   Unknown fields in pairList *   Get message
+    Run keyword and expect error   Unknown fields in 'DynamicRequest.pairList': *   Get message
 
 Encoding length in 2byte struct matches
     [Template]       2byte struct with given length

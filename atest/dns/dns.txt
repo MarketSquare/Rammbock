@@ -1,24 +1,23 @@
 *** Settings ***
+Suite setup    define dns protocol
 Suite teardown    Reset Rammbock
 Library    Rammbock
 Library    DNSLibrary.py
-
+Default tags    Regression
 
 *** Test cases ***
 DNS Query
-    define dns protocol
     dns A query with one domain
     ${msg}=    Get message
 
 dns answer
-    define dns protocol
     dns answer with one domain and IPv4 answer
     ${msg}=    Get message
 
 
 *** Keywords ***
 dns answer with one domain and IPv4 answer
-    new message DNS    questions=1    answer_rrs=1
+    new message    name    DNS    questions:1    answer_rrs:1
     query for google.com
     answer for google.com
 
@@ -29,14 +28,21 @@ answer for google.com
     Value    answers[0].data_length    4
     IP Value    answers[0].address    192.168.0.1
 
+IP Value
+    [arguments]    ${field}    ${value}
+    ${converted}=    convert to ip    ${value}
+    Value    ${field}    ${converted}
+
 dns A query with one domain
-    new message    DNS    questions=1
+    new message    name    DNS    questions:1
     query for google.com
 
 query for google.com
-    Label sequence value    queries[0].query.name    google.com
-    Value    queries[0].query.type    0x0001
-    Value    queries[0].query.class   0x0001
+    Value    transaction_id           0xbabe
+    Value    flags.response           0
+    Label sequence value    queries[0].name    google.com
+    Value    queries[0].type    0x0001
+    Value    queries[0].class   0x0001
 
 Label sequence value
     [arguments]    ${field}    ${domain}
@@ -48,26 +54,36 @@ define dns protocol
     dns header
     Array     questions        dns_query    queries
     Array     answer_rrs       dns_answer    answers
-    Array     authority_rrs    authority_rr    authority_rrs
-    Array     additional_rrs   additional_rr    additional_rrs
+    Array     authority_rrs    authority_rr    authorities
+    Array     additional_rrs   additional_rr    additionals
     end protocol
 
 dns header
     u16    transaction_id
     dns flags
     u16    questions        0
-    u16    answers_rrs      0
+    u16    answer_rrs       0
     u16    authority_rrs    0
     u16    additional_rrs   0
 
-dns query
-    new struct    DNS query    query
+authority_rr
+    [arguments]    ${name}
+    u8    placeholder
+
+additional_rr
+    [arguments]    ${name}
+    u8    placeholder
+
+dns_query
+    [arguments]    ${name}
+    new struct    DNS query    ${name}
     label sequence    name
     u16    type
     u16    class
     end struct
 
-dns answer
+dns_answer
+    [arguments]    ${name}
     new struct    DNS answer    answer
     u16    name    0xc00c
     u16    type
@@ -85,12 +101,12 @@ dns flags
     new binary container    flags
     bin    1    response
     bin    4    opcode       0
-    bin    1    spare        0
+    bin    1    spare_1        0
     bin    1    truncated    0
     bin    1    recursion_desired    0
-    bin    1    spare        0
+    bin    1    spare_2        0
     bin    1    Z        0
     bin    1    spare        0
     bin    1    non_authenticated_data        0
-    bin    4    spare        0
+    bin    4    spare_3        0
     end binary container

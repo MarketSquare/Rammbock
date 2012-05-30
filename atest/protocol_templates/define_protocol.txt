@@ -89,6 +89,17 @@ Node protocol and template protocol must be equal
     Client sends message
     Run keyword and expect error    Template protocol *    Server receives message
 
+Structured field in protocol header
+    new protocol    example
+    new Struct   Type   name
+    u8    field    16
+    end struct
+    end protocol
+    new message    message    protocol=example
+    ${msg}=    get message
+    should be equal as integers    16    ${msg.name.field.int}
+
+
 *** Keywords ***
 Simple Request with '${protocol}'
     New message    ValueRequest    ${protocol}    messageType:0xdddd    flags:0xffff
