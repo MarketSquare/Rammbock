@@ -240,11 +240,14 @@ class Field(object):
     def __repr__(self):
         return '%s = %s' % (self.name, str(self))
 
+    @property
+    def len(self):
+        return len(self)
+
     def __len__(self):
         return self._length
 
     def _get_recursive_name(self):
-
         return (self._parent._get_recursive_name() if self._parent else '') + self._name
 
 
