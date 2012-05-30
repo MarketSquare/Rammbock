@@ -25,10 +25,10 @@ Fail validation with struct
 Reuse struct in another message
     [Tags]
     Message with struct     42
-    ${struct msg} =    Get message
+    ${struct_msg} =    Get message
     Message with struct     1
-    Value       pair     ${struct msg.pair}
-    ${pair msg} =    Get message
+    Value       pair     ${struct_msg.pair}
+    ${pair_msg} =    Get message
     Should be equal as integers    ${pair msg.pair.first.int}     42
 
 Struct containing struct
@@ -69,7 +69,7 @@ Get full path when validating
 
 Get full path when validating against a pattern
     Client sends struct with struct   structstruct.mollyMalones.closesAt:4
-    Run keyword and expect error    Value of field structstruct.mollyMalones.closesAt does not match pattern 0x04!=(0|1|2)    Server Receives struct with struct  structstruct.mollyMalones.closesAt:(0|1|2)
+    Run keyword and expect error    Value of field 'structstruct.mollyMalones.closesAt' does not match pattern '0x04!=(0|1|2)'    Server Receives struct with struct  structstruct.mollyMalones.closesAt:(0|1|2)
 
 
 *** Keywords ***

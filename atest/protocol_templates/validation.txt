@@ -24,7 +24,7 @@ TCP server receives from two clients with pattern validation
 
 Server uses protocol and receives with pattern validation failing
     Client Sends hex    0x 01 00 dddd 000c 0000 00000005
-    Run keyword and expect error    Value of field value does not match *    Server Receives simple request    value:(4|6)
+    Run keyword and expect error    Value of field 'value' does not match *    Server Receives simple request    value:(4|6)
 
 Server uses protocol and value validation fails
     Client Sends hex    0x 01 00 dddd 000c 0000 cafebabe

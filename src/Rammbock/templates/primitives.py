@@ -55,7 +55,7 @@ class _TemplateField(object):
     def decode(self, value, message, name=None, little_endian=False):
         length, aligned_length = self.length.decode_lengths(message, len(value))
         if len(value) < aligned_length:
-            raise Exception('Not enough data for %s. Needs %s bytes, given %s' % (self._get_name(name), aligned_length, len(value)))
+            raise Exception("Not enough data for '%s'. Needs %s bytes, given %s" % (self._get_recursive_name(message), aligned_length, len(value)))
         return Field(self.type,
                      self._get_name(name),
                      value[:length],
@@ -78,7 +78,7 @@ class _TemplateField(object):
         for pattern in patterns:
             if self._is_match(pattern, value, field._parent):
                 return []
-        return ['Value of field %s does not match pattern %s!=%s' %
+        return ["Value of field '%s' does not match pattern '%s!=%s'" %
                 (field._get_recursive_name(), to_0xhex(value), forced_pattern)]
 
     def _is_match(self, forced_value, value, parent):
