@@ -149,6 +149,8 @@ class Protocol(_Template):
             field_index += 1
 
     def read(self, stream, timeout=None):
+        #TODO: use all data if length cannot be obtained. Return amount of data
+        #used to stream
         data = stream.read(self.header_length(), timeout=timeout)
         header = Header(self.name)
         self._extract_values_from_data(data, header, self._fields.values())
@@ -156,7 +158,7 @@ class Protocol(_Template):
         if self.pdu:
             length_param = header[self.pdu_length.field].int
             pdu_bytes = stream.read(self.pdu_length.calc_value(length_param))
-        return (header, pdu_bytes)
+        return header, pdu_bytes
 
     def get_message_stream(self, buffered_stream):
         return MessageStream(buffered_stream, self)

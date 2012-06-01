@@ -661,7 +661,7 @@ class RammbockCore(object):
             key = str(parameter[:index].strip())
         except UnicodeError:
             raise Exception("Only ascii characters are supported in parameters.")
-        return (key, parameter[index + 1:].strip())
+        return key, parameter[index + 1:].strip()
 
     def _log_msg(self, loglevel, log_msg):
         print '*%s* %s' % (loglevel, log_msg)
