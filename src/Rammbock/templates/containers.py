@@ -144,7 +144,8 @@ class Protocol(_Template):
         while len(data) > data_index:
             field = values[field_index]
             header[field.name] = Field(field.type, field.name,
-                data[data_index:data_index + field.length.value])
+                                       data[data_index:data_index +
+                                            field.length.value])
             data_index += field.length.value
             field_index += 1
 
@@ -230,8 +231,9 @@ class StructTemplate(_Template):
     def encode(self, message_params, parent=None, name=None, little_endian=False):
         struct = self._get_struct(name, parent)
         self._add_struct_params(message_params)
-        self._encode_fields(struct, self._get_params_sub_tree(message_params,
-            name), little_endian=little_endian)
+        self._encode_fields(struct,
+                            self._get_params_sub_tree(message_params, name),
+                            little_endian=little_endian)
         if self.has_length:
             length, aligned_length = self.length.find_length_and_set_if_necessary(parent, len(struct))
             if len(struct) != length:
@@ -407,10 +409,18 @@ class BinaryContainerTemplate(_Template):
         bin_str = to_binary_string_of_length(self.binlength, data[:self.binlength / 8])
         data_index = 2
         for field in self._fields.values():
-            container[field.name] = BinaryField(field.length.value, field.name,
-                to_bin("0b" + bin_str[data_index:data_index + field.length.value]))
+            container[field.name] = self._create_field(bin_str, data_index,
+                                                       field)
             data_index += field.length.value
         return container
+
+    def _create_field(self, bin_str, data_index, field):
+        return BinaryField(field.length.value, field.name,
+                           self._binary_substring(bin_str, data_index, field))
+
+    def _binary_substring(self, bin_str, data_index, field):
+        return to_bin(
+            "0b" + bin_str[data_index:data_index + field.length.value])
 
     def validate(self, parent, message_fields, name=None):
         name = name or self.name
