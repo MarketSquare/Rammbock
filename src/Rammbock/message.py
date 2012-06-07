@@ -84,6 +84,10 @@ class List(_StructuredElement):
     def _get_name(self):
         return '%s %s[]' % (self._type, self._name)
 
+    @property
+    def len(self):
+        return len(self._fields)
+
 
 class Struct(_StructuredElement):
 

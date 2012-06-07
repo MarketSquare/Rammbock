@@ -27,6 +27,16 @@ Message with list in list
     Should be equal as integers     ${msg.multiArray[1][0].int}     42
     Should be equal as integers     ${msg.multiArray[1][1].int}     0
 
+Receiving message with unknown length list
+    Client sends request containing '4' entries
+    ${msg}=    Server receives request containing any number of entries
+    Should be equal as integers    ${msg.list.len}    4
+
+Receiving message with not enough entries fails
+    Client sends request containing '4' entries
+    Run keyword and expect error    Not enough*    Server receives request containing '5' entries
+
+
 *** Keywords ***
 Client sends request with list
     [Arguments]    @{params}
@@ -75,3 +85,21 @@ List in List
 Inner list
     [arguments]     ${name}=    ${size}=    ${type}=
     Array       ${size}    ${type}      ${name}
+
+Client sends request containing '${len}' entries
+    New message    fooList    Example     messageType:0xaaaa
+    Array    ${len}    u32    list
+    Value    *     5
+    Client sends message
+
+Server receives request containing any number of entries
+    New message    fooList    Example     messageType:0xaaaa
+    Array    *    u32    list
+    ${msg}=    Server receives message
+    [Return]    ${msg}
+
+Server receives request containing '${number of}' entries
+    New message    fooList    Example     messageType:0xaaaa
+    Array    ${number of}    u32    list
+    ${msg}=    Server receives message
+    [Return]    ${msg}

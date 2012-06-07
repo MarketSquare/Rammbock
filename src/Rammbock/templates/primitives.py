@@ -241,6 +241,8 @@ def Length(value, align=None):
 
 class _Length(object):
 
+    free = False
+
     def __init__(self):
         self.value = None
         self.align = None
@@ -277,6 +279,7 @@ class _StaticLength(_Length):
 class _FreeLength(_Length):
     static = False
     has_references = False
+    free = True
 
     def __init__(self, align):
         self.align = int(align)

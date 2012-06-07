@@ -346,9 +346,12 @@ class ListTemplate(_Template):
         name = name or self.name
         message = self._get_struct(name, parent)
         data_index = 0
-        for index in range(0, self.length.decode(parent)):
+        # maximum_length is given for free length (*) to limit the absolute maximum number of entries
+        for index in range(0, self.length.decode(parent, maximum_length=len(data))):
             message[str(index)] = self.field.decode(data[data_index:], message, name=str(index), little_endian=little_endian)
             data_index += len(message[index])
+            if self.length.free and data_index == len(data):
+                break
         return message
 
     def validate(self, parent, message_fields, name=None):
@@ -356,7 +359,7 @@ class ListTemplate(_Template):
         params_subtree = self._get_params_sub_tree(message_fields, name)
         list = parent[name]
         errors = []
-        for index in range(self.length.decode(parent)):
+        for index in range(list.len):
             errors += self.field.validate(list, params_subtree, name=str(index))
         self._check_params_empty(params_subtree, name)
         return errors
