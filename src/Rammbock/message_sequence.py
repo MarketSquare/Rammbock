@@ -53,7 +53,7 @@ class MessageSequence(object):
     def receive(self, receiver_name, receiver, sender, protocol, message_name, error=''):
         sender_ip_name = ip_name(*sender)
         row = (self._get_operator(sender_ip_name), self._operator(receiver_name, *receiver),
-                                  msg_name(protocol, message_name), error, 'received')
+               msg_name(protocol, message_name), error, 'received')
         if self.is_named_operator(sender_ip_name):
             for i in reversed(range(len(self.sequence))):
                 if self._matches(self.sequence[i], receiver, sender):
@@ -63,8 +63,8 @@ class MessageSequence(object):
 
     def _matches(self, msg, receiver, sender):
         return msg[0].ip_name == ip_name(*sender) and \
-               msg[1].ip_name == ip_name(*receiver) and \
-               msg[-1] == 'sent'
+            msg[1].ip_name == ip_name(*receiver) and \
+            msg[-1] == 'sent'
 
     def get_operators(self):
         return (operator.name for operator in self.operators.values())
