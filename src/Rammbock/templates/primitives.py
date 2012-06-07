@@ -40,7 +40,7 @@ class _TemplateField(object):
     def _get_element_value_and_remove_from_params(self, paramdict, name=None):
         wild_card = paramdict.get('*') if not self.referenced_later else None
         return paramdict.pop(self._get_name(name),
-            self.default_value or wild_card)
+                             self.default_value or wild_card)
 
     def encode(self, paramdict, parent, name=None, little_endian=False):
         value = self._get_element_value_and_remove_from_params(paramdict, name)
@@ -323,9 +323,13 @@ class _DynamicLength(_Length):
 
     def _set_length(self, reference, min_length):
         value_len, aligned_len = self._get_aligned_lengths(min_length)
-        reference._parent[self.field] = reference.template.encode({self.field:
-                                        str(aligned_len)}, reference._parent)
+        reference._parent[self.field] = self._encode_ref_length(aligned_len,
+                                                                reference)
         return value_len, aligned_len
+
+    def _encode_ref_length(self, aligned_len, reference):
+        return reference.template.encode({self.field: str(aligned_len)},
+                                         reference._parent)
 
     def find_length_and_set_if_necessary(self, parent, min_length):
         min_value_for_reference = self.solve_parameter(min_length)
