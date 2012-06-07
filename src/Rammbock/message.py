@@ -221,7 +221,7 @@ class Field(object):
 
     @property
     def chars(self):
-        return str(self._value)
+        return self._value
 
     @property
     def bin(self):
