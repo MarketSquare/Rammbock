@@ -328,16 +328,15 @@ class _DynamicLength(_Length):
         return value_len, aligned_len
 
     def find_length_and_set_if_necessary(self, parent, min_length):
-        min_length = self.solve_parameter(min_length)
+        min_value_for_reference = self.solve_parameter(min_length)
         reference = self._find_reference(parent)
         if self._has_been_set(reference):
-            self._raise_error_if_not_enough_space(parent, reference, min_length)
+            self._raise_error_if_not_enough_space(reference, min_value_for_reference)
             return self._get_aligned_lengths(self.calc_value(reference.int))
-        return self._set_length(reference, min_length)
+        return self._set_length(reference, min_value_for_reference)
 
-    def _raise_error_if_not_enough_space(self, parent, reference, min_length):
-        if reference._length < min_length if not parent[self.field] else\
-        parent[self.field].int < min_length > reference._length:
+    def _raise_error_if_not_enough_space(self, reference, min_length):
+        if reference.int < min_length:
             raise Exception("Value for length is too short")
 
     @property
