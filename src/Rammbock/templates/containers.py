@@ -177,7 +177,7 @@ class MessageTemplate(_Template):
 
     def encode(self, message_params, header_params, little_endian=False):
         message_params = message_params.copy()
-        if not self._protocol.pdu:
+        if self.only_header:
             parameters = self._headers(message_params)
             return self._protocol.encode(None, parameters)
         msg = Message(self.name)
@@ -199,9 +199,13 @@ class MessageTemplate(_Template):
         return Message(self.name)
 
     def validate(self, message, message_fields):
-        if not self._protocol.pdu:
+        if self.only_header:
             return self._protocol.validate(message, message_fields)
         return _Template.validate(self, message, message_fields)
+
+    @property
+    def only_header(self):
+        return not bool(self._protocol.pdu)
 
 
 class StructTemplate(_Template):

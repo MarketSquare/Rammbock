@@ -69,6 +69,11 @@ Resetting message stream cache
     Clear message streams
     Server receive for simple request will timeout
 
+Empty PDU
+    New message    ValueRequest    Example    messageType:0xdddd
+    Client sends message
+    ${msg}=    Server receives message
+    Should be equal     ${msg._header.messageType.hex}    0xdddd
 
 *** Keywords ***
 Server receive for simple request will timeout

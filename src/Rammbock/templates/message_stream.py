@@ -44,7 +44,7 @@ class MessageStream(object):
         return None
 
     def _to_msg(self, template, header, pdu_bytes):
-        if not pdu_bytes:
+        if template.only_header:
             return header
         msg = template.decode(pdu_bytes, parent=header)
         msg._add_header(header)
