@@ -102,12 +102,20 @@ class TestLittleEndian(TestCase):
         self.assertEquals(field.int, 1)
         self.assertEquals(field.bytes, to_bin('0x0001'))
 
+
 class TestTemplateFieldValidation(TestCase):
 
     def test_validate_uint(self):
-        template = UInt(2, 'field', 4)
         field = Field('uint', 'field', to_bin('0x0004'))
-        self._should_pass(template.validate({'field':field}, {}))
+        self._should_pass(UInt(2, 'field', 4).validate({'field':field}, {}))
+        self._should_pass(UInt(2, 'field', '4').validate({'field':field}, {}))
+        self._should_pass(UInt(2, 'field', '0x04').validate({'field':field}, {}))
+        self._should_pass(UInt(2, 'field', '0x0004').validate({'field':field}, {}))
+        self._should_pass(UInt(2, 'field', '(0|4)').validate({'field':field}, {}))
+
+    def test_validate_chars(self):
+        field = Field('chars', 'field', 'foo\x00\x00')
+        self._should_pass(Char(5, 'field', 'foo').validate({'field':field}, {}))
 
     def _should_pass(self, validation):
         self.assertEquals(validation, [])
