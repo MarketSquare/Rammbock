@@ -221,7 +221,7 @@ class Field(object):
 
     @property
     def chars(self):
-        return self._value
+        return self.ascii
 
     @property
     def bin(self):
@@ -242,7 +242,7 @@ class Field(object):
         return str(self.__getattribute__(self._type))
 
     def __repr__(self):
-        return '%s = %s' % (self.name, str(self))
+        return '%s = %s (%s)' % (self.name, str(self), self.hex)
 
     @property
     def len(self):

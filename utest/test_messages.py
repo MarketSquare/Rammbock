@@ -31,7 +31,7 @@ class TestMessages(TestCase):
         self.assertEquals(field.hex, '0x00616200')
         self.assertEquals(field.ascii, 'ab')
         self.assertEquals(field.bytes, '\x00\x61\x62\x00')
-        self.assertEquals(field.chars, '\x00\x61\x62\x00')
+        self.assertEquals(field.chars, 'ab')
         self.assertEquals(field.bin, '0b00000000'+'01100001'+'01100010'+'00000000')
 
 

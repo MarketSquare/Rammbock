@@ -138,10 +138,10 @@ class TestMessageTemplate(TestCase):
         self.assertEquals(repr(msg),
 '''Message FooRequest
   Header TestProtocol
-    msgId = 5
-    length = 8
-  field_1 = 1
-  field_2 = 2
+    msgId = 5 (0x0005)
+    length = 8 (0x0008)
+  field_1 = 1 (0x0001)
+  field_2 = 2 (0x0002)
 ''')
 
     def test_unknown_params_cause_exception(self):
@@ -278,11 +278,11 @@ class TestListTemplate(TestCase):
         """
 Pair liststruct[]
   Pair 0
-    first = 1
-    second = 2
+    first = 1 (0x0001)
+    second = 2 (0x0002)
   Pair 1
-    first = 1
-    second = 2
+    first = 1 (0x0001)
+    second = 2 (0x0002)
 """)
 
     def test_pretty_print_primitive_list(self):
@@ -290,9 +290,9 @@ Pair liststruct[]
         self.assertEquals('\n'+repr(decoded),
             """
 uint topthree[]
-  0 = 3
-  1 = 3
-  2 = 3
+  0 = 3 (0x0003)
+  1 = 3 (0x0003)
+  2 = 3 (0x0003)
 """)
 
     def test_pretty_print_list_list(self):
@@ -301,11 +301,11 @@ uint topthree[]
             """
 List listlist[]
   uint 0[]
-    0 = 3
-    1 = 3
+    0 = 3 (0x0003)
+    1 = 3 (0x0003)
   uint 1[]
-    0 = 3
-    1 = 3
+    0 = 3 (0x0003)
+    1 = 3 (0x0003)
 """)
 
     def test_not_enough_data(self):
