@@ -448,13 +448,19 @@ class RammbockCore(object):
     def chars(self, length, name, value=None, terminator=None):
         """Add a char array to template.
 
-        `length` is given in bytes and can refer to earlier numeric fields in template. `value` is optional.
+        `length` is given in bytes and can refer to earlier numeric fields in
+        template. Special value '*' in length means that length is encoded to
+        length of value and decoded as all available bytes.
+
+        `value` is optional.
 
         Examples:
         | chars | 16 | field | Hello World! |
 
         | u8 | charLength |
         | chars | charLength | field |
+
+        | chars | * | field | Hello World! |
         """
 
         self._add_field(Char(length, name, value, terminator))
@@ -465,11 +471,13 @@ class RammbockCore(object):
     def new_struct(self, type, name, *parameters):
         """Defines a new struct to template.
 
-        You must call `End Struct` to end struct definition. `type` is the name for generic type and `name` is the field
-        name in containing structure. Possible parameters are values for struct fields separated with colon and
-        optional struct length defined with `length=`. Length can be used in receiveing to validate that struct matches
-        predfeined length. When sending, the struct length can refer to other message field which will then be set
-        dynamically.
+        You must call `End Struct` to end struct definition. `type` is the name
+        for generic type and `name` is the field name in containing structure.
+        Possible parameters are values for struct fields separated with colon
+        and optional struct length defined with `length=`. Length can be used in
+        receiveing to validate that struct matches predfeined length. When
+        sending, the struct length can refer to other message field which will
+        then be set dynamically.
 
         Examples:
         | Struct | Pair | myPair |
@@ -493,8 +501,11 @@ class RammbockCore(object):
     def _new_list(self, size, name):
         """Defines a new list to template of `size` and with `name`.
 
-        List type must be given after this keyword by defining one field. Then the list definition has to be closed using
-        `End List`.
+        List type must be given after this keyword by defining one field. Then
+        the list definition has to be closed using `End List`.
+
+        Special value '*' in size means that list will decode values as long as
+        data is available. This free length value is not supported on encoding.
 
         Examples:
         | New list | 5 | myIntList |
@@ -503,6 +514,10 @@ class RammbockCore(object):
 
         | u8 | listLength |
         | New list | listLength | myIntList |
+        | u16 |
+        | End List |
+
+        | New list | * | myIntList |
         | u16 |
         | End List |
         """
