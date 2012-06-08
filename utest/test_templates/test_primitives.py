@@ -116,6 +116,7 @@ class TestTemplateFieldValidation(TestCase):
     def test_validate_chars(self):
         field = Field('chars', 'field', 'foo\x00\x00')
         self._should_pass(Char(5, 'field', 'foo').validate({'field':field}, {}))
+        self._should_pass(Char(5, 'field', '(what|foo|bar)').validate({'field':field}, {}))
 
     def _should_pass(self, validation):
         self.assertEquals(validation, [])
