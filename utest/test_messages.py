@@ -70,6 +70,15 @@ class TestBinaryContainer(TestCase):
         self.assertEquals(little.seven.bin,'0b0101010')
         self.assertEquals(little._raw, to_bin('0b0010 1010 1011 0101'))
 
+    def test_pretty_print_container(self):
+        expected = '''BinaryContainer foo
+  three = 0b101 (0x05)
+  six = 0b101010 (0x2a)
+  seven = 0b0101010 (0x2a)
+'''
+        self.assertEquals(repr(self._bin_container()), expected)
+        self.assertEquals(repr(self._bin_container(little_endian=True)), expected)
+
 
 class TestFieldAlignment(TestCase):
 
