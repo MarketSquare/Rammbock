@@ -154,6 +154,16 @@ Free length in tbcd
     ${msg} =     Server receives message
     Should be equal as integers   ${msg.tbcd_cont.second.tbcd}    5678
 
+Filling array of free length dynamic message in send
+    [Tags]
+    Dynamic message
+    Client sends message  numberOfPairs:4
+    ...  pairList[*].first:0xaa
+    ...  pairlist[*].second:0xbb
+    ${msg} =     Server receives message
+    Should be equal as integers    ${msg.pairlist[3].second.int}    4
+
+
 *** Keywords ***
 Pair
     [arguments]     ${name}=     ${value}=
