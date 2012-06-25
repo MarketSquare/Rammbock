@@ -116,5 +116,5 @@ def to_tbcd_binary(tbcd_string):
             to_bin_str_from_int_string(4, tbcd_string[index])
         index += 2
     return to_bin(value if index == len(tbcd_string)
-                        else value + to_bin_str_from_int_string(4, 15) +
-                        to_bin_str_from_int_string(4, tbcd_string[index]))
+                  else value + to_bin_str_from_int_string(4, 15) +
+                  to_bin_str_from_int_string(4, tbcd_string[index]))
