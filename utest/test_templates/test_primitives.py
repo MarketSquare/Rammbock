@@ -11,7 +11,7 @@ class TestTemplateFields(TestCase):
         self.assertTrue(field.length.static)
         self.assertEquals(field.name, "field")
         self.assertEquals(field.default_value, '-72')
-        self.assertEquals(field.type, 'sint')
+        self.assertEquals(field.type, 'int')
         self.assertEquals(field.encode({}, {}, None).hex, '0xb8')
 
     def test_uint_static_field(self):

@@ -144,7 +144,7 @@ class UInt(_TemplateField):
 
 class Int(_TemplateField):
 
-    type = 'sint'
+    type = 'int'
     can_be_little_endian = True
 
     def __init__(self, length, name, default_value=None, align=None):
@@ -154,7 +154,13 @@ class Int(_TemplateField):
     def _encode_value(self, value, message, little_endian=False):
         self._raise_error_if_no_value(value, message)
         length, aligned_length = self.length.decode_lengths(message)
-        value = to_twos_comp(value, length * 8)
+        bin_len = length * 8
+        min = pow(-2, (bin_len - 1))
+        max = pow(2, (bin_len - 1)) - 1
+        if not min <= int(value) <= max:
+            raise AssertionError('Value %s out of range (%d..%d)'
+                                 % (value, min, max))
+        value = to_twos_comp(value, bin_len)
         binary = to_bin_of_length(length, value)
         binary = binary[::-1] if little_endian else binary
         return binary, aligned_length
