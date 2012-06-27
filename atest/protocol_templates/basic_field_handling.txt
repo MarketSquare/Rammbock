@@ -1,0 +1,41 @@
+*** Settings ***
+Resource    ../Protocols.txt
+Test teardown    Teardown rammbock and increment port numbers
+Default tags    regression
+
+
+*** Test cases ***
+encode signed integer
+    Define example protocol
+    Start TCP client    ${SERVER}    ${SERVER PORT}    name=ExampleServer   protocol=Example
+    Create message with signed integer fields
+    ${msg}=    Get Message    foo:-21
+    should be equal as integers    -21    ${msg.foo.sint}
+    should be equal as integers     42    ${msg.bar.sint}
+    should be equal as integers    -43    ${msg.zig.sint}
+
+encode signed integer with alignment
+    [tags]
+    Define example protocol
+    Start TCP client    ${SERVER}    ${SERVER PORT}    name=ExampleServer   protocol=Example
+    Create message with aligned signed integer fields
+    ${msg}=    Get Message
+    should be equal as integers    -46    ${msg.baz.sint}
+    should be equal as integers     32    ${msg.dar.sint}
+
+send and receive message with signed integer
+    [tags]
+    fail
+
+*** Keywords ***
+Create message with signed integer fields
+    new message    ExampleMessage    Example    messageType:0x00
+    sint    2    foo
+    sint    2    bar     42
+    sint    2    zig    -43
+
+Create message with aligned signed integer fields
+    new message    ExampleMessage    Example    messageType:0x00
+    sint    2    baz    -46    align=4
+    sint    2    dar     32    align=4
+

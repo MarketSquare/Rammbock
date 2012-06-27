@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 from math import ceil
+from Rammbock.binary_tools import from_twos_comp
 from binary_tools import to_0xhex, to_binary_string_of_length, \
     to_bin_of_length, to_tbcd_value, to_tbcd_binary
 from ordered_dict import OrderedDict
@@ -200,6 +201,10 @@ class Field(object):
     @property
     def uint(self):
         return self.int
+
+    @property
+    def sint(self):
+        return from_twos_comp(int(self.int), self._length * 8)
 
     @property
     def hex(self):
