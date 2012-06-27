@@ -24,8 +24,11 @@ encode signed integer with alignment
     should be equal as integers     32    ${msg.dar.sint}
 
 send and receive message with signed integer
-    [tags]
-    fail
+    Setup protocol, TCP server, and client
+    Create message with signed integer fields
+    client sends message    foo:-21
+    ${msg}=    server receives message    foo:-21
+    should be equal as integers    -21    ${msg.foo.sint}
 
 *** Keywords ***
 Create message with signed integer fields
