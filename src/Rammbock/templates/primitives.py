@@ -142,10 +142,10 @@ class UInt(_TemplateField):
         return binary, aligned_length
 
 
-class SInt(_TemplateField):
+class Int(_TemplateField):
 
     type = 'sint'
-    can_be_little_endian = False
+    can_be_little_endian = True
 
     def __init__(self, length, name, default_value=None, align=None):
         _TemplateField.__init__(self, name, default_value)

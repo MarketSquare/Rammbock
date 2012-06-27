@@ -1,5 +1,5 @@
 from unittest import TestCase, main
-from Rammbock.templates.primitives import Char, UInt, PDU, Binary, SInt
+from Rammbock.templates.primitives import Char, UInt, PDU, Binary, Int
 from Rammbock.message import Field
 from Rammbock.binary_tools import to_bin
 
@@ -7,7 +7,7 @@ from Rammbock.binary_tools import to_bin
 class TestTemplateFields(TestCase):
 
     def test_sint_static_field(self):
-        field = SInt('1', "field", '-72')
+        field = Int('1', "field", '-72')
         self.assertTrue(field.length.static)
         self.assertEquals(field.name, "field")
         self.assertEquals(field.default_value, '-72')

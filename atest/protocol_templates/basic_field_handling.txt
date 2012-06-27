@@ -9,10 +9,13 @@ encode signed integer
     Define example protocol
     Start TCP client    ${SERVER}    ${SERVER PORT}    name=ExampleServer   protocol=Example
     Create message with signed integer fields
-    ${msg}=    Get Message    foo:-21
-    should be equal as integers    -21    ${msg.foo.sint}
-    should be equal as integers     42    ${msg.bar.sint}
-    should be equal as integers    -43    ${msg.zig.sint}
+    ${msg}=    Get Message    foo:-72
+    should be equal as integers    -72     ${msg.foo.sint}
+    should be equal as integers    -128    ${msg.bar.sint}
+    should be equal as integers     127    ${msg.zig.sint}
+    should be equal as integers    -43     ${msg.baz.sint}
+    should be equal as integers     43     ${msg.dar.sint}
+    should be equal as integers     0      ${msg.wad.sint}
 
 encode signed integer with alignment
     [tags]
@@ -33,12 +36,16 @@ send and receive message with signed integer
 *** Keywords ***
 Create message with signed integer fields
     new message    ExampleMessage    Example    messageType:0x00
-    sint    2    foo
-    sint    2    bar     42
-    sint    2    zig    -43
+    int    1    foo
+    int    1    bar     -128
+    int    1    zig    127
+    int    1    baz    -43
+    int    1    dar    43
+    int    1    qiz    -43
+    int    1    wad    0
 
 Create message with aligned signed integer fields
     new message    ExampleMessage    Example    messageType:0x00
-    sint    2    baz    -46    align=4
-    sint    2    dar     32    align=4
+    int    2    baz    -46    align=4
+    int    2    dar     32    align=4
 

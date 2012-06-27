@@ -16,7 +16,7 @@ from __future__ import with_statement
 from contextlib import contextmanager
 from networking import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 from message_sequence import MessageSequence
-from templates import Protocol, UInt, SInt, PDU, MessageTemplate, Char, Binary, \
+from templates import Protocol, UInt, Int, PDU, MessageTemplate, Char, Binary, \
     StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate
 from binary_tools import to_0xhex, to_bin
 from templates.containers import TBCDContainerTemplate
@@ -445,7 +445,7 @@ class RammbockCore(object):
         """
         self._add_field(UInt(length, name, value, align=align))
 
-    def sint(self, length, name, value=None, align=None):
+    def int(self, length, name, value=None, align=None):
         """Add an signed integer to template.
 
         `length` is given in bytes and `value` is optional. `align` can be used
@@ -453,11 +453,11 @@ class RammbockCore(object):
         Signed integer uses twos-complement with bits numbered in big-endian.
 
         Examples:
-        | uint | 2 | foo |
-        | uint | 2 | foo | 42 |
-        | uint | 2 | fourByteFoo | 42 | align=4 |
+        | int | 2 | foo |
+        | int | 2 | foo | 42 |
+        | int | 2 | fourByteFoo | 42 | align=4 |
         """
-        self._add_field(SInt(length, name, value, align=align))
+        self._add_field(Int(length, name, value, align=align))
 
     def chars(self, length, name, value=None, terminator=None):
         """Add a char array to template.
