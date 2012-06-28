@@ -6,7 +6,7 @@ from Rammbock.binary_tools import to_bin
 
 class TestTemplateFields(TestCase):
 
-    def test_sint_static_field(self):
+    def test_int_static_field(self):
         field = Int('1', "field", '-72')
         self.assertTrue(field.length.static)
         self.assertEquals(field.name, "field")

@@ -192,6 +192,8 @@ class Field(object):
 
     @property
     def int(self):
+        if self._type == 'int':
+            return self.sint
         return int(self)
 
     def __int__(self):
@@ -203,7 +205,7 @@ class Field(object):
 
     @property
     def sint(self):
-        return from_twos_comp(int(self.int), self._length * 8)
+        return from_twos_comp(int(self), self._length * 8)
 
     @property
     def hex(self):

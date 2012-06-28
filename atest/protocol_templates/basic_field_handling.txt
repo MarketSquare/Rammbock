@@ -35,15 +35,15 @@ encode signed integer with alignment
     Start TCP client    ${SERVER}    ${SERVER PORT}    name=ExampleServer   protocol=Example
     Create message with aligned signed integer fields
     ${msg}=    Get Message
-    should be equal as integers    -46    ${msg.baz.sint}
-    should be equal as integers     32    ${msg.dar.sint}
+    should be equal as integers    -46    ${msg.baz.int}
+    should be equal as integers     32    ${msg.dar.int}
 
 send and receive message with signed integer
     Setup protocol, TCP server, and client
     Create message with signed integer fields
     client sends message    foo:-21
     ${msg}=    server receives message    foo:-21
-    should be equal as integers    -21    ${msg.foo.sint}
+    should be equal as integers    -21    ${msg.foo.int}
 
 *** Keywords ***
 Create message with signed integer fields
