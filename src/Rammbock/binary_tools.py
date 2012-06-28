@@ -123,8 +123,8 @@ def to_tbcd_binary(tbcd_string):
 def to_twos_comp(val, bits):
     """compute the 2's compliment of int value val"""
     if not val.startswith('-'):
-        return int(val)
-    value = _invert(to_bin_str_from_int_string(bits, bin(int(val[1:]))))
+        return to_int(val)
+    value = _invert(to_bin_str_from_int_string(bits, bin(to_int(val[1:]))))
     return int(value, 2) + 1
 
 
@@ -137,3 +137,13 @@ def from_twos_comp(val, bits):
 
 def _invert(value):
     return "".join(str(int(a) ^ 1) for a in value)
+
+
+def to_int(string_value):
+    if string_value in (None, ''):
+        raise Exception("No value or empty value given")
+    if string_value.startswith('0x') or string_value[:3] == '-0x':
+        return int(string_value, 16)
+    elif string_value.startswith('0b') or string_value[:3] == '-0b':
+        return int(string_value, 2)
+    return int(string_value)

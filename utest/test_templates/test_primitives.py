@@ -141,6 +141,14 @@ class TestTemplateFieldValidation(TestCase):
         self._should_pass(UInt(2, 'field', '0x0004').validate({'field':field}, {}))
         self._should_pass(UInt(2, 'field', '(0|4)').validate({'field':field}, {}))
 
+    def test_validate_int(self):
+        field = Field('int', 'field', to_bin('0xffb8'))
+        self._should_pass(Int(2, 'field', -72).validate({'field':field}, {}))
+        self._should_pass(Int(2, 'field', '-72').validate({'field':field}, {}))
+        self._should_pass(Int(2, 'field', '-0x48').validate({'field':field}, {}))
+        self._should_pass(Int(2, 'field', '-0x0048').validate({'field':field}, {}))
+        self._should_pass(Int(2, 'field', '(0|-72)').validate({'field':field}, {}))
+
     def test_validate_chars(self):
         field = Field('chars', 'field', 'foo\x00\x00')
         self._should_pass(Char(5, 'field', 'foo').validate({'field':field}, {}))
