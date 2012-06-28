@@ -57,7 +57,9 @@ class _Template(object):
         return self._get_field(field_name) or self.parent and self.parent._get_field_recursive(field_name)
 
     def _check_params_empty(self, message_fields, name):
-        message_fields.pop('*', None)
+        for key in message_fields.keys():
+            if key.startswith('*'):
+                message_fields.pop(key)
         if message_fields:
             raise AssertionError("Unknown fields in '%s': %s" %
                                  (self._get_recursive_name(), self._pretty_print_fields(message_fields)))
@@ -96,6 +98,8 @@ class _Template(object):
             prefix, _, ending = key.partition('.')
             if prefix == name:
                 result[ending] = params.pop(key)
+            elif prefix == '*' and ending:
+                result[ending] = params[key]
         return result
 
     def _get_struct(self, name, parent):

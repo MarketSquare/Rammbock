@@ -155,16 +155,31 @@ Free length in tbcd
     Should be equal as integers   ${msg.tbcd_cont.second.tbcd}    5678
 
 Filling array of free length dynamic message in send
-    [Tags]
     Dynamic message
     Client sends message  numberOfPairs:4
-    ...  pairList[*].first:0xaa
-    ...  pairlist[*].second:0xbb
+    ...  pairList[*].first:4
+    ...  pairList[*].second:5
     ${msg} =     Server receives message
-    Should be equal as integers    ${msg.pairlist[3].second.int}    4
+    Should be equal as integers    ${msg.pairList[3].second.int}    5
+
+Filling array of free length complicated dynamic message in send
+    Complicated dynamic message
+    Client sends message  length:4
+    ...  list[*].name:hello
+    ...  list[*].pair.first:4
+    ...  list[*].pair.second:5
+    ${msg} =     Server receives message
+    Should be equal as integers    ${msg.list[3].pair.second.int}    5
 
 
 *** Keywords ***
+Named Pair
+    [arguments]     ${name}=     ${value}=
+    New Struct    Named Pair    ${name}
+    Chars   10     name
+    Pair   pair
+    End struct
+
 Pair
     [arguments]     ${name}=     ${value}=
     New Struct    Pair    ${name}
@@ -194,6 +209,14 @@ Dynamic message
 Dynamic pair array
     u8      numberOfPairs
     Array   numberOfPairs    Pair    pairList
+
+Complicated Dynamic message
+    New Message    DynamicRequest  Example    messageType:0xaaaa
+    Dynamic named pair array
+
+Dynamic named pair array
+    u8      length
+    Array   length    Named Pair    list
 
 Dynamic string
     u8     stringLen
