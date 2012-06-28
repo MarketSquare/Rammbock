@@ -47,8 +47,9 @@ class RammbockCore(object):
     def reset_rammbock(self):
         """Closes all connections, deletes all servers, clients, and protocols.
 
-        You should call this method before exiting your test run. This will close all the connections and the ports
-        will therefore be available for reuse faster.
+        You should call this method before exiting your test run. This will
+        close all the connections and the ports will therefore be available for
+        reuse faster.
         """
         for server in self._servers:
             server.close()
@@ -59,7 +60,8 @@ class RammbockCore(object):
     def clear_message_streams(self):
         """ Resets streams and sockets of incoming messages.
 
-        You can use this method to reuse the same connections for several consecutive test cases.
+        You can use this method to reuse the same connections for several
+        consecutive test cases.
         """
         for client in self._clients:
             client.empty()
@@ -69,7 +71,8 @@ class RammbockCore(object):
     def new_protocol(self, protocol_name):
         """Start defining a new protocol template.
 
-        All messages sent and received from a connection that uses a protocol have to conform to this protocol template.
+        All messages sent and received from a connection that uses a protocol
+        have to conform to this protocol template.
         """
         if self._protocol_in_progress:
             raise Exception('Can not start a new protocol definition in middle of old.')
@@ -100,8 +103,9 @@ class RammbockCore(object):
     def start_tcp_server(self, ip, port, name=None, timeout=None, protocol=None):
         """Starts a new TCP server to given `ip` and `port`.
 
-        Server can be given a `name`, default `timeout` and a `protocol`. Notice that you have to use
-        `Accept Connection` keyword for server to receive connections.
+        Server can be given a `name`, default `timeout` and a `protocol`.
+        Notice that you have to use `Accept Connection` keyword for server to
+        receive connections.
 
         Examples:
         | Start TCP server | 10.10.10.2 | 53 |
@@ -119,8 +123,9 @@ class RammbockCore(object):
     def start_udp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None):
         """Starts a new UDP client.
 
-        Client can be optionally given `ip` and `port` to bind to, as well as `name`, default `timeout` and a `protocol`.
-        You should use `Connect` keyword to connect client to a host.
+        Client can be optionally given `ip` and `port` to bind to, as well as
+        `name`, default `timeout` and a `protocol`. You should use `Connect`
+        keyword to connect client to a host.
 
         Examples:
         | Start UDP client |
@@ -133,8 +138,9 @@ class RammbockCore(object):
     def start_tcp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None):
         """Starts a new TCP client.
 
-        Client can be optionally given `ip` and `port` to bind to, as well as `name`, default `timeout` and a `protocol`.
-        You should use `Connect` keyword to connect client to a host.
+        Client can be optionally given `ip` and `port` to bind to, as well as
+        `name`, default `timeout` and a `protocol`. You should use `Connect`
+        keyword to connect client to a host.
 
         Examples:
         | Start TCP client |
@@ -159,14 +165,17 @@ class RammbockCore(object):
         return protocol
 
     def get_client_protocol(self, name=None):
-        """Returns name of the protocol client uses or empty if client does not use a protocol.
+        """Returns name of the protocol client uses or empty if client does not
+        use a protocol.
         """
         return self._clients.get(name).protocol_name or ''
 
     def accept_connection(self, name=None, alias=None):
-        """Accepts a connection to server identified by `name` or the latest server if `name` is empty.
+        """Accepts a connection to server identified by `name` or the latest
+        server if `name` is empty.
 
-        If given an `alias`, the connection is named and can be later referenced with that name.
+        If given an `alias`, the connection is named and can be later referenced
+        with that name.
 
         Examples:
         | Accept connection |
@@ -176,7 +185,8 @@ class RammbockCore(object):
         server.accept_connection(alias)
 
     def connect(self, host, port, name=None):
-        """Connects a client to given `host` and `port`. If client `name` is not given then connects the latest client.
+        """Connects a client to given `host` and `port`. If client `name` is not
+        given then connects the latest client.
 
         Examples:
         | Connect | 127.0.0.1 | 8080 |
@@ -196,7 +206,8 @@ class RammbockCore(object):
     def client_sends_binary(self, message, name=None, label=None):
         """Send raw binary `message`.
 
-        If client `name` is not given, uses the latest client. Optional message `label` is shown on logs.
+        If client `name` is not given, uses the latest client. Optional message
+        `label` is shown on logs.
 
         Examples:
         | Client sends binary | Hello! |
@@ -210,7 +221,8 @@ class RammbockCore(object):
     def server_sends_binary(self, message, name=None, connection=None, label=None):
         """Send raw binary `message`.
 
-        If server `name` is not given, uses the latest server. Optional message `label` is shown on logs.
+        If server `name` is not given, uses the latest server. Optional message
+        `label` is shown on logs.
 
         Examples:
         | Server sends binary | Hello! |
@@ -224,7 +236,8 @@ class RammbockCore(object):
     def client_receives_binary(self, name=None, timeout=None, label=None):
         """Receive raw binary message.
 
-        If client `name` is not given, uses the latest client. Optional message `label` is shown on logs.
+        If client `name` is not given, uses the latest client. Optional message
+        `label` is shown on logs.
 
         Examples:
         | ${binary} = | Client receives binary |
@@ -238,7 +251,8 @@ class RammbockCore(object):
     def server_receives_binary(self, name=None, timeout=None, connection=None, label=None):
         """Receive raw binary message.
 
-        If server `name` is not given, uses the latest server. Optional message `label` is shown on logs.
+        If server `name` is not given, uses the latest server. Optional message
+        `label` is shown on logs.
 
         Examples:
         | ${binary} = | Server receives binary |
@@ -247,9 +261,10 @@ class RammbockCore(object):
         return self.server_receives_binary_from(name, timeout, connection=connection, label=label)[0]
 
     def server_receives_binary_from(self, name=None, timeout=None, connection=None, label=None):
-        """Receive raw binary message. Returns message, ip, and port
+        """Receive raw binary message. Returns message, ip, and port.
 
-        If server `name` is not given, uses the latest server. Optional message `label` is shown on logs.
+        If server `name` is not given, uses the latest server. Optional message
+        `label` is shown on logs.
 
         Examples:
         | ${binary} | ${ip} | ${port} = | Server receives binary from |
@@ -267,8 +282,9 @@ class RammbockCore(object):
     def new_message(self, message_name, protocol=None, *parameters):
         """Define a new message template with `message_name`.
 
-        `protocol` has to be defined earlier with `Start Protocol Description`. Optional parameters are
-        default values for message header separated with colon.
+        `protocol` has to be defined earlier with `Start Protocol Description`.
+        Optional parameters are default values for message header separated with
+        colon.
 
         Examples:
         | New message | MyMessage | MyProtocol | header_field:value |
@@ -294,8 +310,9 @@ class RammbockCore(object):
     def get_message(self, *parameters):
         """Get encoded message.
 
-        * Send Message -keywords are convenience methods, that will call this to get the message object and then send it.
-        Optional parameters are message field values separated with colon.
+        * Send Message -keywords are convenience methods, that will call this to
+        get the message object and then send it. Optional parameters are message
+        field values separated with colon.
 
         Examples:
         | ${msg} = | Get message |
@@ -317,8 +334,9 @@ class RammbockCore(object):
     def client_sends_message(self, *parameters):
         """Send a message defined with `New Message`.
 
-        Optional parameters are client `name` separated with equals and message field values separated with colon.
-        Protocol header values can be set with syntax header:header_field_name:value.
+        Optional parameters are client `name` separated with equals and message
+        field values separated with colon. Protocol header values can be set
+        with syntax header:header_field_name:value.
 
         Examples:
         | Client sends message |
@@ -331,8 +349,9 @@ class RammbockCore(object):
     def server_sends_message(self, *parameters):
         """Send a message defined with `New Message`.
 
-        Optional parameters are server `name` and possible `connection` alias separated with equals and message field
-        values separated with colon. Protocol header values can be set with syntax header:header_field_name:value.
+        Optional parameters are server `name` and possible `connection` alias
+        separated with equals and message field values separated with colon.
+        Protocol header values can be set with syntax header:header_field_name:value.
 
         Examples:
         | Server sends message |
@@ -347,10 +366,13 @@ class RammbockCore(object):
         callback(msg._raw, label=self._current_container.name, **configs)
 
     def client_receives_message(self, *parameters):
-        """Receive a message with template defined using `New Message` and validate field values.
+        """Receive a message with template defined using `New Message` and
+        validate field values.
 
-        Message template has to be defined with `New Message` before calling this. Optional parameters are client `name`
-        and possible `timeout` separated with equals and message field values for validation separated with colon.
+        Message template has to be defined with `New Message` before calling
+        this. Optional parameters are client `name` and possible `timeout`
+        separated with equals and message field values for validation separated
+        with colon.
 
         Examples:
         | ${msg} = | Client receives message |
@@ -364,8 +386,9 @@ class RammbockCore(object):
     def client_receives_without_validation(self, *parameters):
         """Receive a message with template defined using `New Message`.
 
-        Message template has to be defined with `New Message` before calling this. Optional parameters are client `name`
-        and possible `timeout` separated with equals.
+        Message template has to be defined with `New Message` before calling
+        this. Optional parameters are client `name` and possible `timeout`
+        separated with equals.
 
         Examples:
         | ${msg} = | Client receives without validation |
@@ -375,11 +398,13 @@ class RammbockCore(object):
             return msg
 
     def server_receives_message(self, *parameters):
-        """Receive a message with template defined using `New Message` and validate field values.
+        """Receive a message with template defined using `New Message` and
+        validate field values.
 
-        Message template has to be defined with `New Message` before calling this. Optional parameters are server `name`,
-        `connection` alias and possible `timeout` separated with equals and message field values for validation
-        separated with colon.
+        Message template has to be defined with `New Message` before calling
+        this. Optional parameters are server `name`, `connection` alias and
+        possible `timeout` separated with equals and message field values for
+        validation separated with colon.
 
         Examples:
         | ${msg} = | Server receives message |
@@ -393,8 +418,9 @@ class RammbockCore(object):
     def server_receives_without_validation(self, *parameters):
         """Receive a message with template defined using `New Message`.
 
-        Message template has to be defined with `New Message` before calling this. Optional parameters are server `name`
-        and possible `timeout` separated with equals.
+        Message template has to be defined with `New Message` before calling
+        this. Optional parameters are server `name` and possible `timeout`
+        separated with equals.
 
         Examples:
         | ${msg} = | Server receives without validation |
@@ -404,7 +430,8 @@ class RammbockCore(object):
             return msg
 
     def validate_message(self, msg, *parameters):
-        """Validates given message using template defined with `New Message` and field values given as optional arguments.
+        """Validates given message using template defined with `New Message` and
+        field values given as optional arguments.
 
         Examples:
         | Validate message | ${msg} |
@@ -436,7 +463,8 @@ class RammbockCore(object):
     def uint(self, length, name, value=None, align=None):
         """Add an unsigned integer to template.
 
-        `length` is given in bytes and `value` is optional. `align` can be used to align the field to longer byte length.
+        `length` is given in bytes and `value` is optional. `align` can be used
+        to align the field to longer byte length.
 
         Examples:
         | uint | 2 | foo |
@@ -532,7 +560,8 @@ class RammbockCore(object):
     def new_binary_container(self, name):
         """Defines a new binary container to template.
 
-        Binary container can only contain binary fields defined with `Bin` keyword.
+        Binary container can only contain binary fields defined with `Bin`
+        keyword.
 
         Examples:
         | New binary container | flags |
@@ -559,7 +588,8 @@ class RammbockCore(object):
     def bin(self, size, name, value=None):
         """Add new binary field to template.
 
-        This keyword has to be called within a binary container. See `New Binary Container`.
+        This keyword has to be called within a binary container. See `New Binary
+        Container`.
         """
         self._add_field(Binary(size, name, value))
 
@@ -569,7 +599,8 @@ class RammbockCore(object):
     def new_union(self, type, name):
         """Defines a new union to template of `type` and `name`.
 
-        Fields inside the union are alternatives and the length of the union is the length of its longest field.
+        Fields inside the union are alternatives and the length of the union is
+        the length of its longest field.
 
         Example:
         | Union | IntOrAddress | foo |
@@ -588,7 +619,8 @@ class RammbockCore(object):
     def pdu(self, length):
         """Defines the message in protocol template.
 
-        Length must be the name of a previous field in template definition or a static value for fixed length protocols.
+        Length must be the name of a previous field in template definition or a
+        static value for fixed length protocols.
 
         Examples:
         | pdu | 5 |
