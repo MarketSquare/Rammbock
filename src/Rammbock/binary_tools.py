@@ -136,4 +136,4 @@ def from_twos_comp(val, bits):
 
 
 def _invert(value):
-    return "".join('1' if a == '0' else '0' for a in value)
+    return "".join(str(int(a) ^ 1) for a in value)
