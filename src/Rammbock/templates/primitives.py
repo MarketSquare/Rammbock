@@ -104,7 +104,7 @@ class _TemplateField(object):
         return name or self.name or self.type
 
     def _raise_error_if_no_value(self, value, parent):
-        if not value:
+        if value in (None, ''):
             raise AssertionError('Value of %s not set' % self._get_recursive_name(parent))
 
     def _get_recursive_name(self, parent):
@@ -142,28 +142,27 @@ class UInt(_TemplateField):
         return binary, aligned_length
 
 
-class Int(_TemplateField):
+class Int(UInt):
 
     type = 'int'
     can_be_little_endian = True
 
     def __init__(self, length, name, default_value=None, align=None):
-        _TemplateField.__init__(self, name, default_value)
-        self.length = Length(length, align)
+        UInt.__init__(self, length, name, default_value, align)
 
-    def _encode_value(self, value, message, little_endian=False):
-        self._raise_error_if_no_value(value, message)
-        length, aligned_length = self.length.decode_lengths(message)
-        bin_len = length * 8
+    def _get_int_value(self, message, value):
+        bin_len = self.length.decode_lengths(message)[0] * 8
         min = pow(-2, (bin_len - 1))
         max = pow(2, (bin_len - 1)) - 1
         if not min <= to_int(value) <= max:
             raise AssertionError('Value %s out of range (%d..%d)'
                                  % (value, min, max))
-        value = to_twos_comp(value, bin_len)
-        binary = to_bin_of_length(length, value)
-        binary = binary[::-1] if little_endian else binary
-        return binary, aligned_length
+        return to_twos_comp(value, bin_len)
+
+    def _encode_value(self, value, message, little_endian=False):
+        self._raise_error_if_no_value(value, message)
+        value = self._get_int_value(message, value)
+        return UInt._encode_value(self, value, message, little_endian)
 
 
 class Char(_TemplateField):
