@@ -7,12 +7,12 @@ from Rammbock.binary_tools import to_bin
 class TestTemplateFields(TestCase):
 
     def test_int_static_field(self):
-        field = Int('1', "field", '-72')
+        field = Int('4', "field", '-72')
         self.assertTrue(field.length.static)
         self.assertEquals(field.name, "field")
         self.assertEquals(field.default_value, '-72')
         self.assertEquals(field.type, 'int')
-        self.assertEquals(field.encode({}, {}, None).hex, '0xb8')
+        self.assertEquals(field.encode({}, {}, None).hex, '0xffffffb8')
 
     def test_uint_static_field(self):
         field = UInt(5, "field", 8)
@@ -74,6 +74,12 @@ class TestTemplateFields(TestCase):
         decoded = field_template.decode(to_bin('0xcafe'), {})
         self.assertEquals(decoded.hex, '0xcafe')
 
+    def test_decode_int(self):
+        field_template = Int(2, 'field', -72)
+        decoded = field_template.decode(to_bin('0xffb8'), {})
+        self.assertEquals(decoded.int, -72)
+        self.assertEquals(decoded.hex, '0xffb8')
+
     def test_decode_chars(self):
         field_template = Char(2, 'field', 6)
         decoded = field_template.decode(to_bin('0xcafe'), {})
@@ -96,6 +102,13 @@ class TestLittleEndian(TestCase):
         self.assertEquals(field.int, 1)
         self.assertEquals(field.bytes, to_bin('0x0001'))
 
+    def test_little_endian_int_decode(self):
+        template = Int(2, 'field', None)
+        field = template.decode(to_bin('0xb8ff'), None, little_endian=True)
+        self.assertEquals(field._raw, to_bin('0xb8ff'))
+        self.assertEquals(field.int, -72)
+        self.assertEquals(field.bytes, to_bin('0xffb8'))
+
     def test_little_endian_char_decode(self):
         template = Char(5, 'field', None)
         field = template.decode('hello', None, little_endian=True)
@@ -109,6 +122,13 @@ class TestLittleEndian(TestCase):
         self.assertEquals(field._raw, to_bin('0x0100'))
         self.assertEquals(field.int, 1)
         self.assertEquals(field.bytes, to_bin('0x0001'))
+
+    def test_little_endian_int_encode(self):
+        template = Int(2, 'field', -72)
+        field = template.encode({}, {}, None, little_endian=True)
+        self.assertEquals(field._raw, to_bin('0xb8ff'))
+        self.assertEquals(field.int, -72)
+        self.assertEquals(field.bytes, to_bin('0xffb8'))
 
 
 class TestTemplateFieldValidation(TestCase):
