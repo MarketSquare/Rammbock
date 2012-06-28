@@ -16,7 +16,8 @@ from math import ceil
 import math
 
 from Rammbock.message import Field, BinaryField
-from Rammbock.binary_tools import to_bin_of_length, to_0xhex, to_tbcd_binary, to_tbcd_value, to_bin
+from Rammbock.binary_tools import to_bin_of_length, to_0xhex, to_tbcd_binary, \
+    to_tbcd_value, to_bin, to_twos_comp
 
 
 class _TemplateField(object):
@@ -136,6 +137,30 @@ class UInt(_TemplateField):
     def _encode_value(self, value, message, little_endian=False):
         self._raise_error_if_no_value(value, message)
         length, aligned_length = self.length.decode_lengths(message)
+        binary = to_bin_of_length(length, value)
+        binary = binary[::-1] if little_endian else binary
+        return binary, aligned_length
+
+
+class Int(_TemplateField):
+
+    type = 'int'
+    can_be_little_endian = True
+
+    def __init__(self, length, name, default_value=None, align=None):
+        _TemplateField.__init__(self, name, default_value)
+        self.length = Length(length, align)
+
+    def _encode_value(self, value, message, little_endian=False):
+        self._raise_error_if_no_value(value, message)
+        length, aligned_length = self.length.decode_lengths(message)
+        bin_len = length * 8
+        min = pow(-2, (bin_len - 1))
+        max = pow(2, (bin_len - 1)) - 1
+        if not min <= int(value) <= max:
+            raise AssertionError('Value %s out of range (%d..%d)'
+                                 % (value, min, max))
+        value = to_twos_comp(value, bin_len)
         binary = to_bin_of_length(length, value)
         binary = binary[::-1] if little_endian else binary
         return binary, aligned_length

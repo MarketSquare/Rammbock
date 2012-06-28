@@ -18,12 +18,12 @@ class _NetworkingTests(TestCase):
     def setUp(self):
         self.sockets = []
         for key in ports:
-            ports[key] = ports[key] + 1
+            ports[key] += 1
 
-    def tearDown(self, *args, **kwargs):
+    def tearDown(self):
         for sock in self.sockets:
             sock.close()
-        return TestCase.tearDown(self, *args, **kwargs)
+        return TestCase.tearDown(self)
 
     def _verify_emptying(self, server, client):
         client.send('to connect')
@@ -71,10 +71,6 @@ class _NetworkingTests(TestCase):
         self.sockets.append(client)
         return server, client
 
-    def _server_gets(self, name, text):
-        msg = self.net.server_receive(name)
-        self.assertEquals(text, msg)
-
 
 class TestNetworking(_NetworkingTests):
 
@@ -108,7 +104,7 @@ class TestNetworking(_NetworkingTests):
 
     def test_tcp_server_with_named_connection(self):
         server = TCPServer(LOCAL_IP, 1337)
-        client = TCPClient().connect_to(LOCAL_IP, 1337)
+        TCPClient().connect_to(LOCAL_IP, 1337)
         server.accept_connection(alias=CONNECTION_ALIAS + "1")
         self.assertTrue(server._connections.get(CONNECTION_ALIAS + "1"))
 

@@ -1,10 +1,18 @@
 from unittest import TestCase, main
-from Rammbock.templates.primitives import Char, UInt, PDU, Binary
+from Rammbock.templates.primitives import Char, UInt, PDU, Binary, Int
 from Rammbock.message import Field
 from Rammbock.binary_tools import to_bin
 
 
 class TestTemplateFields(TestCase):
+
+    def test_sint_static_field(self):
+        field = Int('1', "field", '-72')
+        self.assertTrue(field.length.static)
+        self.assertEquals(field.name, "field")
+        self.assertEquals(field.default_value, '-72')
+        self.assertEquals(field.type, 'int')
+        self.assertEquals(field.encode({}, {}, None).hex, '0xb8')
 
     def test_uint_static_field(self):
         field = UInt(5, "field", 8)

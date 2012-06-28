@@ -1,5 +1,7 @@
 from unittest import TestCase, main
-from Rammbock.binary_tools import to_bin, to_bin_of_length, to_hex, to_0xhex, to_binary_string_of_length, to_tbcd_value, to_bin_str_from_int_string, to_tbcd_binary
+from Rammbock.binary_tools import to_bin, to_bin_of_length, to_hex, to_0xhex, \
+    to_binary_string_of_length, to_tbcd_value, to_bin_str_from_int_string, \
+    to_tbcd_binary, to_twos_comp, from_twos_comp
 
 
 class TestBinaryConversions(TestCase):
@@ -90,6 +92,22 @@ class TestBinaryConversions(TestCase):
         self.assertEquals('0001', to_bin_str_from_int_string(4, '1'))
         self.assertEquals('0010', to_bin_str_from_int_string(4, '2'))
         self.assertEquals('1111', to_bin_str_from_int_string(4, '15'))
+
+    def test_to_twos_comp(self):
+        self.assertEquals(184, to_twos_comp("-72", 8))
+        self.assertEquals(47, to_twos_comp("47", 8))
+        self.assertEquals(147, to_twos_comp("-109", 8))
+        self.assertEquals(189, to_twos_comp("-67", 8))
+        self.assertEquals(81, to_twos_comp("81", 8))
+
+    def test_from_twos_comp(self):
+        self.assertEquals(-72, from_twos_comp(184, 8))
+        self.assertEquals(47, from_twos_comp(47, 8))
+        self.assertEquals(-109, from_twos_comp(147, 8))
+        self.assertEquals(-67, from_twos_comp(189, 8))
+        self.assertEquals(81, from_twos_comp(81, 8))
+        self.assertEquals(-21, from_twos_comp(65515, 16))
+        self.assertEquals(-46, from_twos_comp(65490, 16))
 
 if __name__ == "__main__":
     main()

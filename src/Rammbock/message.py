@@ -14,7 +14,7 @@
 
 from math import ceil
 from binary_tools import to_0xhex, to_binary_string_of_length, \
-    to_bin_of_length, to_tbcd_value, to_tbcd_binary
+    to_bin_of_length, to_tbcd_value, to_tbcd_binary, from_twos_comp
 from ordered_dict import OrderedDict
 
 
@@ -200,6 +200,10 @@ class Field(object):
     @property
     def uint(self):
         return self.int
+
+    @property
+    def sint(self):
+        return from_twos_comp(int(self.int), self._length * 8)
 
     @property
     def hex(self):

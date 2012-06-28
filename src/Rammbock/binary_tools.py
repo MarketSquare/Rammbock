@@ -116,5 +116,24 @@ def to_tbcd_binary(tbcd_string):
             to_bin_str_from_int_string(4, tbcd_string[index])
         index += 2
     return to_bin(value if index == len(tbcd_string)
-                        else value + to_bin_str_from_int_string(4, 15) +
-                        to_bin_str_from_int_string(4, tbcd_string[index]))
+                  else value + to_bin_str_from_int_string(4, 15) +
+                  to_bin_str_from_int_string(4, tbcd_string[index]))
+
+
+def to_twos_comp(val, bits):
+    """compute the 2's compliment of int value val"""
+    if not val.startswith('-'):
+        return int(val)
+    value = _invert(to_bin_str_from_int_string(bits, bin(int(val[1:]))))
+    return int(value, 2) + 1
+
+
+def from_twos_comp(val, bits):
+    """compute the 2's compliment of int value val"""
+    if val & (1 << (bits - 1)):
+        val -= 1 << bits
+    return val
+
+
+def _invert(value):
+    return "".join('1' if a == '0' else '0' for a in value)
