@@ -8,12 +8,12 @@ class TestParamParsing(TestCase):
         self.rammbock = Rammbock()
 
     def test_create_three_dicts(self):
-        confs, pdu_fields, header_fields = self.rammbock._parse_parameters(['foo=bar','doo:dar'])
+        confs, pdu_fields, header_fields = self.rammbock._parse_parameters(['foo=bar', 'doo:dar'])
         self.assertEquals(confs['foo'], 'bar')
         self.assertEquals(pdu_fields['doo'], 'dar')
 
     def test_use_shortest_name(self):
-        confs, pdu_fields, header_fields = self.rammbock._parse_parameters(['foo=this=is:config=value','doo:this=is:field'])
+        confs, pdu_fields, header_fields = self.rammbock._parse_parameters(['foo=this=is:config=value', 'doo:this=is:field'])
         self.assertEquals(confs['foo'], 'this=is:config=value')
         self.assertEquals(pdu_fields['doo'], 'this=is:field')
 
@@ -66,7 +66,7 @@ class TestMessageSequence(TestCase):
         self.rammbock.client_sends_message()
         self.rammbock.server_receives_message()
         self._sequence_should_equal(self.rammbock._message_sequence.get(),
-            [['Client','Server', 'TestProtocol:FooRequest','','received']])
+                                    [['Client', 'Server', 'TestProtocol:FooRequest', '', 'received']])
 
     def test_validation_failure(self):
         self._example_protocol()
@@ -78,20 +78,20 @@ class TestMessageSequence(TestCase):
         except:
             pass
         self._sequence_should_equal(self.rammbock._message_sequence.get(),
-            [['Client','Server', 'TestProtocol:FooRequest','Value of field foo does not match 0xcafe!=5','received']])
+                                    [['Client', 'Server', 'TestProtocol:FooRequest', 'Value of field foo does not match 0xcafe!=5', 'received']])
 
     def test_send_binary_without_protocol(self):
         self._start_client_server()
         self.rammbock.client_sends_binary('foobar')
         self._sequence_should_equal(self.rammbock._message_sequence.get(),
-            [['Client','127.0.0.1:12345', 'binary','','sent']])
+                                    [['Client', '127.0.0.1:12345', 'binary', '', 'sent']])
 
     def test_receive_binary_without_protocol(self):
         self._start_client_server()
         self.rammbock.client_sends_binary('foobar')
         self.rammbock.server_receives_binary()
         self._sequence_should_equal(self.rammbock._message_sequence.get(),
-            [['Client','Server', 'binary','','received']])
+                                    [['Client', 'Server', 'binary', '', 'received']])
 
     def _sequence_should_equal(self, seq_generator, expected):
         list_seq = [list(row) for row in seq_generator]

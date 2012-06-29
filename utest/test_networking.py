@@ -155,7 +155,6 @@ class TestNetworking(_NetworkingTests):
         self._verify_emptying(server, client)
 
 
-
 class TestGetEndPoints(_NetworkingTests):
 
     def test_get_udp_endpoints(self):
@@ -176,7 +175,6 @@ class TestGetEndPoints(_NetworkingTests):
         self.assertEquals(server.get_peer_address(), client_address)
 
 
-
 def _get_template():
     protocol = Protocol('Test')
     protocol.add(UInt(1, 'id', 1))
@@ -188,24 +186,24 @@ def _get_template():
 class TestBufferedStream(TestCase):
 
     DATA = 'foobardiibadaa'
-    
+
     def setUp(self):
         self._buffered_stream = BufferedStream(MockConnection(self.DATA), 0.1)
-    
+
     def test_normal_read(self):
         self.assertEquals(self.DATA, self._buffered_stream.read(len(self.DATA)))
 
     def test_empty(self):
         self._buffered_stream.read(len('foobar'))
         self._buffered_stream.empty()
-        self.assertRaises(AssertionError, self._buffered_stream.read, len(self.DATA)-len('foobar'))
+        self.assertRaises(AssertionError, self._buffered_stream.read, len(self.DATA) - len('foobar'))
 
 
 class MockConnection(object):
-    
+
     def __init__(self, mock_data_to_receive):
         self._data = mock_data_to_receive
-    
+
     def receive(self, timeout):
         ret = self._data
         self._data = ''
@@ -214,5 +212,3 @@ class MockConnection(object):
 
 if __name__ == "__main__":
     main()
-
-

@@ -53,9 +53,9 @@ class TestTemplateFields(TestCase):
         self.assertRaises(Exception, field.encode, {}, {})
 
     def test_encoding_illegal_value_fails(self):
-        field = UInt(2, 'foo',  '(1|2)')
+        field = UInt(2, 'foo', '(1|2)')
         self.assertRaises(Exception, field.encode, {}, {})
-        field = UInt(2, 'foo',  'poplpdsf')
+        field = UInt(2, 'foo', 'poplpdsf')
         self.assertRaises(Exception, field.encode, {}, {})
 
     def test_pdu_field_without_subtractor(self):
@@ -135,24 +135,24 @@ class TestTemplateFieldValidation(TestCase):
 
     def test_validate_uint(self):
         field = Field('uint', 'field', to_bin('0x0004'))
-        self._should_pass(UInt(2, 'field', 4).validate({'field':field}, {}))
-        self._should_pass(UInt(2, 'field', '4').validate({'field':field}, {}))
-        self._should_pass(UInt(2, 'field', '0x04').validate({'field':field}, {}))
-        self._should_pass(UInt(2, 'field', '0x0004').validate({'field':field}, {}))
-        self._should_pass(UInt(2, 'field', '(0|4)').validate({'field':field}, {}))
+        self._should_pass(UInt(2, 'field', 4).validate({'field': field}, {}))
+        self._should_pass(UInt(2, 'field', '4').validate({'field': field}, {}))
+        self._should_pass(UInt(2, 'field', '0x04').validate({'field': field}, {}))
+        self._should_pass(UInt(2, 'field', '0x0004').validate({'field': field}, {}))
+        self._should_pass(UInt(2, 'field', '(0|4)').validate({'field': field}, {}))
 
     def test_validate_int(self):
         field = Field('int', 'field', to_bin('0xffb8'))
-        self._should_pass(Int(2, 'field', -72).validate({'field':field}, {}))
-        self._should_pass(Int(2, 'field', '-72').validate({'field':field}, {}))
-        self._should_pass(Int(2, 'field', '-0x48').validate({'field':field}, {}))
-        self._should_pass(Int(2, 'field', '-0x0048').validate({'field':field}, {}))
-        self._should_pass(Int(2, 'field', '(0|-72)').validate({'field':field}, {}))
+        self._should_pass(Int(2, 'field', -72).validate({'field': field}, {}))
+        self._should_pass(Int(2, 'field', '-72').validate({'field': field}, {}))
+        self._should_pass(Int(2, 'field', '-0x48').validate({'field': field}, {}))
+        self._should_pass(Int(2, 'field', '-0x0048').validate({'field': field}, {}))
+        self._should_pass(Int(2, 'field', '(0|-72)').validate({'field': field}, {}))
 
     def test_validate_chars(self):
         field = Field('chars', 'field', 'foo\x00\x00')
-        self._should_pass(Char(5, 'field', 'foo').validate({'field':field}, {}))
-        self._should_pass(Char(5, 'field', '(what|foo|bar)').validate({'field':field}, {}))
+        self._should_pass(Char(5, 'field', 'foo').validate({'field': field}, {}))
+        self._should_pass(Char(5, 'field', '(what|foo|bar)').validate({'field': field}, {}))
 
     def _should_pass(self, validation):
         self.assertEquals(validation, [])
@@ -163,13 +163,13 @@ class TestTemplateFieldValidation(TestCase):
     def test_fail_validating_uint(self):
         template = UInt(2, 'field', 4)
         field = Field('uint', 'field', to_bin('0x0004'))
-        self._should_fail(template.validate({'field':field}, {'field':'42'}), 1)
+        self._should_fail(template.validate({'field': field}, {'field': '42'}), 1)
 
 
 class TestAlignment(TestCase):
 
     def test_encode_aligned_uint(self):
-        uint = UInt(1,'foo', '0xff', align='4')
+        uint = UInt(1, 'foo', '0xff', align='4')
         encoded = uint.encode({}, {}, None)
         self.assertEquals(encoded.int, 255)
         self.assertEquals(encoded.hex, '0xff')
@@ -177,7 +177,7 @@ class TestAlignment(TestCase):
         self.assertEquals(encoded._raw, to_bin('0xff00 0000'))
 
     def test_decode_aligned_uint(self):
-        uint = UInt(1,'foo', None, align='4')
+        uint = UInt(1, 'foo', None, align='4')
         decoded = uint.decode(to_bin('0xff00 0000'), None)
         self.assertEquals(decoded.int, 255)
         self.assertEquals(decoded.hex, '0xff')

@@ -32,7 +32,7 @@ class TestMessages(TestCase):
         self.assertEquals(field.ascii, 'ab')
         self.assertEquals(field.bytes, '\x00\x61\x62\x00')
         self.assertEquals(field.chars, 'ab')
-        self.assertEquals(field.bin, '0b00000000'+'01100001'+'01100010'+'00000000')
+        self.assertEquals(field.bin, '0b00000000' + '01100001' + '01100010' + '00000000')
 
 
 class TestBinaryContainer(TestCase):
@@ -48,14 +48,14 @@ class TestBinaryContainer(TestCase):
         self.cont = self._bin_container()
 
     def test_create_binary_container(self):
-        self.assertEquals(self.cont.three.bin,'0b101')
-        self.assertEquals(self.cont.six.bin,'0b101010')
-        self.assertEquals(self.cont.seven.bin,'0b0101010')
+        self.assertEquals(self.cont.three.bin, '0b101')
+        self.assertEquals(self.cont.six.bin, '0b101010')
+        self.assertEquals(self.cont.seven.bin, '0b0101010')
 
     def test_conversions(self):
-        self.assertEquals(self.cont.seven.int,42)
-        self.assertEquals(self.cont.seven.bytes,to_bin(42))
-        self.assertEquals(self.cont.seven.ascii,'*')
+        self.assertEquals(self.cont.seven.int, 42)
+        self.assertEquals(self.cont.seven.bytes, to_bin(42))
+        self.assertEquals(self.cont.seven.ascii, '*')
 
     def test_get_binary_container_bytes(self):
         self.assertEquals(self.cont._raw, to_bin('0b1011 0101 0010 1010'))
@@ -65,9 +65,9 @@ class TestBinaryContainer(TestCase):
 
     def test_little_endian_bin_container(self):
         little = self._bin_container(little_endian=True)
-        self.assertEquals(little.three.bin,'0b101')
-        self.assertEquals(little.six.bin,'0b101010')
-        self.assertEquals(little.seven.bin,'0b0101010')
+        self.assertEquals(little.three.bin, '0b101')
+        self.assertEquals(little.six.bin, '0b101010')
+        self.assertEquals(little.seven.bin, '0b0101010')
         self.assertEquals(little._raw, to_bin('0b0010 1010 1011 0101'))
 
     def test_pretty_print_container(self):
@@ -87,7 +87,7 @@ class TestFieldAlignment(TestCase):
         self.assertEquals(field.int, int(value, 16))
         self.assertEquals(field.hex, value)
         self.assertEquals(field._raw, to_bin(raw))
-        self.assertEquals(field.bytes, to_bin(value))        
+        self.assertEquals(field.bytes, to_bin(value))
         if length:
             self.assertEquals(len(field), length)
 

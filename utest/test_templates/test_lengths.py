@@ -3,6 +3,7 @@ from Rammbock.message import Struct, Field
 from Rammbock.templates.primitives import Length
 from Rammbock.binary_tools import to_bin
 
+
 class TestLength(TestCase):
 
     def test_create_length(self):
@@ -18,7 +19,7 @@ class TestLength(TestCase):
         self.assertEquals(length.value, 5)
 
     def test_only_one_variable_in_dynamic_length(self):
-        self.assertRaises(Exception,Length,'length-messageId')
+        self.assertRaises(Exception, Length, 'length-messageId')
 
     def test_dynamic_length_with_subtractor(self):
         length = Length('length-8')
@@ -69,13 +70,13 @@ class TestLength(TestCase):
         self.assertEquals(stat_len.decode(None), 5)
 
     def test_align_static(self):
-        self._assert_alignment('5','4',8)
-        self._assert_alignment('5','1',5)
-        self._assert_alignment('3','4',4)
-        self._assert_alignment('1','4',4)
-        self._assert_alignment('25','4',28)
-        self._assert_alignment('25','',25)
-        self._assert_alignment('25',None,25)
+        self._assert_alignment('5', '4', 8)
+        self._assert_alignment('5', '1', 5)
+        self._assert_alignment('3', '4', 4)
+        self._assert_alignment('1', '4', 4)
+        self._assert_alignment('25', '4', 28)
+        self._assert_alignment('25', '', 25)
+        self._assert_alignment('25', None, 25)
 
     def _assert_alignment(self, length, alignment, result):
         self.assertEquals(Length(length, alignment).decode_lengths(None, None)[1], result)

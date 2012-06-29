@@ -46,7 +46,7 @@ class TestMessageStream(TestCase):
         self._protocol.add(UInt(1, 'id', 1))
         self._protocol.add(UInt(2, 'length', None))
         self._protocol.add(PDU('length-2'))
-        self._msg = MessageTemplate('FooRequest', self._protocol, {'id':'0xaa'})
+        self._msg = MessageTemplate('FooRequest', self._protocol, {'id': '0xaa'})
         self._msg.add(UInt(1, 'field_1', None))
         self._msg.add(UInt(1, 'field_2', None))
         byte_stream = _MockStream(to_bin('0xff0004cafe aa0004dead dd0004beef'))
@@ -72,7 +72,7 @@ class TestMessageStream(TestCase):
         self.assertRaises(AssertionError, self._msg_stream.get, self._msg, header_filter='id')
 
     def test_timeout_goes_to_stream(self):
-        self._msg.header_parameters = {'id':'0x00'}
+        self._msg.header_parameters = {'id': '0x00'}
         self.assertRaises(socket.timeout, self._msg_stream.get, self._msg, timeout=0.1, header_filter='id')
 
 

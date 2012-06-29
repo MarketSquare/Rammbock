@@ -30,8 +30,8 @@ class TestBinaryConversions(TestCase):
         self.assertEquals(to_bin('0b1111 1111'), '\xff')
         self.assertEquals(to_bin('0b1 0000 0000'), '\x01\x00')
         self.assertEquals(to_bin('0b01 0b01 0b01'), '\x15')
-        self.assertEquals(to_bin('0b11'*32), '\xff\xff\xff\xff\xff\xff\xff\xff')
-        self.assertEquals(to_bin('0b11'*1024), '\xff\xff\xff\xff\xff\xff\xff\xff'*32)
+        self.assertEquals(to_bin('0b11' * 32), '\xff\xff\xff\xff\xff\xff\xff\xff')
+        self.assertEquals(to_bin('0b11' * 1024), '\xff\xff\xff\xff\xff\xff\xff\xff' * 32)
 
     def test_hex_to_bin(self):
         self.assertEquals(to_bin('0x0'), '\x00')
@@ -64,12 +64,12 @@ class TestBinaryConversions(TestCase):
         self.assertEquals(to_0xhex('\xca\xfe\xba\xbe\xf0\x0d\xd0\x0d\xde\xad\xbe\xef'), '0xcafebabef00dd00ddeadbeef')
 
     def test_to_0bbinary(self):
-        self.assertEquals(to_binary_string_of_length(1,'\x00'), '0b0')
-        self.assertEquals(to_binary_string_of_length(3,'\x00'), '0b000')
-        self.assertEquals(to_binary_string_of_length(9,'\x01\xff'), '0b111111111')
-        self.assertEquals(to_binary_string_of_length(12,'\x01\xff'), '0b000111111111')
-        self.assertEquals(to_binary_string_of_length(68,'\x01\x00\x00\x00\x00\x00\x00\x00\x00'), '0b0001'+('0000'*16))
-        self.assertEquals(to_binary_string_of_length(2048,'\xff\xff\xff\xff\xff\xff\xff\xff'*32), '0b'+('11'*1024))
+        self.assertEquals(to_binary_string_of_length(1, '\x00'), '0b0')
+        self.assertEquals(to_binary_string_of_length(3, '\x00'), '0b000')
+        self.assertEquals(to_binary_string_of_length(9, '\x01\xff'), '0b111111111')
+        self.assertEquals(to_binary_string_of_length(12, '\x01\xff'), '0b000111111111')
+        self.assertEquals(to_binary_string_of_length(68, '\x01\x00\x00\x00\x00\x00\x00\x00\x00'), '0b0001' + ('0000' * 16))
+        self.assertEquals(to_binary_string_of_length(2048, '\xff\xff\xff\xff\xff\xff\xff\xff' * 32), '0b' + ('11' * 1024))
 
     def test_to_tbcd_value(self):
         self.assertEquals('1', to_tbcd_value(to_bin('0b11110001')))

@@ -4,6 +4,7 @@ from Rammbock.message_sequence import MessageSequence, SeqdiagGenerator
 CLIENT = ('11.11.11.11', 11)
 SERVER = ('11.11.11.11', 2222)
 
+
 class TestMessageSequence(TestCase):
 
     def _send(self, seq):
@@ -45,7 +46,7 @@ class TestMessageSequence(TestCase):
         self._send(seq)
         self._receive(seq)
         self._sequence_should_equal(seq.get(), [['Sender', 'Receiver', 'Protocol:Msg', '', 'sent'],
-                                     ['Sender', 'Receiver', 'Protocol:Msg', '', 'received']])
+                                    ['Sender', 'Receiver', 'Protocol:Msg', '', 'received']])
 
     def test_register_error(self):
         seq = MessageSequence()
@@ -66,9 +67,9 @@ class TestSeqdiagGenerator(TestCase):
     def test_request_response(self):
         generator = SeqdiagGenerator()
         self.assertEquals(generator.generate(['Sender', 'Receiver'],
-            [['Sender', 'Receiver', 'Protocol:Msg', '', 'received'],
-            ['Receiver', 'Sender', 'Protocol:Msg', '', 'received']]),
-        """diagram {
+                          [['Sender', 'Receiver', 'Protocol:Msg', '', 'received'],
+                          ['Receiver', 'Sender', 'Protocol:Msg', '', 'received']]),
+            """diagram {
     Sender -> Receiver [label = "Protocol:Msg"];
     Sender <- Receiver [label = "Protocol:Msg"];
 }
@@ -77,7 +78,7 @@ class TestSeqdiagGenerator(TestCase):
     def test_failure(self):
         generator = SeqdiagGenerator()
         self.assertEquals(generator.generate(['Sender', 'Receiver'],
-            [['Sender', 'Receiver', 'Protocol:Msg', 'This failed', 'received']]),
+                          [['Sender', 'Receiver', 'Protocol:Msg', 'This failed', 'received']]),
             """diagram {
     Sender -> Receiver [label = "Protocol:Msg - This failed", color = red];
 }
@@ -86,13 +87,13 @@ class TestSeqdiagGenerator(TestCase):
     def test_several_operators(self):
         generator = SeqdiagGenerator()
         self.assertEquals(generator.generate(['Client', 'Server', 'DB'],
-            [['Client', 'Server', 'Protocol:Req', '', 'received'],
-             ['Server', 'Client', 'Protocol:Resp', '', 'received'],
-             ['Client', 'DB', 'msg', '', 'received'],
-             ['DB', 'Client', 'another', '', 'received'],
-             ['Server', 'DB', 'HTTP:background', '', 'received'],
-             ['DB', 'Server', 'HTTP:response', '', 'received']]),
-        """diagram {
+                          [['Client', 'Server', 'Protocol:Req', '', 'received'],
+                          ['Server', 'Client', 'Protocol:Resp', '', 'received'],
+                          ['Client', 'DB', 'msg', '', 'received'],
+                          ['DB', 'Client', 'another', '', 'received'],
+                          ['Server', 'DB', 'HTTP:background', '', 'received'],
+                          ['DB', 'Server', 'HTTP:response', '', 'received']]),
+            """diagram {
     Client -> Server [label = "Protocol:Req"];
     Client <- Server [label = "Protocol:Resp"];
     Client -> DB [label = "msg"];
@@ -105,12 +106,12 @@ class TestSeqdiagGenerator(TestCase):
     def test_cutoff_at_15_operations(self):
         generator = SeqdiagGenerator()
         self.assertEquals(generator.generate(['Client', 'Server', 'DB'],
-            [['Client', 'Server', 'Protocol:Req', '', 'received'],
-                ['Server', 'Client', 'Protocol:Resp', '', 'received'],
-                ['Client', 'DB', 'msg', '', 'received'],
-                ['DB', 'Client', 'another', '', 'received'],
-                ['Server', 'DB', 'HTTP:background', '', 'received'],
-                ['DB', 'Server', 'HTTP:response', '', 'received']]*10),
+                          [['Client', 'Server', 'Protocol:Req', '', 'received'],
+                          ['Server', 'Client', 'Protocol:Resp', '', 'received'],
+                          ['Client', 'DB', 'msg', '', 'received'],
+                          ['DB', 'Client', 'another', '', 'received'],
+                          ['Server', 'DB', 'HTTP:background', '', 'received'],
+                          ['DB', 'Server', 'HTTP:response', '', 'received']] * 10),
             """diagram {
     Client <- DB [label = "another"];
     Server -> DB [label = "HTTP:background"];
@@ -129,7 +130,6 @@ class TestSeqdiagGenerator(TestCase):
     Server <- DB [label = "HTTP:response"];
 }
 """)
-
 
 
 if __name__ == "__main__":
