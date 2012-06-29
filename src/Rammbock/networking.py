@@ -144,7 +144,10 @@ class _Server(_NetworkNode):
         self._set_default_timeout(timeout)
 
     def _bind_socket(self):
-        self._socket.bind((self._ip, self._port))
+        try:
+            self._socket.bind((self._ip, self._port))
+        except socket.error, e:
+            raise Exception("error: [Errno %d] %s for address %s:%d" % (e[0], e[1], self._ip, self._port))
         self._is_connected = True
 
 
