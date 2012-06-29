@@ -2,7 +2,7 @@
 Suite setup    define dns protocol
 Suite teardown    Reset Rammbock
 Library    Rammbock
-Library    DNSLibrary.py
+Library    ../message_tools.py
 Resource    ../Protocols.txt
 Default tags    Regression
 

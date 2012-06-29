@@ -1,6 +1,6 @@
 *** Settings ***
 Library    Rammbock
-Library    ../dns/DNSLibrary.py
+Library    ../message_tools.py
 
 
 *** Variables ***
