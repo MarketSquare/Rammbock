@@ -205,7 +205,7 @@ class Field(object):
 
     @property
     def sint(self):
-        return from_twos_comp(int(self), self._length * 8)
+        return from_twos_comp(int(self), len(self._value) * 8)
 
     @property
     def hex(self):

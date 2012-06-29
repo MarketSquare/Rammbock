@@ -168,6 +168,22 @@ class TestTemplateFieldValidation(TestCase):
 
 class TestAlignment(TestCase):
 
+    def test_encode_aligned_int(self):
+        sint = Int(1, 'foo', '-72', align='4')
+        encoded = sint.encode({}, {}, None)
+        self.assertEquals(encoded.int, -72)
+        self.assertEquals(encoded.hex, '0xb8')
+        self.assertEquals(len(encoded), 4)
+        self.assertEquals(encoded._raw, to_bin('0xb800 0000'))
+
+    def test_decode_aligned_int(self):
+        sint = Int(1, 'foo', None, align='4')
+        decoded = sint.decode(to_bin('0xb800 0000'), None)
+        self.assertEquals(decoded.int, -72)
+        self.assertEquals(decoded.hex, '0xb8')
+        self.assertEquals(len(decoded), 4)
+        self.assertEquals(decoded._raw, to_bin('0xb800 0000'))
+
     def test_encode_aligned_uint(self):
         uint = UInt(1, 'foo', '0xff', align='4')
         encoded = uint.encode({}, {}, None)

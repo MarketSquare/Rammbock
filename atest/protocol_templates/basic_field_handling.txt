@@ -30,7 +30,6 @@ Signed integer fields should give warning when encoding if integer over range
     run keyword and expect error    Value -258 out of range (-128..127)    get message    foo:-258
 
 encode signed integer with alignment
-    [tags]
     Define example protocol
     Start TCP client    ${SERVER}    ${SERVER PORT}    name=ExampleServer   protocol=Example
     Create message with aligned signed integer fields
