@@ -1,13 +1,13 @@
 *** Settings ***
-Library     Rammbock
+Library    Rammbock
+Library    ../dns/DNSLibrary.py
+
 
 *** Variables ***
 ${TEST MACHINE}   127.0.0.1
 ${SERVER}         ${TEST MACHINE}
 ${CLIENT}         ${TEST MACHINE}
 ${GTP CONTROL PORT}                 2123
-
-*** Variables ***
 ${IMSI_type}                        1
 ${Recovery_type}                    3
 ${CREATE SESSION REQUEST}           32
@@ -89,3 +89,13 @@ single value tbcd container
     new tbcd container    ${name}
     tbcd   ${len}    value    ${value}
     end tbcd container
+
+IP Value
+    [arguments]    ${field}    ${value}
+    ${converted}=    convert to ip    ${value}
+    Value    ${field}    ${converted}
+
+Label sequence value
+    [arguments]    ${field}    ${domain}
+    ${converted}=    convert to label sequence    ${domain}
+    Value    ${field}    ${converted}
