@@ -21,3 +21,7 @@ def field_should_not_exist(message_struct, field_name):
 def field_should_exist(message_struct, field_name):
     if field_name not in message_struct:
         raise AssertionError('Field %s was not found in %s' % (field_name, message_struct))
+
+
+def convert_datetime_to_ntp_integer(value):
+    raise Exception("Not yet implemented")

@@ -107,6 +107,18 @@ class Rammbock(RammbockCore):
         This is an convenience method that simply calls `Uint` keyword with predefined length."""
         self.uint(16, name, value, align)
 
+    def i8(self, name, value=None, align=None):
+        """Add an 1 byte integer field to template.
+
+        This is an convenience method that simply calls `Int` keyword with predefined length."""
+        self.int(1, name, value, align)
+
+    def i32(self, name, value=None, align=None):
+        """Add an 32 byte integer field to template.
+
+        This is an convenience method that simply calls `Int` keyword with predefined length."""
+        self.int(4, name, value, align)
+
     def array(self, size, type, name, *parameters):
         """Define a new array of given `size` and containing fields of type `type`.
 

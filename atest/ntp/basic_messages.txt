@@ -1,5 +1,6 @@
 *** Settings ***
 Library    Rammbock
+Library    ../message_tools.py
 Suite teardown    reset rammbock
 
 
@@ -24,9 +25,9 @@ Define NTP protocol
     Flags
     u8    Peer clock stratum        0
     u8    Peer polling Interval     10
-    s8    Peer clock precision     -20        #signed integer
-    s32   Root delay                0.0303    #signed fixed-point number
-    s32   Root dispersion           0.1855    #signed fixed-point number
+    i8    Peer clock precision     -20        #signed integer
+    i32   Root delay                0.0303    #signed fixed-point number
+    i32   Root dispersion           0.1855    #signed fixed-point number
     IP    Reference id              192.168.0.1
     Datetime   Reference timestamp       Sep 27, 2004 05:29:41.259040000
     Datetime   Origin timestamp          Sep 27, 2004 06:18:04.922896000
@@ -43,7 +44,7 @@ Flags
 
 Datetime
     [arguments]    ${name}    ${datetime}
-    ${converted}=    Convert datetime to 8 byte NTP integer    ${datetime}
+    ${converted}=    Convert datetime to NTP integer    ${datetime}
     u64    ${name}    ${converted}
 
 Datetime value
