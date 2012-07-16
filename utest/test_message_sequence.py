@@ -69,7 +69,7 @@ class TestSeqdiagGenerator(TestCase):
         self.assertEquals(generator.generate(['Sender', 'Receiver'],
                           [['Sender', 'Receiver', 'Protocol:Msg', '', 'received'],
                           ['Receiver', 'Sender', 'Protocol:Msg', '', 'received']]),
-            """diagram {
+                          """diagram {
     Sender -> Receiver [label = "Protocol:Msg"];
     Sender <- Receiver [label = "Protocol:Msg"];
 }
@@ -79,7 +79,7 @@ class TestSeqdiagGenerator(TestCase):
         generator = SeqdiagGenerator()
         self.assertEquals(generator.generate(['Sender', 'Receiver'],
                           [['Sender', 'Receiver', 'Protocol:Msg', 'This failed', 'received']]),
-            """diagram {
+                          """diagram {
     Sender -> Receiver [label = "Protocol:Msg - This failed", color = red];
 }
 """)
@@ -93,7 +93,7 @@ class TestSeqdiagGenerator(TestCase):
                           ['DB', 'Client', 'another', '', 'received'],
                           ['Server', 'DB', 'HTTP:background', '', 'received'],
                           ['DB', 'Server', 'HTTP:response', '', 'received']]),
-            """diagram {
+                          """diagram {
     Client -> Server [label = "Protocol:Req"];
     Client <- Server [label = "Protocol:Resp"];
     Client -> DB [label = "msg"];
@@ -112,7 +112,7 @@ class TestSeqdiagGenerator(TestCase):
                           ['DB', 'Client', 'another', '', 'received'],
                           ['Server', 'DB', 'HTTP:background', '', 'received'],
                           ['DB', 'Server', 'HTTP:response', '', 'received']] * 10),
-            """diagram {
+                          """diagram {
     Client <- DB [label = "another"];
     Server -> DB [label = "HTTP:background"];
     Server <- DB [label = "HTTP:response"];
