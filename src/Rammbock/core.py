@@ -14,7 +14,7 @@
 
 from __future__ import with_statement
 from contextlib import contextmanager
-from Rammbock.message import _StructuredElement
+from message import _StructuredElement
 from networking import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 from message_sequence import MessageSequence
 from templates import Protocol, UInt, Int, PDU, MessageTemplate, Char, Binary, \
