@@ -23,13 +23,26 @@ Fail validation with struct
     Server should fail validation with struct    pair.first:0xff
 
 Reuse struct in another message
-    [Tags]
     Message with struct     42
     ${struct_msg} =    Get message
     Message with struct     1
     Value       pair     ${struct_msg.pair}
     ${pair_msg} =    Get message
     Should be equal as integers    ${pair msg.pair.first.int}     42
+
+Reuse complex struct in another message
+    Message with struct in struct
+    value       structstruct.mollyMalones.name      Molly
+    value       structstruct.mollyMalones.closesAt  8
+    value       structstruct.foo        42
+    ${msg} =    Get message
+    Message with struct in struct
+    value       structstruct.mollyMalones.name      ThisWillBeOverRidden
+    value       structstruct    ${msg.structstruct}
+    ${new_msg} =    Get message
+    Should be equal    ${new_msg.structstruct.mollyMalones.name.ascii}     Molly
+    Should be equal as integers    ${new_msg.structstruct.foo.int}     42
+    Should be equal as integers    ${new_msg.structstruct.mollyMalones.closesAt.int}     8
 
 Struct containing struct
     Client sends struct with struct   structstruct.mollyMalones.closesAt:4
@@ -125,6 +138,7 @@ StructStruct
 Bar
     [Arguments]    ${name}
     New Struct   Bar   ${name}
+    Chars     20        name       Progress Bar
     u8        opensAt    10
     u8        closesAt    2
     End struct

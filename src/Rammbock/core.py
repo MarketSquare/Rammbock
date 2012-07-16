@@ -14,6 +14,7 @@
 
 from __future__ import with_statement
 from contextlib import contextmanager
+from Rammbock.message import _StructuredElement
 from networking import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 from message_sequence import MessageSequence
 from templates import Protocol, UInt, Int, PDU, MessageTemplate, Char, Binary, \
@@ -679,7 +680,14 @@ class RammbockCore(object):
         | Value | foo | 42 |
         | Value | struct.sub_field | 0xcafe |
         """
-        self._field_values[name] = value
+        if isinstance(value, _StructuredElement):
+            self._struct_fields_as_values(name, value)
+        else:
+            self._field_values[name] = value
+
+    def _struct_fields_as_values(self, name, value):
+        for field_name in value._fields:
+            self.value('%s.%s' % (name, field_name), value._fields[field_name])
 
     def _parse_parameters(self, parameters):
         configs, fields = [], []

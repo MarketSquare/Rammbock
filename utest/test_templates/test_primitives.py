@@ -31,6 +31,12 @@ class TestTemplateFields(TestCase):
         self.assertEquals(field.encode({}, {}, None)._raw, 'foo\x00\x00')
         self.assertEquals(field.encode({}, {}, None).bytes, 'foo\x00\x00')
 
+    def test_set_char_value_from_message_field(self):
+        msg_field = Field('chars', 'char_field', '\x00a\x00b', aligned_len=5)
+        field = Char(5, "char_field", '')
+        self.assertEquals(field.encode({'char_field': msg_field}, {}, None)._raw, '\x00a\x00b\x00')
+        self.assertEquals(field.encode({'char_field': msg_field}, {}, None).bytes, '\x00a\x00b\x00')
+
     def test_binary_field(self):
         field = Binary(3, 'field', 1)
         self.assertTrue(field.length.static)

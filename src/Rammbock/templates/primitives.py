@@ -175,10 +175,13 @@ class Char(_TemplateField):
         self.length = Length(length)
 
     def _encode_value(self, value, message, little_endian=False):
-        value = value or ''
-        value += self._terminator
+        if isinstance(value, Field):
+            value = value._value
+        else:
+            value = str(value or '')
+            value += self._terminator
         length, aligned_length = self.length.find_length_and_set_if_necessary(message, len(value))
-        return str(value).ljust(length, '\x00'), aligned_length
+        return value.ljust(length, '\x00'), aligned_length
 
     def _prepare_data(self, data):
         if self._terminator:
