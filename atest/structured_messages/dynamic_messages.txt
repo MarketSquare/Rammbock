@@ -171,6 +171,14 @@ Filling array of free length complicated dynamic message in send
     ${msg} =     Server receives message
     Should be equal as integers    ${msg.list[3].pair.second.int}    5
 
+Reuse struct value from another message
+    Populate dynamic message  2  0x01  0x02  0x11  0x22
+    ${list msg} =    Get message
+    Message with struct
+    Value    pair    ${list msg.pairList[0]}
+    ${pair msg} =    Get message
+    Should be equal    ${pair msg.pair.first.hex}   0x01
+
 
 *** Keywords ***
 Named Pair
@@ -201,6 +209,11 @@ Populate dynamic message
     value   pairList[0].second   ${0 second}
     value   pairList[1].first   ${1 first}
     value   pairList[1].second   ${1 second}
+
+Message with struct
+    [arguments]    ${pair values}=
+    New Message    StructRequest  Example    messageType:0xaaaa
+    Pair    pair   ${pair values}
 
 Dynamic message
     New Message    DynamicRequest  Example    messageType:0xaaaa
