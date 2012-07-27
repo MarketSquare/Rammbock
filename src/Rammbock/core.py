@@ -303,10 +303,18 @@ class RammbockCore(object):
         """
         self._message_templates[name] = (self._get_message_template(), self._field_values)
 
-    def load_template(self, name):
+    def load_template(self, name, *parameters):
         """Load a message template saved with `Save template`.
+        Optional parameters are default values for message header separated with
+        colon.
+
+        Examples:
+        | Load Template | MyMessage | header_field:value |
         """
-        self._init_new_message_stack(*self._message_templates[name])
+        _, header_fields, _ = self._parse_parameters(parameters)
+        template, fields = self._message_templates[name]
+        template.header_parameters.update(header_fields)
+        self._init_new_message_stack(template, fields)
 
     def get_message(self, *parameters):
         """Get encoded message.

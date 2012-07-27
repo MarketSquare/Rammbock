@@ -24,6 +24,12 @@ Save templates and field values
     ${msg}=          Get message
     Should be equal as integers    ${msg.double_1.int}   4242
 
+Load template with header parameters
+    Save single and double templates
+    Load template     single       field:10
+    ${msg}=           Get message
+    Should be equal as integers    ${msg._header.field}    10
+
 
 *** Keywords ***
 Save single and double templates
@@ -31,13 +37,16 @@ Save single and double templates
     Save template    single
     Double valued
     Save template    double
+
 Single valued
     New message    SingleRequest    Example
     u32    single    1
+
 Double valued
     New message    DoubleRequest    Example
     u16    double_1  22
     u16    double_2  2222
+
 Save single and double templates with values
     Single valued
     value   single   42
