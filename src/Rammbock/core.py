@@ -14,7 +14,6 @@
 
 from __future__ import with_statement
 from contextlib import contextmanager
-from copy import deepcopy
 from message import _StructuredElement
 from networking import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 from message_sequence import MessageSequence
@@ -38,6 +37,7 @@ class RammbockCore(object):
         self._servers = _NamedCache('server')
         self._clients = _NamedCache('client')
         self._message_stack = []
+        self._header_values = {}
         self._field_values = {}
         self._message_sequence = MessageSequence()
         self._message_templates = {}
@@ -277,8 +277,9 @@ class RammbockCore(object):
         self._register_receive(server, label, name, connection=connection)
         return msg, ip, port
 
-    def _init_new_message_stack(self, message, fields=None):
+    def _init_new_message_stack(self, message, fields=None, header_fields=None):
         self._field_values = fields if fields else {}
+        self._header_values = header_fields if header_fields else {}
         self._message_stack = [message]
 
     def new_message(self, message_name, protocol=None, *parameters):
@@ -314,10 +315,7 @@ class RammbockCore(object):
         """
         _, header_fields, _ = self._parse_parameters(parameters)
         template, fields = self._message_templates[name]
-        if header_fields:
-            template = deepcopy(template)
-            template.header_parameters.update(header_fields)
-        self._init_new_message_stack(template, fields)
+        self._init_new_message_stack(template, fields, header_fields)
 
     def get_message(self, *parameters):
         """Get encoded message.
@@ -675,13 +673,14 @@ class RammbockCore(object):
 
     def _get_parameters_with_defaults(self, parameters):
         config, fields, headers = self._parse_parameters(parameters)
-        fields = self._populate_defaults(fields)
+        fields = self._populate_defaults(fields, self._field_values)
+        headers = self._populate_defaults(headers, self._header_values)
         return config, fields, headers
 
-    def _populate_defaults(self, fields):
-        ret_val = self._field_values
+    def _populate_defaults(self, fields, default_values):
+        ret_val = default_values
         ret_val.update(fields)
-        self._field_values = {}
+        default_values = {}
         return ret_val
 
     def value(self, name, value):
