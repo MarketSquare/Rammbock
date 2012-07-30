@@ -29,7 +29,13 @@ Load template with header parameters
     Load template     single       field:10
     ${msg}=           Get message
     Should be equal as integers    ${msg._header.field}    10
-
+    
+Load template with header parameters does not alter the original template
+    Save single and double templates
+    Load template     single       field:10
+    Load template     single
+    ${msg}=           Get message
+    Should be equal as integers    ${msg._header.field}    16
 
 *** Keywords ***
 Save single and double templates
