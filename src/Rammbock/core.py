@@ -313,7 +313,7 @@ class RammbockCore(object):
         Examples:
         | Load Template | MyMessage | header_field:value |
         """
-        _, header_fields, _ = self._parse_parameters(parameters)
+        _, _, header_fields = self._parse_parameters(parameters)
         template, fields = self._message_templates[name]
         self._init_new_message_stack(template, fields, header_fields)
 
