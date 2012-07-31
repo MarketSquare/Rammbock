@@ -1,5 +1,5 @@
 *** Settings ***
-Suite setup    define dns protocol
+Suite setup    define dns protocol and setup server and client
 Suite teardown    Reset Rammbock
 Library    Rammbock
 Library    ../message_tools.py
@@ -16,12 +16,16 @@ dns answer
     ${msg}=    Get message
 
 send and receive dns request
-    [tags]
-    Setup UDP server and client      DNS
     dns A query with one domain
     client sends message
     server receives message
 
+Send two and receive two dns request in sequence
+    dns A query with one domain
+    client sends message
+    client sends message
+    server receives message
+    server receives message
 
 *** Keywords ***
 dns answer with one domain and IPv4 answer
@@ -56,6 +60,10 @@ Label sequence value
     [arguments]    ${field}    ${domain}
     ${converted}=    convert to label sequence    ${domain}
     Value    ${field}    ${converted}
+
+define dns protocol and setup server and client
+    define dns protocol
+    Setup UDP server and client      DNS
 
 define dns protocol
     new protocol    DNS

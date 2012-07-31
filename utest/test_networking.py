@@ -198,6 +198,16 @@ class TestBufferedStream(TestCase):
         self._buffered_stream.empty()
         self.assertRaises(AssertionError, self._buffered_stream.read, len(self.DATA) - len('foobar'))
 
+    def test_read_all(self):
+        data = self._buffered_stream.read(-1)
+        self.assertEquals(data, self.DATA)
+
+    def test_read_and_return(self):
+        self._buffered_stream.read(-1)
+        self._buffered_stream.return_data('badaa')
+        data = self._buffered_stream.read(-1)
+        self.assertEquals(data, 'badaa')
+
 
 class MockConnection(object):
 

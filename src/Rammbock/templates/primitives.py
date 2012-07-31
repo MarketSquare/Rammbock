@@ -32,7 +32,7 @@ class _TemplateField(object):
 
     def get_static_length(self):
         if not self.length.static:
-            raise Exception('Length of %s is dynamic.' % self._get_name())
+            raise IndexError('Length of %s is dynamic.' % self._get_name())
         return self.length.value
 
     def _get_element_value(self, paramdict, name=None):
@@ -368,11 +368,11 @@ class _DynamicLength(_Length):
 
     def _raise_error_if_not_enough_space(self, reference, min_length):
         if reference.int < min_length:
-            raise Exception("Value for length is too short")
+            raise IndexError("Value for length is too short")
 
     @property
     def value(self):
-        raise Exception('Length is dynamic.')
+        raise IndexError('Length is dynamic.')
 
 
 def _partition(operator, value):

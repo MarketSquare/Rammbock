@@ -20,6 +20,9 @@ class _MockStream(object):
         self.data = self.data[length:]
         return result
 
+    def return_data(self, data):
+        self.data = data + self.data
+
     def empty(self):
         self.data = ''
 

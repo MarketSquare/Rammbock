@@ -324,12 +324,21 @@ class BufferedStream(_WithTimeouts):
         cutoff = time.time() + timeout
         while time.time() < cutoff:
             result += self._get(size - len(result))
-            if len(result) == size:
+            if self._size_full(result, size):
                 return result
             self._fill_buffer(timeout)
         raise AssertionError('Timeout %ds exceeded.' % timeout)
 
+    def _size_full(self, result, size):
+        return len(result) == size or (size == -1 and len(result))
+
+    def return_data(self, data):
+        if data:
+            self._buffer = data + self._buffer
+
     def _get(self, size):
+        if size == -1:
+            size = len(self._buffer)
         if not self._buffer:
             return ''
         result = self._buffer[:size]

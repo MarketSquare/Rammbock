@@ -114,12 +114,10 @@ class Protocol(_Template):
         self.pdu = None
 
     def header_length(self):
-        length = 0
-        for field in self._fields.values():
-            if not field.length.static:
-                return length
-            length += field.length.value
-        return length
+        try:
+            return sum(field.get_static_length() for field in self._fields.values() if field.type != 'pdu')
+        except IndexError:
+            return -1
 
     def encode(self, message, header_params, little_endian=False):
         header_params = header_params.copy()
@@ -144,21 +142,19 @@ class Protocol(_Template):
     # TODO: fields after the pdu
     def _extract_values_from_data(self, data, header, values):
         data_index = 0
-        field_index = 0
-        while len(data) > data_index:
-            field = values[field_index]
-            header[field.name] = Field(field.type, field.name,
-                                       data[data_index:data_index +
-                                            field.length.value])
-            data_index += field.length.value
-            field_index += 1
+        for field in values:
+            if field is not self.pdu:
+                header[field.name] = field.decode(data[data_index:], header)
+                data_index += len(header[field.name])
+        return data[data_index:]
 
     def read(self, stream, timeout=None):
         #TODO: use all data if length cannot be obtained. Return amount of data
         #used to stream
         data = stream.read(self.header_length(), timeout=timeout)
         header = Header(self.name)
-        self._extract_values_from_data(data, header, self._fields.values())
+        unused_data = self._extract_values_from_data(data, header, self._fields.values())
+        stream.return_data(unused_data)
         pdu_bytes = None
         if self.pdu:
             length_param = header[self.pdu_length.field].int
@@ -204,8 +200,13 @@ class MessageTemplate(_Template):
 
     def validate(self, message, message_fields):
         if self.only_header:
-            return self._protocol.validate(message, message_fields)
+            return self._protocol.validate(message, self._protocol_validation_params(message_fields))
         return _Template.validate(self, message, message_fields)
+
+    def _protocol_validation_params(self, message_fields):
+        validation_params = self.header_parameters.copy()
+        validation_params.update(message_fields)
+        return validation_params
 
     @property
     def only_header(self):
@@ -392,6 +393,9 @@ class BinaryContainerTemplate(_Template):
     has_length = False
     type = 'BinaryContainer'
 
+    def get_static_length(self):
+        return self.binlength / 8
+
     def add(self, field):
         if not isinstance(field, Binary):
             raise AssertionError('Binary container can only have binary fields.')
@@ -446,6 +450,9 @@ class TBCDContainerTemplate(_Template):
 
     has_length = False
     type = 'TBCDContainer'
+
+    def get_static_length(self):
+        return self.binlength / 8
 
     def _verify_not_little_endian(self, little_endian):
         if little_endian:
