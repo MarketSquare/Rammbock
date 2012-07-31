@@ -102,5 +102,5 @@ Structured field in protocol header
 
 *** Keywords ***
 Simple Request with '${protocol}'
-    New message    ValueRequest    ${protocol}    messageType:0xdddd    flags:0xffff
+    New message    ValueRequest    ${protocol}    header:messageType:0xdddd    header:flags:0xffff
     u32    value    0xdeadbeef

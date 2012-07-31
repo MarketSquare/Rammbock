@@ -75,7 +75,7 @@ Validate fails when trying to validate nonexistent field
 *** Keywords ***
 Named client sends simple request
     [Arguments]    ${client}=    @{params}
-    New message    ValueRequest    Example    messageType:0xdddd    flags:0xffff
+    New message    ValueRequest    Example    header:messageType:0xdddd    header:flags:0xffff
     u32    value    0xdeadbeef
     Client Sends message    name=${client}    @{params}
 

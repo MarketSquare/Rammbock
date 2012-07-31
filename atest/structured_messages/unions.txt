@@ -115,11 +115,11 @@ Server receives hyper complex union request
     [return]    ${msg}
 
 Simple union message
-   New message    UnionMessage   Example  messageType:0xb00b
+   New message    UnionMessage   Example  header:messageType:0xb00b
    Simple union   simpleU
 
 Simple union in struct
-   New message    UnionInStruct   Example  messageType:0xbabe
+   New message    UnionInStruct   Example  header:messageType:0xbabe
    SStructField   structField
 
 SStructField
@@ -131,7 +131,7 @@ SStructField
     End struct
 
 Complex union message
-   New message   ComplexUnion    Example  messageType:0xb00b
+   New message   ComplexUnion    Example  header:messageType:0xb00b
    ComplexUnion  complexU
 
 Simple union
@@ -157,7 +157,7 @@ Tuple
     End struct
 
 Hyper Complex union message
-   New message   HyperUnion    Example  messageType:0xb00b
+   New message   HyperUnion    Example  header:messageType:0xb00b
    HyperUnion  hyperU
 
 HyperUnion

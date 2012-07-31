@@ -51,7 +51,7 @@ Create Session Request Values
 
 
 Create Session Request
-    new message    create session request    gtpv2    message type:${CREATE SESSION REQUEST}
+    new message    create session request    gtpv2    header:message type:${CREATE SESSION REQUEST}
     IE  IMSI
     IE  MSISDN
     IE  ULI

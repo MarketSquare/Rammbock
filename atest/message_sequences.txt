@@ -7,7 +7,7 @@ Library           OperatingSystem
 *** Test Cases ***
 Seqdiag diagram
     [tags]    seqdiag
-    New message    ValueRequest    Example    messageType:0
+    New message    ValueRequest    Example    header:messageType:0
     u32    value    0
     Client sends message
     Server receives message

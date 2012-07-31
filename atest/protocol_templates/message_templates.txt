@@ -35,13 +35,13 @@ Server uses protocol and receives
 
 Server uses protocol with header field values and receives
     Client Sends hex    0x 01 00 dddd 000c 0000 cafebabe
-    ${msg} =    Server Receives simple request with header    messageType:0xdddd
+    ${msg} =    Server Receives simple request with header    header:messageType:0xdddd
     Should be equal    ${msg.value.hex}    0xcafebabe
 
 Server uses protocol and messages arrive out of order
     Client Sends hex    0x 01 00 aaaa 000c 0000 deadbeef
     Client Sends hex    0x 01 00 dddd 000c 0000 cafebabe
-    ${msg_dddd} =    Server Receives simple request with header    messageType:0xdddd    flags:0xffff
+    ${msg_dddd} =    Server Receives simple request with header    header:messageType:0xdddd    header:flags:0xffff
     Should be equal    ${msg_dddd._header.messageType.hex}    0xdddd
 
 Message field type conversions
@@ -61,8 +61,11 @@ Field alignment
     Should be equal    ${msg.aligned_8bit_field.hex}    0xff
     Binary should equal hex    ${msg.aligned_8bit_field._raw}    0xff000000
 
-Error when giving non-ascii parameters
-    Run keyword and expect error    Only ascii characters are supported in parameters.    New message    ValueRequest    Example    messägeType:0xdddd
+Error when giving non-ascii parameters in header
+    Run keyword and expect error    Only ascii characters are supported in parameters.    New message    ValueRequest    Example    header:messägeType:0xdddd
+
+Error when giving non-ascii parameters in pdu fields
+    Run keyword and expect error    Only ascii characters are supported in parameters.    Client sends simple request    välyy:0xbebabeba
 
 Resetting message stream cache
     Client sends simple request
@@ -70,13 +73,13 @@ Resetting message stream cache
     Server receive for simple request will timeout
 
 Empty PDU
-    New message    ValueRequest    Example    messageType:0xdddd
+    New message    ValueRequest    Example    header:messageType:0xdddd
     Client sends message
     ${msg}=    Server receives message
     Should be equal     ${msg._header.messageType.hex}    0xdddd
 
 Non ascii values in chars
-    New message    ValueRequest    Example    messageType:0xdddd    flags:0xffff
+    New message    ValueRequest    Example    header:messageType:0xdddd    flags:0xffff
     Chars   *      foo
     ${binary} =    Hex to Bin       0xff00feef11616200ffee
     Value          foo          ${binary}
@@ -100,7 +103,7 @@ Server Receives simple request with header
     [Return]    ${msg}
 
 AlignedRequest
-    New message    AlignedRequest    Example    messageType:0xf000
+    New message    AlignedRequest    Example    header:messageType:0xf000
     u8    aligned_8bit_field    align=4
 
 Client sends aligned request

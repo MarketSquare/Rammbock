@@ -106,33 +106,33 @@ Decoding variable length container with dynamic length content
     should be equal as integers    ${msg.container.stringLen.int}   10
 
 Encode dynamic length string
-    New message     DynString   Example    messageType:0xaaaa
+    New message     DynString   Example    header:messageType:0xaaaa
     Dynamic string
     ${msg} =     Get message    name:test
     Should be equal as integers    ${msg.stringLen.int}    4
 
 Encoding multiplied length string
-    New message     DynString   Example     messageType:0xaaaa
+    New message     DynString   Example    header:messageType:0xaaaa
     u8      length      2
     Chars   length*2    string  a
     ${msg} =    Get message
     Should be equal     ${msg.string.hex}   0x61000000
 
 Encoding free length
-    New message    FreeLength   Example    messageType:0xaaaa
+    New message    FreeLength   Example    header:messageType:0xaaaa
     Chars    *     foo
     ${msg} =     Get message    foo:test
     Should be equal    ${msg.foo.ascii}    test
 
 Decoding free length
-    New message    FreeLength   Example    messageType:0xaaaa
+    New message    FreeLength   Example    header:messageType:0xaaaa
     Chars    *     foo
     Client sends message         foo:test
     ${msg} =     Server receives message
     Should be equal    ${msg.foo.ascii}    test
 
 Free length in struct
-    New message    FreeLength   Example    messageType:0xaaaa
+    New message    FreeLength   Example    header:messageType:0xaaaa
     u8      length
     New struct   WithLength    struct    length=length
     Chars    *     foo
@@ -145,7 +145,7 @@ Free length in struct
     Should be equal as integers   ${msg.last.int}    42
 
 Free length in tbcd
-    New message   FreeLength   Example     messageType:0xaaaa
+    New message   FreeLength   Example     header:messageType:0xaaaa
     new tbcd container    tbcd_cont
     tbcd   4    first     1234
     tbcd   *    second    5678
@@ -212,11 +212,11 @@ Populate dynamic message
 
 Message with struct
     [arguments]    ${pair values}=
-    New Message    StructRequest  Example    messageType:0xaaaa
+    New Message    StructRequest  Example    header:messageType:0xaaaa
     Pair    pair   ${pair values}
 
 Dynamic message
-    New Message    DynamicRequest  Example    messageType:0xaaaa
+    New Message    DynamicRequest  Example    header:messageType:0xaaaa
     Dynamic pair array
 
 Dynamic pair array
@@ -224,7 +224,7 @@ Dynamic pair array
     Array   numberOfPairs    Pair    pairList
 
 Complicated Dynamic message
-    New Message    DynamicRequest  Example    messageType:0xaaaa
+    New Message    DynamicRequest  Example    header:messageType:0xaaaa
     Dynamic named pair array
 
 Dynamic named pair array
@@ -237,7 +237,7 @@ Dynamic string
 
 Define variable length container
     [Arguments]    ${content}
-    New message   FooExample   Example    messageType:0xb0b0
+    New message   FooExample   Example    header:messageType:0xb0b0
     u8    length_field
     container    container    length_field     ${content}
     u16   field_after_container       0xcafe
@@ -271,7 +271,7 @@ Decode 2byte struct with given length should fail
 
 define 2byte struct
     [Arguments]     ${length}
-    New message   FooExample   Example    messageType:0xb0b0
+    New message   FooExample   Example    header:messageType:0xb0b0
     u8    length_field
     container    container    ${length}    u16    field    0x00
 
@@ -283,7 +283,7 @@ multiple fields
 
 Dynamic length fields with different parameters
     [arguments]    ${static length field value}    ${kw for dynamic content creation}    @{kw to validate outcome and params}
-    New message   FooExample  Example   messageType:0xb0b0
+    New message   FooExample  Example   header:messageType:0xb0b0
     u8    length_field    ${static length field value}
     Run keyword    ${kw for dynamic content creation}
     run keyword    @{kw to validate outcome and params}

@@ -69,7 +69,7 @@ Verify message fields
     Should be equal as integers    200    ${msg.faa.int}    
     
 ExampleMessage
-    New Message     ExampleMessage    Example    messageType:0xbabe  
+    New Message     ExampleMessage    Example    header:messageType:0xbabe  
     u16             foo       1
     u8              bar       2
     u8              faa       
@@ -80,7 +80,7 @@ Value ExampleMessage
     Value           faa      20
 
 ComplexMessage
-    New Message     ComplexMessage    Example    messageType:0xbabe
+    New Message     ComplexMessage    Example    header:messageType:0xbabe
     Product        wonker
     Product        bonker
     

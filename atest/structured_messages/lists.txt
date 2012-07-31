@@ -20,7 +20,7 @@ Message with list validation fails
     Server should fail validation with list   someList.2    someList[2]:4
 
 Message with list in list
-    New message     TwoDimensionalInts  Example    messageType:0xaaaa
+    New message     TwoDimensionalInts  Example    header:messageType:0xaaaa
     List in List
     value   *   0
     ${msg} =    Get message     multiArray[1][0]:42
@@ -65,11 +65,11 @@ Server should fail validation with list
     Run keyword and expect error     Value of field ${field}*    Server receives request with list    @{params}
 
 List message
-    New message    ListRequest    Example    messageType:0xaaaa
+    New message    ListRequest    Example    header:messageType:0xaaaa
     Array   5    u32    someList    3
 
 Message with list containing struct
-    New message    ListRequestWithStruct    Example    messageType:0xaaaa
+    New message    ListRequestWithStruct    Example    header:messageType:0xaaaa
     Array   5    Pair    someList    3
 
 Pair
@@ -87,19 +87,19 @@ Inner list
     Array       ${size}    ${type}      ${name}
 
 Client sends request containing '${len}' entries
-    New message    fooList    Example     messageType:0xaaaa
+    New message    fooList    Example     header:messageType:0xaaaa
     Array    ${len}    u32    list
     Value    *     5
     Client sends message
 
 Server receives request containing any number of entries
-    New message    fooList    Example     messageType:0xaaaa
+    New message    fooList    Example     header:messageType:0xaaaa
     Array    *    u32    list
     ${msg}=    Server receives message
     [Return]    ${msg}
 
 Server receives request containing '${number of}' entries
-    New message    fooList    Example     messageType:0xaaaa
+    New message    fooList    Example     header:messageType:0xaaaa
     Array    ${number of}    u32    list
     ${msg}=    Server receives message
     [Return]    ${msg}

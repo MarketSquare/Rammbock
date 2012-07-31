@@ -42,10 +42,10 @@ Client sends request and server receives it
     Verify server gets hex    0x 01 00 dddd 000c ffff deadbeef
 
 Simple request
-    New message    ValueRequest    Example    messageType:0xdddd    flags:0xffff
+    New message    ValueRequest    Example    header:messageType:0xdddd    header:flags:0xffff
     u32    value    0xdeadbeef
 
 Charred request
     [Arguments]    ${string_value}=
-    New message    CharredRequest    Example    messageType:0xf000
+    New message    CharredRequest    Example    header:messageType:0xf000
     chars    16    string_value      ${string_value}

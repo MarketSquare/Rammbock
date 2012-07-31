@@ -297,7 +297,7 @@ class RammbockCore(object):
             raise Exception("Protocol not defined! Please define a protocol before creating a message!")
         if self._protocol_in_progress:
             raise Exception("Protocol definition in progress. Please finish it before starting to define a message.")
-        _, header_fields, _ = self._parse_parameters(parameters)
+        _, _, header_fields = self._parse_parameters(parameters)
         self._init_new_message_stack(MessageTemplate(message_name, proto, header_fields))
 
     def save_template(self, name):
@@ -711,7 +711,7 @@ class RammbockCore(object):
         header_indexes = []
         for index, (name, value) in enumerate(fields):
             if name == 'header' and ':' in value:
-                headers.append(value.split(':', 1))
+                headers.append(self._name_and_value(':', value))
                 header_indexes.append(index)
         fields = (field for index, field in enumerate(fields)
                   if index not in header_indexes)

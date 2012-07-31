@@ -50,13 +50,13 @@ Struct containing struct
     Should be equal as integers   ${msg.structstruct.mollyMalones.closesAt.int}   4
 
 Unfinished struct fails
-    New message   ExampleMessage   Example   messageType:0xbabe
+    New message   ExampleMessage   Example   header:messageType:0xbabe
     New Struct  MyStruct  myStruct
     u8    foo
     Get message fails because 'myStruct' is not completed
 
 Pass value dict to Struct
-   New message   FooExample   Example    messageType:0xb0b0
+   New message   FooExample   Example    header:messageType:0xb0b0
    define struct    first:1    second:2
    ${msg}   Get message
    Should be equal     ${msg.fooName.first.hex}    0x01
@@ -64,7 +64,7 @@ Pass value dict to Struct
    Should be equal     ${msg.fooName.third.hex}    0xff
 
 Pass value dict to Struct but replace it in Get Message
-   New message   FooExample   Example    messageType:0xb0b0
+   New message   FooExample   Example    header:messageType:0xb0b0
    define struct    first:1    second:2
    ${msg}   Get message    fooName.second:0x22
    Should be equal     ${msg.fooName.first.hex}    0x01
@@ -114,7 +114,7 @@ Server should fail validation with struct
 
 Message with struct
     [arguments]    ${pair values}=
-    New Message    StructRequest  Example    messageType:0xaaaa
+    New Message    StructRequest  Example    header:messageType:0xaaaa
     Pair    pair   ${pair values}
 
 Pair
@@ -125,7 +125,7 @@ Pair
     End struct
 
 Message with struct in struct
-    New Message   StructStruct   Example    messageType:0xaaaa
+    New Message   StructStruct   Example    header:messageType:0xaaaa
     StructStruct   structstruct
 
 StructStruct

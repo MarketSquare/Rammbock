@@ -46,7 +46,7 @@ send and receive message with signed integer
 
 *** Keywords ***
 Create message with signed integer fields
-    new message    ExampleMessage    Example    messageType:0x00
+    new message    ExampleMessage    Example    header:messageType:0x00
     int    1    foo
     int    1    bar     -128
     int    1    zig    127
@@ -56,7 +56,7 @@ Create message with signed integer fields
     int    1    wad    0
 
 Create message with aligned signed integer fields
-    new message    ExampleMessage    Example    messageType:0x00
+    new message    ExampleMessage    Example    header:messageType:0x00
     int    2    baz    -46    align=4
     int    2    dar     32    align=4
 

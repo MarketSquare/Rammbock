@@ -44,7 +44,6 @@ Load template with header parameters and field values
     Should be equal as integers    ${msg._header.field}    10
     Should be equal as integers    ${msg.single}           42
 
-
 *** Keywords ***
 Save single and double templates
     Single valued

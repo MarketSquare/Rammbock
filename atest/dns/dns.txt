@@ -25,7 +25,7 @@ send and receive dns request
 
 *** Keywords ***
 dns answer with one domain and IPv4 answer
-    new message    name    DNS    questions:1    answer_rrs:1
+    new message    name    DNS    header:questions:1    header:answer_rrs:1
     query for google.com
     answer for google.com
 
@@ -42,7 +42,7 @@ IP Value
     Value    ${field}    ${converted}
 
 dns A query with one domain
-    new message    name    DNS    questions:1
+    new message    name    DNS    header:questions:1
     query for google.com
 
 query for google.com

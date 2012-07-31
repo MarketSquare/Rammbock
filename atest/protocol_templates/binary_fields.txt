@@ -21,7 +21,7 @@ Binary field decoding
 
 Binary fields must be aligned
     [Setup]    Define example protocol
-    New message   Foo    Example   messageType:0xdddd
+    New message   Foo    Example   header:messageType:0xdddd
     New Binary Container    flags
     Bin  2   firstTwo    0b11
     Bin  4   nextFour    0b1010
@@ -30,7 +30,7 @@ Binary fields must be aligned
 
 *** Keywords ***
 Binary Message
-    New message   Foo    Example    messageType:0xdddd
+    New message   Foo    Example    header:messageType:0xdddd
     New Binary Container    flags
     Bin  2   firstTwo    0b11
     Bin  4   nextFour    0b1010
