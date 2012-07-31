@@ -686,11 +686,16 @@ class RammbockCore(object):
     def value(self, name, value):
         """Defines a default `value` for a template field identified by `name`.
 
+        Default values for header fields can be set with header:field syntax.
+
         Examples:
         | Value | foo | 42 |
         | Value | struct.sub_field | 0xcafe |
+        | Value | header:version | 0x02 |
         """
-        if isinstance(value, _StructuredElement):
+        if name.startswith('header:'):
+            self._header_values[name.split(':', 1)[1]] = value
+        elif isinstance(value, _StructuredElement):
             self._struct_fields_as_values(name, value)
         else:
             self._field_values[name] = value

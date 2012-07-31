@@ -56,6 +56,10 @@ Validate with wild cards fails
     Value      bonker.*     1
     Validation of field fails     bonker.id    ${msg}
 
+Default values for header fields
+    Client sends     Header value ExampleMessage
+    ${msg}=     Server receives     Header value ExampleMessage
+    Should be equal    ${msg._header.reserved.hex}    0xff
 
 *** Keywords ***
 Validation of field fails
@@ -78,6 +82,10 @@ Value ExampleMessage
     ExampleMessage
     Value           bar      10
     Value           faa      20
+
+Header value ExampleMessage
+    Value ExampleMessage
+    Value           header:reserved    0xff
 
 ComplexMessage
     New Message     ComplexMessage    Example    header:messageType:0xbabe
