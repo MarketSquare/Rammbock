@@ -84,6 +84,25 @@ Get full path when validating against a pattern
     Client sends struct with struct   structstruct.mollyMalones.closesAt:4
     Run keyword and expect error    Value of field 'structstruct.mollyMalones.closesAt' does not match pattern '0x04!=(0|1|2)'    Server Receives struct with struct  structstruct.mollyMalones.closesAt:(0|1|2)
 
+Reuse struct in header fields vith value
+    [Setup]    Setup protocol with struct in header, udp server and client
+    Message with struct in header     header:receiver.board:0xcafe    header:receiver.process:0xbabe
+    ${msg}=    Get message
+    Message with struct in header
+    Value    header:receiver    ${msg._header.receiver}
+    ${msg reusing receiver}=    Get message
+    Should be equal    ${msg reusing receiver._header.receiver.board.hex}    0xcafe
+    Should be equal    ${msg reusing receiver._header.receiver.process.hex}    0xbabe
+
+Reuse struct in header fields as parameter
+    [Setup]    Setup protocol with struct in header, udp server and client
+    [Tags]
+    Message with struct in header     header:receiver.board:0xcafe    header:receiver.process:0xbabe
+    ${msg}=    Get message
+    Message with struct in header     header:receiver:${msg._header.receiver}
+    ${msg reusing receiver}=    Get message
+    Should be equal    ${msg reusing receiver._header.receiver.board.hex}    0xcafe
+    Should be equal    ${msg reusing receiver._header.receiver.process.hex}    0xbabe
 
 *** Keywords ***
 Client sends request with struct
@@ -154,3 +173,7 @@ define struct
    u8    third      0xff
    End Struct
 
+Message with struct in header
+    [Arguments]    @{params}
+    New Message    StructHeaderMessage    StructProtocol    @{params}
+    u8             field     10

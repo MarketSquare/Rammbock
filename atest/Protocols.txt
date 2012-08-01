@@ -27,6 +27,24 @@ Define simple protocol
     pdu   4
     End protocol
 
+Receiver
+    [Arguments]    ${name}
+    New Struct    Receiver    ${name}
+    u16           board
+    u16           process
+    End Struct
+
+Define protocol with struct in header
+    New protocol    StructProtocol
+    u16         length
+    Receiver    receiver
+    pdu         length-6
+    End protocol
+
+Setup protocol with struct in header, Udp server and client
+    Define protocol with struct in header
+    Setup UDP server and client    StructProtocol
+
 Setup TCP server and client  [arguments]   ${protocol}=
     Start TCP server    ${SERVER}    ${SERVER PORT}    name=ExampleServer   protocol=${protocol}
     Start TCP client    name=ExampleClient    protocol=${protocol}

@@ -693,10 +693,10 @@ class RammbockCore(object):
         | Value | struct.sub_field | 0xcafe |
         | Value | header:version | 0x02 |
         """
-        if name.startswith('header:'):
-            self._header_values[name.split(':', 1)[1]] = value
-        elif isinstance(value, _StructuredElement):
+        if isinstance(value, _StructuredElement):
             self._struct_fields_as_values(name, value)
+        elif name.startswith('header:'):
+            self._header_values[name.split(':', 1)[1]] = value
         else:
             self._field_values[name] = value
 
