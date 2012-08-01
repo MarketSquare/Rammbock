@@ -94,16 +94,6 @@ Reuse struct in header fields vith value
     Should be equal    ${msg reusing receiver._header.receiver.board.hex}    0xcafe
     Should be equal    ${msg reusing receiver._header.receiver.process.hex}    0xbabe
 
-Reuse struct in header fields as parameter
-    [Setup]    Setup protocol with struct in header, udp server and client
-    [Tags]
-    Message with struct in header     header:receiver.board:0xcafe    header:receiver.process:0xbabe
-    ${msg}=    Get message
-    Message with struct in header     header:receiver:${msg._header.receiver}
-    ${msg reusing receiver}=    Get message
-    Should be equal    ${msg reusing receiver._header.receiver.board.hex}    0xcafe
-    Should be equal    ${msg reusing receiver._header.receiver.process.hex}    0xbabe
-
 *** Keywords ***
 Client sends request with struct
     [Arguments]    @{params}
