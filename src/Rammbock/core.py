@@ -297,8 +297,13 @@ class RammbockCore(object):
             raise Exception("Protocol not defined! Please define a protocol before creating a message!")
         if self._protocol_in_progress:
             raise Exception("Protocol definition in progress. Please finish it before starting to define a message.")
-        _, _, header_fields = self._parse_parameters(parameters)
+        configs, fields, header_fields = self._parse_parameters(parameters)
+        self._raise_error_if_configs_or_fields(configs, fields, 'New message')
         self._init_new_message_stack(MessageTemplate(message_name, proto, header_fields))
+
+    def _raise_error_if_configs_or_fields(self, configs, fields, function):
+        if configs or fields:
+            raise AssertionError('Cannot set configs or pdu fields in %s' % function)
 
     def save_template(self, name):
         """Save a message template for later use with `Load template`.
@@ -313,7 +318,8 @@ class RammbockCore(object):
         Examples:
         | Load Template | MyMessage | header_field:value |
         """
-        _, _, header_fields = self._parse_parameters(parameters)
+        configs, fields, header_fields = self._parse_parameters(parameters)
+        self._raise_error_if_configs_or_fields(configs, fields, 'Load template')
         template, fields = self._message_templates[name]
         self._init_new_message_stack(template, fields, header_fields)
 
@@ -680,7 +686,6 @@ class RammbockCore(object):
     def _populate_defaults(self, fields, default_values):
         ret_val = default_values
         ret_val.update(fields)
-        default_values = {}
         return ret_val
 
     def value(self, name, value):
@@ -696,7 +701,7 @@ class RammbockCore(object):
         if isinstance(value, _StructuredElement):
             self._struct_fields_as_values(name, value)
         elif name.startswith('header:'):
-            self._header_values[name.split(':', 1)[1]] = value
+            self._header_values[name.partition(':')[-1]] = value
         else:
             self._field_values[name] = value
 

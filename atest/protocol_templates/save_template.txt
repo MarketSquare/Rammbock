@@ -37,12 +37,14 @@ Load template with header parameters does not alter the original template
     ${msg}=           Get message
     Should be equal as integers    ${msg._header.field}    16
 
-Load template with header parameters and field values
-    Save single and double templates with values
-    Load template     single       header:field:10
-    ${msg}=           Get message
-    Should be equal as integers    ${msg._header.field}    10
-    Should be equal as integers    ${msg.single}           42
+Trying to set pdu fields in Load template fails
+    Save single and double templates
+    Run keyword and expect error    Cannot set configs or pdu fields in Load template    Load template     single     single:1
+
+Trying to set pdu fields in New message fails
+    Save single and double templates
+    Run keyword and expect error    Cannot set configs or pdu fields in New message    New message     single    Example    timeout=1
+
 
 *** Keywords ***
 Save single and double templates

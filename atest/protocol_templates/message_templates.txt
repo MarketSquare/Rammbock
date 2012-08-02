@@ -79,7 +79,7 @@ Empty PDU
     Should be equal     ${msg._header.messageType.hex}    0xdddd
 
 Non ascii values in chars
-    New message    ValueRequest    Example    header:messageType:0xdddd    flags:0xffff
+    New message    ValueRequest    Example    header:messageType:0xdddd    header:flags:0xffff
     Chars   *      foo
     ${binary} =    Hex to Bin       0xff00feef11616200ffee
     Value          foo          ${binary}
