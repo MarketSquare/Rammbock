@@ -14,7 +14,6 @@
 
 from __future__ import with_statement
 from contextlib import contextmanager
-from copy import deepcopy
 from message import _StructuredElement
 from networking import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 from message_sequence import MessageSequence
@@ -309,7 +308,10 @@ class RammbockCore(object):
     def save_template(self, name):
         """Save a message template for later use with `Load template`.
         """
-        self._message_templates[name] = (self._get_message_template(), self._field_values)
+        template = self._get_message_template()
+        template.set_as_saved()
+        self._message_templates[name] = (template, self._field_values)
+
 
     def load_template(self, name, *parameters):
         """Load a message template saved with `Save template`.
@@ -322,8 +324,6 @@ class RammbockCore(object):
         configs, fields, header_fields = self._parse_parameters(parameters)
         self._raise_error_if_configs_or_fields(configs, fields, 'Load template')
         template, fields = self._message_templates[name]
-        # Ensure immutability of the stored template
-        template = deepcopy(template)
         self._init_new_message_stack(template, fields, header_fields)
 
     def get_message(self, *parameters):
@@ -527,6 +527,8 @@ class RammbockCore(object):
         self._add_field(Char(length, name, value, terminator))
 
     def _add_field(self, field):
+        if self._current_container.is_saved:
+            raise AssertionError('Adding fields to message loaded with Load template is not allowed')
         self._current_container.add(field)
 
     def new_struct(self, type, name, *parameters):

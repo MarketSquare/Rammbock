@@ -28,6 +28,7 @@ class _Template(object):
         self.parent = parent
         self._fields = OrderedDict()
         self.name = name
+        self._saved = False
 
     def _pretty_print_fields(self, fields):
         return ', '.join('%s:%s' % (key, value) for key, value in fields.items())
@@ -105,6 +106,9 @@ class _Template(object):
     def _get_struct(self, name, parent):
         return None
 
+    @property
+    def is_saved(self):
+        return self._saved
 
 #TODO: Refactor the pdu to use the same dynamic length strategy as structs in encoding
 class Protocol(_Template):
@@ -207,6 +211,9 @@ class MessageTemplate(_Template):
         validation_params = self.header_parameters.copy()
         validation_params.update(message_fields)
         return validation_params
+
+    def set_as_saved(self):
+        self._saved = True
 
     @property
     def only_header(self):
