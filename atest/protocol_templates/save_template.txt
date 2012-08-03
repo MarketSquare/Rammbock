@@ -45,8 +45,20 @@ Trying to set pdu fields in New message fails
     Save single and double templates
     Run keyword and expect error    Cannot set configs or pdu fields in New message    New message     single    Example    timeout=1
 
+Adding fields to message after loading template does not alter the original template
+    Save single and double templates
+    Load template and add a field to it
+    Verify one can load the same template and add a field with the same name again
+
 
 *** Keywords ***
+Load template and add a field to it
+    Load template     single
+    u32    added_field    0xcafebabe
+
+Verify one can load the same template and add a field with the same name again
+    Load template and add a field to it
+
 Save single and double templates
     Single valued
     Save template    single

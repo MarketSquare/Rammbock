@@ -14,6 +14,7 @@
 
 from __future__ import with_statement
 from contextlib import contextmanager
+from copy import deepcopy
 from message import _StructuredElement
 from networking import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
 from message_sequence import MessageSequence
@@ -321,6 +322,8 @@ class RammbockCore(object):
         configs, fields, header_fields = self._parse_parameters(parameters)
         self._raise_error_if_configs_or_fields(configs, fields, 'Load template')
         template, fields = self._message_templates[name]
+        # Ensure immutability of the stored template
+        template = deepcopy(template)
         self._init_new_message_stack(template, fields, header_fields)
 
     def get_message(self, *parameters):
