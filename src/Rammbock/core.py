@@ -312,7 +312,6 @@ class RammbockCore(object):
         template.set_as_saved()
         self._message_templates[name] = (template, self._field_values)
 
-
     def load_template(self, name, *parameters):
         """Load a message template saved with `Save template`.
         Optional parameters are default values for message header separated with

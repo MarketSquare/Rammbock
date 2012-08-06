@@ -110,6 +110,7 @@ class _Template(object):
     def is_saved(self):
         return self._saved
 
+
 #TODO: Refactor the pdu to use the same dynamic length strategy as structs in encoding
 class Protocol(_Template):
 
