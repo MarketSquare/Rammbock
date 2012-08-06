@@ -722,13 +722,13 @@ class RammbockCore(object):
 
     def _get_headers(self, fields):
         headers = []
-        header_indexes = []
+        indices = []
         for index, (name, value) in enumerate(fields):
             if name == 'header' and ':' in value:
                 headers.append(self._name_and_value(':', value))
-                header_indexes.append(index)
+                indices.append(index)
         fields = (field for index, field in enumerate(fields)
-                  if index not in header_indexes)
+                  if index not in indices)
         return headers, fields
 
     def _to_dict(self, *lists):
