@@ -306,6 +306,10 @@ class TCPClient(_Client, _TCPNode):
     pass
 
 
+class SCTPClient(_Client, _TCPNode):
+    pass
+
+
 class _NamedCache(object):
 
     def __init__(self, basename):

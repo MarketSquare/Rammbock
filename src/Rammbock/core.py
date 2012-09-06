@@ -15,7 +15,7 @@
 from __future__ import with_statement
 from contextlib import contextmanager
 from message import _StructuredElement
-from networking import TCPServer, TCPClient, UDPServer, UDPClient, SCTPServer, _NamedCache
+from networking import TCPServer, TCPClient, UDPServer, UDPClient, SCTPServer, SCTPClient, _NamedCache
 from message_sequence import MessageSequence
 from templates import Protocol, UInt, Int, PDU, MessageTemplate, Char, Binary, \
     StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate
@@ -166,6 +166,21 @@ class RammbockCore(object):
         | Start TCP client | timeout=5 |
         """
         self._start_client(TCPClient, ip, port, name, timeout, protocol)
+
+    def start_sctp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None):
+        """Starts a new TCP client.
+
+        Client can be optionally given `ip` and `port` to bind to, as well as
+        `name`, default `timeout` and a `protocol`. You should use `Connect`
+        keyword to connect client to a host.
+
+        Examples:
+        | Start TCP client |
+        | Start TCP client | name=Client1 | protocol=GTPV2 |
+        | Start TCP client | 10.10.10.2 | 53 | name=Server1 | protocol=GTPV2 |
+        | Start TCP client | timeout=5 |
+        """
+        self._start_client(SCTPClient, ip, port, name, timeout, protocol)
 
     def _start_client(self, client_class, ip=None, port=None, name=None, timeout=None, protocol=None):
         protocol = self._get_protocol(protocol)
