@@ -160,7 +160,7 @@ Should fail
 
 Setup SCTP server and client
     [Arguments]    ${protocol}=
-    Start STCP server    ${SERVER}    ${SERVER PORT}    name=ExampleServer    protocol=${protocol}
+    Start SCTP Server    ${SERVER}    ${SERVER PORT}    name=ExampleServer    protocol=${protocol}
     Start STCP client    name=ExampleClient    protocol=${protocol}
     connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient
     Accept connection    name=ExampleServer

@@ -15,7 +15,7 @@
 from __future__ import with_statement
 from contextlib import contextmanager
 from message import _StructuredElement
-from networking import TCPServer, TCPClient, UDPServer, UDPClient, _NamedCache
+from networking import TCPServer, TCPClient, UDPServer, UDPClient, SCTPServer, _NamedCache
 from message_sequence import MessageSequence
 from templates import Protocol, UInt, Int, PDU, MessageTemplate, Char, Binary, \
     StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate
@@ -116,6 +116,21 @@ class RammbockCore(object):
         | Start TCP server | 10.10.10.2 | 53 | timeout=5 |
         """
         self._start_server(TCPServer, ip, port, name, timeout, protocol)
+
+    def start_sctp_server(self, ip, port, name=None, timeout=None, protocol=None):
+        """Starts a new STCP server to given `ip` and `port`.
+
+        Server can be given a `name`, default `timeout` and a `protocol`.
+        Notice that you have to use `Accept Connection` keyword for server to
+        receive connections.
+
+        Examples:
+        | Start STCP server | 10.10.10.2 | 53 |
+        | Start STCP server | 10.10.10.2 | 53 | Server1 |
+        | Start STCP server | 10.10.10.2 | 53 | name=Server1 | protocol=GTPV2 |
+        | Start STCP server | 10.10.10.2 | 53 | timeout=5 |
+        """
+        self._start_server(SCTPServer, ip, port, name, timeout, protocol)
 
     def _start_server(self, server_class, ip, port, name=None, timeout=None, protocol=None):
         protocol = self._get_protocol(protocol)

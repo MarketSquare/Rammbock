@@ -16,6 +16,12 @@ import socket
 import time
 from binary_tools import to_hex
 
+try:
+    from sctp import sctpsocket_tcp
+    SCTP_ENABLED = True
+except ImportError:
+    SCTP_ENABLED = False
+
 UDP_BUFFER_SIZE = 65536
 TCP_BUFFER_SIZE = 1000000
 TCP_MAX_QUEUED_CONNECTIONS = 5
@@ -136,6 +142,17 @@ class _UDPNode(object):
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 
+class _SCTPNode(object):
+
+    _transport_layer_name = 'SCTP'
+    _size_limit = TCP_BUFFER_SIZE
+
+    def _init_socket(self):
+        if not SCTP_ENABLED:
+            raise Exception("SCTP Not enabled")
+        self._socket = sctpsocket_tcp(socket.AF_INET)
+
+
 class _Server(_NetworkNode):
 
     def __init__(self, ip, port, timeout=None):
@@ -185,7 +202,7 @@ class UDPServer(_Server, _UDPNode):
         return self._last_client
 
 
-class TCPServer(_Server, _TCPNode):
+class StreamServer(_Server, _TCPNode):
 
     def __init__(self, ip, port, timeout=None, protocol=None):
         _Server.__init__(self, ip, port, timeout)
@@ -242,6 +259,14 @@ class _TCPConnection(_NetworkNode, _TCPNode):
         self._protocol = protocol
         self._message_stream = self._get_message_stream()
         self._is_connected = True
+
+
+class SCTPServer(StreamServer, _SCTPNode):
+    pass
+
+
+class TCPServer(StreamServer, _TCPNode):
+    pass
 
 
 class _Client(_NetworkNode):
