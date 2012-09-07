@@ -149,7 +149,7 @@ class _SCTPNode(object):
 
     def _init_socket(self):
         if not SCTP_ENABLED:
-            raise Exception("SCTP Not enabled")
+            raise Exception("SCTP Not enabled. Is pysctp installed? https://github.com/philpraxis/pysctp")
         self._socket = sctpsocket_tcp(socket.AF_INET)
 
 
