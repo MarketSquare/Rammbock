@@ -168,7 +168,7 @@ class RammbockCore(object):
         self._start_client(TCPClient, ip, port, name, timeout, protocol)
 
     def start_sctp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None):
-        """Starts a new TCP client.
+        """Starts a new SCTP client.
 
         Client can be optionally given `ip` and `port` to bind to, as well as
         `name`, default `timeout` and a `protocol`. You should use `Connect`

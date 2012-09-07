@@ -202,7 +202,7 @@ class UDPServer(_Server, _UDPNode):
         return self._last_client
 
 
-class StreamServer(_Server, _TCPNode):
+class StreamServer(_Server):
 
     def __init__(self, ip, port, timeout=None, protocol=None):
         _Server.__init__(self, ip, port, timeout)
@@ -226,7 +226,7 @@ class StreamServer(_Server, _TCPNode):
         connection.send(msg)
 
     def send_to(self, *args):
-        raise Exception("TCP server cannot send to a specific address.")
+        raise Exception("Stream server cannot send to a specific address.")
 
     def close(self):
         if self._is_connected:
@@ -306,7 +306,7 @@ class TCPClient(_Client, _TCPNode):
     pass
 
 
-class SCTPClient(_Client, _TCPNode):
+class SCTPClient(_Client, _SCTPNode):
     pass
 
 
