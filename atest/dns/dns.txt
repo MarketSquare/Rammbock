@@ -30,10 +30,10 @@ Send two and receive two dns request in sequence
 *** Keywords ***
 dns answer with one domain and IPv4 answer
     new message    name    DNS    header:questions:1    header:answer_rrs:1
-    query for google.com
-    answer for google.com
+    query for example.com
+    answer for example.com
 
-answer for google.com
+answer for ${DOMAIN}
     Value    answers[0].type    1
     Value    answers[0].class    1
     Value    answers[0].time_to_live    1200
@@ -49,10 +49,10 @@ dns A query with one domain
     new message    name    DNS    header:questions:1
     query for google.com
 
-query for google.com
+query for ${DOMAIN}
     Value    transaction_id           0xbabe
     Value    flags.response           0
-    Label sequence value    queries[0].name    google.com
+    Label sequence value    queries[0].name    ${DOMAIN}
     Value    queries[0].type    0x0001
     Value    queries[0].class   0x0001
 
