@@ -74,15 +74,15 @@ class _NetworkNode(_WithTimeouts):
         return stream.get(message_template, timeout=timeout, header_filter=header_filter)
 
     def log_send(self, binary, ip, port):
-        print '*DEBUG* Send %s to %s:%s over %s' % (to_hex(binary), ip, port, self._transport_layer_name)
+        print '*DEBUG* Send %d bytes: %s to %s:%s over %s' % (len(binary), to_hex(binary), ip, port, self._transport_layer_name)
 
     def log_receive(self, binary, ip, port):
-        print "*DEBUG* Read %s from %s:%s over %s" % (to_hex(binary), ip, port, self._transport_layer_name)
+        print "*DEBUG* Trying to read %d bytes: %s from %s:%s over %s" % (len(binary), to_hex(binary), ip, port, self._transport_layer_name)
 
     def empty(self):
         result = True
         try:
-            while (result):
+            while result:
                 result = self.receive(timeout=0.0)
         except (socket.timeout, socket.error):
             pass
