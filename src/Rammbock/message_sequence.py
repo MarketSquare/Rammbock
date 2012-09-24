@@ -14,6 +14,7 @@
 from __future__ import with_statement
 import subprocess
 from ordered_dict import OrderedDict
+from robot.api import logger
 
 
 def ip_name(ip, port):
@@ -124,7 +125,7 @@ class SeqdiagGenerator(object):
     def _print_link(self, path, rc):
         if rc == 0:
             name = path + '.png'
-            print '*HTML* <a href="%s"><img src="%s"></a>' % (name, name)
+            logger.info('<a href="%s"><img src="%s"></a>' % (name, name), True)
         else:
-            print '*DEBUG* Message sequence generation with seqdiag failed. Linking sequence file instead.'
-            print '*HTML* <a href="%s">Message sequence</a>' % path
+            logger.debug('Message sequence generation with seqdiag failed. Linking sequence file instead.')
+            logger.info('<a href="%s">Message sequence</a>' % path, True)

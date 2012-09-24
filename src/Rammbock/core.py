@@ -14,6 +14,7 @@
 
 from __future__ import with_statement
 from contextlib import contextmanager
+from robot.api import logger
 from message import _StructuredElement
 from networking import TCPServer, TCPClient, UDPServer, UDPClient, SCTPServer, SCTPClient, _NamedCache
 from message_sequence import MessageSequence
@@ -371,7 +372,7 @@ class RammbockCore(object):
 
     def _encode_message(self, message_fields, header_fields):
         msg = self._get_message_template().encode(message_fields, header_fields)
-        print '*DEBUG* %s' % repr(msg)
+        logger.debug('%s' % repr(msg))
         return msg
 
     def _get_message_template(self):
@@ -491,8 +492,8 @@ class RammbockCore(object):
     def _validate_message(self, msg, message_fields):
         errors = self._get_message_template().validate(msg, message_fields)
         if errors:
-            print "Validation failed for %s" % repr(msg)
-            print '\n'.join(errors)
+            logger.info("Validation failed for %s" % repr(msg))
+            logger.info('\n'.join(errors))
             raise AssertionError(errors[0])
 
     @contextmanager
@@ -503,7 +504,7 @@ class RammbockCore(object):
         try:
             yield msg, message_fields
             self._register_receive(node, self._current_container.name, name)
-            print "*DEBUG* Received %s" % repr(msg)
+            logger.debug("Received %s" % repr(msg))
         except AssertionError, e:
             self._register_receive(node, self._current_container.name, name, error=e.args[0])
             raise e
@@ -785,6 +786,3 @@ class RammbockCore(object):
         except UnicodeError:
             raise Exception("Only ascii characters are supported in parameters.")
         return key, parameter[index + 1:].strip()
-
-    def _log_msg(self, loglevel, log_msg):
-        print '*%s* %s' % (loglevel, log_msg)

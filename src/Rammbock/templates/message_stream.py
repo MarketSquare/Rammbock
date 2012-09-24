@@ -11,6 +11,7 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+from robot.api import logger
 
 from Rammbock.binary_tools import to_bin
 
@@ -24,10 +25,10 @@ class MessageStream(object):
 
     def get(self, message_template, timeout=None, header_filter=None):
         header_fields = message_template.header_parameters
-        print "*TRACE* Get message with params %s" % header_fields
+        logger.trace("Get message with params %s" % header_fields)
         msg = self._get_from_cache(message_template, header_fields, header_filter)
         if msg:
-            print "*TRACE* Cache hit. Cache currently has %s messages" % len(self._cache)
+            logger.trace("Cache hit. Cache currently has %s messages" % len(self._cache))
             return msg
         while True:
             header, pdu_bytes = self._protocol.read(self._stream, timeout=timeout)

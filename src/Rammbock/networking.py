@@ -12,8 +12,10 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+
 import socket
 import time
+from robot.api import logger
 from binary_tools import to_hex
 
 try:
@@ -74,10 +76,10 @@ class _NetworkNode(_WithTimeouts):
         return stream.get(message_template, timeout=timeout, header_filter=header_filter)
 
     def log_send(self, binary, ip, port):
-        print '*DEBUG* Send %d bytes: %s to %s:%s over %s' % (len(binary), to_hex(binary), ip, port, self._transport_layer_name)
+        logger.debug("Send %d bytes: %s to %s:%s over %s" % (len(binary), to_hex(binary), ip, port, self._transport_layer_name))
 
     def log_receive(self, binary, ip, port):
-        print "*DEBUG* Trying to read %d bytes: %s from %s:%s over %s" % (len(binary), to_hex(binary), ip, port, self._transport_layer_name)
+        logger.debug("Trying to read %d bytes: %s from %s:%s over %s" % (len(binary), to_hex(binary), ip, port, self._transport_layer_name))
 
     def empty(self):
         result = True
@@ -330,7 +332,7 @@ class _NamedCache(object):
     def get_with_name(self, name=None):
         if not name:
             name = self._current
-            print '*DEBUG* Choosing %s by default' % self._current
+            logger.debug("Choosing %s by default" % self._current)
         return self._cache[name], name
 
     def get(self, name=None):
