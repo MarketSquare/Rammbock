@@ -119,7 +119,7 @@ class RammbockCore(object):
 
     def start_sctp_server(self, ip, port, name=None, timeout=None, protocol=None):
         """Starts a new STCP server to given `ip` and `port`.
-
+        pysctp (https://github.com/philpraxis/pysctp) need to be installed your system.
         Server can be given a `name`, default `timeout` and a `protocol`.
         Notice that you have to use `Accept Connection` keyword for server to
         receive connections.
@@ -168,7 +168,7 @@ class RammbockCore(object):
         self._start_client(TCPClient, ip, port, name, timeout, protocol)
 
     def start_sctp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None):
-        """Starts a new TCP client.
+        """Starts a new SCTP client.
 
         Client can be optionally given `ip` and `port` to bind to, as well as
         `name`, default `timeout` and a `protocol`. You should use `Connect`
