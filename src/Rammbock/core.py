@@ -573,7 +573,7 @@ class RammbockCore(object):
         then be set dynamically.
 
         Examples:
-        | Struct | Pair | myPair |
+        | New struct | Pair | myPair |
         | u8     | first |
         | u8     | second |
         | End Struct |
@@ -587,7 +587,7 @@ class RammbockCore(object):
             parameters[name + '.' + param_key] = parameters.pop(param_key)
 
     def end_struct(self):
-        """End struct definition. See `Struct`."""
+        """End struct definition. See `New Struct`."""
         struct = self._message_stack.pop()
         self._add_field(struct)
 
@@ -668,7 +668,7 @@ class RammbockCore(object):
         the length of its longest field.
 
         Example:
-        | Union | IntOrAddress | foo |
+        | New union | IntOrAddress | foo |
         | Chars | 16 | ipAddress |
         | u32   | int |
         | End union |
@@ -676,7 +676,7 @@ class RammbockCore(object):
         self._message_stack.append(UnionTemplate(type, name, self._current_container))
 
     def end_union(self):
-        """End union definition. See `Union`.
+        """End union definition. See `New Union`.
         """
         union = self._message_stack.pop()
         self._add_field(union)
