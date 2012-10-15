@@ -1,6 +1,15 @@
 Rammbock release notes
 ======================
 
+0.3.0
+-----
+
+* Signed integers
+* Support dynamic length headers
+* SCTP protocol
+* Free length lists (*)
+* Many minor fixes and improvements
+
 0.2.1
 -----
 
