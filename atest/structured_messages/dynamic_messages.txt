@@ -179,6 +179,11 @@ Reuse struct value from another message
     ${pair msg} =    Get message
     Should be equal    ${pair msg.pair.first.hex}   0x01
 
+Overriding array fields which have value set with [*]
+    [Tags]
+    Populate dynamic message with value [*] all set to '0xff'
+    ${dynamic message}=    Get message    pairList[3].first:0x00        numberOfPairs:4
+    Should be equal    ${dynamic message.pairList[3].first.hex}   0x00
 
 *** Keywords ***
 Named Pair
@@ -209,6 +214,11 @@ Populate dynamic message
     value   pairList[0].second   ${0 second}
     value   pairList[1].first   ${1 first}
     value   pairList[1].second   ${1 second}
+
+Populate dynamic message with value [*] all set to '${value}'
+    Dynamic Message
+    value   pairList[*].first     ${value}
+    value   pairList[*].second    ${value}
 
 Message with struct
     [arguments]    ${pair values}=
