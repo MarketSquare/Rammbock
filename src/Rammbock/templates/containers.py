@@ -385,7 +385,7 @@ class ListTemplate(_Template):
 
     def _get_params_sub_tree(self, params, name=None):
         # TODO: Test for * syntax in array subfields
-        result = {'*': params['*']} if '*' in params else {}
+        result = OrderedDict({'*': params['*']} if '*' in params else {})
         name = name or self.name
         for key in params.keys():
             match = self.param_pattern.match(key)

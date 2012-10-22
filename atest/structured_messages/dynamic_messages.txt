@@ -180,7 +180,6 @@ Reuse struct value from another message
     Should be equal    ${pair msg.pair.first.hex}   0x01
 
 Overriding array fields which have value set with [*]
-    [Tags]
     Populate dynamic message with value [*] all set to '0xff'
     ${dynamic message}=    Get message    pairList[3].first:0x00        numberOfPairs:4
     Should be equal    ${dynamic message.pairList[3].first.hex}   0x00
