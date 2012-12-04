@@ -184,6 +184,16 @@ Overriding array fields which have value set with [*]
     ${dynamic message}=    Get message    pairList[3].first:0x00        numberOfPairs:4
     Should be equal    ${dynamic message.pairList[3].first.hex}   0x00
 
+Reuse dynamic array in another message
+    [Tags]
+    ${msg1}=    Get dynamic message with list
+    Dynamic message
+    Value    numberOfPairs    ${msg1.numberOfPairs}
+    Value    pairList         ${msg1.pairList}
+    ${msg2}=    Get message
+    Should be equal as integers     ${msg1.pairList[0].first}
+    ...                             ${msg2.pairList[0].first}
+
 *** Keywords ***
 Named Pair
     [arguments]     ${name}=     ${value}=
@@ -304,3 +314,9 @@ get message and validate length field
     [arguments]       ${value}    ${valid length}    @{args for get msg}
     ${msg}=   get message    name:${value}    @{args for get msg}
     should be equal as integers    ${msg.length_field.int}    ${valid length}
+
+Get dynamic message with list
+    Populate dynamic message    2    1   2   3   4
+    ${msg}=    Get message
+    [Return]    ${msg}
+    
