@@ -180,6 +180,12 @@ class MessageTemplate(_Template):
         self.header_parameters = header_params
         self.length = protocol.pdu_length
 
+    def decode(self, data, parent=None, name=None, little_endian=False):
+        msg = _Template.decode(self, data, parent, name, little_endian)
+        if len(msg) < len(data):
+            raise AssertionError('Receiving %s failed, message too long' % self.name)
+        return msg
+
     def encode(self, message_params, header_params, little_endian=False):
         message_params = message_params.copy()
         if self.only_header:

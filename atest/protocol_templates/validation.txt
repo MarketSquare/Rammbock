@@ -71,6 +71,10 @@ Validate fails when trying to validate nonexistent field
     ${msg}=    Server receives without validation
     Validation fails    ${msg}    Unknown fields in 'ValueRequest': foo:0xfeedd00d    foo:0xfeedd00d
 
+Receiving should fail if message too long
+    Client sends long request
+    Server expects shorter request
+    Receiving message fails because there is extra data
 
 *** Keywords ***
 Named client sends simple request
@@ -89,3 +93,11 @@ Server Receives simple request from named connection
 Validation fails
     [Arguments]    ${msg}    ${error}    @{parameters}
     Run keyword and expect error    ${error}    Validate message    ${msg}    @{parameters}
+
+Server expects shorter request
+    New message    shorter message    Example
+    u32    value    0xdeadbeef
+
+Receiving message fails because there is extra data
+    Run keyword and expect error    Receiving shorter message failed, message too long
+    ...    Server receives message
