@@ -335,7 +335,7 @@ class UnionTemplate(_Template):
 #TODO: list field could be overriden
 class ListTemplate(_Template):
 
-    param_pattern = re.compile(r'(.*?)\[(.*?)\](.*)')
+    param_pattern = re.compile(r'([^.]*?)\[(.*?)\](.*)')
     has_length = True
     type = 'List'
 
@@ -390,15 +390,22 @@ class ListTemplate(_Template):
         return errors
 
     def _get_params_sub_tree(self, params, name=None):
-        # TODO: Test for * syntax in array subfields
         result = OrderedDict({'*': params['*']} if '*' in params else {})
         name = name or self.name
         for key in params.keys():
             match = self.param_pattern.match(key)
             if match:
                 prefix, child_name, ending = match.groups()
-                if prefix == name or prefix == '*':
+                if prefix == name:
                     result[child_name + ending] = params.pop(key)
+                elif prefix == '*':
+                    result[child_name + ending] = params[key]
+            else:
+                prefix, _, ending = key.partition('.')
+                if prefix == name:
+                    result[ending] = params.pop(key)
+                elif prefix == '*' and ending:
+                    result[ending] = params[key]
         return result
 
 

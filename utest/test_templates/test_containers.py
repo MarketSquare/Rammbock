@@ -11,6 +11,13 @@ def _get_empty_pair(name='pair'):
     return struct
 
 
+def _get_struct_with_two_lists(name='pair'):
+    struct = StructTemplate('PairOfLists', name, parent=None)
+    struct.add(_get_list_of_three('first_list', None))
+    struct.add(_get_list_of_three('second_list', None))
+    return struct
+
+
 def _get_empty_recursive_struct():
     str_str = StructTemplate('StructStruct', '3pairs', parent=None)
     pair1 = _get_empty_pair('pair1')
@@ -36,9 +43,9 @@ def _get_recursive_struct():
     return str_str
 
 
-def _get_list_of_three():
-    list = ListTemplate(3, 'topthree', parent=None)
-    list.add(UInt(2, None, 1))
+def _get_list_of_three(name='topthree', value=1):
+    list = ListTemplate(3, name, parent=None)
+    list.add(UInt(2, None, value))
     return list
 
 
@@ -277,6 +284,28 @@ class TestListTemplate(TestCase):
         self.assertEquals(params['0'], 1)
         self.assertEquals(params['4[0]'], 4)
         self.assertEquals(len(params), 2)
+
+    def test_parse_params_with_dot(self):
+        list = _get_list_of_three()
+        params = list._get_params_sub_tree({'topthree.0': 1, 'foo': 2, 'topthree.4.0': 4})
+        self.assertEquals(params['0'], 1)
+        self.assertEquals(params['4.0'], 4)
+        self.assertEquals(len(params), 2)
+
+    def test_parse_params_with_dots_and_brackets(self):
+        list = _get_list_of_three()
+        params = list._get_params_sub_tree({'topthree.0': 1, 'foo': 2, 'topthree.4[0]': 4})
+        self.assertEquals(params['0'], 1)
+        self.assertEquals(params['4[0]'], 4)
+        self.assertEquals(len(params), 2)
+
+    def test_set_list_values_with_defaults(self):
+        pair_of_lists = _get_struct_with_two_lists()
+        encoded = pair_of_lists.encode({'pair.*': 2, 'pair.*[0]': 42})
+        self.assertEquals(encoded.first_list[1].int, 2)
+        self.assertEquals(encoded.second_list[1].int, 2)
+        self.assertEquals(encoded.first_list[0].int, 42)
+        self.assertEquals(encoded.second_list[0].int, 42)
 
     def test_pretty_print(self):
         encoded = _get_struct_list().encode({}, None)
