@@ -393,20 +393,25 @@ class ListTemplate(_Template):
         result = OrderedDict({'*': params['*']} if '*' in params else {})
         name = name or self.name
         for key in params.keys():
-            match = self.param_pattern.match(key)
-            if match:
-                prefix, child_name, ending = match.groups()
-                if prefix == name:
-                    result[child_name + ending] = params.pop(key)
-                elif prefix == '*':
-                    result[child_name + ending] = params[key]
-            else:
-                prefix, _, ending = key.partition('.')
-                if prefix == name:
-                    result[ending] = params.pop(key)
-                elif prefix == '*' and ending:
-                    result[ending] = params[key]
+            self._consume_params_with_brackets(name, params, result, key)
+            self._consume_dot_syntax(name, params, result, key)
         return result
+
+    def _consume_params_with_brackets(self, name, params, result, key):
+        match = self.param_pattern.match(key)
+        if match:
+            prefix, child_name, ending = match.groups()
+            if prefix == name:
+                result[child_name + ending] = params.pop(key)
+            elif prefix == '*':
+                result[child_name + ending] = params[key]
+
+    def _consume_dot_syntax(self, name, params, result, key):
+        prefix, _, ending = key.partition('.')
+        if prefix == name:
+            result[ending] = params.pop(key)
+        elif prefix == '*' and ending:
+            result[ending] = params[key]
 
 
 class BinaryContainerTemplate(_Template):
