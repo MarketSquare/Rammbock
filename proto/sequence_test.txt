@@ -1,5 +1,64 @@
+*** Settings ***
+Test Setup        Setup protocol, UDP server, and client
+Test teardown     Teardown rammbock and increment port numbers
+Resource          ../atest/Protocols.txt
+Default tags      Regression
+
+*** Variables ***
+${HEADER} =    0x0100aaaa000f0000
+
+*** Test Cases ***
+Example sequence
+    Client sends request with struct     pair.first:0xba   pair.second:0xbe
+    ${request}=    Server receives request with struct
+    Server sends sum response     ${request.pair}
+    ${response}=   Client receives message
+    Should be equal as integers    0    ${response.status}
+    Should be equal as integers    376   ${response.sum}
 
 
-*** Test cases ***
-See if we fail as expected
-    Fail   Jihaa
+*** Keywords ***
+Setup protocol, UDP server, and client
+    Define example protocol
+    Setup UDP server and client    protocol=Example
+    
+Setup UDP server and client
+    [Arguments]    ${protocol}=
+    Start udp server    ${SERVER}    ${SERVER PORT}    name=ExampleServer    protocol=${protocol}    timeout=1
+    Start udp client    name=ExampleClient    protocol=${protocol}    timeout=1
+    connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient
+
+Client sends request with struct
+    [Arguments]    @{params}
+    Message with struct
+    Client sends message   @{params}
+
+Message with struct
+    [arguments]    ${pair values}=
+    New Message    StructRequest     Example    header:messageType:0xaaaa
+    Pair    pair   ${pair values}
+
+Pair
+    [arguments]     ${name}=     ${value}=
+    New Struct    Pair    ${name}
+    u8    first       ${value}
+    u8    second      ${value}
+    End struct
+    
+Server receives request with struct
+    [Arguments]    @{params}
+    Message with struct
+    ${msg} =    Server Receives message    @{params}
+    [return]    ${msg}
+
+Server sends sum response
+    [Arguments]     ${pair}
+    ${sum}=   Evaluate    ${pair.first}+${pair.second}
+    Sum message
+    Server sends message    status:0    sum:${sum}
+    
+Sum message
+    New Message    SumMessage     Example    header:messageType:0xbbbb
+    u8     status
+    u32    sum
+    
