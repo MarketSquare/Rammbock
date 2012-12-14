@@ -1,0 +1,5 @@
+
+
+*** Test cases ***
+See if we fail as expected
+    Fail   Jihaa
