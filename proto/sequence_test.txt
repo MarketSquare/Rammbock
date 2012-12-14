@@ -11,7 +11,7 @@ ${HEADER} =    0x0100aaaa000f0000
 Example sequence
     Client sends request with struct     pair.first:0xba   pair.second:0xbe
     ${request}=    Server receives request with struct
-    Server sends sum response     ${request.pair}
+    Calculate and send sum response     ${request.pair}
     ${response}=   Client receives message
     Should be equal as integers    0    ${response.status}
     Should be equal as integers    376   ${response.sum}
@@ -51,9 +51,13 @@ Server receives request with struct
     ${msg} =    Server Receives message    @{params}
     [return]    ${msg}
 
-Server sends sum response
+Calculate and send sum response
     [Arguments]     ${pair}
     ${sum}=   Evaluate    ${pair.first}+${pair.second}
+    Server sends sum response    ${sum}
+
+Server sends sum response
+    [Arguments]     ${sum}
     Sum message
     Server sends message    status:0    sum:${sum}
     

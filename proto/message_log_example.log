@@ -1,0 +1,58 @@
+Example sequence.
+Client sends request with struct.
+Rammbock.Client Sends Message
+---->>>
+Message StructRequest
+  Header Example
+    version = 1 (0x01)
+    reserved = 0 (0x00)
+    messageType = 43690 (0xaaaa)
+    length = 10 (0x000a)
+    flags = 0 (0x0000)
+  Pair pair
+    first = 186 (0xba)
+    second = 190 (0xbe)
+--------------------------------------
+Example sequence.
+Server receives request with struct.
+Rammbock.Server Receives Message
+<<<----
+Message StructRequest
+  Header Example
+    version = 1 (0x01)
+    reserved = 0 (0x00)
+    messageType = 43690 (0xaaaa)
+    length = 10 (0x000a)
+    flags = 0 (0x0000)
+  Pair pair
+    first = 186 (0xba)
+    second = 190 (0xbe)
+--------------------------------------
+Example sequence.
+Calculate and send sum response.
+Server sends sum response.
+Rammbock.Server Sends Message
+---->>>
+Message SumMessage
+  Header Example
+    version = 1 (0x01)
+    reserved = 0 (0x00)
+    messageType = 48059 (0xbbbb)
+    length = 13 (0x000d)
+    flags = 0 (0x0000)
+  status = 0 (0x00)
+  sum = 376 (0x00000178)
+--------------------------------------
+Example sequence.
+Rammbock.Client receives message
+<<<----
+Message SumMessage
+  Header Example
+    version = 1 (0x01)
+    reserved = 0 (0x00)
+    messageType = 48059 (0xbbbb)
+    length = 13 (0x000d)
+    flags = 0 (0x0000)
+  status = 0 (0x00)
+  sum = 376 (0x00000178)
+--------------------------------------
