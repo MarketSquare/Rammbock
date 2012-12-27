@@ -1,5 +1,7 @@
 Generic network protocol test library for Robot Framework, which offers easy way to specify network packets and inspect the results of sent / received packets. Library offers Domain Specific Language for packet specification.
 
+Downloads are available at https://github.com/robotframework/Rammbock/downloads
+
 1. Installation instructions:
 
 1.1 Precondiditons
