@@ -114,9 +114,10 @@ class _Template(object):
 #TODO: Refactor the pdu to use the same dynamic length strategy as structs in encoding
 class Protocol(_Template):
 
-    def __init__(self, name):
+    def __init__(self, name, little_endian=False):
         _Template.__init__(self, name, None)
         self.pdu = None
+        self.little_endian = little_endian
 
     def header_length(self):
         try:
@@ -124,10 +125,10 @@ class Protocol(_Template):
         except IndexError:
             return -1
 
-    def encode(self, message, header_params, little_endian=False):
+    def encode(self, message, header_params):
         header_params = header_params.copy()
         header = Header(self.name)
-        self._encode_fields(header, header_params, little_endian=little_endian)
+        self._encode_fields(header, header_params, little_endian=self.little_endian)
         return header
 
     def _handle_pdu_field(self, field):
@@ -149,7 +150,7 @@ class Protocol(_Template):
         data_index = 0
         for field in values:
             if field is not self.pdu:
-                header[field.name] = field.decode(data[data_index:], header)
+                header[field.name] = field.decode(data[data_index:], header, little_endian=self.little_endian)
                 data_index += len(header[field.name])
         return data[data_index:]
 

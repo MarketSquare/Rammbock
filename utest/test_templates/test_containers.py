@@ -2,6 +2,8 @@ from unittest import TestCase, main
 from Rammbock.templates.containers import Protocol, MessageTemplate, StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate, TBCDContainerTemplate
 from Rammbock.templates.primitives import UInt, PDU, Char, Binary, TBCD
 from Rammbock.binary_tools import to_bin_of_length, to_bin
+from tools import _MockStream
+from Rammbock.templates.message_stream import MessageStream
 
 
 def _get_empty_pair(name='pair'):
@@ -782,6 +784,34 @@ class TestLittleEndian(TestCase):
         self.assertEquals(encoded[0].first._raw, to_bin('0x0100'))
         self.assertEquals(encoded[0].second.hex, '0x0002')
         self.assertEquals(encoded[0].second._raw, to_bin('0x0200'))
+
+
+class TestLittleEndianProtocol(TestCase):
+
+    def setUp(self):
+        self._protocol = Protocol('TestProtocol', little_endian=True)
+        self._protocol.add(UInt(2, 'msgId', 5))
+        self._protocol.add(UInt(2, 'length', None))
+        self._protocol.add(PDU('length-4'))
+        self.tmp = MessageTemplate('FooRequest', self._protocol, {})
+        self.tmp.add(UInt(2, 'field_1', '0xcafe'))
+        self.tmp.add(UInt(2, 'field_2', '0xbabe'))
+
+    def test_encode_little_endian_header(self):
+        encoded = self.tmp.encode({}, {})
+        self.assertEquals(encoded._header.msgId.hex, '0x0005')
+        self.assertEquals(encoded._header.msgId._raw, to_bin('0x0500'))
+
+    def test_decode_little_endian_header(self):
+        byte_stream = _MockStream(to_bin('0x0500 0800 cafe babe'))
+        self._msg_stream = MessageStream(byte_stream, self._protocol)
+        decoded = self._msg_stream.get(self.tmp)
+        self.assertEquals(decoded._header.msgId.hex, '0x0005')
+        self.assertEquals(decoded._header.msgId._raw, to_bin('0x0500'))
+        self.assertEquals(decoded.field_1.hex, '0xcafe')
+        self.assertEquals(decoded.field_1._raw, to_bin('0xcafe'))
+        self.assertEquals(decoded.field_2.hex, '0xbabe')
+        self.assertEquals(decoded.field_2._raw, to_bin('0xbabe'))
 
 
 if __name__ == '__main__':
