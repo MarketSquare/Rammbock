@@ -129,6 +129,8 @@ class Protocol(_Template):
         header_params = header_params.copy()
         header = Header(self.name)
         self._encode_fields(header, header_params, little_endian=self.little_endian)
+        if not isinstance(self.pdu_length, (int, long)):
+            self.pdu_length.find_length_and_set_if_necessary(header, len(message._raw), little_endian=self.little_endian)
         return header
 
     def _handle_pdu_field(self, field):
@@ -179,7 +181,6 @@ class MessageTemplate(_Template):
         _Template.__init__(self, message_name, None)
         self._protocol = protocol
         self.header_parameters = header_params
-        self.length = protocol.pdu_length
 
     def decode(self, data, parent=None, name=None, little_endian=False):
         msg = _Template.decode(self, data, parent, name, little_endian)
@@ -195,9 +196,7 @@ class MessageTemplate(_Template):
         msg = Message(self.name)
         self._encode_fields(msg, message_params, little_endian=little_endian)
         if self._protocol:
-            # TODO: little endian support for protocol header
             header = self._protocol.encode(msg, self._headers(header_params))
-            self.length.find_length_and_set_if_necessary(header, len(msg._raw))
             msg._add_header(header)
         return msg
 

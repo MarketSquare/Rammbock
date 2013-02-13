@@ -800,7 +800,9 @@ class TestLittleEndianProtocol(TestCase):
     def test_encode_little_endian_header(self):
         encoded = self.tmp.encode({}, {})
         self.assertEquals(encoded._header.msgId.hex, '0x0005')
+        self.assertEquals(encoded._header.length.hex, '0x0008')
         self.assertEquals(encoded._header.msgId._raw, to_bin('0x0500'))
+        self.assertEquals(encoded._header.length._raw, to_bin('0x0800'))
 
     def test_decode_little_endian_header(self):
         byte_stream = _MockStream(to_bin('0x0500 0800 cafe babe'))
