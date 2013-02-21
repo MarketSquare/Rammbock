@@ -15,11 +15,12 @@
 from math import ceil
 import re
 
-from Rammbock.message import Field, Union, Message, Header, List, Struct, BinaryContainer, BinaryField, TBCDContainer
+from Rammbock.message import Field, Union, Message, Header, List, Struct, BinaryContainer, BinaryField, TBCDContainer, Conditional
 from message_stream import MessageStream
 from primitives import Length, Binary, TBCD
 from Rammbock.ordered_dict import OrderedDict
 from Rammbock.binary_tools import to_binary_string_of_length, to_bin, to_tbcd_value, to_tbcd_binary
+from Rammbock.condition_parser import ConditionParser
 
 
 class _Template(object):
@@ -520,3 +521,40 @@ class TBCDContainerTemplate(_Template):
         tbcd = TBCDContainer(name or self.name)
         tbcd._parent = parent
         return tbcd
+
+
+class ConditionalTemplate(_Template):
+
+    has_length = False
+    type = 'Conditional'
+
+    def __init__(self, condition, name, parent):
+        self.condition = ConditionParser(condition)
+        _Template.__init__(self, name, parent)
+
+    def encode(self, message_params, parent=None, name=None, little_endian=False):
+        conditional = self._get_struct(name, parent)
+        if conditional.exists:
+            self._encode_fields(conditional,
+                                self._get_params_sub_tree(message_params, name),
+                                little_endian=little_endian)
+        return conditional
+
+    def decode(self, data, parent=None, name=None, little_endian=False):
+        if self.condition.evaluate(parent):
+            return _Template.decode(self, data, parent, name, little_endian)
+        else:
+            return self._get_struct(name, parent)
+
+    def validate(self, parent, message_fields, name=None):
+        name = name or self.name
+        message = parent[name]
+        if message.exists:
+            return _Template.validate(self, message, self._get_params_sub_tree(message_fields, name))
+        return []
+
+    def _get_struct(self, name, parent):
+        conditional = Conditional(name or self.name)
+        conditional._parent = parent
+        conditional.exists = self.condition.evaluate(parent)
+        return conditional

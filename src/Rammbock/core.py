@@ -18,11 +18,9 @@ from robot.api import logger
 from message import _StructuredElement
 from networking import TCPServer, TCPClient, UDPServer, UDPClient, SCTPServer, SCTPClient, _NamedCache
 from message_sequence import MessageSequence
-from templates import Protocol, UInt, Int, PDU, MessageTemplate, Char, Binary, \
-    StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate
+from templates import Protocol, UInt, Int, PDU, MessageTemplate, Char, Binary, TBCD, \
+    StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate, ConditionalTemplate, TBCDContainerTemplate
 from binary_tools import to_0xhex, to_bin
-from templates.containers import TBCDContainerTemplate
-from templates.primitives import TBCD
 
 
 class RammbockCore(object):
@@ -786,3 +784,19 @@ class RammbockCore(object):
         except UnicodeError:
             raise Exception("Only ascii characters are supported in parameters.")
         return key, parameter[index + 1:].strip()
+
+    def conditional(self, condition, name):
+        """Defines a 'condition' when conditional element of 'name' exists if `condition` is true.
+
+        Example:
+        | Conditional | mycondition == 1 | foo |
+        | u8   | myelement | 42 |
+        | End conditional |
+        """
+        self._message_stack.append(ConditionalTemplate(condition, name, self._current_container))
+
+    def end_conditional(self):
+        """End conditional definition. See `Conditional`.
+        """
+        conditional = self._message_stack.pop()
+        self._add_field(conditional)

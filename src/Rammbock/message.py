@@ -152,6 +152,17 @@ class TBCDContainer(BinaryContainer):
         return int(ceil(sum(len(field.tbcd) for field in self._fields.values()) / 2.0))
 
 
+class Conditional(_StructuredElement):
+
+    _type = 'Conditional'
+
+    def __init__(self, name, exists=False):
+        self._name = name
+        self.exists = exists
+        self._fields = OrderedDict()
+        self._parent = None
+
+
 class Message(_StructuredElement):
 
     _type = 'Message'
