@@ -130,7 +130,7 @@ class Protocol(_Template):
         header_params = header_params.copy()
         header = Header(self.name)
         self._encode_fields(header, header_params, little_endian=self.little_endian)
-        if not isinstance(self.pdu_length, (int, long)):
+        if self.pdu_length:
             self.pdu_length.find_length_and_set_if_necessary(header, len(message._raw), little_endian=self.little_endian)
         return header
 
@@ -141,7 +141,7 @@ class Protocol(_Template):
 
     @property
     def pdu_length(self):
-        return self.pdu.length if self.pdu else 0
+        return self.pdu.length if self.pdu else None
 
     def add(self, field):
         if self.pdu:

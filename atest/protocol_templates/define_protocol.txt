@@ -59,6 +59,17 @@ Protocol without PDU
     ${msg}  Get message     field:4
     Should be equal as integers     ${msg.field}    4
 
+Protocol without PDU and dynamic length
+    New protocol   noPDUDymagic
+    u16  length
+    u16  id     16
+    Chars  length - 4   text
+    End protocol
+    New message    message   protocol=noPDUDymagic
+    ${msg}    Get message    text:hello
+    Should be equal as integers     ${msg.length}        9
+    Should be equal as integers     ${msg.text.len}      5
+
 Send and receive protocol without PDU
     New Protocol   NoPDU
     u8  field  16

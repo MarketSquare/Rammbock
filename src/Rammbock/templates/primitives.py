@@ -350,7 +350,7 @@ class _DynamicLength(_Length):
 
     def _set_length(self, reference, min_length, little_endian=False):
         value_len, aligned_len = self._get_aligned_lengths(min_length)
-        reference._parent[self.field] = self._encode_ref_length(aligned_len,
+        reference._parent[self.field] = self._encode_ref_length(self.solve_parameter(aligned_len),
                                                                 reference,
                                                                 little_endian=little_endian)
         return value_len, aligned_len
@@ -360,12 +360,11 @@ class _DynamicLength(_Length):
                                          reference._parent, little_endian=little_endian)
 
     def find_length_and_set_if_necessary(self, parent, min_length, little_endian=False):
-        min_value_for_reference = self.solve_parameter(min_length)
         reference = self._find_reference(parent)
         if self._has_been_set(reference):
-            self._raise_error_if_not_enough_space(reference, min_value_for_reference)
+            self._raise_error_if_not_enough_space(reference, self.solve_parameter(min_length))
             return self._get_aligned_lengths(self.calc_value(reference.int))
-        return self._set_length(reference, min_value_for_reference, little_endian=little_endian)
+        return self._set_length(reference, min_length, little_endian=little_endian)
 
     def _raise_error_if_not_enough_space(self, reference, min_length):
         if reference.int < min_length:
