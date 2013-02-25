@@ -152,7 +152,7 @@ Increment ports
 Increment port
     [Arguments]    ${name}
     ${new} =    Evaluate    ${${name}}+2
-    Set suite variable    ${${name}}    ${new}
+    Set global variable    ${${name}}    ${new}
 
 Should fail
     [Arguments]    @{args}
