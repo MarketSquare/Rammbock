@@ -3,6 +3,7 @@ from Rammbock.templates.primitives import UInt, PDU
 from Rammbock.binary_tools import to_bin
 from tools import *
 
+
 class TestConditional(TestCase):
 
     def _get_conditional(self):
