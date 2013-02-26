@@ -2,67 +2,7 @@ from unittest import TestCase, main
 from Rammbock.templates.containers import Protocol, MessageTemplate, StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate, TBCDContainerTemplate, ConditionalTemplate
 from Rammbock.templates.primitives import UInt, PDU, Char, Binary, TBCD
 from Rammbock.binary_tools import to_bin_of_length, to_bin
-from tools import _MockStream
-from Rammbock.templates.message_stream import MessageStream
-
-
-def _get_empty_pair(name='pair'):
-    struct = StructTemplate('Pair', name, parent=None)
-    struct.add(UInt(2, 'first', None))
-    struct.add(UInt(2, 'second', None))
-    return struct
-
-
-def _get_struct_with_two_lists(name='pair'):
-    struct = StructTemplate('PairOfLists', name, parent=None)
-    struct.add(_get_list_of_three('first_list', None))
-    struct.add(_get_list_of_three('second_list', None))
-    return struct
-
-
-def _get_empty_recursive_struct():
-    str_str = StructTemplate('StructStruct', '3pairs', parent=None)
-    pair1 = _get_empty_pair('pair1')
-    pair2 = _get_empty_pair('pair2')
-    pair3 = _get_empty_pair('pair3')
-    str_str.add(pair1)
-    str_str.add(pair2)
-    str_str.add(pair3)
-    return str_str
-
-
-def _get_pair():
-    struct = StructTemplate('Pair', 'pair', parent=None)
-    struct.add(UInt(2, 'first', 1))
-    struct.add(UInt(2, 'second', 2))
-    return struct
-
-
-def _get_recursive_struct():
-    str_str = StructTemplate('StructStruct', 'str_str', parent=None)
-    inner = _get_pair()
-    str_str.add(inner)
-    return str_str
-
-
-def _get_list_of_three(name='topthree', value=1):
-    list = ListTemplate(3, name, parent=None)
-    list.add(UInt(2, None, value))
-    return list
-
-
-def _get_list_list():
-    innerList = ListTemplate(2, None, parent=None)
-    innerList.add(UInt(2, None, 7))
-    outerList = ListTemplate('2', 'listlist', parent=None)
-    outerList.add(innerList)
-    return outerList
-
-
-def _get_struct_list():
-    list = ListTemplate(2, 'liststruct', parent=None)
-    list.add(_get_pair())
-    return list
+from tools import *
 
 
 class _WithValidation(object):
@@ -175,55 +115,55 @@ class TestStructuredTemplate(TestCase):
         self._protocol.add(UInt(2, 'length', None))
         self._protocol.add(PDU('length-4'))
         self.tmp = MessageTemplate('StructuredRequest', self._protocol, {})
-        struct = _get_pair()
+        struct = get_pair()
         self.tmp.add(struct)
         msg = self.tmp.encode({}, {})
         self.assertEquals(msg.pair.first.int, 1)
 
     def test_create_struct(self):
-        struct = _get_pair()
+        struct = get_pair()
         self.assertEquals(struct.name, 'pair')
 
     def test_add_fields_to_struct(self):
-        struct = _get_pair()
+        struct = get_pair()
         encoded = struct.encode({}, {})
         self.assertEquals(encoded.first.int, 1)
 
     def test_add_fields_to_struct_and_override_values(self):
-        struct = _get_pair()
+        struct = get_pair()
         encoded = struct.encode({'pair.first': 42}, {})
         self.assertEquals(encoded.first.int, 42)
 
     def test_yo_dawg_i_heard(self):
-        str_str = _get_recursive_struct()
+        str_str = get_recursive_struct()
         encoded = str_str.encode({}, {})
         self.assertEquals(encoded.pair.first.int, 1)
 
     def test_get_recursive_names(self):
-        pair = _get_pair()
+        pair = get_pair()
         names = pair._get_params_sub_tree({'pair.foo': 0, 'pairnotyourname.ploo': 2, 'pair.goo.doo': 3})
         self.assertEquals(len(names), 2)
         self.assertEquals(names['foo'], 0)
         self.assertEquals(names['goo.doo'], 3)
 
     def test_set_recursive(self):
-        str_str = _get_recursive_struct()
+        str_str = get_recursive_struct()
         encoded = str_str.encode({'str_str.pair.first': 42}, {})
         self.assertEquals(encoded.pair.first.int, 42)
 
     def test_decode_several_structs(self):
-        str_list = _get_struct_list()
+        str_list = get_struct_list()
         decoded = str_list.decode(to_bin('0xcafebabe d00df00d'), {})
         self.assertEquals(decoded[0].first.hex, '0xcafe')
         self.assertEquals(decoded[1].second.hex, '0xf00d')
 
     def test_length_of_struct(self):
-        pair = _get_pair()
+        pair = get_pair()
         encoded = pair.encode({}, {})
         self.assertEquals(len(encoded), 4)
 
     def test_decode_struct(self):
-        pair = _get_pair()
+        pair = get_pair()
         decoded = pair.decode(to_bin('0xcafebabe'), {})
         self.assertEquals(decoded.first.hex, '0xcafe')
         self.assertEquals(decoded.second.hex, '0xbabe')
@@ -232,12 +172,12 @@ class TestStructuredTemplate(TestCase):
 class TestDefaultValues(TestCase):
 
     def test_default_values(self):
-        pair = _get_empty_pair()
+        pair = get_empty_pair()
         encoded = pair.encode({'pair.*': '5'})
         self.assertEquals(encoded.first.int, 5)
 
     def test_sub_default_values(self):
-        pairs = _get_empty_recursive_struct()
+        pairs = get_empty_recursive_struct()
         encoded = pairs.encode({'*': '1', '3pairs.pair2.*': '2', '3pairs.pair3.*': '3'})
         self.assertEquals(encoded.pair1.first.int, 1)
         self.assertEquals(encoded.pair2.first.int, 2)
@@ -247,26 +187,26 @@ class TestDefaultValues(TestCase):
 class TestListTemplate(TestCase):
 
     def test_create_list(self):
-        list = _get_list_of_three()
+        list = get_list_of_three()
         self.assertEquals(list.name, 'topthree')
         self.assertEquals(list.encode({}, None)[0].int, 1)
         self.assertEquals(list.encode({}, None)[2].int, 1)
 
     def test_create_list_with_setting_value(self):
-        list = _get_list_of_three()
+        list = get_list_of_three()
         encoded = list.encode({'topthree[0]': 42}, {}, None)
         self.assertEquals(encoded[0].int, 42)
         self.assertEquals(encoded[1].int, 1)
 
     def test_list_with_struct(self):
-        list = _get_struct_list()
+        list = get_struct_list()
         encoded = list.encode({'liststruct[1].first': 24}, {}, None)
         self.assertEquals(encoded[0].first.int, 1)
         self.assertEquals(encoded[1].first.int, 24)
         self.assertEquals(encoded[1].second.int, 2)
 
     def test_list_list(self):
-        outerList = _get_list_list()
+        outerList = get_list_list()
         encoded = outerList.encode({'listlist[0][1]': 10, 'listlist[1][0]': 55}, {}, None)
         self.assertEquals(encoded[0][1].int, 10)
         self.assertEquals(encoded[1][0].int, 55)
@@ -281,28 +221,28 @@ class TestListTemplate(TestCase):
         self.assertEquals(decoded[0].int, 3)
 
     def test_parse_params(self):
-        list = _get_list_of_three()
+        list = get_list_of_three()
         params = list._get_params_sub_tree({'topthree[0]': 1, 'foo': 2, 'topthree[4][0]': 4})
         self.assertEquals(params['0'], 1)
         self.assertEquals(params['4[0]'], 4)
         self.assertEquals(len(params), 2)
 
     def test_parse_params_with_dot(self):
-        list = _get_list_of_three()
+        list = get_list_of_three()
         params = list._get_params_sub_tree({'topthree.0': 1, 'foo': 2, 'topthree.4.0': 4})
         self.assertEquals(params['0'], 1)
         self.assertEquals(params['4.0'], 4)
         self.assertEquals(len(params), 2)
 
     def test_parse_params_with_dots_and_brackets(self):
-        list = _get_list_of_three()
+        list = get_list_of_three()
         params = list._get_params_sub_tree({'topthree.0': 1, 'foo': 2, 'topthree.4[0]': 4})
         self.assertEquals(params['0'], 1)
         self.assertEquals(params['4[0]'], 4)
         self.assertEquals(len(params), 2)
 
     def test_set_list_values_with_defaults(self):
-        pair_of_lists = _get_struct_with_two_lists()
+        pair_of_lists = get_struct_with_two_lists()
         encoded = pair_of_lists.encode({'pair.*': 2, 'pair.*[0]': 42})
         self.assertEquals(encoded.first_list[1].int, 2)
         self.assertEquals(encoded.second_list[1].int, 2)
@@ -310,7 +250,7 @@ class TestListTemplate(TestCase):
         self.assertEquals(encoded.second_list[0].int, 42)
 
     def test_pretty_print(self):
-        encoded = _get_struct_list().encode({}, None)
+        encoded = get_struct_list().encode({}, None)
         self.assertEquals('\n' + repr(encoded),
                           """
 Pair liststruct[]
@@ -323,7 +263,7 @@ Pair liststruct[]
 """)
 
     def test_pretty_print_primitive_list(self):
-        decoded = _get_list_of_three().decode(to_bin('0x' + ('0003' * 3)), {})
+        decoded = get_list_of_three().decode(to_bin('0x' + ('0003' * 3)), {})
         self.assertEquals('\n' + repr(decoded),
                           """
 uint topthree[]
@@ -333,7 +273,7 @@ uint topthree[]
 """)
 
     def test_pretty_print_list_list(self):
-        decoded = _get_list_list().decode(to_bin('0x' + ('0003' * 4)), {})
+        decoded = get_list_list().decode(to_bin('0x' + ('0003' * 4)), {})
         self.assertEquals('\n' + repr(decoded),
                           """
 List listlist[]
@@ -346,7 +286,7 @@ List listlist[]
 """)
 
     def test_not_enough_data(self):
-        template = _get_list_of_three()
+        template = get_list_of_three()
         self.assertRaises(Exception, template.decode, to_bin('0x00010002'))
 
 
@@ -486,33 +426,33 @@ class TestMessageTemplateValidation(TestCase):
 class TestTemplateFieldValidation(TestCase, _WithValidation):
 
     def test_validate_struct_passes(self):
-        template = _get_pair()
+        template = get_pair()
         field = template.encode({})
         self._should_pass(template.validate({'pair': field}, {'pair.first': '1'}))
 
     def test_validate_struct_fails(self):
-        template = _get_pair()
+        template = get_pair()
         field = template.encode({})
         self._should_fail(template.validate({'pair': field}, {'pair.first': '42'}), 1)
 
     def test_validate_list_succeeds(self):
-        template = _get_list_of_three()
+        template = get_list_of_three()
         encoded = template.encode({}, None)
         self._should_pass(template.validate({'topthree': encoded}, {'topthree[1]': '1'}))
 
     def test_validate_list_fails(self):
-        template = _get_list_of_three()
+        template = get_list_of_three()
         encoded = template.encode({}, None)
         self._should_fail(template.validate({'topthree': encoded}, {'topthree[1]': '42'}), 1)
 
     def test_validate_list_list(self):
-        template = _get_list_list()
+        template = get_list_list()
         encoded = template.encode({}, None)
         self._should_pass(template.validate({'listlist': encoded}, {'listlist[1][1]': '7'}))
         self._should_fail(template.validate({'listlist': encoded}, {'listlist[1][1]': '42'}), 1)
 
     def test_validate_struct_list(self):
-        template = _get_struct_list()
+        template = get_struct_list()
         encoded = template.encode({}, None)
         self._should_pass(template.validate({'liststruct': encoded}, {'liststruct[1].first': '1'}))
         self._should_fail(template.validate({'liststruct': encoded}, {'liststruct[1].first': '42'}), 1)
@@ -542,9 +482,9 @@ class TestUnions(TestCase, _WithValidation):
         self._check_length(10, Char(10, 'a', None), Char(10, 'b', None))
 
     def test_container_union_length(self):
-        self._check_length(4, _get_pair(), UInt(2, 'b', 1))
-        self._check_length(4, UInt(1, 'a', 1), _get_recursive_struct())
-        self._check_length(6, _get_pair(), _get_list_of_three())
+        self._check_length(4, get_pair(), UInt(2, 'b', 1))
+        self._check_length(4, UInt(1, 'a', 1), get_recursive_struct())
+        self._check_length(6, get_pair(), get_list_of_three())
 
     def test_fail_on_dynamic_length(self):
         union = UnionTemplate('NotLegal', 'dymagic', parent=None)
@@ -599,7 +539,7 @@ class TestUnions(TestCase, _WithValidation):
         self._should_fail(union.validate({'foo': decoded}, {'foo.small': '0xff', 'foo.medium': ''}), 1)
 
     def test_validat_struct_union(self):
-        struct = _get_pair()
+        struct = get_pair()
         union = self._get_foo_union()
         struct.add(union)
         decoded = struct.decode(to_bin('0xcafebabe f00dd00d'))
@@ -759,61 +699,6 @@ class TestTBCDContainerTemplate(TestCase):
         container.add(TBCD('4', 'second', '1234'))
         encoded = container.encode({})
         self.assertEquals(4, len(encoded))
-
-
-class TestLittleEndian(TestCase):
-
-    def test_little_endian_struct_decode(self):
-        pair = _get_pair()
-        decoded = pair.decode(to_bin('0xcafebabe'), little_endian=True)
-        self.assertEquals(decoded.first.hex, '0xfeca')
-        self.assertEquals(decoded.second.hex, '0xbeba')
-
-    def test_little_endian_struct_encode(self):
-        pair = _get_pair()
-        encoded = pair.encode({}, little_endian=True)
-        self.assertEquals(encoded.first.hex, '0x0001')
-        self.assertEquals(encoded.first._raw, to_bin('0x0100'))
-        self.assertEquals(encoded.second.hex, '0x0002')
-        self.assertEquals(encoded.second._raw, to_bin('0x0200'))
-
-    def test_little_endian_list_encode(self):
-        struct_list = _get_struct_list()
-        encoded = struct_list.encode({}, None, little_endian=True)
-        self.assertEquals(encoded[0].first.hex, '0x0001')
-        self.assertEquals(encoded[0].first._raw, to_bin('0x0100'))
-        self.assertEquals(encoded[0].second.hex, '0x0002')
-        self.assertEquals(encoded[0].second._raw, to_bin('0x0200'))
-
-
-class TestLittleEndianProtocol(TestCase):
-
-    def setUp(self):
-        self._protocol = Protocol('TestProtocol', little_endian=True)
-        self._protocol.add(UInt(2, 'msgId', 5))
-        self._protocol.add(UInt(2, 'length', None))
-        self._protocol.add(PDU('length-4'))
-        self.tmp = MessageTemplate('FooRequest', self._protocol, {})
-        self.tmp.add(UInt(2, 'field_1', '0xcafe'))
-        self.tmp.add(UInt(2, 'field_2', '0xbabe'))
-
-    def test_encode_little_endian_header(self):
-        encoded = self.tmp.encode({}, {})
-        self.assertEquals(encoded._header.msgId.hex, '0x0005')
-        self.assertEquals(encoded._header.length.hex, '0x0008')
-        self.assertEquals(encoded._header.msgId._raw, to_bin('0x0500'))
-        self.assertEquals(encoded._header.length._raw, to_bin('0x0800'))
-
-    def test_decode_little_endian_header(self):
-        byte_stream = _MockStream(to_bin('0x0500 0800 cafe babe'))
-        self._msg_stream = MessageStream(byte_stream, self._protocol)
-        decoded = self._msg_stream.get(self.tmp)
-        self.assertEquals(decoded._header.msgId.hex, '0x0005')
-        self.assertEquals(decoded._header.msgId._raw, to_bin('0x0500'))
-        self.assertEquals(decoded.field_1.hex, '0xcafe')
-        self.assertEquals(decoded.field_1._raw, to_bin('0xcafe'))
-        self.assertEquals(decoded.field_2.hex, '0xbabe')
-        self.assertEquals(decoded.field_2._raw, to_bin('0xbabe'))
 
 
 class TestConditional(TestCase):

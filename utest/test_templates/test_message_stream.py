@@ -1,5 +1,5 @@
 from unittest import TestCase, main
-from tools import _MockStream
+from tools import MockStream
 import socket
 from Rammbock.templates.message_stream import MessageStream
 from Rammbock.templates import Protocol, MessageTemplate, UInt, PDU
@@ -15,7 +15,7 @@ class TestProtocolMessageReceiving(TestCase):
         self._protocol.add(PDU('length-2'))
 
     def test_read_header_and_pdu(self):
-        stream = _MockStream(to_bin('0xff0004cafe'))
+        stream = MockStream(to_bin('0xff0004cafe'))
         header, data = self._protocol.read(stream)
         self.assertEquals(header.id.hex, '0xff')
         self.assertEquals(data, '\xca\xfe')
@@ -31,7 +31,7 @@ class TestMessageStream(TestCase):
         self._msg = MessageTemplate('FooRequest', self._protocol, {'id': '0xaa'})
         self._msg.add(UInt(1, 'field_1', None))
         self._msg.add(UInt(1, 'field_2', None))
-        byte_stream = _MockStream(to_bin('0xff0004cafe aa0004dead dd0004beef'))
+        byte_stream = MockStream(to_bin('0xff0004cafe aa0004dead dd0004beef'))
         self._msg_stream = MessageStream(byte_stream, self._protocol)
 
     def test_get_message(self):
