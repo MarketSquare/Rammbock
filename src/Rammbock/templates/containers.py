@@ -211,16 +211,18 @@ class MessageTemplate(_Template):
         return Message(self.name)
 
     def validate(self, message, message_fields, header_fields):
-        if self.only_header:
-            return self._protocol.validate(message, self._protocol_validation_params(message_fields))
         validation_params = self.header_parameters.copy()
+        if self.only_header:
+            return self._validate_with_header_only(message, message_fields, validation_params)
+        return self._validate_with_header_and_messagebody(message, message_fields, header_fields, validation_params)
+
+    def _validate_with_header_only(self, message, message_fields, validation_params):
+        validation_params.update(message_fields)
+        return self._protocol.validate(message, validation_params)
+
+    def _validate_with_header_and_messagebody(self, message, message_fields, header_fields, validation_params):
         validation_params.update(header_fields)
         return self._protocol.validate(message._header, validation_params) + _Template.validate(self, message, message_fields)
-
-    def _protocol_validation_params(self, message_fields):
-        validation_params = self.header_parameters.copy()
-        validation_params.update(message_fields)
-        return validation_params
 
     def set_as_saved(self):
         self._saved = True
