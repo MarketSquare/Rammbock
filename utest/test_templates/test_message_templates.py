@@ -91,45 +91,51 @@ class TestMessageTemplateValidation(TestCase):
         self.tmp = MessageTemplate('FooRequest', self._protocol, {})
         self.tmp.add(UInt(2, 'field_1', '0xcafe'))
         self.tmp.add(UInt(2, 'field_2', '0xbabe'))
+        self.example = self.tmp.encode({}, {})
 
     def test_validate_passing_hex(self):
-        msg = self.tmp.decode(to_bin('0xcafebabe'))
-        errors = self.tmp.validate(msg, {})
+        msg = self._decode_and_set_fake_header('0xcafebabe')
+        errors = self.tmp.validate(msg, {}, {})
         self.assertEquals(errors, [])
 
     def test_validate_error_default_value(self):
-        msg = self.tmp.decode(to_bin('0xcafedead'))
-        errors = self.tmp.validate(msg, {})
+        msg = self._decode_and_set_fake_header('0xcafedead')
+        errors = self.tmp.validate(msg, {}, {})
         self.assertEquals(errors, ['Value of field field_2 does not match 0xdead!=0xbabe'])
 
     def test_validate_error_override(self):
-        msg = self.tmp.decode(to_bin('0xcafebabe'))
-        errors = self.tmp.validate(msg, {'field_2': '0xdead'})
+        msg = self._decode_and_set_fake_header('0xcafebabe')
+        errors = self.tmp.validate(msg, {'field_2': '0xdead'}, {})
         self.assertEquals(errors, ['Value of field field_2 does not match 0xbabe!=0xdead'])
 
     def test_validate_two_errors(self):
-        msg = self.tmp.decode(to_bin('0xbeefbabe'))
-        errors = self.tmp.validate(msg, {'field_2': '0xdead'})
+        msg = self._decode_and_set_fake_header('0xbeefbabe')
+        errors = self.tmp.validate(msg, {'field_2': '0xdead'}, {})
         self.assertEquals(len(errors), 2)
 
     def test_validate_pattern_pass(self):
-        msg = self.tmp.decode(to_bin('0xcafe0002'))
-        errors = self.tmp.validate(msg, {'field_2': '(0|2)'})
+        msg = self._decode_and_set_fake_header('0xcafe0002')
+        errors = self.tmp.validate(msg, {'field_2': '(0|2)'}, {})
         self.assertEquals(len(errors), 0)
 
     def test_validate_pattern_failure(self):
-        msg = self.tmp.decode(to_bin('0xcafe0002'))
-        errors = self.tmp.validate(msg, {'field_2': '(0|3)'})
+        msg = self._decode_and_set_fake_header('0xcafe0002')
+        errors = self.tmp.validate(msg, {'field_2': '(0|3)'}, {})
         self.assertEquals(len(errors), 1)
 
     def test_validate_passing_int(self):
-        msg = self.tmp.decode(to_bin('0xcafe0200'))
-        errors = self.tmp.validate(msg, {'field_2': '512'})
+        msg = self._decode_and_set_fake_header('0xcafe0200')
+        errors = self.tmp.validate(msg, {'field_2': '512'}, {})
         self.assertEquals(errors, [])
 
+    def _decode_and_set_fake_header(self, bin_value):
+        msg = self.tmp.decode(to_bin(bin_value))
+        msg['_header'] = self.example._header
+        return msg
+
     def test_failing_passing_int(self):
-        msg = self.tmp.decode(to_bin('0xcafe0200'))
-        errors = self.tmp.validate(msg, {'field_2': '513'})
+        msg = self._decode_and_set_fake_header('0xcafe0200')
+        errors = self.tmp.validate(msg, {'field_2': '513'}, {})
         self.assertEquals(len(errors), 1)
 
 

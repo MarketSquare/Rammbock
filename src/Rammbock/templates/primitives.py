@@ -250,6 +250,9 @@ class PDU(_TemplateField):
     def encode(self, params, parent, little_endian=False):
         return None
 
+    def validate(self, parent, paramdict, name=None):
+        return []
+
 
 def Length(value, align=None):
     value = str(value)

@@ -210,10 +210,12 @@ class MessageTemplate(_Template):
     def _get_struct(self, name, parent=None):
         return Message(self.name)
 
-    def validate(self, message, message_fields):
+    def validate(self, message, message_fields, header_fields):
         if self.only_header:
             return self._protocol.validate(message, self._protocol_validation_params(message_fields))
-        return _Template.validate(self, message, message_fields)
+        validation_params = self.header_parameters.copy()
+        validation_params.update(header_fields)
+        return self._protocol.validate(message._header, validation_params) + _Template.validate(self, message, message_fields)
 
     def _protocol_validation_params(self, message_fields):
         validation_params = self.header_parameters.copy()

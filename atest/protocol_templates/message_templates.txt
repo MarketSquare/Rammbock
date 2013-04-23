@@ -20,7 +20,7 @@ Client uses protocol and sends
 Client uses protocol and receives
     Client sends request and server receives it
     Server Sends simple request    value:0xcafebabe
-    ${msg} =    Client Receives simple request
+    ${msg} =    Client Receives simple request    header:flags:0xffff
     Should be equal    ${msg.value.hex}    0xcafebabe
 
 Server uses protocol and sends
@@ -41,7 +41,7 @@ Server uses protocol with header field values and receives
 Server uses protocol and messages arrive out of order
     Client Sends hex    0x 01 00 aaaa 000c 0000 deadbeef
     Client Sends hex    0x 01 00 dddd 000c 0000 cafebabe
-    ${msg_dddd} =    Server Receives simple request with header    header:messageType:0xdddd    header:flags:0xffff
+    ${msg_dddd} =    Server Receives simple request with header    header:messageType:0xdddd
     Should be equal    ${msg_dddd._header.messageType.hex}    0xdddd
 
 Message field type conversions

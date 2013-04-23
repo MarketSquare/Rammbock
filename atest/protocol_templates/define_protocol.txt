@@ -36,7 +36,7 @@ Defining message while defining protocol fails
 
 Overriding header parameters in send
     Client sends simple request    header:flags:0xcafe
-    ${msg}=    Server receives simple request
+    ${msg}=    Server receives simple request    header:flags:0xcafe
     Should be equal    0xcafe    ${msg._header.flags.hex}
 
 Getting protocol name from client

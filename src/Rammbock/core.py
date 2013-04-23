@@ -426,8 +426,8 @@ class RammbockCore(object):
         | ${msg} = | Client receives message | name=Client1 | timeout=5 |
         | ${msg} = | Client receives message | message_field:(0|1) |
         """
-        with self._receive(self._clients, *parameters) as (msg, message_fields):
-            self._validate_message(msg, message_fields)
+        with self._receive(self._clients, *parameters) as (msg, message_fields, header_fields):
+            self._validate_message(msg, message_fields, header_fields)
             return msg
 
     def client_receives_without_validation(self, *parameters):
@@ -441,7 +441,7 @@ class RammbockCore(object):
         | ${msg} = | Client receives without validation |
         | ${msg} = | Client receives without validation | name=Client1 | timeout=5 |
         """
-        with self._receive(self._clients, *parameters) as (msg, _):
+        with self._receive(self._clients, *parameters) as (msg, _, _):
             return msg
 
     def server_receives_message(self, *parameters):
@@ -458,8 +458,8 @@ class RammbockCore(object):
         | ${msg} = | Server receives message | name=Server1 | alias=my_connection | timeout=5 |
         | ${msg} = | Server receives message | message_field:(0|1) |
         """
-        with self._receive(self._servers, *parameters) as (msg, message_fields):
-            self._validate_message(msg, message_fields)
+        with self._receive(self._servers, *parameters) as (msg, message_fields, header_fields):
+            self._validate_message(msg, message_fields, header_fields)
             return msg
 
     def server_receives_without_validation(self, *parameters):
@@ -473,7 +473,7 @@ class RammbockCore(object):
         | ${msg} = | Server receives without validation |
         | ${msg} = | Server receives without validation | name=Server1 | alias=my_connection | timeout=5 |
         """
-        with self._receive(self._servers, *parameters) as (msg, _):
+        with self._receive(self._servers, *parameters) as (msg, _, _):
             return msg
 
     def validate_message(self, msg, *parameters):
@@ -484,11 +484,11 @@ class RammbockCore(object):
         | Validate message | ${msg} |
         | Validate message | ${msg} | status:0 |
         """
-        _, message_fields, _ = self._get_parameters_with_defaults(parameters)
-        self._validate_message(msg, message_fields)
+        _, message_fields, header_fields = self._get_parameters_with_defaults(parameters)
+        self._validate_message(msg, message_fields, header_fields)
 
-    def _validate_message(self, msg, message_fields):
-        errors = self._get_message_template().validate(msg, message_fields)
+    def _validate_message(self, msg, message_fields, header_fields):
+        errors = self._get_message_template().validate(msg, message_fields, header_fields)
         if errors:
             logger.info("Validation failed for %s" % repr(msg))
             logger.info('\n'.join(errors))
@@ -496,11 +496,11 @@ class RammbockCore(object):
 
     @contextmanager
     def _receive(self, nodes, *parameters):
-        configs, message_fields, _ = self._get_parameters_with_defaults(parameters)
+        configs, message_fields, header_fields = self._get_parameters_with_defaults(parameters)
         node, name = nodes.get_with_name(configs.pop('name', None))
         msg = node.get_message(self._get_message_template(), **configs)
         try:
-            yield msg, message_fields
+            yield msg, message_fields, header_fields
             self._register_receive(node, self._current_container.name, name)
             logger.debug("Received %s" % repr(msg))
         except AssertionError, e:
