@@ -103,6 +103,6 @@ Server expects shorter request
     u32    value    0xdeadbeef
 
 Receiving message fails because there is extra data
-    Run keyword and expect error    Receiving shorter message failed, message too long
+    Run keyword and expect error    Received: 'shorter message', message too long. Expected 4 but got 8
     ...    Server receives message
 

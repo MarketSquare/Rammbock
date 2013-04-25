@@ -185,9 +185,12 @@ class MessageTemplate(_Template):
 
     def decode(self, data, parent=None, name=None, little_endian=False):
         msg = _Template.decode(self, data, parent, name, little_endian)
-        if len(msg) < len(data):
-            raise AssertionError('Receiving %s failed, message too long' % self.name)
+        self.check_message_lengths(msg, data)
         return msg
+
+    def check_message_lengths(self, msg, data):
+        if len(msg) < len(data):
+            raise AssertionError('Received: \'%s\', message too long. Expected %s but got %s' % (self.name, len(msg), len(data)))
 
     def encode(self, message_params, header_params, little_endian=False):
         message_params = message_params.copy()
