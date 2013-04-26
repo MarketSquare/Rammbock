@@ -12,15 +12,15 @@ UDP Server uses protocol and receives with pattern validation
 
 TCP server uses protocol and receives with pattern validation
     [Setup]    Setup protocol, TCP server, and client
-    Client Sends simple request
+    Client Sends simple request    header:flags:0xffff
     Server Receives simple request    header:flags:0xffff
 
 TCP server receives from two clients with pattern validation
     [Setup]    Define protocol, start tcp server and two clients    Example
     Named client sends simple request    ExampleClient1    value:0xcafebabe
     Named client sends simple request    ExampleClient2    value:0xdeadbeef
-    Server Receives simple request from named connection    Connection2    value:0xdeadbeef    header:flags:0xffff
-    Server Receives simple request from named connection    Connection1    value:0xcafebabe    header:flags:0xffff
+    Server Receives simple request from named connection    Connection2    value:0xdeadbeef
+    Server Receives simple request from named connection    Connection1    value:0xcafebabe
 
 Server uses protocol and receives with pattern validation failing
     Client Sends hex    0x 01 00 dddd 000c 0000 00000005
@@ -76,14 +76,23 @@ Receiving should fail if message too long
     Server expects shorter request
     Receiving message fails because there is extra data
 
-Validating header fields
+Validating header field fails
     Client Sends hex    0x 01 00 dddd 000c cafe 00000005
     Run keyword and expect error    Value of field Example.flags does not match 0xcafe!=0x0000    Server Receives simple request
+
+Validating header fields
+    Client Sends hex    0x 02 03 eeee 000c cafe 00000005
+    Server Receives simple request
+    ...    header:version:0x02
+    ...    header:reserved:0x03
+    ...    header:messageType:0xeeee
+    ...    header:length:0x000c
+    ...    header:flags:0xcafe
 
 *** Keywords ***
 Named client sends simple request
     [Arguments]    ${client}=    @{params}
-    New message    ValueRequest    Example    header:messageType:0xdddd    header:flags:0xffff
+    New message    ValueRequest    Example    header:messageType:0xdddd
     u32    value    0xdeadbeef
     Client Sends message    name=${client}    @{params}
 
@@ -103,6 +112,6 @@ Server expects shorter request
     u32    value    0xdeadbeef
 
 Receiving message fails because there is extra data
-    Run keyword and expect error    Received: 'shorter message', message too long. Expected 4 but got 8
+    Run keyword and expect error    Received 'shorter message', message too long. Expected 4 but got 8
     ...    Server receives message
 

@@ -19,7 +19,7 @@ Client uses protocol and sends
 
 Client uses protocol and receives
     Client sends request and server receives it
-    Server Sends simple request    value:0xcafebabe
+    Server Sends simple request    value:0xcafebabe    header:flags:0xffff
     ${msg} =    Client Receives simple request    header:flags:0xffff
     Should be equal    ${msg.value.hex}    0xcafebabe
 
