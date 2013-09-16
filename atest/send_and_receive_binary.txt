@@ -62,4 +62,3 @@ SCTP Server sends binary to client
     Server sends binary    foo
     ${message}=    Client receives binary
     Should be equal    ${message}    foo
-

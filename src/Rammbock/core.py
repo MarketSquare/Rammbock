@@ -800,3 +800,15 @@ class RammbockCore(object):
         """
         conditional = self._message_stack.pop()
         self._add_field(conditional)
+
+    def get_client_unread_messages_count(self, client_name=None):
+        """Gets count of unread messages from client
+        """
+        client = self._clients.get_with_name(client_name)[0]
+        return client.get_messages_count_in_buffer()
+
+    def get_server_unread_messages_count(self, server_name=None):
+        """Gets count of unread messages from server
+        """
+        server = self._servers.get(server_name)
+        return server.get_messages_count_in_buffer()

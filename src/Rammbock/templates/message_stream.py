@@ -63,3 +63,15 @@ class MessageStream(object):
     def empty(self):
         self._cache = []
         self._stream.empty()
+
+    def get_messages_count_in_cache(self):
+        self._fill_cache()
+        return len(self._cache)
+
+    def _fill_cache(self):
+        try:
+            while True:
+                header, pdu_bytes = self._protocol.read(self._stream, timeout=0)
+                self._cache.append((header, pdu_bytes))
+        except:
+            pass

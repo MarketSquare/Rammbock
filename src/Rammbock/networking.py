@@ -123,6 +123,10 @@ class _NetworkNode(_WithTimeouts):
     def protocol_name(self):
         return self._protocol.name if self._protocol else None
 
+    def get_messages_count_in_buffer(self):
+        stream = self._get_message_stream()
+        return stream.get_messages_count_in_cache()
+
 
 class _TCPNode(object):
 

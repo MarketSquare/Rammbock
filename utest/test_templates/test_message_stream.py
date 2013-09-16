@@ -57,6 +57,16 @@ class TestMessageStream(TestCase):
         self._msg.header_parameters = {'id': '0x00'}
         self.assertRaises(socket.timeout, self._msg_stream.get, self._msg, timeout=0.1, header_filter='id')
 
+    def test_get_messages_count_from_cache_two_messages(self):
+        _ = self._msg_stream.get(self._msg, header_filter='id')
+        self._msg.header_parameters = {'id': '0xdd'}
+        count = self._msg_stream.get_messages_count_in_cache()
+        self.assertEquals(count, 2)
+
+    def test_get_messages_count_from_cache_three_messages(self):
+        count = self._msg_stream.get_messages_count_in_cache()
+        self.assertEquals(count, 3)
+
 
 if __name__ == '__main__':
     main()
