@@ -94,6 +94,13 @@ No unread messages should be in client buffer
     ${count}=    Get client unread messages count    client_name=ExampleClient
     Should be equal as integers    ${count}    0
 
+One unread messages should be in client buffer
+    Client sends request and server receives it
+    Server Sends simple request    value:0xcafebabe    header:flags:0xffff
+    Client Sends simple request
+    ${count}=    Get client unread messages count    client_name=ExampleClient
+    Should be equal as integers    ${count}    1
+
 One unread message should be in server buffer
     Client Sends simple request
     ${count}=    Get server unread messages count    server_name=ExampleServer

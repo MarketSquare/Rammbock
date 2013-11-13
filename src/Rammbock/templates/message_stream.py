@@ -66,12 +66,14 @@ class MessageStream(object):
 
     def get_messages_count_in_cache(self):
         self._fill_cache()
+        for msg in self._cache:
+            logger.info(msg)
         return len(self._cache)
 
     def _fill_cache(self):
         try:
             while True:
-                header, pdu_bytes = self._protocol.read(self._stream, timeout=0)
+                header, pdu_bytes = self._protocol.read(self._stream, timeout=0.2)
                 self._cache.append((header, pdu_bytes))
         except:
             pass
