@@ -6,6 +6,7 @@ from Rammbock.networking import UDPServer, TCPServer, UDPClient, TCPClient, Buff
 from Rammbock.templates.containers import Protocol
 from Rammbock.templates.primitives import UInt, PDU
 
+
 LOCAL_IP = '127.0.0.1'
 CONNECTION_ALIAS = "Connection alias"
 
@@ -107,6 +108,13 @@ class TestNetworking(_NetworkingTests):
         TCPClient().connect_to(LOCAL_IP, 1337)
         server.accept_connection(alias=CONNECTION_ALIAS + "1")
         self.assertTrue(server._connections.get(CONNECTION_ALIAS + "1"))
+
+    def test_tcp_server_with_no_connections(self):
+        server = TCPServer(LOCAL_IP, 1337)
+        client = TCPClient()
+        client.connect_to(LOCAL_IP, 1337)
+        client.send('foofaa')
+        self.assertRaises(AssertionError, server.receive)
 
     def test_setting_port_no_ip(self):
         server, client = self._udp_server_and_client(ports['SERVER_PORT'], ports['CLIENT_PORT'], client_ip='')

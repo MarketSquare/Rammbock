@@ -33,8 +33,8 @@ class RammbockCore(object):
     def _init_caches(self):
         self._protocol_in_progress = None
         self._protocols = {}
-        self._servers = _NamedCache('server')
-        self._clients = _NamedCache('client')
+        self._servers = _NamedCache('server', "No servers defined!")
+        self._clients = _NamedCache('client', "No clients defined!")
         self._message_stack = []
         self._header_values = {}
         self._field_values = {}

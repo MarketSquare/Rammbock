@@ -215,8 +215,11 @@ class StreamServer(_Server):
         self._init_socket()
         self._bind_socket()
         self._socket.listen(TCP_MAX_QUEUED_CONNECTIONS)
-        self._connections = _NamedCache('connection')
         self._protocol = protocol
+        self._init_connection_cache()
+
+    def _init_connection_cache(self):
+        self._connections = _NamedCache('connection', "No connections accepted!")
 
     def receive_from(self, timeout=None, alias=None):
         connection = self._connections.get(alias)
@@ -240,7 +243,7 @@ class StreamServer(_Server):
             for connection in self._connections:
                 connection.close()
             self._socket.close()
-            self._connections = _NamedCache('connection')
+            self._init_connection_cache()
 
     def close_connection(self, alias=None):
         raise Exception("Not yet implemented")
@@ -318,11 +321,12 @@ class SCTPClient(_Client, _SCTPNode):
 
 class _NamedCache(object):
 
-    def __init__(self, basename):
+    def __init__(self, basename, miss_error):
         self._basename = basename
         self._counter = 0
         self._cache = {}
         self._current = None
+        self._miss_error = miss_error
 
     def add(self, value, name=None):
         name = name or self._next_name()
@@ -336,6 +340,8 @@ class _NamedCache(object):
     def get_with_name(self, name=None):
         if not name:
             name = self._current
+            if not name:
+                raise AssertionError(self._miss_error)
             logger.debug("Choosing %s by default" % self._current)
         return self._cache[name], name
 
