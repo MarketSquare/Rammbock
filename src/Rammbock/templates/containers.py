@@ -166,8 +166,11 @@ class Protocol(_Template):
         stream.return_data(unused_data)
         pdu_bytes = None
         if self.pdu:
-            length_param = header[self.pdu_length.field].int
-            pdu_bytes = stream.read(self.pdu_length.calc_value(length_param))
+            if self.pdu_length.static:
+                length = self.pdu_length.value
+            else:
+                length = self.pdu_length.calc_value(header[self.pdu_length.field].int)
+            pdu_bytes = stream.read(length)
         return header, pdu_bytes
 
     def get_message_stream(self, buffered_stream):

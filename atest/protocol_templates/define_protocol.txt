@@ -71,13 +71,22 @@ Protocol without PDU and dynamic length
     Should be equal as integers     ${msg.text.len}      5
 
 Send and receive protocol without PDU
-    New Protocol   NoPDU
+    [Setup]  New Protocol   NoPDU
     u8  field  16
     End Protocol
     New message    message   protocol=NoPDU
     Setup TCP server and client     NoPDU
     Client sends message    field:42
     ${msg}  Server receives message     field:42
+    Should be equal as integers     ${msg.field}    42
+
+Send and receive protocol with fixed PDU on TCP
+    [Setup]  Define simple protocol
+    Setup TCP server and client     Example
+    New message   message   protocol=Example
+    u32    field     42
+    Client sends message
+    ${msg}  Server receives message
     Should be equal as integers     ${msg.field}    42
 
 Protocol with fields after PDU fail
