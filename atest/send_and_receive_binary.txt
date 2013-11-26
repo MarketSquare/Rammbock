@@ -62,3 +62,16 @@ SCTP Server sends binary to client
     Server sends binary    foo
     ${message}=    Client receives binary
     Should be equal    ${message}    foo
+
+Error for missing client
+    [Setup]   Define example protocol
+    Run keyword and expect error  No clients defined!   Client sends binary   foo
+
+Error for missing server
+    [Setup]   Define example protocol
+    Run keyword and expect error  No servers defined!   Server sends binary   foo
+
+Error for missing server connection
+    [Setup]   Define example protocol
+    Start TCP server    ${SERVER}    ${SERVER PORT}    protocol=Example
+    Run keyword and expect error  No connections accepted!   Server receives binary
