@@ -21,6 +21,7 @@ from message_sequence import MessageSequence
 from templates import Protocol, UInt, Int, PDU, MessageTemplate, Char, Binary, TBCD, \
     StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate, ConditionalTemplate, TBCDContainerTemplate
 from binary_tools import to_0xhex, to_bin
+import copy
 
 
 class RammbockCore(object):
@@ -349,10 +350,28 @@ class RammbockCore(object):
         Examples:
         | Load Template | MyMessage | header_field:value |
         """
+        template, fields, header_fields = self._set_templates_fields_and_header_fields(name, parameters)
+        self._init_new_message_stack(template, fields, header_fields)
+
+    def load_copy_of_template(self, name, *parameters):
+        """Load a copy of message template saved with `Save template` when originally saved values need to be preserved
+        from test to test.
+        Optional parameters are default values for message header separated with
+        colon.
+
+        Examples:
+        | Load Copy Of Template | MyMessage | header_field:value |
+        """
+        template, fields, header_fields = self._set_templates_fields_and_header_fields(name, parameters)
+        copy_of_template = copy.deepcopy(template)
+        copy_of_fields = copy.deepcopy(fields)
+        self._init_new_message_stack(copy_of_template, copy_of_fields, header_fields)
+
+    def _set_templates_fields_and_header_fields(self, name, parameters):
         configs, fields, header_fields = self._parse_parameters(parameters)
         self._raise_error_if_configs_or_fields(configs, fields, 'Load template')
         template, fields = self._message_templates[name]
-        self._init_new_message_stack(template, fields, header_fields)
+        return template, fields, header_fields
 
     def get_message(self, *parameters):
         """Get encoded message.

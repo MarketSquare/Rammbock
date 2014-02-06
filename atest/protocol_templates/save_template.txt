@@ -52,6 +52,26 @@ Adding fields to message after loading template is not allowed
     ...    Adding fields to message loaded with Load template is not allowed
     ...    u32    new_field   2
 
+Using load copy of template should preserve saved values in template
+    Save single and double templates with values
+    Load copy of template    single
+    ${msg}=          Get message    single:43
+    Should be equal as integers    ${msg.single.int}   43
+    load template    single
+    ${msg}=          Get message
+    Should be equal as integers    ${msg.single.int}   42
+
+Using load copy of template should preserve saved values in template when content is dynamic
+    Save dynamic length valued
+    Load copy of template    dynamic
+    ${msg}=          Get message    length:4    string:fofafefa
+    Should be equal as integers    ${msg.length.int}   4
+    Should be equal as strings   ${msg.string}   fofafefa
+    load template    dynamic
+    ${msg}=          Get message
+    Should be equal as integers    ${msg.length.int}   3
+    Should be equal as strings   ${msg.string}   foofee
+
 *** Keywords ***
 Save single and double templates
     Single valued
@@ -75,3 +95,14 @@ Save single and double templates with values
     Double valued
     value  double_1  4242
     Save template    double
+
+Dynamic length valued
+    New message    DynamicRequest    Example
+    u8      length
+    Chars   length*2    string
+
+Save dynamic length valued
+    Dynamic length valued
+    Value    length    3
+    Value    string    foofee
+    Save template    dynamic
