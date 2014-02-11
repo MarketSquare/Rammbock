@@ -1,7 +1,7 @@
 from unittest import TestCase
 from Rammbock.templates.primitives import UInt, PDU
 from Rammbock.binary_tools import to_bin
-from tools import *
+from test_templates.tools import *
 
 
 class TestTBCDContainerTemplate(TestCase):
