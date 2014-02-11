@@ -15,7 +15,7 @@
 
 import socket
 import time
-from robot.api import logger
+from Rammbock import logger
 from binary_tools import to_hex
 
 try:

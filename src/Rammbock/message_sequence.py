@@ -14,7 +14,7 @@
 from __future__ import with_statement
 import subprocess
 from ordered_dict import OrderedDict
-from robot.api import logger
+from Rammbock import logger
 
 
 def ip_name(ip, port):

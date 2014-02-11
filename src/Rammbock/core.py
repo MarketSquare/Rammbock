@@ -14,7 +14,7 @@
 
 from __future__ import with_statement
 from contextlib import contextmanager
-from robot.api import logger
+from Rammbock import logger
 from message import _StructuredElement
 from networking import TCPServer, TCPClient, UDPServer, UDPClient, SCTPServer, SCTPClient, _NamedCache
 from message_sequence import MessageSequence
