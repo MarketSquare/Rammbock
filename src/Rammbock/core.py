@@ -15,11 +15,15 @@
 from __future__ import with_statement
 from contextlib import contextmanager
 from Rammbock import logger
+from Rammbock.templates.containers import BagTemplate, CaseTemplate
 from message import _StructuredElement
-from networking import TCPServer, TCPClient, UDPServer, UDPClient, SCTPServer, SCTPClient, _NamedCache
+from networking import (TCPServer, TCPClient, UDPServer, UDPClient, SCTPServer,
+                        SCTPClient, _NamedCache)
 from message_sequence import MessageSequence
-from templates import Protocol, UInt, Int, PDU, MessageTemplate, Char, Binary, TBCD, \
-    StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate, ConditionalTemplate, TBCDContainerTemplate
+from templates import (Protocol, UInt, Int, PDU, MessageTemplate, Char, Binary,
+                       TBCD, StructTemplate, ListTemplate, UnionTemplate,
+                       BinaryContainerTemplate, ConditionalTemplate,
+                       TBCDContainerTemplate)
 from binary_tools import to_0xhex, to_bin
 import copy
 
@@ -697,6 +701,20 @@ class RammbockCore(object):
         """
         union = self._message_stack.pop()
         self._add_field(union)
+
+    def start_bag(self, name):
+        self._message_stack.append(BagTemplate(name, self._current_container))
+
+    def end_bag(self):
+        bag = self._message_stack.pop()
+        self._add_field(bag)
+
+    def _start_bag_case(self, size):
+        self._message_stack.append(CaseTemplate(size, self._current_container))
+
+    def _end_bag_case(self):
+        case = self._message_stack.pop()
+        self._add_field(case)
 
     def pdu(self, length):
         """Defines the message in protocol template.

@@ -28,14 +28,20 @@ class _StructuredElement(object):
         self._parent = None
 
     def __setitem__(self, name, child):
-        self._fields[name] = child
+        self._fields[unicode(name)] = child
         child._parent = self
 
     def __getitem__(self, name):
-        return self._fields[str(name)]
+        return self._fields[unicode(name)]
 
     def __getattr__(self, name):
         return self[name]
+
+    def __delitem__(self, name):
+        name = unicode(name)
+        item = self._fields[name]
+        del self._fields[name]
+        item._parent = None
 
     def __str__(self):
         return self._get_name()
@@ -47,7 +53,7 @@ class _StructuredElement(object):
         return result
 
     def __contains__(self, key):
-        return key in self._fields
+        return unicode(key) in self._fields
 
     def _format_indented(self, text):
         return ''.join(['  %s\n' % line for line in text.splitlines()])
@@ -87,6 +93,23 @@ class List(_StructuredElement):
     @property
     def len(self):
         return len(self._fields)
+
+    def add(self, value):
+        self[self.len] = value
+
+
+class Bag(_StructuredElement):
+
+    _type = 'Bag'
+
+    def __init__(self, name):
+        self._name = name
+        self._fields = OrderedDict()
+        self._parent = None
+
+    @property
+    def len(self):
+        return sum(field.len for field in self._fields.values())
 
 
 class Struct(_StructuredElement):

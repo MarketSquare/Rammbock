@@ -144,6 +144,12 @@ class Rammbock(RammbockCore):
         BuiltIn().run_keyword(type, *parameters)
         self.end_struct()
 
+    def case(self, size, kw, *parameters):
+        # TODO: check we are inside a bag!
+        self._start_bag_case(size)
+        BuiltIn().run_keyword(kw, *parameters)
+        self._end_bag_case()
+
     def embed_seqdiag_sequence(self):
         """Create a message sequence diagram png file to output folder and embed the image to log file.
 

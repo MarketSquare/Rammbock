@@ -15,12 +15,16 @@
 from math import ceil
 import re
 
-from Rammbock.message import Field, Union, Message, Header, List, Struct, BinaryContainer, BinaryField, TBCDContainer, Conditional
+from Rammbock.message import (Field, Union, Message, Header, List, Struct,
+                              BinaryContainer, BinaryField, TBCDContainer,
+                              Conditional, Bag)
 from message_stream import MessageStream
-from primitives import Length, Binary, TBCD
+from primitives import Length, Binary, TBCD, BagSize
 from Rammbock.ordered_dict import OrderedDict
-from Rammbock.binary_tools import to_binary_string_of_length, to_bin, to_tbcd_value, to_tbcd_binary
+from Rammbock.binary_tools import (to_binary_string_of_length, to_bin,
+                                   to_tbcd_value, to_tbcd_binary)
 from Rammbock.condition_parser import ConditionParser
+from Rammbock.logger import trace
 
 
 class _Template(object):
@@ -340,6 +344,103 @@ class UnionTemplate(_Template):
         name = name or self.name
         message = parent[name]
         return _Template.validate(self, message, self._get_params_sub_tree(message_fields, name))
+
+
+class BagTemplate(_Template):
+
+    has_length = False
+    type = 'Bag'
+
+    def __init__(self, name, parent):
+        _Template.__init__(self, name, parent)
+
+    def add(self, field):
+        if field.type != 'Case':
+            raise AssertionError('Field of type %s added to bag. Has to be of type Case.' % field.type)
+        self._fields[field.name] = field
+
+    def encode(self, set_params, parent=None, name=None, little_endian=False):
+        raise AssertionError("Set can not be encoded.")
+
+    def decode(self, data, parent=None, name=None, little_endian=False):
+        bag = self._get_struct(name, parent)
+        while data:
+            match = self._decode_one(data, bag, little_endian=little_endian)
+            data = data[len(match['0']):]
+        return bag
+
+    def _decode_one(self, data, bag, little_endian=False):
+        for case in self._fields.values():
+            try:
+                match = case.decode(data, bag, little_endian=little_endian)
+                trace("'%s' matches in bag '%s'. value: %r" % (case.name, self.name, match[match.len - 1]))
+                return match
+            except Exception as e:
+                trace("'%s' does not match in bag '%s'. Error: %s" % (case.name, self.name, e.message))
+        raise AssertionError("Unable to decode bag value.")
+
+    def _get_struct(self, name, parent):
+        bag = Bag(name or self.name)
+        bag._parent = parent
+        for case in self._fields.values():
+            bag[case.name] = case.get_message_object(bag)
+        return bag
+
+    def validate(self, parent, message_fields, name=None):
+        name = name or self.name
+        params_subtree = self._get_params_sub_tree(message_fields, name)
+        bag = parent[name]
+        errors = []
+        for field in self._fields.values():
+            errors += field.validate(bag, params_subtree)
+        return errors
+
+
+class CaseTemplate(_Template):
+
+    has_length = False
+    type = 'Case'
+
+    def __init__(self, size, parent):
+        self.size = BagSize(size)
+        _Template.__init__(self, None, parent)
+
+    @property
+    def field(self):
+        return self._fields.values()[0]
+
+    def add(self, field):
+        self.name = field.name
+        _Template.add(self, field)
+
+    def decode(self, data, parent, name=None, little_endian=False):
+        case = parent[self.name]
+        # TODO: Cleanup
+        field = self.field.decode(data, case, name=str(case.len),
+                                  little_endian=little_endian)
+        case.add(field)
+        errors = self.field.validate(case, {}, str(case.len - 1))
+        if errors:
+            del case[case.len - 1]
+            raise AssertionError(errors[0])
+        return case
+
+    # FIXME: now validating only number of entries
+    def validate(self, parent, message_fields, name=None):
+        errors = []
+        case = parent[name or self.name]
+        if case.len < self.size.min or case.len > self.size.max:
+            errors.append('%s values in bag %s for %s (size %s).' %
+                          (case.len or 'No',
+                           parent._name,
+                           case._name,
+                           self.size))
+        return errors
+
+    def get_message_object(self, parent):
+        lst = List(self.name, self.field.type)
+        lst._parent = parent
+        return lst
 
 
 #TODO: check that only one field is added to list

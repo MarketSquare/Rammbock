@@ -14,6 +14,8 @@
 
 from math import ceil
 import math
+import sys
+import re
 
 from Rammbock.message import Field, BinaryField
 from Rammbock.binary_tools import to_bin_of_length, to_0xhex, to_tbcd_binary, \
@@ -438,3 +440,34 @@ class Multiplier(object):
 
     def solve_parameter(self, length):
         return math.ceil(length / float(self.multiplier))
+
+
+class BagSize(object):
+
+    fixed = re.compile(r'[1-9][0-9]*\Z')
+    range = re.compile(r'([0-9]+)\s*-\s*([1-9][0-9]*)\Z')
+
+    def __init__(self, size):
+        # TODO: add open range 2-n
+        size = size.strip()
+        if size == '*':
+            self._set_min_max(0, sys.maxint)
+        elif self.fixed.match(size):
+            self._set_min_max(size, size)
+        elif self.range.match(size):
+            self._set_min_max(*self.range.match(size).groups())
+        else:
+            raise AssertionError("Invalid bag size %s." % size)
+
+    def _set_min_max(self, min_, max_):
+        self.min = int(min_)
+        self.max = int(max_)
+        if self.min > self.max:
+            raise AssertionError("Invalid bag size %s." % str(self))
+
+    def __str__(self):
+        if self.min == self.max:
+            return str(self.min)
+        elif self.min == 0 and self.max == sys.maxint:
+            return '*'
+        return '%s-%s' % (self.min, self.max)
