@@ -246,11 +246,12 @@ class StructTemplate(_Template):
 
     has_length = False
 
-    def __init__(self, type, name, parent, parameters=None, length=None):
+    def __init__(self, type, name, parent, parameters=None, length=None, align=1):
         self._parameters = parameters or {}
         self.type = type
         if length:
             self._set_length(length)
+        self._align = int(align)
         _Template.__init__(self, name, parent)
 
     def _set_length(self, length):
@@ -280,7 +281,7 @@ class StructTemplate(_Template):
 
     # TODO: Cleanup setting the parent to constructor of message -elements
     def _get_struct(self, name, parent):
-        struct = Struct(name or self.name, self.type)
+        struct = Struct(name or self.name, self.type, align=self._align)
         struct._parent = parent
         return struct
 

@@ -62,6 +62,13 @@ def get_struct_list():
     return list
 
 
+def get_struct_with_length_and_alignment():
+    struct = StructTemplate('Pair', 'pair', parent=None, align=4)
+    struct.add(UInt(2, 'first', 1))
+    struct.add(UInt(1, 'second', 2))
+    return struct
+
+
 class MockStream(object):
 
     def __init__(self, data):

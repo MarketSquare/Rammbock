@@ -116,11 +116,23 @@ class Struct(_StructuredElement):
 
     _type = 'Struct'
 
-    def __init__(self, name, type_name):
+    def __init__(self, name, type_name, align=1):
         self._name = name
         self._type = type_name
         self._fields = OrderedDict()
         self._parent = None
+        self._align = align
+
+    def __len__(self):
+        result = sum(len(field) for field in self._fields.values())
+        return self._get_aligned(result)
+
+    def _get_aligned(self, length):
+        return length + (self._align - length % self._align) % self._align
+
+    def _get_raw_bytes(self):
+        result = ''.join((field._raw for field in self._fields.values()))
+        return result.ljust(self._get_aligned(len(result)), '\x00')
 
 
 class Union(_StructuredElement):

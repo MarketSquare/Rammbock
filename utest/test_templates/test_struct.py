@@ -65,3 +65,19 @@ class TestStructs(TestCase):
         decoded = pair.decode(to_bin('0xcafebabe'), {})
         self.assertEquals(decoded.first.hex, '0xcafe')
         self.assertEquals(decoded.second.hex, '0xbabe')
+
+    def test_decode_aligned(self):
+        struct = get_struct_with_length_and_alignment()
+        decoded = struct.decode(to_bin('0x00010200'), {})
+        self.assertEqual(decoded.first.int, 1)
+        self.assertEqual(decoded.second.int, 2)
+        self.assertEqual(len(decoded), 4)
+        self.assertEqual(decoded._raw, to_bin('0x00010200'))
+
+    def test_encode_aligned(self):
+        struct = get_struct_with_length_and_alignment()
+        encoded = struct.encode({}, {})
+        self.assertEqual(encoded.first.int, 1)
+        self.assertEqual(encoded.second.int, 2)
+        self.assertEqual(len(encoded), 4)
+        self.assertEqual(encoded._raw, to_bin('0x00010200'))
