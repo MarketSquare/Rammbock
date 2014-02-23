@@ -81,3 +81,13 @@ class TestStructs(TestCase):
         self.assertEqual(encoded.second.int, 2)
         self.assertEqual(len(encoded), 4)
         self.assertEqual(encoded._raw, to_bin('0x00010200'))
+
+    def test_encode_perfectly_aligned(self):
+        struct = get_struct_with_length_and_alignment()
+        struct.add(UInt(5, 'third', 3))
+        encoded = struct.encode({}, {})
+        self.assertEqual(encoded.first.int, 1)
+        self.assertEqual(encoded.second.int, 2)
+        self.assertEqual(encoded.third.int, 3)
+        self.assertEqual(len(encoded), 8)
+        self.assertEqual(encoded._raw, to_bin('0x00010200 00000003'))
