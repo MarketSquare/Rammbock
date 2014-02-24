@@ -601,7 +601,7 @@ class RammbockCore(object):
         """
         configs, parameters, _ = self._get_parameters_with_defaults(parameters)
         self._add_struct_name_to_params(name, parameters)
-        self._message_stack.append(StructTemplate(type, name, self._current_container, parameters, length=configs.get('length')))
+        self._message_stack.append(StructTemplate(type, name, self._current_container, parameters, length=configs.get('length'), align=configs.get('align')))
 
     def _add_struct_name_to_params(self, name, parameters):
         for param_key in parameters.keys():

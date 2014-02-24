@@ -246,12 +246,12 @@ class StructTemplate(_Template):
 
     has_length = False
 
-    def __init__(self, type, name, parent, parameters=None, length=None, align=1):
+    def __init__(self, type, name, parent, parameters=None, length=None, align=None):
         self._parameters = parameters or {}
         self.type = type
         if length:
             self._set_length(length)
-        self._align = int(align)
+        self._align = int(align or 1)
         _Template.__init__(self, name, parent)
 
     def _set_length(self, length):
