@@ -206,6 +206,11 @@ class RammbockCore(object):
         """
         return self._clients.get(name).protocol_name or ''
 
+    def update_client_protocol(self, client, protocol):
+        protocol = self._get_protocol(protocol)
+        client = self._clients.get(client)
+        client.set_protocol(protocol)
+
     def accept_connection(self, name=None, alias=None):
         """Accepts a connection to server identified by `name` or the latest
         server if `name` is empty.

@@ -306,6 +306,9 @@ class _Client(_NetworkNode):
         self._is_connected = True
         return self
 
+    def set_protocol(self, protocol):
+        self._protocol = protocol
+
 
 class UDPClient(_Client, _UDPNode):
     pass
