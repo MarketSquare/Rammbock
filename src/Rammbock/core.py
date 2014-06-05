@@ -193,6 +193,14 @@ class RammbockCore(object):
             client.set_own_ip_and_port(ip=ip, port=port)
         return self._clients.add(client, name)
 
+    def _is_client(self, client_name):
+        client_exist = True
+        try:
+            self._clients.get_with_name(client_name)
+        except KeyError:
+            client_exist = False
+        return client_exist
+
     def _get_protocol(self, protocol):
         try:
             protocol = self._protocols[protocol] if protocol else None
