@@ -17,7 +17,7 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-## {{{ http://code.activestate.com/recipes/576693/ (r9)
+# {{{ http://code.activestate.com/recipes/576693/ (r9)
 # Backport of OrderedDict() class that runs on Python 2.4, 2.5, 2.6, 2.7 and pypy.
 # Passes Python2.7's test suite and incorporates all the latest updates.
 
@@ -271,4 +271,4 @@ class OrderedDict(dict):
     def viewitems(self):
         "od.viewitems() -> a set-like object providing a view on od's items"
         return ItemsView(self)
-    ## end of http://code.activestate.com/recipes/576693/ }}}
+    # end of http://code.activestate.com/recipes/576693/ }}}

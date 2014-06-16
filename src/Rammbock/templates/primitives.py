@@ -81,15 +81,35 @@ class _TemplateField(object):
         return self._validate_exact_match(forced_value, value, field)
 
     def _validate_pattern(self, forced_pattern, value, field):
-        patterns = forced_pattern[1:-1].split('|')
-        for pattern in patterns:
-            if self._is_match(pattern, value, field._parent):
-                return []
+        if self._validate_or(forced_pattern, value, field):
+            return []
+        if self._validate_masked(forced_pattern, value):
+            return []
         return ["Value of field '%s' does not match pattern '%s!=%s'" %
                 (field._get_recursive_name(), to_0xhex(value), forced_pattern)]
 
+    def _validate_or(self, forced_pattern, value, field):
+        if forced_pattern.find('|') != -1:
+            patterns = forced_pattern[1:-1].split('|')
+            for pattern in patterns:
+                if self._is_match(pattern, value, field._parent):
+                    return True
+            return False
+
+    def _validate_masked(self, forced_pattern, value):
+        if forced_pattern.find('&') != -1:
+            masked_val, masked_field = self._apply_mask_to_values(forced_pattern, value)
+            if masked_val == masked_field:
+                return True
+            return False
+
+    def _apply_mask_to_values(self, forced_pattern, value):
+        val = forced_pattern[1:-1].split('&')[0].strip()
+        mask = forced_pattern[1:-1].split('&')[1].strip()
+        return to_int(val) & to_int(mask), to_int(to_0xhex(value)) & to_int(mask)
+
     def _is_match(self, forced_value, value, parent):
-        #TODO: Should pass msg
+        # TODO: Should pass msg
         forced_binary_val, _ = self._encode_value(forced_value, parent)
         return forced_binary_val == value
 

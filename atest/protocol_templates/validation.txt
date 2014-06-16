@@ -89,6 +89,25 @@ Validating header fields
     ...    header:length:0x000c
     ...    header:flags:0xcafe
 
+Validating header field by applying mask to value
+    Client Sends hex    0x 02 03 eeee 000c cafe 00000005
+    Server Receives simple request
+    ...    header:version:0x02
+    ...    header:reserved:0x03
+    ...    header:messageType:0xeeee
+    ...    header:length:0x000c
+    ...    header:flags:(0xfafa&0x0ff0)
+
+Validating pdu field by applying mask to value
+    Client Sends hex    0x 01 00 dddd 000c 0000 12345678
+    ${msg} =    Server Receives simple request    value:(0x12645678 & 0xff0fffff)
+    Should be equal    ${msg.value.hex}    0x12345678
+
+Validating pdu field by applying mask to value fails
+    Client Sends hex    0x 01 00 dddd 000c 0000 12345678
+    Run keyword and expect error    Value of field 'value' does not match pattern '0x12345678!=(0x12645678 & 0xffff0fff)'    Server Receives simple request    value:(0x12645678 & 0xffff0fff)
+
+
 *** Keywords ***
 Named client sends simple request
     [Arguments]    ${client}=    @{params}

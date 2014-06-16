@@ -206,7 +206,7 @@ class TestAlignment(TestCase):
         self.assertEquals(len(decoded), 4)
         self.assertEquals(decoded._raw, to_bin('0xff00 0000'))
 
-    #TODO: more combinations, handling chars
+    # TODO: more combinations, handling chars
 
 
 if __name__ == '__main__':

@@ -116,7 +116,7 @@ class _Template(object):
         return self._saved
 
 
-#TODO: Refactor the pdu to use the same dynamic length strategy as structs in encoding
+# TODO: Refactor the pdu to use the same dynamic length strategy as structs in encoding
 class Protocol(_Template):
 
     def __init__(self, name, little_endian=False):
@@ -162,8 +162,8 @@ class Protocol(_Template):
         return data[data_index:]
 
     def read(self, stream, timeout=None):
-        #TODO: use all data if length cannot be obtained. Return amount of data
-        #used to stream
+        # TODO: use all data if length cannot be obtained. Return amount of data
+        # used to stream
         data = stream.read(self.header_length(), timeout=timeout)
         header = Header(self.name)
         unused_data = self._extract_values_from_data(data, header, self._fields.values())
@@ -444,8 +444,8 @@ class CaseTemplate(_Template):
         return lst
 
 
-#TODO: check that only one field is added to list
-#TODO: list field could be overriden
+# TODO: check that only one field is added to list
+# TODO: list field could be overriden
 class ListTemplate(_Template):
 
     param_pattern = re.compile(r'([^.]*?)\[(.*?)\](.*)')
