@@ -1,0 +1,15 @@
+*** Settings ***
+Library     my_handler.py
+Resource        ../Protocols.txt
+Suite Setup     Setup protocol, TCP server, and client
+Test teardown    Teardown rammbock and increment port numbers
+#Default tags    regression
+
+*** Test cases ***
+Register an auto reply
+    Define sample template
+    Set client handler  handle_sample
+    Server sends sample message
+    Server sends another message
+    Client receives another message
+    Handler should have been called with sample message
