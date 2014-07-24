@@ -50,6 +50,11 @@ class RammbockCore(object):
     def _current_container(self):
         return self._message_stack[-1]
 
+    def set_client_handler(self, handler_func, name=None):
+        msg_template = self._get_message_template()
+        client, client_name = self._clients.get_with_name(name)
+        client.set_handler(msg_template, handler_func)
+
     def reset_rammbock(self):
         """Closes all connections, deletes all servers, clients, and protocols.
 
