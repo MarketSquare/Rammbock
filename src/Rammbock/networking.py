@@ -46,6 +46,9 @@ class _WithTimeouts(object):
 
 class _NetworkNode(_WithTimeouts):
 
+    def set_handler(self, msg_template, handler_func):
+        self._message_stream.set_handler(msg_template, handler_func)
+
     def get_own_address(self):
         return self._socket.getsockname()
 
