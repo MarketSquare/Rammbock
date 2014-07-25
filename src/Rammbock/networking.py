@@ -63,6 +63,7 @@ class _NetworkNode(_WithTimeouts):
             self._socket.close()
             self._message_stream = None
 
+    # TODO: Rename to _get_new_message_stream
     def _get_message_stream(self):
         if not self._protocol:
             return None
@@ -127,8 +128,7 @@ class _NetworkNode(_WithTimeouts):
         return self._protocol.name if self._protocol else None
 
     def get_messages_count_in_buffer(self):
-        stream = self._get_message_stream()
-        return stream.get_messages_count_in_cache()
+        return self._message_stream.get_messages_count_in_cache()
 
 
 class _TCPNode(object):

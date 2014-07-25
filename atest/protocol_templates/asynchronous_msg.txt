@@ -21,9 +21,25 @@ Respond to an asynchronous message
     Server sends another message
     Client receives another message
     Server should receive response to sample
+Multiple clients
+    [Setup]   Setup protocol, server, two clients, and define templates
+    Load Template   sample
+    Set client handler  my_handler.respond_to_sample    name=ExampleClient2
+    Server sends sample message   Connection1
+    Server sends another message  Connection1
+    Client receives another message    name=ExampleClient1
+    Sample message should be in cache   name=ExampleClient1
+    Server sends sample message   Connection2
+    Server sends another message  Connection2
+    Client receives another message    name=ExampleClient2
+    Server should receive response to sample
+
 
 
 *** Keywords ***
+Setup protocol, server, two clients, and define templates
+    Define protocol, start tcp server and two clients    protocol=Example
+    Define templates
 Setup protocol, nodes, and define templates
     Setup protocol, TCP server, and client
     Define Templates
@@ -44,15 +60,16 @@ Define sample response template
     New Message     sample_response  Example     header:messageType:0x0011
     u16     bar     100
     Save Template   sample response
-Server sends sample message
+Server sends sample message    [Arguments]    ${connection}=
     Load Template   sample
-    Server sends message
-Server sends another message
+    Server sends message    connection=${connection}
+Server sends another message   [Arguments]    ${connection}=
     Load Template   another
-    Server sends message
+    Server sends message    connection=${connection}
 Client receives another message
+    [Arguments]     ${name}=
     Load Template   another
-    Client receives message   header_filter=messageType
+    Client receives message   name=${name}  header_filter=messageType
 Handler should have been called with sample message
     ${rcvd msgs}   Get rcvd msg
     Length should be   ${rcvd_msgs}     1
@@ -64,3 +81,7 @@ Server should receive response to sample
 Message cache should be empty
     ${my_count}=     Get Client Unread Messages Count
     Should be Equal as integers     ${my_count}     0
+Sample message should be in cache
+    [Arguments]     ${name}=
+    ${my_count}=     Get Client Unread Messages Count   ${name}
+    Should be Equal as integers     ${my_count}     1
