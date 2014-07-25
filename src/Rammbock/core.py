@@ -50,7 +50,32 @@ class RammbockCore(object):
     def _current_container(self):
         return self._message_stack[-1]
 
+    # TODO: Set Server Handler
+
     def set_client_handler(self, handler_func, name=None):
+        """Sets an automatic handler for the type of message template currently loaded.
+
+        This feature allows users to set a python handler function which is called
+        automatically by the Rammbock message queue when message matches the expected
+        template. The optional name argument defines the client node to which the
+        handler will be bound. Otherwise the default client will be used.
+
+        The handler function will be called with two arguments: the rammbock library
+        instance and the received message.
+
+        Example:
+        | Load template      | SomeMessage |
+        | Set client handler | my_module.respond_to_sample |
+
+        my_module.py:
+        | def respond_to_sample(rammbock, msg):
+        |     rammbock.save_template("__backup_template")
+        |     try:
+        |         rammbock.load_template("sample response")
+        |         rammbock.client_sends_message()
+        |     finally:
+        |         rammbock.load_template("__backup_template")
+        """
         msg_template = self._get_message_template()
         client, client_name = self._clients.get_with_name(name)
         client.set_handler(msg_template, handler_func)
