@@ -9,3 +9,5 @@ output.xml
 .project
 .pydevproject
 .idea
+Seqdiag diagram.seqdiag
+nose-out.xml

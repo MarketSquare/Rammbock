@@ -1,0 +1,87 @@
+*** Settings ***
+Library     my_handler.py
+Resource        ../Protocols.txt
+Test Setup     Setup protocol, nodes, and define templates
+Test teardown    Teardown rammbock and increment port numbers
+#Default tags    regression
+
+*** Test cases ***
+Register an auto reply
+    Load Template   sample
+    Set client handler  my_handler.handle_sample
+    Server sends sample message
+    Server sends another message
+    Client receives another message
+    Handler should have been called with sample message
+    Message cache should be empty
+Respond to an asynchronous message
+    Load Template   sample
+    Set client handler  my_handler.respond_to_sample
+    Server sends sample message
+    Server sends another message
+    Client receives another message
+    Server should receive response to sample
+Multiple clients
+    [Setup]   Setup protocol, server, two clients, and define templates
+    Load Template   sample
+    Set client handler  my_handler.respond_to_sample    name=ExampleClient2
+    Server sends sample message   Connection1
+    Server sends another message  Connection1
+    Client receives another message    name=ExampleClient1
+    Sample message should be in cache   name=ExampleClient1
+    Server sends sample message   Connection2
+    Server sends another message  Connection2
+    Client receives another message    name=ExampleClient2
+    Server should receive response to sample
+
+
+
+*** Keywords ***
+Setup protocol, server, two clients, and define templates
+    Define protocol, start tcp server and two clients    protocol=Example
+    Define templates
+Setup protocol, nodes, and define templates
+    Setup protocol, TCP server, and client
+    Define Templates
+Define Templates
+    Define sample template
+    Define another template
+    Define sample response template
+Define sample template
+    New Message     sample  Example     header:messageType:0x0042
+    u16     foo     1
+    Save Template   sample
+Define another template
+    New Message     another  Example     header:messageType:0x00ab
+    u16     foo     100
+    u16     eoo      500
+    Save Template   another
+Define sample response template
+    New Message     sample_response  Example     header:messageType:0x0011
+    u16     bar     100
+    Save Template   sample response
+Server sends sample message    [Arguments]    ${connection}=
+    Load Template   sample
+    Server sends message    connection=${connection}
+Server sends another message   [Arguments]    ${connection}=
+    Load Template   another
+    Server sends message    connection=${connection}
+Client receives another message
+    [Arguments]     ${name}=
+    Load Template   another
+    Client receives message   name=${name}  header_filter=messageType
+Handler should have been called with sample message
+    ${rcvd msgs}   Get rcvd msg
+    Length should be   ${rcvd_msgs}     1
+    ${msg}=    Set variable   ${rcvd msgs[0]}
+    Should be equal   ${msg._header.messageType.hex}     0x0042
+Server should receive response to sample
+    Load Template   sample response
+    Server receives message     timeout=1
+Message cache should be empty
+    ${my_count}=     Get Client Unread Messages Count
+    Should be Equal as integers     ${my_count}     0
+Sample message should be in cache
+    [Arguments]     ${name}=
+    ${my_count}=     Get Client Unread Messages Count   ${name}
+    Should be Equal as integers     ${my_count}     1

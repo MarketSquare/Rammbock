@@ -119,10 +119,11 @@ class _Template(object):
 # TODO: Refactor the pdu to use the same dynamic length strategy as structs in encoding
 class Protocol(_Template):
 
-    def __init__(self, name, little_endian=False):
+    def __init__(self, name, little_endian=False, library=None):
         _Template.__init__(self, name, None)
         self.pdu = None
         self.little_endian = little_endian
+        self.library = library
 
     def header_length(self):
         try:

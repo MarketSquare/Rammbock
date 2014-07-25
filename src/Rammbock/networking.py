@@ -46,6 +46,9 @@ class _WithTimeouts(object):
 
 class _NetworkNode(_WithTimeouts):
 
+    def set_handler(self, msg_template, handler_func):
+        self._message_stream.set_handler(msg_template, handler_func)
+
     def get_own_address(self):
         return self._socket.getsockname()
 
@@ -60,6 +63,7 @@ class _NetworkNode(_WithTimeouts):
             self._socket.close()
             self._message_stream = None
 
+    # TODO: Rename to _get_new_message_stream
     def _get_message_stream(self):
         if not self._protocol:
             return None
@@ -124,8 +128,7 @@ class _NetworkNode(_WithTimeouts):
         return self._protocol.name if self._protocol else None
 
     def get_messages_count_in_buffer(self):
-        stream = self._get_message_stream()
-        return stream.get_messages_count_in_cache()
+        return self._message_stream.get_messages_count_in_cache()
 
 
 class _TCPNode(object):
