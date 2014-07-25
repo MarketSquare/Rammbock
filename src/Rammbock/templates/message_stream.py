@@ -46,7 +46,7 @@ class MessageStream(object):
             if self._matches(header, template.header_parameters, header_filter):
                 msg_to_be_sent = self._to_msg(template, header, pdu_bytes)
                 self._get_call_handler(func)(self._protocol.library, msg_to_be_sent)
-                return  # FIXME Make test that handled messages dont go to cache
+                return
         self._cache.append((header, pdu_bytes))
 
     def _get_call_handler(self, handler_name):

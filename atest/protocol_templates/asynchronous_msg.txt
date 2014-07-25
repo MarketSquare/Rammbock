@@ -13,6 +13,7 @@ Register an auto reply
     Server sends another message
     Client receives another message
     Handler should have been called with sample message
+    Message cache should be empty
 Respond to an asynchronous message
     Load Template   sample
     Set client handler  my_handler.respond_to_sample
@@ -60,3 +61,6 @@ Handler should have been called with sample message
 Server should receive response to sample
     Load Template   sample response
     Server receives message     timeout=1
+Message cache should be empty
+    ${my_count}=     Get Client Unread Messages Count
+    Should be Equal as integers     ${my_count}     0
