@@ -89,7 +89,7 @@ class RammbockCore(object):
             raise Exception('Can not start a new protocol definition in middle of old.')
         if protocol_name in self._protocols:
             raise Exception('Protocol %s already defined' % protocol_name)
-        self._init_new_message_stack(Protocol(protocol_name))
+        self._init_new_message_stack(Protocol(protocol_name, library=self))
         self._protocol_in_progress = True
 
     def end_protocol(self):
