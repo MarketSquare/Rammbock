@@ -1,0 +1,36 @@
+*** Settings ***
+Library    Rammbock
+Suite teardown    Reset Rammbock
+Resource     async_resources.txt
+Force tags   background
+
+
+*** Variables ***
+${BACKGROUND}=    ${False}
+
+*** Test Cases ***
+Serve on background
+    Run keyword if   ${BACKGROUND}     Serve
+    ...              ELSE              Set test documentation    Skipped because not run on background.
+
+
+*** Keywords ***
+Serve
+    Define example protocol
+    Define Templates
+    Start TCP server    127.0.0.1    44455    name=ExampleServer    protocol=Example
+    Accept connection
+    Receive   another
+    Send   sample
+    Receive  sample response
+    Send  another
+
+Send   [arguments]    ${message}
+    Load template    ${message}
+    Server sends message
+
+Receive   [arguments]    ${message}
+    Load template    ${message}
+    Server receives message
+
+

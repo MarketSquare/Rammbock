@@ -1,4 +1,5 @@
 import socket
+from contextlib import contextmanager
 from Rammbock.templates.containers import Protocol, MessageTemplate, StructTemplate, ListTemplate, UnionTemplate, BinaryContainerTemplate, TBCDContainerTemplate, ConditionalTemplate
 from Rammbock.templates.primitives import UInt, PDU, Char, Binary, TBCD
 
@@ -89,6 +90,10 @@ class MockStream(object):
 
     def empty(self):
         self.data = ''
+
+    @contextmanager
+    def sync_threads(self):
+        yield
 
 
 class WithValidation(object):

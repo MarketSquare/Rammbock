@@ -1,13 +1,15 @@
 *** Settings ***
 Library     my_handler.py
-Resource        ../Protocols.txt
+Library     Process
+Resource    async_resources.txt
 Test Setup     Setup protocol, nodes, and define templates
 Test teardown    Teardown rammbock and increment port numbers
-#Default tags    regression
+Default tags    regression
 
 *** Test cases ***
 Register an auto reply
     Load Template   sample
+    Reset received messages
     Set client handler  my_handler.handle_sample
     Server sends sample message
     Server sends another message
@@ -16,6 +18,7 @@ Register an auto reply
     Message cache should be empty
 Respond to an asynchronous message
     Load Template   sample
+    Reset received messages
     Set client handler  my_handler.respond_to_sample
     Server sends sample message
     Server sends another message
@@ -24,6 +27,7 @@ Respond to an asynchronous message
 Multiple clients
     [Setup]   Setup protocol, server, two clients, and define templates
     Load Template   sample
+    Reset received messages
     Set client handler  my_handler.respond_to_sample    name=ExampleClient2
     Server sends sample message   Connection1
     Server sends another message  Connection1
@@ -33,33 +37,46 @@ Multiple clients
     Server sends another message  Connection2
     Client receives another message    name=ExampleClient2
     Server should receive response to sample
+Asynchronous messages on background
+    [Setup]    Setup protocol, one client, and define templates
+    Load Template   sample
+    Reset received messages
+    Set client handler  my_handler.respond_to_sample     header_filter=messageType
+    Load template    another
+    client sends message
+    Wait until keyword succeeds     2s  0.1s  Handler should have been called with sample message
+    client receives message    header_filter=messageType
+    [Teardown]     Get background results and reset
+Register an auto reply to work on background
+    Load Template   sample
+    Reset received messages
+    Set client handler  my_handler.handle_sample
+    Server sends sample message
+    Wait until keyword succeeds   2s  0.1s   Handler should have been called with sample message
+    Message cache should be empty
 
-
+*** Variables ***
+${SOURCEDIR}=   ${CURDIR}${/}..${/}..${/}src
+${BACKGROUND FILE}=    ${CURDIR}${/}background_server.txt
 
 *** Keywords ***
+Get background results and reset
+    ${res}=    Terminate Process
+    Log    STDOUT:\n${res.stdout}\nSTDERR:\n${res.stderr}
+    Teardown rammbock and increment port numbers
+Setup protocol, one client, and define templates
+    Define Example protocol
+    Define templates
+    Start background process
+    Start TCP client    127.0.0.1   45555   name=client   protocol=Example
+    Sleep   1   # Unfortunately if connect fails, the same socket can not be reused. So polling becomes difficult
+    Connect     127.0.0.1   44455
 Setup protocol, server, two clients, and define templates
     Define protocol, start tcp server and two clients    protocol=Example
     Define templates
 Setup protocol, nodes, and define templates
     Setup protocol, TCP server, and client
     Define Templates
-Define Templates
-    Define sample template
-    Define another template
-    Define sample response template
-Define sample template
-    New Message     sample  Example     header:messageType:0x0042
-    u16     foo     1
-    Save Template   sample
-Define another template
-    New Message     another  Example     header:messageType:0x00ab
-    u16     foo     100
-    u16     eoo      500
-    Save Template   another
-Define sample response template
-    New Message     sample_response  Example     header:messageType:0x0011
-    u16     bar     100
-    Save Template   sample response
 Server sends sample message    [Arguments]    ${connection}=
     Load Template   sample
     Server sends message    connection=${connection}
@@ -85,3 +102,5 @@ Sample message should be in cache
     [Arguments]     ${name}=
     ${my_count}=     Get Client Unread Messages Count   ${name}
     Should be Equal as integers     ${my_count}     1
+Start background process
+    ${process}=    Start process  pybot  --variable  BACKGROUND:True   --pythonpath  ${SOURCEDIR}  --outputdir  ${TEMPDIR}  ${BACKGROUND FILE}  shell=True

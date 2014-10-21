@@ -52,7 +52,7 @@ class RammbockCore(object):
 
     # TODO: Set Server Handler
 
-    def set_client_handler(self, handler_func, name=None):
+    def set_client_handler(self, handler_func, name=None, header_filter=None):
         """Sets an automatic handler for the type of message template currently loaded.
 
         This feature allows users to set a python handler function which is called
@@ -78,7 +78,7 @@ class RammbockCore(object):
         """
         msg_template = self._get_message_template()
         client, client_name = self._clients.get_with_name(name)
-        client.set_handler(msg_template, handler_func)
+        client.set_handler(msg_template, handler_func, header_filter)
 
     def reset_rammbock(self):
         """Closes all connections, deletes all servers, clients, and protocols.
