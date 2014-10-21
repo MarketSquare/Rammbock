@@ -27,6 +27,11 @@ class MessageStream(object):
         self._protocol = protocol
         self._handlers = []
         self._handler_thread = None
+        self._running = True
+
+    def close(self):
+        self._running = False
+        self.empty()
 
     def set_handler(self, msg_template, handler_func, header_filter):
         self._handlers.append((msg_template, handler_func, header_filter))
@@ -107,7 +112,7 @@ class MessageStream(object):
             pass
 
     def match_handlers_periodically(self):
-        while True:
+        while self._running:
             time.sleep(0.5)  # TODO: Should this be configurable?
             self.match_handlers()
 

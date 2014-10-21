@@ -77,6 +77,8 @@ class _NetworkNode(_WithTimeouts):
             if self._is_connected:
                 self._is_connected = False
                 self._socket.close()
+                if self._message_stream:
+                    self._message_stream.close()
                 self._message_stream = None
 
     # TODO: Rename to _get_new_message_stream
