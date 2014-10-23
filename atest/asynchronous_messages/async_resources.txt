@@ -1,5 +1,7 @@
 *** Settings ***
 Resource        ../Protocols.txt
+Library    Rammbock
+Library     my_handler.py
 
 *** Keywords ***
 Define Templates
@@ -19,3 +21,17 @@ Define sample response template
     New Message     sample_response  Example     header:messageType:0x0011
     u16     bar     100
     Save Template   sample response
+Handler should have been called with '${count}' sample messages
+    ${rcvd msgs}   Get rcvd msg
+    Length should be   ${rcvd_msgs}     ${count}
+    ${msg}=    Set variable   ${rcvd msgs[0]}
+    Should be equal   ${msg._header.messageType.hex}     0x0042
+Handler should have been called with '${count}' another messages
+    ${rcvd msgs}   Get rcvd msg
+    Length should be   ${rcvd_msgs}     ${count}
+    ${msg}=    Set variable   ${rcvd msgs[0]}
+    Should be equal   ${msg._header.messageType.hex}     0x00ab
+Handler should have been called with '${count}' times
+    ${rcvd msgs}   Get rcvd msg
+    Length should be   ${rcvd_msgs}     ${count}
+

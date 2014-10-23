@@ -1,5 +1,4 @@
 *** Settings ***
-Library     my_handler.py
 Library     Process
 Resource    async_resources.txt
 Test Setup     Setup protocol, nodes, and define templates
@@ -10,16 +9,16 @@ Default tags    regression
 Register an auto reply
     Load Template   sample
     Reset received messages
-    Set client handler  my_handler.handle_sample
+    Set client handler  my_handler.handle_sample     header_filter=messageType
     Server sends sample message
     Server sends another message
     Client receives another message
-    Handler should have been called with sample message
+    Handler should have been called with '1' sample messages
     Message cache should be empty
 Respond to an asynchronous message
     Load Template   sample
     Reset received messages
-    Set client handler  my_handler.respond_to_sample
+    Set client handler  my_handler.respond_to_sample    header_filter=messageType
     Server sends sample message
     Server sends another message
     Client receives another message
@@ -28,7 +27,7 @@ Multiple clients
     [Setup]   Setup protocol, server, two clients, and define templates
     Load Template   sample
     Reset received messages
-    Set client handler  my_handler.respond_to_sample    name=ExampleClient2
+    Set client handler  my_handler.respond_to_sample    name=ExampleClient2    header_filter=messageType
     Server sends sample message   Connection1
     Server sends another message  Connection1
     Client receives another message    name=ExampleClient1
@@ -38,21 +37,29 @@ Multiple clients
     Client receives another message    name=ExampleClient2
     Server should receive response to sample
 Asynchronous messages on background
-    [Setup]    Setup protocol, one client, and define templates
+    [Setup]    Setup protocol, one client, background server, and define templates      Serve on background
     Load Template   sample
     Reset received messages
     Set client handler  my_handler.respond_to_sample     header_filter=messageType
     Load template    another
     client sends message
-    Wait until keyword succeeds     2s  0.1s  Handler should have been called with sample message
+    Wait until keyword succeeds     2s  0.1s  Handler should have been called with '1' sample messages
     client receives message    header_filter=messageType
+    [Teardown]     Get background results and reset
+100 asynchronous messages on background
+    [Setup]    Setup protocol, one client, background server, and define templates      Loop on background
+    Load Template   sample
+    Reset received messages
+    Set client handler  my_handler.respond_to_sample     header_filter=messageType     interval=0.1
+    Repeat keyword   100    Send receive another
+    Wait until keyword succeeds     20s  1s  Handler should have been called with '101' sample messages
     [Teardown]     Get background results and reset
 Register an auto reply to work on background
     Load Template   sample
     Reset received messages
-    Set client handler  my_handler.handle_sample
+    Set client handler  my_handler.handle_sample    header_filter=messageType
     Server sends sample message
-    Wait until keyword succeeds   2s  0.1s   Handler should have been called with sample message
+    Wait until keyword succeeds   2s  0.1s   Handler should have been called with '1' sample messages
     Message cache should be empty
 
 *** Variables ***
@@ -60,16 +67,21 @@ ${SOURCEDIR}=   ${CURDIR}${/}..${/}..${/}src
 ${BACKGROUND FILE}=    ${CURDIR}${/}background_server.txt
 
 *** Keywords ***
+Send receive another
+    Load template    another
+    client sends message
+    client receives message     header_filter=messageType
 Get background results and reset
     ${res}=    Terminate Process
     Log    STDOUT:\n${res.stdout}\nSTDERR:\n${res.stderr}
     Teardown rammbock and increment port numbers
-Setup protocol, one client, and define templates
+Setup protocol, one client, background server, and define templates
+    [Arguments]    ${background operation}
     Define Example protocol
     Define templates
-    Start background process
+    Start background process    ${background operation}
     Start TCP client    127.0.0.1   45555   name=client   protocol=Example
-    Sleep   1   # Unfortunately if connect fails, the same socket can not be reused. So polling becomes difficult
+    Sleep   2   # Unfortunately if connect fails, the same socket can not be reused. So polling becomes difficult
     Connect     127.0.0.1   44455
 Setup protocol, server, two clients, and define templates
     Define protocol, start tcp server and two clients    protocol=Example
@@ -87,11 +99,6 @@ Client receives another message
     [Arguments]     ${name}=
     Load Template   another
     Client receives message   name=${name}  header_filter=messageType
-Handler should have been called with sample message
-    ${rcvd msgs}   Get rcvd msg
-    Length should be   ${rcvd_msgs}     1
-    ${msg}=    Set variable   ${rcvd msgs[0]}
-    Should be equal   ${msg._header.messageType.hex}     0x0042
 Server should receive response to sample
     Load Template   sample response
     Server receives message     timeout=1
@@ -103,4 +110,8 @@ Sample message should be in cache
     ${my_count}=     Get Client Unread Messages Count   ${name}
     Should be Equal as integers     ${my_count}     1
 Start background process
-    ${process}=    Start process  pybot  --variable  BACKGROUND:True   --pythonpath  ${SOURCEDIR}  --outputdir  ${TEMPDIR}  ${BACKGROUND FILE}  shell=True
+    [Arguments]     ${name}
+    ${process}=    Start process  pybot  --test  ${name}  --loglevel   DEBUG
+    ...            --variable  BACKGROUND:True   --pythonpath  ${SOURCEDIR}
+    ...            --outputdir  ${TEMPDIR}  ${BACKGROUND FILE}  shell=True
+    [Return]    ${process}

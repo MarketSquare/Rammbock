@@ -14,6 +14,9 @@
 import time
 import threading
 
+
+import traceback
+import sys
 from Rammbock import logger
 
 from Rammbock.binary_tools import to_bin
@@ -28,13 +31,16 @@ class MessageStream(object):
         self._handlers = []
         self._handler_thread = None
         self._running = True
+        self._interval = 0.5
 
     def close(self):
         self._running = False
         self.empty()
 
-    def set_handler(self, msg_template, handler_func, header_filter):
+    def set_handler(self, msg_template, handler_func, header_filter, interval):
         self._handlers.append((msg_template, handler_func, header_filter))
+        if interval:
+            self._interval = float(interval)
         if not self._handler_thread:
             self._handler_thread = threading.Thread(target=self.match_handlers_periodically)
             self._handler_thread.daemon = True
@@ -47,18 +53,19 @@ class MessageStream(object):
         if msg:
             logger.trace("Cache hit. Cache currently has %s messages" % len(self._cache))
             return msg
-        with self._stream.sync_threads():
-            while True:
+        while True:
+            with self._stream.sync_threads():
                 header, pdu_bytes = self._protocol.read(self._stream, timeout=timeout)
                 if self._matches(header, header_fields, header_filter):
                     return self._to_msg(message_template, header, pdu_bytes)
                 else:
-                    self._match_or_cache(header, pdu_bytes, header_filter)
+                    self._match_or_cache(header, pdu_bytes)
 
-    def _match_or_cache(self, header, pdu_bytes, header_filter):
+    def _match_or_cache(self, header, pdu_bytes):
         for template, func, handler_filter in self._handlers:
-            if self._matches(header, template.header_parameters, header_filter or handler_filter):
+            if self._matches(header, template.header_parameters, handler_filter):
                 msg_to_be_sent = self._to_msg(template, header, pdu_bytes)
+                logger.debug("Calling handler %s for message %s" % (func, msg_to_be_sent))
                 self._get_call_handler(func)(self._protocol.library, msg_to_be_sent)
                 return
         self._cache.append((header, pdu_bytes))
@@ -113,14 +120,29 @@ class MessageStream(object):
 
     def match_handlers_periodically(self):
         while self._running:
-            time.sleep(0.5)  # TODO: Should this be configurable?
+            time.sleep(self._interval)
             self.match_handlers()
 
     def match_handlers(self):
+        logger.trace("Getting lock for matching handlers")
         with self._stream.sync_threads():
+            logger.trace("Got lock for matching handlers")
             try:
                 while True:
-                    header, pdu_bytes = self._protocol.read(self._stream, timeout=0.05)
-                    self._match_or_cache(header, pdu_bytes, None)
-            except:
-                pass
+                    self._try_matching_cached_to_templates()
+                    header, pdu_bytes = self._protocol.read(self._stream, timeout=0.02)
+                    self._match_or_cache(header, pdu_bytes)
+            except Exception:
+                logger.trace("failure in matching cache %s" % traceback.format_exc())
+        logger.debug("Done matching handlers")
+
+    # FIXME: Is this actually necessary? Wouldnt we always match before caching?
+    # Unless of course the handler was set after caching happened...
+    def _try_matching_cached_to_templates(self):
+        if not self._cache:
+            return
+        for template, func, handler_filter in self._handlers:
+            msg = self._get_from_cache(template, template.header_parameters, handler_filter)
+            if msg:
+                logger.debug("Calling handler %s for cached message %s" % (func, msg))
+                self._get_call_handler(func)(self._protocol.library, msg)

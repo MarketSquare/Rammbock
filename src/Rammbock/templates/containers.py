@@ -175,6 +175,7 @@ class Protocol(_Template):
                 length = self.pdu_length.value
             else:
                 length = self.pdu_length.calc_value(header[self.pdu_length.field].int)
+            # TODO: we need a timeout?
             pdu_bytes = stream.read(length)
         return header, pdu_bytes
 

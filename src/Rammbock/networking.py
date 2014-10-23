@@ -53,24 +53,28 @@ class _NetworkNode(_WithTimeouts):
 
     @contextmanager
     def sync_threads(self):
+        self._lock.acquire()
         try:
-            self._lock.acquire()
             yield
         finally:
             self._lock.release()
 
     _message_stream = None
 
-    def set_handler(self, msg_template, handler_func, header_filter):
-        self._message_stream.set_handler(msg_template, handler_func, header_filter)
+    def set_handler(self, msg_template, handler_func, header_filter, alias=None, interval=None):
+        if alias:
+            raise AssertionError('Named connections not supported.')
+        self._message_stream.set_handler(msg_template, handler_func, header_filter, interval)
 
     def get_own_address(self):
-        return self._socket.getsockname()
+        with self.sync_threads():
+            return self._socket.getsockname()
 
     def get_peer_address(self, alias=None):
         if alias:
             raise AssertionError('Named connections not supported.')
-        return self._socket.getpeername()
+        with self.sync_threads():
+            return self._socket.getpeername()
 
     def close(self):
         with self.sync_threads():
@@ -101,7 +105,7 @@ class _NetworkNode(_WithTimeouts):
         logger.debug("Send %d bytes: %s to %s:%s over %s" % (len(binary), to_hex(binary), ip, port, self._transport_layer_name))
 
     def log_receive(self, binary, ip, port):
-        logger.debug("Trying to read %d bytes: %s from %s:%s over %s" % (len(binary), to_hex(binary), ip, port, self._transport_layer_name))
+        logger.trace("Trying to read %d bytes: %s from %s:%s over %s" % (len(binary), to_hex(binary), ip, port, self._transport_layer_name))
 
     def empty(self):
         result = True
@@ -246,6 +250,10 @@ class StreamServer(_Server):
 
     def _init_connection_cache(self):
         self._connections = _NamedCache('connection', "No connections accepted!")
+
+    def set_handler(self, msg_template, handler_func, header_filter, alias=None, interval=None):
+        connection = self._connections.get(alias)
+        connection.set_handler(msg_template, handler_func, header_filter, interval=interval)
 
     def receive_from(self, timeout=None, alias=None):
         connection = self._connections.get(alias)
@@ -397,7 +405,7 @@ class BufferedStream(_WithTimeouts):
             if self._size_full(result, size):
                 return result
             self._fill_buffer(timeout)
-        raise AssertionError('Timeout %ds exceeded.' % timeout)
+        raise AssertionError('Timeout %fs exceeded.' % timeout)
 
     def _size_full(self, result, size):
         return len(result) == size or (size == -1 and len(result))

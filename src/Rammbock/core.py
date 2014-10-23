@@ -52,13 +52,20 @@ class RammbockCore(object):
 
     # TODO: Set Server Handler
 
-    def set_client_handler(self, handler_func, name=None, header_filter=None):
+    def set_client_handler(self, handler_func, name=None, header_filter=None, interval=0.5):
         """Sets an automatic handler for the type of message template currently loaded.
 
         This feature allows users to set a python handler function which is called
         automatically by the Rammbock message queue when message matches the expected
         template. The optional name argument defines the client node to which the
         handler will be bound. Otherwise the default client will be used.
+
+        The header_filter defines which header field will be used to identify the
+        message defined in template. (Otherwise all incoming messages will match!)
+
+        The interval defines the interval in seconds on which the handler will
+        be called on background. By default the incoming messages are checked
+        every 0.5 seconds.
 
         The handler function will be called with two arguments: the rammbock library
         instance and the received message.
@@ -78,7 +85,45 @@ class RammbockCore(object):
         """
         msg_template = self._get_message_template()
         client, client_name = self._clients.get_with_name(name)
-        client.set_handler(msg_template, handler_func, header_filter)
+        client.set_handler(msg_template, handler_func, header_filter=header_filter, interval=interval)
+
+    def set_server_handler(self, handler_func, name=None, header_filter=None, alias=None, interval=0.5):
+        """Sets an automatic handler for the type of message template currently loaded.
+
+        This feature allows users to set a python handler function which is called
+        automatically by the Rammbock message queue when message matches the expected
+        template. The optional name argument defines the server node to which the
+        handler will be bound. Otherwise the default server will be used.
+
+        The header_filter defines which header field will be used to identify the
+        message defined in template. (Otherwise all incoming messages will match!)
+
+        The interval defines the interval in seconds on which the handler will
+        be called on background. By default the incoming messages are checked
+        every 0.5 seconds.
+
+        The alias is the alias for the connection. By default the current active
+        connection will be used.
+
+        The handler function will be called with two arguments: the rammbock library
+        instance and the received message.
+
+        Example:
+        | Load template      | SomeMessage |
+        | Set server handler | my_module.respond_to_sample | messageType |
+
+        my_module.py:
+        | def respond_to_sample(rammbock, msg):
+        |     rammbock.save_template("__backup_template")
+        |     try:
+        |         rammbock.load_template("sample response")
+        |         rammbock.server_sends_message()
+        |     finally:
+        |         rammbock.load_template("__backup_template")
+        """
+        msg_template = self._get_message_template()
+        server, server_name = self._servers.get_with_name(name)
+        server.set_handler(msg_template, handler_func, header_filter=header_filter, alias=alias, interval=interval)
 
     def reset_rammbock(self):
         """Closes all connections, deletes all servers, clients, and protocols.

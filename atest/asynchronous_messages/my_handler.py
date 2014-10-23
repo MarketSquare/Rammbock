@@ -1,5 +1,7 @@
 
 RECEIVED_MESSAGES = []
+SERVER_SENT = {'sample': 0,
+               'another': 0}
 
 
 def handle_sample(rammbock, msg):
@@ -19,6 +21,30 @@ def respond_to_sample(rammbock, msg):
         rammbock.client_sends_message()
     finally:
         rammbock.load_template("__backup_template")
+
+
+def server_respond_to_another_max_100(rammbock, msg):
+    RECEIVED_MESSAGES.append(msg)
+    if SERVER_SENT['another'] < 100:
+        SERVER_SENT['another'] = SERVER_SENT['another'] + 1
+        rammbock.save_template("__backup_template")
+        try:
+            rammbock.load_template("another")
+            rammbock.server_sends_message()
+        finally:
+            rammbock.load_template("__backup_template")
+
+
+def server_respond_to_sample_response_max_100(rammbock, msg):
+    RECEIVED_MESSAGES.append(msg)
+    if SERVER_SENT['sample'] < 100:
+        SERVER_SENT['sample'] = SERVER_SENT['sample'] + 1
+        rammbock.save_template("__backup_template")
+        try:
+            rammbock.load_template("sample")
+            rammbock.server_sends_message()
+        finally:
+            rammbock.load_template("__backup_template")
 
 
 def get_rcvd_msg():

@@ -1,29 +1,46 @@
 *** Settings ***
-Library    Rammbock
 Suite teardown    Reset Rammbock
 Resource     async_resources.txt
 Force tags   background
 
-
 *** Variables ***
 ${BACKGROUND}=    ${False}
+${PORT}=          44455
 
 *** Test Cases ***
 Serve on background
     Run keyword if   ${BACKGROUND}     Serve
     ...              ELSE              Set test documentation    Skipped because not run on background.
-
+Loop on background
+    Run keyword if   ${BACKGROUND}     Serve on loop
+    ...              ELSE              Set test documentation    Skipped because not run on background.
 
 *** Keywords ***
+Serve on loop
+    Setup connection
+    Send   sample
+    Load Template   another
+    Set server handler     my_handler.server_respond_to_another_max_100     header_filter=messageType   interval=0.1
+    Load template   sample response
+    Set server handler     my_handler.server_respond_to_sample_response_max_100     header_filter=messageType    interval=0.1
+    Wait until keyword succeeds   50s  1s    Handler should have been called with '200' times
+
 Serve
-    Define example protocol
-    Define Templates
-    Start TCP server    127.0.0.1    44455    name=ExampleServer    protocol=Example
-    Accept connection
+    Setup connection
     Receive   another
+    Send sample receive sample
+    Send  another
+    Sleep    5
+
+Send sample receive sample
     Send   sample
     Receive  sample response
-    Send  another
+
+Setup connection
+    Define example protocol
+    Define Templates
+    Start TCP server    127.0.0.1    ${PORT}    name=ExampleServer    protocol=Example
+    Accept connection
 
 Send   [arguments]    ${message}
     Load template    ${message}
@@ -31,6 +48,6 @@ Send   [arguments]    ${message}
 
 Receive   [arguments]    ${message}
     Load template    ${message}
-    Server receives message
+    Server receives message     header_filter=messageType
 
 
