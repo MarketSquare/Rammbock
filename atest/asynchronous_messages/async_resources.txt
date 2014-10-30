@@ -2,6 +2,10 @@
 Resource        ../Protocols.txt
 Library    Rammbock
 Library     my_handler.py
+Library   OperatingSystem
+
+*** Variables ***
+${SIGNAL FILE}=   ${TEMPDIR}${/}.rammbock_background_signal
 
 *** Keywords ***
 Define Templates
@@ -31,6 +35,10 @@ Handler should have been called with '${count}' another messages
     Length should be   ${rcvd_msgs}     ${count}
     ${msg}=    Set variable   ${rcvd msgs[0]}
     Should be equal   ${msg._header.messageType.hex}     0x00ab
+Handler should have been called with '${count}' times with logging
+    Log handler messages
+    Reset handler messages
+    Handler should have been called with '${count}' times
 Handler should have been called with '${count}' times
     ${rcvd msgs}   Get rcvd msg
     Length should be   ${rcvd_msgs}     ${count}

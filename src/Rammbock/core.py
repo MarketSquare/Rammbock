@@ -13,24 +13,27 @@
 #  limitations under the License.
 
 from __future__ import with_statement
-from contextlib import contextmanager
-from Rammbock import logger
-from Rammbock.templates.containers import BagTemplate, CaseTemplate
-from message import _StructuredElement
-from networking import (TCPServer, TCPClient, UDPServer, UDPClient, SCTPServer,
-                        SCTPClient, _NamedCache)
-from message_sequence import MessageSequence
-from templates import (Protocol, UInt, Int, PDU, MessageTemplate, Char, Binary,
-                       TBCD, StructTemplate, ListTemplate, UnionTemplate,
-                       BinaryContainerTemplate, ConditionalTemplate,
-                       TBCDContainerTemplate)
-from binary_tools import to_0xhex, to_bin
 import copy
+from contextlib import contextmanager
+from . import logger
+from .synchronization import SynchronizedType
+from .templates.containers import BagTemplate, CaseTemplate
+from .message import _StructuredElement
+from .networking import (TCPServer, TCPClient, UDPServer, UDPClient, SCTPServer,
+                         SCTPClient, _NamedCache)
+from .message_sequence import MessageSequence
+from .templates import (Protocol, UInt, Int, PDU, MessageTemplate, Char, Binary,
+                        TBCD, StructTemplate, ListTemplate, UnionTemplate,
+                        BinaryContainerTemplate, ConditionalTemplate,
+                        TBCDContainerTemplate)
+from .binary_tools import to_0xhex, to_bin
 
 
 class RammbockCore(object):
 
     ROBOT_LIBRARY_SCOPE = 'GLOBAL'
+
+    __metaclass__ = SynchronizedType
 
     def __init__(self):
         self._init_caches()
@@ -45,12 +48,17 @@ class RammbockCore(object):
         self._field_values = {}
         self._message_sequence = MessageSequence()
         self._message_templates = {}
+        self.reset_handler_messages()
 
     @property
     def _current_container(self):
         return self._message_stack[-1]
 
-    # TODO: Set Server Handler
+    def reset_handler_messages(self):
+        logger.reset_background_messages()
+
+    def log_handler_messages(self):
+        logger.log_background_messages()
 
     def set_client_handler(self, handler_func, name=None, header_filter=None, interval=0.5):
         """Sets an automatic handler for the type of message template currently loaded.

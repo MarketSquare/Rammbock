@@ -1,7 +1,9 @@
 *** Settings ***
-Suite teardown    Reset Rammbock
+Suite teardown    Run keywords   log handler messages    Reset Rammbock
 Resource     async_resources.txt
 Force tags   background
+
+
 
 *** Variables ***
 ${BACKGROUND}=    ${False}
@@ -20,10 +22,10 @@ Serve on loop
     Setup connection
     Send   sample
     Load Template   another
-    Set server handler     my_handler.server_respond_to_another_max_100     header_filter=messageType   interval=0.1
+    Set server handler     my_handler.server_respond_to_another_max_100     header_filter=messageType   interval=0.01
     Load template   sample response
-    Set server handler     my_handler.server_respond_to_sample_response_max_100     header_filter=messageType    interval=0.1
-    Wait until keyword succeeds   50s  1s    Handler should have been called with '200' times
+    Set server handler     my_handler.server_respond_to_sample_response_max_100     header_filter=messageType    interval=0.01
+    Wait until keyword succeeds   30s  0.5s    Handler should have been called with '200' times with logging
 
 Serve
     Setup connection
@@ -40,6 +42,7 @@ Setup connection
     Define example protocol
     Define Templates
     Start TCP server    127.0.0.1    ${PORT}    name=ExampleServer    protocol=Example
+    Touch    ${SIGNAL FILE}
     Accept connection
 
 Send   [arguments]    ${message}

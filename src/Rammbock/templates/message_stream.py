@@ -13,13 +13,11 @@
 #  limitations under the License.
 import time
 import threading
-
-
 import traceback
-import sys
-from Rammbock import logger
 
+from Rammbock import logger
 from Rammbock.binary_tools import to_bin
+from Rammbock.synchronization import LOCK
 
 
 class MessageStream(object):
@@ -42,7 +40,7 @@ class MessageStream(object):
         if interval:
             self._interval = float(interval)
         if not self._handler_thread:
-            self._handler_thread = threading.Thread(target=self.match_handlers_periodically)
+            self._handler_thread = threading.Thread(target=self.match_handlers_periodically, name="Background handler")
             self._handler_thread.daemon = True
             self._handler_thread.start()
 
@@ -54,7 +52,7 @@ class MessageStream(object):
             logger.trace("Cache hit. Cache currently has %s messages" % len(self._cache))
             return msg
         while True:
-            with self._stream.sync_threads():
+            with LOCK:
                 header, pdu_bytes = self._protocol.read(self._stream, timeout=timeout)
                 if self._matches(header, header_fields, header_filter):
                     return self._to_msg(message_template, header, pdu_bytes)
@@ -124,17 +122,14 @@ class MessageStream(object):
             self.match_handlers()
 
     def match_handlers(self):
-        logger.trace("Getting lock for matching handlers")
-        with self._stream.sync_threads():
-            logger.trace("Got lock for matching handlers")
-            try:
-                while True:
+        try:
+            while True:
+                with LOCK:
                     self._try_matching_cached_to_templates()
-                    header, pdu_bytes = self._protocol.read(self._stream, timeout=0.02)
+                    header, pdu_bytes = self._protocol.read(self._stream, timeout=0.01)
                     self._match_or_cache(header, pdu_bytes)
-            except Exception:
-                logger.trace("failure in matching cache %s" % traceback.format_exc())
-        logger.debug("Done matching handlers")
+        except Exception:
+            logger.debug("failure in matching cache %s" % traceback.format_exc())
 
     # FIXME: Is this actually necessary? Wouldnt we always match before caching?
     # Unless of course the handler was set after caching happened...

@@ -15,10 +15,9 @@
 
 import socket
 import time
-from Rammbock import logger
-from binary_tools import to_hex
-from contextlib import contextmanager
-import threading
+from . import logger
+from .synchronization import SynchronizedType
+from .binary_tools import to_hex
 
 try:
     from sctp import sctpsocket_tcp
@@ -48,16 +47,7 @@ class _WithTimeouts(object):
 
 class _NetworkNode(_WithTimeouts):
 
-    def __init__(self):
-        self._lock = threading.RLock()
-
-    @contextmanager
-    def sync_threads(self):
-        self._lock.acquire()
-        try:
-            yield
-        finally:
-            self._lock.release()
+    __metaclass__ = SynchronizedType
 
     _message_stream = None
 
@@ -67,23 +57,20 @@ class _NetworkNode(_WithTimeouts):
         self._message_stream.set_handler(msg_template, handler_func, header_filter, interval)
 
     def get_own_address(self):
-        with self.sync_threads():
-            return self._socket.getsockname()
+        return self._socket.getsockname()
 
     def get_peer_address(self, alias=None):
         if alias:
             raise AssertionError('Named connections not supported.')
-        with self.sync_threads():
-            return self._socket.getpeername()
+        return self._socket.getpeername()
 
     def close(self):
-        with self.sync_threads():
-            if self._is_connected:
-                self._is_connected = False
-                self._socket.close()
-                if self._message_stream:
-                    self._message_stream.close()
-                self._message_stream = None
+        if self._is_connected:
+            self._is_connected = False
+            self._socket.close()
+            if self._message_stream:
+                self._message_stream.close()
+            self._message_stream = None
 
     # TODO: Rename to _get_new_message_stream
     def _get_message_stream(self):
@@ -127,22 +114,19 @@ class _NetworkNode(_WithTimeouts):
         return self._receive_msg_ip_port()
 
     def _receive_msg_ip_port(self):
-        with self.sync_threads():
-            msg = self._socket.recv(self._size_limit)
-            ip, port = self._socket.getpeername()
-            self.log_receive(msg, ip, port)
-            return msg, ip, port
+        msg = self._socket.recv(self._size_limit)
+        ip, port = self._socket.getpeername()
+        self.log_receive(msg, ip, port)
+        return msg, ip, port
 
     def send(self, msg, alias=None):
-        with self.sync_threads():
-            self._raise_error_if_alias_given(alias)
-            ip, port = self.get_peer_address()
-            self.log_send(msg, ip, port)
-            self._sendall(msg)
+        self._raise_error_if_alias_given(alias)
+        ip, port = self.get_peer_address()
+        self.log_send(msg, ip, port)
+        self._sendall(msg)
 
     def _sendall(self, msg):
-        with self.sync_threads():
-            self._socket.sendall(msg)
+        self._socket.sendall(msg)
 
     def _raise_error_if_alias_given(self, alias):
         if alias:
@@ -228,8 +212,7 @@ class UDPServer(_Server, _UDPNode):
         self.send(msg)
 
     def _sendall(self, msg):
-        with self.sync_threads():
-            self._socket.sendto(msg, self.get_peer_address())
+        self._socket.sendto(msg, self.get_peer_address())
 
     def get_peer_address(self, alias=None):
         self._check_no_alias(alias)
@@ -272,13 +255,12 @@ class StreamServer(_Server):
         raise Exception("Stream server cannot send to a specific address.")
 
     def close(self):
-        with self.sync_threads():
-            if self._is_connected:
-                self._is_connected = False
-                for connection in self._connections:
-                    connection.close()
-                self._socket.close()
-                self._init_connection_cache()
+        if self._is_connected:
+            self._is_connected = False
+            for connection in self._connections:
+                connection.close()
+            self._socket.close()
+            self._init_connection_cache()
 
     def close_connection(self, alias=None):
         raise Exception("Not yet implemented")
@@ -428,8 +410,3 @@ class BufferedStream(_WithTimeouts):
 
     def empty(self):
         self._buffer = ''
-
-    @contextmanager
-    def sync_threads(self):
-        with self._connection.sync_threads():
-            yield

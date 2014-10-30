@@ -53,9 +53,9 @@ Asynchronous messages on background
     [Setup]    Setup protocol, one client, background server, and define templates      Loop on background
     Load Template   sample
     Reset received messages
-    Set client handler  my_handler.respond_to_sample     header_filter=messageType     interval=0.1
+    Set client handler  my_handler.respond_to_sample     header_filter=messageType     interval=0.01
     Repeat keyword   100    Send receive another
-    Wait until keyword succeeds     20s  1s  Handler should have been called with '101' sample messages
+    Wait until keyword succeeds     20s  0.5s  Handler should have been called with '101' sample messages
     [Teardown]     Get background results and reset
 Register an auto reply to work on background
     Load Template   sample
@@ -77,15 +77,18 @@ Send receive another
 Get background results and reset
     ${res}=    Terminate Process
     Log    STDOUT:\n${res.stdout}\nSTDERR:\n${res.stderr}
+    log handler messages
     Teardown rammbock and increment port numbers
 Setup protocol, one client, background server, and define templates
     [Arguments]    ${background operation}
     Define Example protocol
     Define templates
+    Remove File     ${SIGNAL FILE}
     Start background process    ${background operation}
     Start TCP client    127.0.0.1   45555   name=client   protocol=Example
-    Sleep   3   # Unfortunately if connect fails, the same socket can not be reused. So polling becomes difficult
-    Connect     127.0.0.1   44455
+    Wait Until Created    ${SIGNAL FILE}     timeout=10 seconds
+    sleep   0.1s     # Just to make sure we dont get inbetween keywordcalls
+    Connect     127.0.0.1   ${SERVER PORT}
 Setup protocol, server, two clients, and define templates
     Define protocol, start tcp server and two clients    protocol=Example
     Define templates
@@ -115,6 +118,6 @@ Sample message should be in cache
 Start background process
     [Arguments]     ${name}
     ${process}=    Start process  pybot  --test  ${name}  --loglevel   DEBUG
-    ...            --variable  BACKGROUND:True   --pythonpath  ${SOURCEDIR}
+    ...            --variable  BACKGROUND:True   --variable  PORT:${SERVER PORT}  --pythonpath  ${SOURCEDIR}
     ...            --outputdir  ${TEMPDIR}  ${BACKGROUND FILE}  shell=True
     [Return]    ${process}

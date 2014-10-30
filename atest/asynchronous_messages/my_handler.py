@@ -1,3 +1,5 @@
+from Rammbock import logger
+
 
 RECEIVED_MESSAGES = []
 SERVER_SENT = {'sample': 0,
@@ -33,6 +35,8 @@ def server_respond_to_another_max_100(rammbock, msg):
             rammbock.server_sends_message()
         finally:
             rammbock.load_template("__backup_template")
+    else:
+        logger.warn("Reached 100 in another")
 
 
 def server_respond_to_sample_response_max_100(rammbock, msg):
@@ -45,6 +49,8 @@ def server_respond_to_sample_response_max_100(rammbock, msg):
             rammbock.server_sends_message()
         finally:
             rammbock.load_template("__backup_template")
+    else:
+        logger.warn("Reached 100 in sample")
 
 
 def get_rcvd_msg():

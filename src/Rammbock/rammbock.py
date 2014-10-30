@@ -14,10 +14,10 @@
 
 import os
 
-from core import RammbockCore
 from robot.libraries.BuiltIn import BuiltIn
-from message_sequence import SeqdiagGenerator
-from version import VERSION
+from .core import RammbockCore
+from .message_sequence import SeqdiagGenerator
+from .version import VERSION
 
 
 class Rammbock(RammbockCore):
