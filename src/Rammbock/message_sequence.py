@@ -100,9 +100,9 @@ class SeqdiagGenerator(object):
         for row in sequence[-15:]:
             row = list(row)
             if operators.index(row[0]) < operators.index(row[1]):
-                result += '    %s -> %s %s;\n' % (row[0], row[1], self._get_label(row))
+                result += '    "%s" -> "%s" %s;\n' % (row[0], row[1], self._get_label(row))
             else:
-                result += '    %s <- %s %s;\n' % (row[1], row[0], self._get_label(row))
+                result += '    "%s" <- "%s" %s;\n' % (row[1], row[0], self._get_label(row))
         return self.template % result
 
     def _get_label(self, row):

@@ -72,8 +72,8 @@ class TestSeqdiagGenerator(TestCase):
                           [['Sender', 'Receiver', 'Protocol:Msg', '', 'received'],
                            ['Receiver', 'Sender', 'Protocol:Msg', '', 'received']]),
                           """diagram {
-    Sender -> Receiver [label = "Protocol:Msg"];
-    Sender <- Receiver [label = "Protocol:Msg"];
+    "Sender" -> "Receiver" [label = "Protocol:Msg"];
+    "Sender" <- "Receiver" [label = "Protocol:Msg"];
 }
 """)
 
@@ -81,7 +81,7 @@ class TestSeqdiagGenerator(TestCase):
         self.assertEquals(self.generator.generate(['Sender', 'Receiver'],
                           [['Sender', 'Receiver', 'Protocol:Msg', 'This failed', 'received']]),
                           """diagram {
-    Sender -> Receiver [label = "Protocol:Msg - This failed", color = red];
+    "Sender" -> "Receiver" [label = "Protocol:Msg - This failed", color = red];
 }
 """)
 
@@ -94,12 +94,12 @@ class TestSeqdiagGenerator(TestCase):
                            ['Server', 'DB', 'HTTP:background', '', 'received'],
                            ['DB', 'Server', 'HTTP:response', '', 'received']]),
                           """diagram {
-    Client -> Server [label = "Protocol:Req"];
-    Client <- Server [label = "Protocol:Resp"];
-    Client -> DB [label = "msg"];
-    Client <- DB [label = "another"];
-    Server -> DB [label = "HTTP:background"];
-    Server <- DB [label = "HTTP:response"];
+    "Client" -> "Server" [label = "Protocol:Req"];
+    "Client" <- "Server" [label = "Protocol:Resp"];
+    "Client" -> "DB" [label = "msg"];
+    "Client" <- "DB" [label = "another"];
+    "Server" -> "DB" [label = "HTTP:background"];
+    "Server" <- "DB" [label = "HTTP:response"];
 }
 """)
 
@@ -112,21 +112,21 @@ class TestSeqdiagGenerator(TestCase):
                            ['Server', 'DB', 'HTTP:background', '', 'received'],
                            ['DB', 'Server', 'HTTP:response', '', 'received']] * 10),
                           """diagram {
-    Client <- DB [label = "another"];
-    Server -> DB [label = "HTTP:background"];
-    Server <- DB [label = "HTTP:response"];
-    Client -> Server [label = "Protocol:Req"];
-    Client <- Server [label = "Protocol:Resp"];
-    Client -> DB [label = "msg"];
-    Client <- DB [label = "another"];
-    Server -> DB [label = "HTTP:background"];
-    Server <- DB [label = "HTTP:response"];
-    Client -> Server [label = "Protocol:Req"];
-    Client <- Server [label = "Protocol:Resp"];
-    Client -> DB [label = "msg"];
-    Client <- DB [label = "another"];
-    Server -> DB [label = "HTTP:background"];
-    Server <- DB [label = "HTTP:response"];
+    "Client" <- "DB" [label = "another"];
+    "Server" -> "DB" [label = "HTTP:background"];
+    "Server" <- "DB" [label = "HTTP:response"];
+    "Client" -> "Server" [label = "Protocol:Req"];
+    "Client" <- "Server" [label = "Protocol:Resp"];
+    "Client" -> "DB" [label = "msg"];
+    "Client" <- "DB" [label = "another"];
+    "Server" -> "DB" [label = "HTTP:background"];
+    "Server" <- "DB" [label = "HTTP:response"];
+    "Client" -> "Server" [label = "Protocol:Req"];
+    "Client" <- "Server" [label = "Protocol:Resp"];
+    "Client" -> "DB" [label = "msg"];
+    "Client" <- "DB" [label = "another"];
+    "Server" -> "DB" [label = "HTTP:background"];
+    "Server" <- "DB" [label = "HTTP:response"];
 }
 """)
 
