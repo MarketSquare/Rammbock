@@ -24,7 +24,7 @@ from Rammbock.ordered_dict import OrderedDict
 from Rammbock.binary_tools import (to_binary_string_of_length, to_bin,
                                    to_tbcd_value, to_tbcd_binary)
 from Rammbock.condition_parser import ConditionParser
-from Rammbock.logger import trace
+from Rammbock.logger import logger
 
 
 class _Template(object):
@@ -376,10 +376,10 @@ class BagTemplate(_Template):
         for case in self._fields.values():
             try:
                 match = case.decode(data, bag, little_endian=little_endian)
-                trace("'%s' matches in bag '%s'. value: %r" % (case.name, self.name, match[match.len - 1]))
+                logger.trace("'%s' matches in bag '%s'. value: %r" % (case.name, self.name, match[match.len - 1]))
                 return match
             except Exception as e:
-                trace("'%s' does not match in bag '%s'. Error: %s" % (case.name, self.name, e.message))
+                logger.trace("'%s' does not match in bag '%s'. Error: %s" % (case.name, self.name, e.message))
         raise AssertionError("Unable to decode bag value.")
 
     def _get_struct(self, name, parent):

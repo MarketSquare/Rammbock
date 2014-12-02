@@ -15,7 +15,7 @@
 
 import socket
 import time
-from . import logger
+from .logger import logger
 from .synchronization import SynchronizedType
 from .binary_tools import to_hex
 

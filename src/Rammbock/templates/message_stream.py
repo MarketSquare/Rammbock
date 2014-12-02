@@ -15,7 +15,7 @@ import time
 import threading
 import traceback
 
-from Rammbock import logger
+from Rammbock.logger import logger
 from Rammbock.binary_tools import to_bin
 from Rammbock.synchronization import LOCK
 

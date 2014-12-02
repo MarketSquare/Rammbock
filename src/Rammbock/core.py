@@ -15,7 +15,7 @@
 from __future__ import with_statement
 import copy
 from contextlib import contextmanager
-from . import logger
+from .logger import logger
 from .synchronization import SynchronizedType
 from .templates.containers import BagTemplate, CaseTemplate
 from .message import _StructuredElement
