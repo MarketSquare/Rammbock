@@ -6,9 +6,14 @@ from .decorator import decorator
 LOCK = threading.RLock()
 
 
+SYNCHRONIZATION = True
+
+
 @decorator
 def synchronized(f, *args, **kw):
     """ Synchronization decorator """
+    if not SYNCHRONIZATION:
+        return f(*args, **kw)
     with LOCK:
         return f(*args, **kw)
 

@@ -14,6 +14,7 @@
 
 
 import socket
+import ssl
 import time
 from .logger import logger
 from .synchronization import SynchronizedType
@@ -189,7 +190,7 @@ class _Server(_NetworkNode):
 
 class UDPServer(_Server, _UDPNode):
 
-    def __init__(self, ip, port, timeout=None, protocol=None):
+    def __init__(self, ip, port, timeout=None, protocol=None, keystore=None):
         _Server.__init__(self, ip, port, timeout)
         self._protocol = protocol
         self._last_client = None
@@ -223,7 +224,7 @@ class UDPServer(_Server, _UDPNode):
 
 class StreamServer(_Server):
 
-    def __init__(self, ip, port, timeout=None, protocol=None):
+    def __init__(self, ip, port, timeout=None, protocol=None, keystore=None):
         _Server.__init__(self, ip, port, timeout)
         self._init_socket()
         self._bind_socket()
@@ -296,9 +297,28 @@ class TCPServer(StreamServer, _TCPNode):
     pass
 
 
+class SSLServer(TCPServer):
+
+    _transport_layer_name = 'SSL'
+
+    def __init__(self, ip, port, timeout=None, protocol=None, keystore=None):
+        TCPServer.__init__(self, ip, port, timeout, protocol)
+        self._keystore = keystore
+
+    def accept_connection(self, alias=None):
+        connection, client_address = self._socket.accept()
+        connstream = ssl.wrap_socket(connection,
+                                     server_side=True,
+                                     certfile=self._keystore,
+                                     keyfile=self._keystore,
+                                     ssl_version=ssl.PROTOCOL_TLSv1)
+        self._connections.add(_TCPConnection(connstream, protocol=self._protocol), alias)
+        return client_address
+
+
 class _Client(_NetworkNode):
 
-    def __init__(self, timeout=None, protocol=None):
+    def __init__(self, timeout=None, protocol=None, keystore=None):
         self._is_connected = False
         self._init_socket()
         self._set_default_timeout(timeout)
@@ -336,6 +356,19 @@ class TCPClient(_Client, _TCPNode):
 
 class SCTPClient(_Client, _SCTPNode):
     pass
+
+
+class SSLClient(TCPClient):
+
+    _transport_layer_name = 'SSL'
+
+    def __init__(self, timeout=None, protocol=None, keystore=None):
+        TCPClient.__init__(self, timeout, protocol)
+        self._keystore = keystore
+        self._socket = ssl.wrap_socket(self._socket,
+                                       cert_reqs=ssl.CERT_REQUIRED,
+                                       ssl_version=ssl.PROTOCOL_TLSv1,
+                                       ca_certs=self._keystore)
 
 
 class _NamedCache(object):

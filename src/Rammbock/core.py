@@ -20,7 +20,7 @@ from .synchronization import SynchronizedType
 from .templates.containers import BagTemplate, CaseTemplate
 from .message import _StructuredElement
 from .networking import (TCPServer, TCPClient, UDPServer, UDPClient, SCTPServer,
-                         SCTPClient, _NamedCache)
+                         SCTPClient, SSLServer, SSLClient, _NamedCache)
 from .message_sequence import MessageSequence
 from .templates import (Protocol, UInt, Int, PDU, MessageTemplate, Char, Binary,
                         TBCD, StructTemplate, ListTemplate, UnionTemplate,
@@ -219,9 +219,14 @@ class RammbockCore(object):
         """
         self._start_server(SCTPServer, ip, port, name, timeout, protocol)
 
-    def _start_server(self, server_class, ip, port, name=None, timeout=None, protocol=None):
+    def start_ssl_server(self, ip, port, name=None, timeout=None, protocol=None, keystore=None):
+        """Starts a new SSL server to given `ip` and `port`.
+        """
+        self._start_server(SSLServer, ip, port, name, timeout, protocol, keystore)
+
+    def _start_server(self, server_class, ip, port, name=None, timeout=None, protocol=None, keystore=None):
         protocol = self._get_protocol(protocol)
-        server = server_class(ip=ip, port=port, timeout=timeout, protocol=protocol)
+        server = server_class(ip=ip, port=port, timeout=timeout, protocol=protocol, keystore=keystore)
         return self._servers.add(server, name)
 
     def start_udp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None):
@@ -269,9 +274,14 @@ class RammbockCore(object):
         """
         self._start_client(SCTPClient, ip, port, name, timeout, protocol)
 
-    def _start_client(self, client_class, ip=None, port=None, name=None, timeout=None, protocol=None):
+    def start_ssl_client(self, ip=None, port=None, name=None, timeout=None, protocol=None, keystore=None):
+        """Starts a new SSL client.
+        """
+        self._start_client(SSLClient, ip, port, name, timeout, protocol, keystore)
+
+    def _start_client(self, client_class, ip=None, port=None, name=None, timeout=None, protocol=None, keystore=None):
         protocol = self._get_protocol(protocol)
-        client = client_class(timeout=timeout, protocol=protocol)
+        client = client_class(timeout=timeout, protocol=protocol, keystore=keystore)
         if ip or port:
             client.set_own_ip_and_port(ip=ip, port=port)
         return self._clients.add(client, name)

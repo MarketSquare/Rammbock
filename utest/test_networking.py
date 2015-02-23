@@ -1,11 +1,15 @@
 from unittest import TestCase, main
 import time
 import socket
-from threading import Timer
-from Rammbock.networking import UDPServer, TCPServer, UDPClient, TCPClient, BufferedStream
+import os
+from threading import Timer, Thread
+from Rammbock import synchronization
+from Rammbock.networking import UDPServer, TCPServer, UDPClient, TCPClient, SSLClient, SSLServer, BufferedStream
 from Rammbock.templates.containers import Protocol
 from Rammbock.templates.primitives import UInt, PDU
 
+BASE = os.path.dirname(__file__)
+KEYSTORE = os.path.join(BASE, '..', 'atest', 'cert.pem')
 
 LOCAL_IP = '127.0.0.1'
 CONNECTION_ALIAS = "Connection alias"
@@ -71,6 +75,35 @@ class _NetworkingTests(TestCase):
         self.sockets.append(server)
         self.sockets.append(client)
         return server, client
+
+
+class TestSSLNetworking(_NetworkingTests):
+
+    def test_send_receive_over_ssl(self):
+        client, server = self._connect_ssl_server_and_client(ports['SERVER_PORT'] + 1000,
+                                                             ports['CLIENT_PORT'] + 1000)
+        client.send('foofaa')
+        self._assert_receive(server, 'foofaa')
+
+    def _connect_ssl_server_and_client(self, server_port, client_port=None, timeout=None):
+        server = SSLServer(LOCAL_IP, server_port, timeout=timeout, keystore=KEYSTORE)
+        client = SSLClient(timeout=timeout, keystore=KEYSTORE)
+        if client_port:
+            client.set_own_ip_and_port(LOCAL_IP, client_port)
+        # We need to disable synchronization to accept ssl connection while
+        # connecting client
+        synchronization.SYNCHRONIZATION = False
+        try:
+            Thread(target=self._accept_on_background, args=(server, )).start()
+            client.connect_to(LOCAL_IP, server_port)
+        finally:
+            synchronization.SYNCHRONIZATION = True
+        self.sockets.append(server)
+        self.sockets.append(client)
+        return server, client
+
+    def _accept_on_background(self, server):
+        server.accept_connection()
 
 
 class TestNetworking(_NetworkingTests):
