@@ -207,7 +207,7 @@ class Char(_TemplateField):
 
     def _prepare_data(self, data):
         if self._terminator:
-            return data[0:data.index(self._terminator) + 1]
+            return data[0:data.index(self._terminator) + len(self._terminator)]
         return data
 
 
