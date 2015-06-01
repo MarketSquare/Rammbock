@@ -84,7 +84,7 @@ class RammbockCore(object):
 
         my_module.py:
         | def respond_to_sample(rammbock, msg):
-        |     rammbock.save_template("__backup_template")
+        |     rammbock.save_template("__backup_template", unlocked=True)
         |     try:
         |         rammbock.load_template("sample response")
         |         rammbock.client_sends_message()
@@ -122,7 +122,7 @@ class RammbockCore(object):
 
         my_module.py:
         | def respond_to_sample(rammbock, msg):
-        |     rammbock.save_template("__backup_template")
+        |     rammbock.save_template("__backup_template", unlocked=True)
         |     try:
         |         rammbock.load_template("sample response")
         |         rammbock.server_sends_message()
