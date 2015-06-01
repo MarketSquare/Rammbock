@@ -29,7 +29,7 @@ Load template with header parameters
     Load template     single       header:field:10
     ${msg}=           Get message
     Should be equal as integers    ${msg._header.field}    10
-    
+
 Load template with header parameters does not alter the original template
     Save single and double templates
     Load template     single       header:field:10
@@ -51,6 +51,12 @@ Adding fields to message after loading template is not allowed
     Run keyword and expect error
     ...    Adding fields to message loaded with Load template is not allowed
     ...    u32    new_field   2
+
+Adding fields to message after loading template is allowed if saved as not locked
+    Single valued
+    Save template   unlocked   unlocked=True
+    Load template   unlocked
+    u32    new_field   2
 
 Using load copy of template should preserve saved values in template
     Save single and double templates with values

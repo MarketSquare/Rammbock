@@ -422,11 +422,21 @@ class RammbockCore(object):
         if configs or fields:
             raise AssertionError('Cannot set configs or pdu fields in %s' % function)
 
-    def save_template(self, name):
+    def save_template(self, name, unlocked=False):
         """Save a message template for later use with `Load template`.
+
+        If saved template is marked as unlocked, then changes can be made to it
+        afterwards. By default tempaltes are locked.
+
+        Examples:
+        | Save Template | MyMessage |
+        | Save Template | MyOtherMessage | unlocked=True |
         """
+        if isinstance(unlocked, basestring):
+            unlocked = unlocked.lower() != 'false'
         template = self._get_message_template()
-        template.set_as_saved()
+        if not unlocked:
+            template.set_as_saved()
         self._message_templates[name] = (template, self._field_values)
 
     def load_template(self, name, *parameters):
