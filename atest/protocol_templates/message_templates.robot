@@ -112,6 +112,20 @@ Two unread message should be in server buffer
     ${count}=    Get server unread messages count    server_name=ExampleServer
     Should be equal as integers    ${count}    2
 
+Receive latest
+    Client sends request and server receives it
+    Server Sends simple request    value:0xf0f0f0f0
+    Server Sends simple request    value:0xb0b0b0b0
+    Server Sends simple request    value:0xcafebabe
+    ${msg}=    Client Receives Message    latest=True
+    Should be equal   ${msg.value.hex}     0xcafebabe
+    ${count}=    Get client unread messages count    client_name=ExampleClient
+    Should be equal as integers    ${count}    2
+
+Receive latest when only one message
+    Client Sends simple request
+    Server receives message   latest=True
+
 *** Keywords ***
 Server receive for simple request will timeout
     Run keyword and expect error    timeout: timed out    Server Receives simple request    timeout=0.1

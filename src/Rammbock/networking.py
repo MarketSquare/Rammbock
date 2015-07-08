@@ -84,15 +84,15 @@ class _NetworkNode(_WithTimeouts):
             return None
         return self._protocol.get_message_stream(BufferedStream(self, self._default_timeout))
 
-    def get_message(self, message_template, timeout=None, header_filter=None):
+    def get_message(self, message_template, timeout=None, header_filter=None, latest=None):
         if not self._protocol:
             raise AssertionError('Can not receive messages without protocol. Initialize network node with "protocol=<protocl name>"')
         if self._protocol != message_template._protocol:
             raise AssertionError('Template protocol does not match network node protocol %s!=%s' % (self.protocol_name, message_template._protocol.name))
-        return self._get_from_stream(message_template, self._message_stream, timeout=timeout, header_filter=header_filter)
+        return self._get_from_stream(message_template, self._message_stream, timeout=timeout, header_filter=header_filter, latest=latest)
 
-    def _get_from_stream(self, message_template, stream, timeout, header_filter):
-        return stream.get(message_template, timeout=timeout, header_filter=header_filter)
+    def _get_from_stream(self, message_template, stream, timeout, header_filter, latest):
+        return stream.get(message_template, timeout=timeout, header_filter=header_filter, latest=latest)
 
     def log_send(self, binary, ip, port):
         logger.debug("Send %d bytes: %s to %s:%s over %s" % (len(binary), to_hex(binary), ip, port, self._transport_layer_name))

@@ -547,9 +547,13 @@ class RammbockCore(object):
         validate field values.
 
         Message template has to be defined with `New Message` before calling
-        this. Optional parameters are client `name` and possible `timeout`
-        separated with equals and message field values for validation separated
-        with colon.
+        this.
+
+        Optional parameters:
+        - `name` the client name (default is the latest used) example: `name=Client 1`
+        - `timeout` for receiving message. example: `timeout=0.1`
+        - `latest` if set to True, get latest message from buffer instead first. Default is False. Example: `latest=True`
+        -  message field values for validation separated with colon. example: `some_field:0xaf05`
 
         Examples:
         | ${msg} = | Client receives message |
@@ -564,8 +568,12 @@ class RammbockCore(object):
         """Receive a message with template defined using `New Message`.
 
         Message template has to be defined with `New Message` before calling
-        this. Optional parameters are client `name` and possible `timeout`
-        separated with equals.
+        this.
+
+        Optional parameters:
+        - `name` the client name (default is the latest used) example: `name=Client 1`
+        - `timeout` for receiving message. example: `timeout=0.1`
+        - `latest` if set to True, get latest message from buffer instead first. Default is False. Example: `latest=True`
 
         Examples:
         | ${msg} = | Client receives without validation |
@@ -579,7 +587,16 @@ class RammbockCore(object):
         validate field values.
 
         Message template has to be defined with `New Message` before calling
-        this. Optional parameters are server `name`, `connection` alias and
+        this.
+
+        Optional parameters:
+        - `name` the client name (default is the latest used) example: `name=Client 1`
+        - `connection` alias. example: `connection=connection 1`
+        - `timeout` for receiving message. example: `timeout=0.1`
+        - `latest` if set to True, get latest message from buffer instead first. Default is False. Example: `latest=True`
+        -  message field values for validation separated with colon. example: `some_field:0xaf05`
+
+        Optional parameters are server `name`, `connection` alias and
         possible `timeout` separated with equals and message field values for
         validation separated with colon.
 
@@ -596,8 +613,13 @@ class RammbockCore(object):
         """Receive a message with template defined using `New Message`.
 
         Message template has to be defined with `New Message` before calling
-        this. Optional parameters are server `name` and possible `timeout`
-        separated with equals.
+        this.
+
+        Optional parameters:
+        - `name` the client name (default is the latest used) example: `name=Client 1`
+        - `connection` alias. example: `connection=connection 1`
+        - `timeout` for receiving message. example: `timeout=0.1`
+        - `latest` if set to True, get latest message from buffer instead first. Default is False. Example: `latest=True`
 
         Examples:
         | ${msg} = | Server receives without validation |

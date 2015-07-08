@@ -44,10 +44,12 @@ class MessageStream(object):
             self._handler_thread.daemon = True
             self._handler_thread.start()
 
-    def get(self, message_template, timeout=None, header_filter=None):
+    def get(self, message_template, timeout=None, header_filter=None, latest=None):
         header_fields = message_template.header_parameters
         logger.trace("Get message with params %s" % header_fields)
-        msg = self._get_from_cache(message_template, header_fields, header_filter)
+        if latest:
+            self._fill_cache()
+        msg = self._get_from_cache(message_template, header_fields, header_filter, latest)
         if msg:
             logger.trace("Cache hit. Cache currently has %s messages" % len(self._cache))
             return msg
@@ -73,8 +75,9 @@ class MessageStream(object):
         mod = __import__(module)
         return getattr(mod, function)
 
-    def _get_from_cache(self, template, fields, header_filter):
-        for index in range(len(self._cache)):
+    def _get_from_cache(self, template, fields, header_filter, latest):
+        indexes = range(len(self._cache))
+        for index in indexes if not latest else reversed(indexes):
             header, pdu = self._cache[index]
             if self._matches(header, fields, header_filter):
                 self._cache.pop(index)
@@ -137,7 +140,7 @@ class MessageStream(object):
         if not self._cache:
             return
         for template, func, handler_filter in self._handlers:
-            msg = self._get_from_cache(template, template.header_parameters, handler_filter)
+            msg = self._get_from_cache(template, template.header_parameters, handler_filter, False)
             if msg:
                 logger.debug("Calling handler %s for cached message %s" % (func, msg))
                 self._get_call_handler(func)(self._protocol.library, msg)
