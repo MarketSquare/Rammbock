@@ -1,7 +1,7 @@
 *** Settings ***
 Test Setup        Setup protocol, UDP server, and client
 Test Teardown     Teardown rammbock and increment port numbers
-Resource          Protocols.txt
+Resource          Protocols.robot
 Library           OperatingSystem
 
 *** Test Cases ***

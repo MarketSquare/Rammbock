@@ -2,7 +2,7 @@
 Test Setup        Setup protocol, UDP server, and client
 Test Teardown     Teardown rammbock and increment port numbers
 Default Tags      regression
-Resource          ../Protocols.txt
+Resource          ../Protocols.robot
 
 *** Test Cases ***
 Binary field encoding

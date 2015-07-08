@@ -1,12 +1,12 @@
 *** Settings ***
-Resource          ../Protocols.txt
+Resource          ../Protocols.robot
 
 *** Keywords ***
 Client Sends simple request
     [Arguments]    @{params}
     Simple request
     Client Sends message    @{params}
-    
+
 Client Sends long request
     [Arguments]    @{params}
     Long request
@@ -49,7 +49,7 @@ Client sends request and server receives it
 Simple request
     New message    ValueRequest    Example    header:messageType:0xdddd    header:flags:0xffff
     u32    value    0xdeadbeef
-    
+
 Long request
     New message    ValueRequest    Example    header:messageType:0xdddd    header:flags:0xffff
     u32    value    0xdeadbeef

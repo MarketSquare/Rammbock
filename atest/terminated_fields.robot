@@ -2,7 +2,7 @@
 Library           Rammbock
 Suite setup       Define protocol
 Suite teardown    Reset Rammbock
-Resource    Protocols.txt
+Resource    Protocols.robot
 Default tags    Regression
 
 *** Test Cases ***

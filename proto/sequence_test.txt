@@ -1,7 +1,7 @@
 *** Settings ***
 Test Setup        Setup protocol, UDP server, and client
 Test teardown     Teardown rammbock and increment port numbers
-Resource          ../atest/Protocols.txt
+Resource          ../atest/Protocols.robot
 Default tags      Regression
 
 *** Variables ***
@@ -21,7 +21,7 @@ Example sequence
 Setup protocol, UDP server, and client
     Define example protocol
     Setup UDP server and client    protocol=Example
-    
+
 Setup UDP server and client
     [Arguments]    ${protocol}=
     Start udp server    ${SERVER}    ${SERVER PORT}    name=ExampleServer    protocol=${protocol}    timeout=1
@@ -44,7 +44,7 @@ Pair
     u8    first       ${value}
     u8    second      ${value}
     End struct
-    
+
 Server receives request with struct
     [Arguments]    @{params}
     Message with struct
@@ -60,9 +60,8 @@ Server sends sum response
     [Arguments]     ${sum}
     Sum message
     Server sends message    status:0    sum:${sum}
-    
+
 Sum message
     New Message    SumMessage     Example    header:messageType:0xbbbb
     u8     status
     u32    sum
-    

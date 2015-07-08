@@ -2,7 +2,7 @@
 Test Setup        Setup protocol, UDP server, and client
 Test Teardown     Teardown rammbock and increment port numbers
 Default Tags      regression
-Resource          template_resources.txt
+Resource          template_resources.robot
 
 
 *** Test Cases ***

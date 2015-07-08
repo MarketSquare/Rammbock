@@ -1,5 +1,5 @@
 *** Settings ***
-Resource          Protocols.txt
+Resource          Protocols.robot
 Test Setup        Setup protocol, UDP server, and client
 Test teardown     Teardown rammbock and increment port numbers
 Default Tags        Regression
@@ -16,7 +16,7 @@ Server sends client receives
     Server sends     Value ExampleMessage    faa:200
     ${msg}=     Client receives    Value ExampleMessage   faa:200
     Verify message fields    ${msg}
-    
+
 Default values in get message
      Value ExampleMessage
      ${msg}=      Get message    faa:200
@@ -69,15 +69,15 @@ Validation of field fails
 Verify message fields
     [Arguments]   ${msg}
     Should be equal as integers    1    ${msg.foo.int}
-    Should be equal as integers    10   ${msg.bar.int} 
-    Should be equal as integers    200    ${msg.faa.int}    
-    
+    Should be equal as integers    10   ${msg.bar.int}
+    Should be equal as integers    200    ${msg.faa.int}
+
 ExampleMessage
-    New Message     ExampleMessage    Example    header:messageType:0xbabe  
+    New Message     ExampleMessage    Example    header:messageType:0xbabe
     u16             foo       1
     u8              bar       2
-    u8              faa       
-    
+    u8              faa
+
 Value ExampleMessage
     ExampleMessage
     Value           bar      10
@@ -91,7 +91,7 @@ ComplexMessage
     New Message     ComplexMessage    Example    header:messageType:0xbabe
     Product        wonker
     Product        bonker
-    
+
 Product
     [Arguments]    ${name}
     New Struct   Product   ${name}
@@ -99,29 +99,29 @@ Product
     u32          price
     u32          category
     End struct
-    
+
 Client sends
     [Arguments]    ${message type}   @{params}
     Run keyword    ${message type}
     Client sends message    @{params}
 
-Server sends 
+Server sends
     [Arguments]    ${message type}   @{params}
     Run keyword    ${message type}
     Server sends message    @{params}
-    
+
 Server receives
     [Arguments]    ${message type}   @{params}
     Run keyword    ${message type}
-    ${msg}=      Server receives message    @{params}  
+    ${msg}=      Server receives message    @{params}
     [Return]     ${msg}
-    
+
 Client receives
     [Arguments]    ${message type}   @{params}
     Run keyword    ${message type}
-    ${msg}=      Client receives message    @{params}  
+    ${msg}=      Client receives message    @{params}
     [Return]     ${msg}
-    
-Send first message to server to identify client    
+
+Send first message to server to identify client
     Client sends     Value ExampleMessage
     ${msg}=     Server receives     Value ExampleMessage

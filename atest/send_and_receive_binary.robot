@@ -2,7 +2,7 @@
 Test Setup        Setup TCP server and client
 Test Teardown     Teardown rammbock and increment port numbers
 Default Tags      Regression
-Resource          Protocols.txt
+Resource          Protocols.robot
 
 *** Test cases ***
 TCP Client sends binary to server

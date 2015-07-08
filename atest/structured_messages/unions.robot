@@ -2,7 +2,7 @@
 Test Setup        Setup protocol, UDP server, and client
 Test teardown     Teardown rammbock and increment port numbers
 Library           ../message_tools.py
-Resource          ../Protocols.txt
+Resource          ../Protocols.robot
 Default Tags      Regression
 
 
@@ -15,15 +15,15 @@ Simple union
     Should be equal    ${msg.simpleU.fooShort.hex}      0xf0
 
 Union in struct
-    Client sends simple union in struct   
-    ...  structField.structBeginField:0xbeba       
-    ...  structField.onion:fooMiddle   
-    ...  structField.onion.fooMiddle:0xf00d  
-    ...  structField.structEndField:0xabba       
+    Client sends simple union in struct
+    ...  structField.structBeginField:0xbeba
+    ...  structField.onion:fooMiddle
+    ...  structField.onion.fooMiddle:0xf00d
+    ...  structField.structEndField:0xabba
     ${msg} =    Server receives union in struct
     Should be equal as integers   ${msg.structField.structBeginField.hex}  0xbeba
-    Should be equal as integers   ${msg.structField.onion.fooMiddle.hex}   0xf00d    
-    Should be equal as integers   ${msg.structField.structEndField.hex}    0xabba        
+    Should be equal as integers   ${msg.structField.onion.fooMiddle.hex}   0xf00d
+    Should be equal as integers   ${msg.structField.structEndField.hex}    0xabba
 
 Complex union
     Client sends complex union request     complexU:complexType  complexU.complexType.first:1    complexU.complexType.second:2
@@ -41,7 +41,7 @@ Choosing union when receiving
     [Tags]
     Client sends hyper complex union request    hyperU:machine
     ${msg} =    Server receives hyper complex union request    hyperU:machine
-    Field should exist        ${msg.hyperU}     machine 
+    Field should exist        ${msg.hyperU}     machine
     Field should not exist    ${msg.hyperU}     user
 
 Proper error message when union not chosen
@@ -81,13 +81,13 @@ Server receives simple union request
     Simple union message
     ${msg} =    Server Receives message    @{params}
     [return]    ${msg}
-    
+
 Server receives union in struct
     [Arguments]    @{params}
     Simple union in struct
     ${msg} =    Server Receives message    @{params}
     [return]    ${msg}
-        
+
 Client sends complex union request
     [Arguments]    @{params}
     Complex union message
@@ -125,7 +125,7 @@ Simple union in struct
 SStructField
     [Arguments]    ${name}
     New struct     SStructField    ${name}
-    u32            structBeginField     
+    u32            structBeginField
     Simple union   onion
     u32            structEndField
     End struct

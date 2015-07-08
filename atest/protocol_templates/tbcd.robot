@@ -2,7 +2,7 @@
 Test Setup        Define example protocol
 Test Teardown     Teardown rammbock and increment port numbers
 Default Tags      regression
-Resource          ../Protocols.txt
+Resource          ../Protocols.robot
 
 *** Test Cases ***
 

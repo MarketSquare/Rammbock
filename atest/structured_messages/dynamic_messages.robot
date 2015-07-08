@@ -1,7 +1,7 @@
 *** Settings ***
 Test Setup        Setup protocol, UDP server, and client
 Test teardown     Teardown rammbock and increment port numbers
-Resource          ../Protocols.txt
+Resource          ../Protocols.robot
 Default Tags      Regression
 
 *** Variables ***
@@ -319,4 +319,3 @@ Get dynamic message with list
     Populate dynamic message    2    1   2   3   4
     ${msg}=    Get message
     [Return]    ${msg}
-    

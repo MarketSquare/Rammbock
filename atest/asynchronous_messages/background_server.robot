@@ -1,6 +1,6 @@
 *** Settings ***
 Suite teardown    Run keywords   log handler messages    Reset Rammbock
-Resource     async_resources.txt
+Resource     async_resources.robot
 Force tags   background
 
 

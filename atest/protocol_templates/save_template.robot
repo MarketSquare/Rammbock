@@ -2,7 +2,7 @@
 Test Setup        Define Simple Protocol
 Test Teardown     Reset rammbock
 Default Tags      regression
-Resource          template_resources.txt
+Resource          template_resources.robot
 
 
 *** Test Cases ***

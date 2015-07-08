@@ -2,7 +2,7 @@
 Test Setup        Create server and client, and define protocol
 Test Teardown     Reset Rammbock
 Default Tags      regression
-Resource          gtpv2_resource.txt
+Resource          gtpv2_resource.robot
 
 
 *** Test Cases ***

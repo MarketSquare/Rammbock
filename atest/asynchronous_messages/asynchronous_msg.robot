@@ -1,9 +1,9 @@
 *** Settings ***
 Library     Process
-Resource    async_resources.txt
+Resource    async_resources.robot
 Test Setup     Setup protocol, nodes, and define templates
 Test teardown    Teardown rammbock and increment port numbers
-Default tags    regression
+Force tags    regression
 
 *** Test cases ***
 Register an auto reply
@@ -38,7 +38,6 @@ Multiple clients
     Server should receive response to sample
 Asynchronous messages on background
     [Setup]    Setup protocol, one client, background server, and define templates      Serve on background
-    [Tags]     in progress
     Load Template   sample
     Reset received messages
     Set client handler  my_handler.respond_to_sample     header_filter=messageType
@@ -49,7 +48,7 @@ Asynchronous messages on background
     [Teardown]     Get background results and reset
 100 asynchronous messages on background
     [Documentation]     This test is rather slow, so run with --exclude slow to skip this.
-    [Tags]     slow   in progress
+    [Tags]     slow
     [Setup]    Setup protocol, one client, background server, and define templates      Loop on background
     Load Template   sample
     Reset received messages
@@ -67,7 +66,7 @@ Register an auto reply to work on background
 
 *** Variables ***
 ${SOURCEDIR}=   ${CURDIR}${/}..${/}..${/}src
-${BACKGROUND FILE}=    ${CURDIR}${/}background_server.txt
+${BACKGROUND FILE}=    ${CURDIR}${/}background_server.robot
 
 *** Keywords ***
 Send receive another

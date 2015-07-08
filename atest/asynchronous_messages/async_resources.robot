@@ -1,5 +1,5 @@
 *** Settings ***
-Resource        ../Protocols.txt
+Resource        ../Protocols.robot
 Library    Rammbock
 Library     my_handler.py
 Library   OperatingSystem

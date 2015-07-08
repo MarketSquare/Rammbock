@@ -1,5 +1,5 @@
 *** Settings ***
-Resource    ../Protocols.txt
+Resource    ../Protocols.robot
 Test teardown    Teardown rammbock and increment port numbers
 Default tags    regression
 

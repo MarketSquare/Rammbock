@@ -3,7 +3,7 @@ Suite setup    define dns protocol and setup server and client
 Suite teardown    Reset Rammbock
 Library    Rammbock
 Library    ../message_tools.py
-Resource    ../Protocols.txt
+Resource    ../Protocols.robot
 Default tags    Regression
 
 *** Test cases ***
