@@ -1,7 +1,7 @@
 from unittest import TestCase
 from Rammbock.templates.primitives import UInt, PDU
 from Rammbock.binary_tools import to_bin
-from test_templates.tools import *
+from .tools import *
 
 
 class TestListTemplate(TestCase):

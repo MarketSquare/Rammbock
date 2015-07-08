@@ -1,5 +1,5 @@
 from unittest import TestCase, main
-from test_templates.tools import MockStream
+from .tools import MockStream
 import socket
 from Rammbock.templates.message_stream import MessageStream
 from Rammbock.templates import Protocol, MessageTemplate, UInt, PDU

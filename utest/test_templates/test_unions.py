@@ -2,7 +2,7 @@ from unittest import TestCase
 from Rammbock.templates.containers import StructTemplate, UnionTemplate
 from Rammbock.templates.primitives import UInt, Char
 from Rammbock.binary_tools import to_bin
-from test_templates.tools import *
+from .tools import *
 
 
 class TestUnions(TestCase, WithValidation):
