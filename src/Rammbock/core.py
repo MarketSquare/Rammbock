@@ -180,12 +180,14 @@ class RammbockCore(object):
         """Starts a new UDP server to given `ip` and `port`.
 
         Server can be given a `name`, default `timeout` and a `protocol`.
+        `family` can be either ipv4 (default) or ipv6.
 
         Examples:
         | Start UDP server | 10.10.10.2 | 53 |
         | Start UDP server | 10.10.10.2 | 53 | Server1 |
         | Start UDP server | 10.10.10.2 | 53 | name=Server1 | protocol=GTPV2 |
         | Start UDP server | 10.10.10.2 | 53 | timeout=5 |
+        | Start UDP server | 0:0:0:0:0:0:0:1 | 53 | family=ipv6 |
         """
         self._start_server(UDPServer, ip, port, name, timeout, protocol, family)
 
@@ -193,19 +195,23 @@ class RammbockCore(object):
         """Starts a new TCP server to given `ip` and `port`.
 
         Server can be given a `name`, default `timeout` and a `protocol`.
-        Notice that you have to use `Accept Connection` keyword for server to
-        receive connections.
+        `family` can be either ipv4 (default) or ipv6. Notice that you have to
+        use `Accept Connection` keyword for server to receive connections.
 
         Examples:
         | Start TCP server | 10.10.10.2 | 53 |
         | Start TCP server | 10.10.10.2 | 53 | Server1 |
         | Start TCP server | 10.10.10.2 | 53 | name=Server1 | protocol=GTPV2 |
         | Start TCP server | 10.10.10.2 | 53 | timeout=5 |
+        | Start TCP server | 0:0:0:0:0:0:0:1 | 53 | family=ipv6 |
         """
         self._start_server(TCPServer, ip, port, name, timeout, protocol, family)
 
     def start_sctp_server(self, ip, port, name=None, timeout=None, protocol=None, family='ipv4'):
         """Starts a new STCP server to given `ip` and `port`.
+
+        `family` can be either ipv4 (default) or ipv6.
+
         pysctp (https://github.com/philpraxis/pysctp) need to be installed your system.
         Server can be given a `name`, default `timeout` and a `protocol`.
         Notice that you have to use `Accept Connection` keyword for server to
@@ -228,14 +234,17 @@ class RammbockCore(object):
         """Starts a new UDP client.
 
         Client can be optionally given `ip` and `port` to bind to, as well as
-        `name`, default `timeout` and a `protocol`. You should use `Connect`
-        keyword to connect client to a host.
+        `name`, default `timeout` and a `protocol`.  `family` can be either
+        ipv4 (default) or ipv6.
+
+        You should use `Connect` keyword to connect client to a host.
 
         Examples:
         | Start UDP client |
         | Start UDP client | name=Client1 | protocol=GTPV2 |
         | Start UDP client | 10.10.10.2 | 53 | name=Server1 | protocol=GTPV2 |
         | Start UDP client | timeout=5 |
+        | Start UDP client | 0:0:0:0:0:0:0:1 | 53 | family=ipv6 |
         """
         self._start_client(UDPClient, ip, port, name, timeout, protocol, family)
 
@@ -243,14 +252,17 @@ class RammbockCore(object):
         """Starts a new TCP client.
 
         Client can be optionally given `ip` and `port` to bind to, as well as
-        `name`, default `timeout` and a `protocol`. You should use `Connect`
-        keyword to connect client to a host.
+        `name`, default `timeout` and a `protocol`. `family` can be either
+        ipv4 (default) or ipv6.
+
+        You should use `Connect` keyword to connect client to a host.
 
         Examples:
         | Start TCP client |
         | Start TCP client | name=Client1 | protocol=GTPV2 |
         | Start TCP client | 10.10.10.2 | 53 | name=Server1 | protocol=GTPV2 |
         | Start TCP client | timeout=5 |
+        | Start TCP client | 0:0:0:0:0:0:0:1 | 53 | family=ipv6 |
         """
         self._start_client(TCPClient, ip, port, name, timeout, protocol, family)
 
@@ -258,8 +270,10 @@ class RammbockCore(object):
         """Starts a new SCTP client.
 
         Client can be optionally given `ip` and `port` to bind to, as well as
-        `name`, default `timeout` and a `protocol`. You should use `Connect`
-        keyword to connect client to a host.
+        `name`, default `timeout` and a `protocol`.  `family` can be either
+        ipv4 (default) or ipv6.
+
+        You should use `Connect` keyword to connect client to a host.
 
         Examples:
         | Start TCP client |
