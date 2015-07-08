@@ -30,6 +30,12 @@ TCP_BUFFER_SIZE = 1000000
 TCP_MAX_QUEUED_CONNECTIONS = 5
 
 
+def get_family(family):
+    if not family:
+        family = 'ipv4'
+    return {'ipv4': socket.AF_INET, 'ipv6': socket.AF_INET6}[family.lower()]
+
+
 class _WithTimeouts(object):
 
     _default_timeout = 10
@@ -57,12 +63,12 @@ class _NetworkNode(_WithTimeouts):
         self._message_stream.set_handler(msg_template, handler_func, header_filter, interval)
 
     def get_own_address(self):
-        return self._socket.getsockname()
+        return self._socket.getsockname()[:2]
 
     def get_peer_address(self, alias=None):
         if alias:
             raise AssertionError('Named connections not supported.')
-        return self._socket.getpeername()
+        return self._socket.getpeername()[:2]
 
     def close(self):
         if self._is_connected:
@@ -115,7 +121,7 @@ class _NetworkNode(_WithTimeouts):
 
     def _receive_msg_ip_port(self):
         msg = self._socket.recv(self._size_limit)
-        ip, port = self._socket.getpeername()
+        ip, port = self._socket.getpeername()[:2]
         self.log_receive(msg, ip, port)
         return msg, ip, port
 
@@ -145,8 +151,8 @@ class _TCPNode(object):
     _transport_layer_name = 'TCP'
     _size_limit = TCP_BUFFER_SIZE
 
-    def _init_socket(self):
-        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def _init_socket(self, family):
+        self._socket = socket.socket(get_family(family), socket.SOCK_STREAM)
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 
@@ -155,8 +161,8 @@ class _UDPNode(object):
     _transport_layer_name = 'UDP'
     _size_limit = UDP_BUFFER_SIZE
 
-    def _init_socket(self):
-        self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    def _init_socket(self, family):
+        self._socket = socket.socket(get_family(family), socket.SOCK_DGRAM)
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 
@@ -165,10 +171,10 @@ class _SCTPNode(object):
     _transport_layer_name = 'SCTP'
     _size_limit = TCP_BUFFER_SIZE
 
-    def _init_socket(self):
+    def _init_socket(self, family):
         if not SCTP_ENABLED:
             raise Exception("SCTP Not enabled. Is pysctp installed? https://github.com/philpraxis/pysctp")
-        self._socket = sctpsocket_tcp(socket.AF_INET)
+        self._socket = sctpsocket_tcp(get_family(family))
 
 
 class _Server(_NetworkNode):
@@ -189,16 +195,17 @@ class _Server(_NetworkNode):
 
 class UDPServer(_Server, _UDPNode):
 
-    def __init__(self, ip, port, timeout=None, protocol=None):
+    def __init__(self, ip, port, timeout=None, protocol=None, family=None):
         _Server.__init__(self, ip, port, timeout)
         self._protocol = protocol
         self._last_client = None
-        self._init_socket()
+        self._init_socket(family)
         self._bind_socket()
         self._message_stream = self._get_message_stream()
 
     def _receive_msg_ip_port(self):
-        msg, (ip, port) = self._socket.recvfrom(self._size_limit)
+        msg, address = self._socket.recvfrom(self._size_limit)
+        ip, port = address[:2]
         self.log_receive(msg, ip, port)
         self._last_client = (ip, int(port))
         return msg, ip, port
@@ -223,9 +230,9 @@ class UDPServer(_Server, _UDPNode):
 
 class StreamServer(_Server):
 
-    def __init__(self, ip, port, timeout=None, protocol=None):
+    def __init__(self, ip, port, timeout=None, protocol=None, family=None):
         _Server.__init__(self, ip, port, timeout)
-        self._init_socket()
+        self._init_socket(family)
         self._bind_socket()
         self._socket.listen(TCP_MAX_QUEUED_CONNECTIONS)
         self._protocol = protocol
@@ -298,9 +305,9 @@ class TCPServer(StreamServer, _TCPNode):
 
 class _Client(_NetworkNode):
 
-    def __init__(self, timeout=None, protocol=None):
+    def __init__(self, timeout=None, protocol=None, family=None):
         self._is_connected = False
-        self._init_socket()
+        self._init_socket(family)
         self._set_default_timeout(timeout)
         self._protocol = protocol
         self._message_stream = None

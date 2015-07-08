@@ -176,7 +176,7 @@ class RammbockCore(object):
         self._protocols[protocol.name] = protocol
         self._protocol_in_progress = False
 
-    def start_udp_server(self, ip, port, name=None, timeout=None, protocol=None):
+    def start_udp_server(self, ip, port, name=None, timeout=None, protocol=None, family='ipv4'):
         """Starts a new UDP server to given `ip` and `port`.
 
         Server can be given a `name`, default `timeout` and a `protocol`.
@@ -187,9 +187,9 @@ class RammbockCore(object):
         | Start UDP server | 10.10.10.2 | 53 | name=Server1 | protocol=GTPV2 |
         | Start UDP server | 10.10.10.2 | 53 | timeout=5 |
         """
-        self._start_server(UDPServer, ip, port, name, timeout, protocol)
+        self._start_server(UDPServer, ip, port, name, timeout, protocol, family)
 
-    def start_tcp_server(self, ip, port, name=None, timeout=None, protocol=None):
+    def start_tcp_server(self, ip, port, name=None, timeout=None, protocol=None, family='ipv4'):
         """Starts a new TCP server to given `ip` and `port`.
 
         Server can be given a `name`, default `timeout` and a `protocol`.
@@ -202,9 +202,9 @@ class RammbockCore(object):
         | Start TCP server | 10.10.10.2 | 53 | name=Server1 | protocol=GTPV2 |
         | Start TCP server | 10.10.10.2 | 53 | timeout=5 |
         """
-        self._start_server(TCPServer, ip, port, name, timeout, protocol)
+        self._start_server(TCPServer, ip, port, name, timeout, protocol, family)
 
-    def start_sctp_server(self, ip, port, name=None, timeout=None, protocol=None):
+    def start_sctp_server(self, ip, port, name=None, timeout=None, protocol=None, family='ipv4'):
         """Starts a new STCP server to given `ip` and `port`.
         pysctp (https://github.com/philpraxis/pysctp) need to be installed your system.
         Server can be given a `name`, default `timeout` and a `protocol`.
@@ -217,14 +217,14 @@ class RammbockCore(object):
         | Start STCP server | 10.10.10.2 | 53 | name=Server1 | protocol=GTPV2 |
         | Start STCP server | 10.10.10.2 | 53 | timeout=5 |
         """
-        self._start_server(SCTPServer, ip, port, name, timeout, protocol)
+        self._start_server(SCTPServer, ip, port, name, timeout, protocol, family)
 
-    def _start_server(self, server_class, ip, port, name=None, timeout=None, protocol=None):
+    def _start_server(self, server_class, ip, port, name, timeout, protocol, family):
         protocol = self._get_protocol(protocol)
-        server = server_class(ip=ip, port=port, timeout=timeout, protocol=protocol)
+        server = server_class(ip=ip, port=port, timeout=timeout, protocol=protocol, family=family)
         return self._servers.add(server, name)
 
-    def start_udp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None):
+    def start_udp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None, family='ipv4'):
         """Starts a new UDP client.
 
         Client can be optionally given `ip` and `port` to bind to, as well as
@@ -237,9 +237,9 @@ class RammbockCore(object):
         | Start UDP client | 10.10.10.2 | 53 | name=Server1 | protocol=GTPV2 |
         | Start UDP client | timeout=5 |
         """
-        self._start_client(UDPClient, ip, port, name, timeout, protocol)
+        self._start_client(UDPClient, ip, port, name, timeout, protocol, family)
 
-    def start_tcp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None):
+    def start_tcp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None, family='ipv4'):
         """Starts a new TCP client.
 
         Client can be optionally given `ip` and `port` to bind to, as well as
@@ -252,9 +252,9 @@ class RammbockCore(object):
         | Start TCP client | 10.10.10.2 | 53 | name=Server1 | protocol=GTPV2 |
         | Start TCP client | timeout=5 |
         """
-        self._start_client(TCPClient, ip, port, name, timeout, protocol)
+        self._start_client(TCPClient, ip, port, name, timeout, protocol, family)
 
-    def start_sctp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None):
+    def start_sctp_client(self, ip=None, port=None, name=None, timeout=None, protocol=None, family='ipv4'):
         """Starts a new SCTP client.
 
         Client can be optionally given `ip` and `port` to bind to, as well as
@@ -267,11 +267,11 @@ class RammbockCore(object):
         | Start TCP client | 10.10.10.2 | 53 | name=Server1 | protocol=GTPV2 |
         | Start TCP client | timeout=5 |
         """
-        self._start_client(SCTPClient, ip, port, name, timeout, protocol)
+        self._start_client(SCTPClient, ip, port, name, timeout, protocol, family)
 
-    def _start_client(self, client_class, ip=None, port=None, name=None, timeout=None, protocol=None):
+    def _start_client(self, client_class, ip, port, name, timeout, protocol, family):
         protocol = self._get_protocol(protocol)
-        client = client_class(timeout=timeout, protocol=protocol)
+        client = client_class(timeout=timeout, protocol=protocol, family=family)
         if ip or port:
             client.set_own_ip_and_port(ip=ip, port=port)
         return self._clients.add(client, name)
