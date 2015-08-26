@@ -63,6 +63,15 @@ Register an auto reply to work on background
     Server sends sample message
     Wait until keyword succeeds   2s  0.1s   Handler should have been called with '1' sample messages
     Message cache should be empty
+Timeout at background
+    [timeout]    3s
+    [Setup]    Setup protocol, one client, background server, and define templates  Send 10 messages every 0.5 seconds
+    Load Template   sample
+    Reset received messages
+    Set client handler  my_handler.respond_to_sample    header_filter=messageType
+    Load Template   another
+    Run keyword and expect error  Timeout 0.6*  Client receives message   header_filter=messageType   timeout=0.6
+    [Teardown]     Get background results and reset
 
 *** Variables ***
 ${SOURCEDIR}=   ${CURDIR}${/}..${/}..${/}src

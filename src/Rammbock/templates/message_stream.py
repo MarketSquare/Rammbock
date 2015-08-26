@@ -53,13 +53,15 @@ class MessageStream(object):
         if msg:
             logger.trace("Cache hit. Cache currently has %s messages" % len(self._cache))
             return msg
-        while True:
+        cutoff = time.time() + float(timeout if timeout else 0)
+        while not timeout or time.time() < cutoff:
             with LOCK:
                 header, pdu_bytes = self._protocol.read(self._stream, timeout=timeout)
                 if self._matches(header, header_fields, header_filter):
                     return self._to_msg(message_template, header, pdu_bytes)
                 else:
                     self._match_or_cache(header, pdu_bytes)
+        raise AssertionError('Timeout %fs exceeded in message stream.' % float(timeout))
 
     def _match_or_cache(self, header, pdu_bytes):
         for template, func, handler_filter in self._handlers:

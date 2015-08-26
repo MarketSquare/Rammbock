@@ -16,6 +16,9 @@ Serve on background
 Loop on background
     Run keyword if   ${BACKGROUND}     Serve on loop
     ...              ELSE              Set test documentation    Skipped because not run on background.
+Send 10 messages every 0.5 seconds
+    Run keyword if   ${BACKGROUND}     Send 10 messages every 0.5 seconds
+    ...              ELSE              Set test documentation    Skipped because not run on background.
 
 *** Keywords ***
 Serve on loop
@@ -33,6 +36,12 @@ Serve
     Send sample receive sample
     Send  another
     Sleep    5
+
+Send 10 messages every 0.5 seconds
+    Setup connection
+    :FOR  ${i}  IN RANGE  10
+    \   Send sample receive sample
+    \   Sleep   0.5
 
 Send sample receive sample
     Send   sample
