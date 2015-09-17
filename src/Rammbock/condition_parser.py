@@ -32,10 +32,12 @@ class ConditionParser(object):
         except:
             raise IllegalConditionException('Expected integer, unsupported value given: %s' % value)
 
-    def _get_field(self, msg_fields):
-        if self.name not in msg_fields:
-            raise IllegalConditionException('Given name condition: %s not found in message fields' % self.name)
-        return msg_fields[self.name].int
+    def _get_field(self, elem):
+        for part in self.name.split('.'):
+            if part not in elem:
+                raise IllegalConditionException('Given name condition: %s not found in message fields' % self.name)
+            elem = elem[part]
+        return elem.int
 
 
 class IllegalConditionException(Exception):
