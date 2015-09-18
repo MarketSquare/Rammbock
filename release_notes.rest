@@ -1,6 +1,15 @@
 Rammbock release notes
 ======================
 
+0.4.0
+-----
+
+* Background handlers for asynchronous message handling
+* Bags of optional elements in optional order
+* IPv6 support
+* Struct alignment
+* Numerous fixes and enhancements
+
 0.3.0
 -----
 
