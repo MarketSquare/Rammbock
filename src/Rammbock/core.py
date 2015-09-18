@@ -832,9 +832,45 @@ class RammbockCore(object):
         self._add_field(union)
 
     def start_bag(self, name):
+        """Bags are sets of optional elements with an optional count.
+
+        The optional elements are given each as a `Case` with the accepted count
+        as first argument. The received elements are matched from the list of
+        cases in order. If the the received value does not validate against the
+        case (for example a value of a field does not match expected), then the
+        next case is tried until a match is found. Note that although the received
+        elements are matched in order that the cases are given, the elements dont
+        need to arrive in the same order as the cases are.
+
+
+        This example would match int value 42 0-1 times and in value 1 0-2 times.
+        For example 1, 42, 1 would match, as would 1, 1:
+        | Start bag | intBag |
+        | case | 0-1 | u8 | foo | 42 |
+        | case | 0-2 | u8 | bar | 1 |
+        | End bag |
+
+
+        A more real world example, where each AVP entry has a type field with a
+        value that is used for matching:
+        | Start bag | avps |
+        | Case | 1 | AVP | result | Result-Code |
+        | Case | 1 | AVP | originHost | Origin-Host |
+        | Case | 1 | AVP | originRealm | Origin-Realm |
+        | Case | 1 | AVP | hostIP | Host-IP-Address |
+        | Case | * | AVP | appId | Vendor-Specific-Application-Id |
+        | Case | 0-1 | AVP | originState | Origin-State |
+        | End bag |
+
+        For a more complete example on bags, see the
+        [https://github.com/robotframework/Rammbock/blob/master/atest/diameter.robot|diameter.robot]
+        file from Rammbock's acceptance tests.
+        """
         self._message_stack.append(BagTemplate(name, self._current_container))
 
     def end_bag(self):
+        """Ends a bag started with `Start Bag`.
+        """
         bag = self._message_stack.pop()
         self._add_field(bag)
 

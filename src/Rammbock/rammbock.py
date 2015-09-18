@@ -145,6 +145,17 @@ class Rammbock(RammbockCore):
         self.end_struct()
 
     def case(self, size, kw, *parameters):
+        """An element inside a bag started with `Start Bag`.
+
+        The first argument is size which can be absolute value like `1`, a range
+        like `0-3`, or just `*` to accept any number of elements.
+
+        Examples:
+        | Start bag | intBag |
+        | case | 0-1 | u8 | foo | 42 |
+        | case | 0-2 | u8 | bar | 1 |
+        | End bag |
+        """
         # TODO: check we are inside a bag!
         self._start_bag_case(size)
         BuiltIn().run_keyword(kw, *parameters)
