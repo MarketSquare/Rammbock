@@ -1,0 +1,13 @@
+log.html
+report.html
+output.xml
+*pyc
+*swp
+*swo
+.svn
+.DS_Store
+.project
+.pydevproject
+.idea
+Seqdiag diagram.seqdiag
+nose-out.xml
