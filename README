@@ -20,6 +20,8 @@ python setup.py install
 
 2. We have examples from following protocols:
 GTPv2
+Diameter
+DNS
 
 Examples can be found from our Acceptance Test Cases:
 https://github.com/robotframework/Rammbock/tree/master/atest
