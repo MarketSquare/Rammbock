@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 from distutils.core import setup
-from os.path import join, dirname
+from os.path import join, dirname, abspath
 
-execfile(join(dirname(__file__), 'src', 'Rammbock', 'version.py'))
+CURDIR = dirname(abspath(__file__))
+execfile(join(CURDIR, 'src', 'Rammbock', 'version.py'))
 
 setup(name         = 'robotframework-rammbock',
       version      = VERSION,
@@ -11,5 +12,6 @@ setup(name         = 'robotframework-rammbock',
       author_email = 'robotframework-users@googlegroups.com',
       url          = 'http://github.com/robotframework/Rammbock/',
       package_dir  = {'' : 'src'},
-      packages     = ['Rammbock', 'Rammbock.templates']
+      packages     = ['Rammbock', 'Rammbock.templates'],
+      long_description = open(join(CURDIR, 'README.rst')).read()
       )
