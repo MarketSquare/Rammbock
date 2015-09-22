@@ -71,6 +71,12 @@ Validate fails when trying to validate nonexistent field
     ${msg}=    Server receives without validation
     Validation fails    ${msg}    Unknown fields in 'ValueRequest': foo:0xfeedd00d    foo:0xfeedd00d
 
+Validate fails when values set as integers instead of strings
+    Client sends simple request
+    Value     value    ${1}
+    ${msg}=    Server receives without validation
+    Validation fails    ${msg}    AttributeError: Validating value:1 failed. 'int' object has no attribute 'startswith'.\n \ \ \ \ Did you set default value as numeric object instead of string?
+
 Receiving should fail if message too long
     Client sends long request
     Server expects shorter request

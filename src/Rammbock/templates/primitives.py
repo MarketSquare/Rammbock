@@ -74,10 +74,15 @@ class _TemplateField(object):
         field = parent[name]
         value = field.bytes
         forced_value = self._get_element_value_and_remove_from_params(paramdict, name)
-        if not forced_value or forced_value == 'None':
-            return []
-        elif forced_value.startswith('('):
-            return self._validate_pattern(forced_value, value, field)
+        try:
+            if not forced_value or forced_value == 'None':
+                return []
+            elif forced_value.startswith('('):
+                return self._validate_pattern(forced_value, value, field)
+        except AttributeError as e:
+            e.args = ('Validating {}:{} failed. {}.\n    Did you set default value as numeric object instead of string?'
+                      .format(name, forced_value, e.args[0]),)
+            raise e
         return self._validate_exact_match(forced_value, value, field)
 
     def _validate_pattern(self, forced_pattern, value, field):
