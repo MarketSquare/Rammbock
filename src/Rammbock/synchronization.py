@@ -15,8 +15,8 @@ def synchronized(f, *args, **kw):
 
 class SynchronizedType(type):
 
-    def __new__(cls, name, bases, local):
+    def __new__(cls, clsname, bases, local):
         for name, item in local.items():
             if callable(item) and not name.startswith("_"):
                 local[name] = synchronized(item)
-        return type.__new__(cls, name, bases, local)
+        return type.__new__(cls, clsname, bases, local)
