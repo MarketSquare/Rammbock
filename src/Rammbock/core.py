@@ -290,6 +290,14 @@ class RammbockCore(object):
             client.set_own_ip_and_port(ip=ip, port=port)
         return self._clients.add(client, name)
 
+    def _is_client(self, client_name):
+        client_exist = True
+        try:
+            self._clients.get_with_name(client_name)
+        except KeyError:
+            client_exist = False
+        return client_exist
+
     def _get_protocol(self, protocol):
         try:
             protocol = self._protocols[protocol] if protocol else None
@@ -302,6 +310,19 @@ class RammbockCore(object):
         use a protocol.
         """
         return self._clients.get(name).protocol_name or ''
+
+    def update_client_protocol(self, protocol, client=None):
+        """Updates client protocol. If client is not
+        given then update the latest client.
+
+        Examples:
+        | Update client protocol | protocol_name |
+        | Update client protocol | protocol_name | client_name |
+        """
+        protocol = self._get_protocol(protocol)
+        client = self._clients.get(client)
+        client.set_protocol(protocol)
+        client.update_message_stream()
 
     def accept_connection(self, name=None, alias=None):
         """Accepts a connection to server identified by `name` or the latest

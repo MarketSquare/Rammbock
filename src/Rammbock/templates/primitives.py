@@ -162,7 +162,7 @@ class UInt(_TemplateField):
         self.length = Length(length, align)
 
     def _encode_value(self, value, message, little_endian=False):
-        self._raise_error_if_no_value(value, message)
+        # self._raise_error_if_no_value(value, message)
         length, aligned_length = self.length.decode_lengths(message)
         binary = to_bin_of_length(length, value)
         binary = binary[::-1] if little_endian else binary
@@ -187,7 +187,7 @@ class Int(UInt):
         return to_twos_comp(value, bin_len)
 
     def _encode_value(self, value, message, little_endian=False):
-        self._raise_error_if_no_value(value, message)
+        # self._raise_error_if_no_value(value, message)
         value = self._get_int_value(message, value)
         return UInt._encode_value(self, value, message, little_endian)
 
@@ -227,7 +227,7 @@ class Binary(_TemplateField):
             raise AssertionError('Binary field length must be static. Length: %s' % length)
 
     def _encode_value(self, value, message, little_endian=False):
-        self._raise_error_if_no_value(value, message)
+        # self._raise_error_if_no_value(value, message)
         minimum_binary = to_bin(value)
         length, aligned = self.length.decode_lengths(message, len(minimum_binary))
         binary = to_bin_of_length(self._byte_length(length), value)
