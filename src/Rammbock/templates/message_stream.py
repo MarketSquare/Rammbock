@@ -68,7 +68,7 @@ class MessageStream(object):
             if self._matches(header, template.header_parameters, handler_filter):
                 msg_to_be_sent = self._to_msg(template, header, pdu_bytes)
                 logger.debug("Calling handler %s for message %s" % (func, msg_to_be_sent))
-                self._get_call_handler(func)(self._protocol.library, msg_to_be_sent)
+                self._call_handler_function(func, msg_to_be_sent)
                 return
         self._cache.append((header, pdu_bytes))
 
@@ -145,4 +145,20 @@ class MessageStream(object):
             msg = self._get_from_cache(template, template.header_parameters, handler_filter, False)
             if msg:
                 logger.debug("Calling handler %s for cached message %s" % (func, msg))
-                self._get_call_handler(func)(self._protocol.library, msg)
+                self._call_handler_function(func, msg)
+
+    def _call_handler_function(self, func, msg):
+        func = self._get_call_handler(func)
+        node, connection = self._get_node_and_connection()
+        args = func.func_code.co_varnames
+        if len(args) == 3:
+            return func(self._protocol.library, msg, node)
+        if len(args) == 4:
+            return func(self._protocol.library, msg, node, connection)
+        return func(self._protocol.library, msg)
+
+    def _get_node_and_connection(self):
+        connection = self._stream._connection
+        if connection.parent:
+            return connection.parent, connection
+        return connection, None

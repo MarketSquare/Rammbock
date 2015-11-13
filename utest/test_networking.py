@@ -110,9 +110,9 @@ class TestNetworking(_NetworkingTests):
         self.assertTrue(server._connections.get(CONNECTION_ALIAS + "1"))
 
     def test_tcp_server_with_no_connections(self):
-        server = TCPServer(LOCAL_IP, 1337)
+        server = TCPServer(LOCAL_IP, 1338)
         client = TCPClient()
-        client.connect_to(LOCAL_IP, 1337)
+        client.connect_to(LOCAL_IP, 1338)
         client.send('foofaa')
         self.assertRaises(AssertionError, server.receive)
 

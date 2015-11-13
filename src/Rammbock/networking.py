@@ -56,6 +56,8 @@ class _NetworkNode(_WithTimeouts):
     __metaclass__ = SynchronizedType
 
     _message_stream = None
+    parent = None
+    name = '<not set>'
 
     def set_handler(self, msg_template, handler_func, header_filter, alias=None, interval=None):
         if alias:
@@ -251,7 +253,7 @@ class StreamServer(_Server):
 
     def accept_connection(self, alias=None):
         connection, client_address = self._socket.accept()
-        self._connections.add(_TCPConnection(connection, protocol=self._protocol), alias)
+        self._connections.add(_TCPConnection(self, connection, protocol=self._protocol), alias)
         return client_address
 
     def send(self, msg, alias=None):
@@ -287,7 +289,8 @@ class StreamServer(_Server):
 
 class _TCPConnection(_NetworkNode, _TCPNode):
 
-    def __init__(self, socket, protocol=None):
+    def __init__(self, parent, socket, protocol=None):
+        self.parent = parent
         self._socket = socket
         self._protocol = protocol
         self._message_stream = self._get_message_stream()
@@ -357,6 +360,7 @@ class _NamedCache(object):
     def add(self, value, name=None):
         name = name or self._next_name()
         self._cache[name] = value
+        value.name = name
         self._current = name
 
     def _next_name(self):

@@ -15,24 +15,24 @@ def reset_received_messages():
         RECEIVED_MESSAGES.pop()
 
 
-def respond_to_sample(rammbock, msg):
+def respond_to_sample(rammbock, msg, client):
     RECEIVED_MESSAGES.append(msg)
     rammbock.save_template("__backup_template")
     try:
         rammbock.load_template("sample response")
-        rammbock.client_sends_message()
+        rammbock.client_sends_message('name=%s' % client.name)
     finally:
         rammbock.load_template("__backup_template")
 
 
-def server_respond_to_another_max_100(rammbock, msg):
+def server_respond_to_another_max_100(rammbock, msg, server, connection):
     RECEIVED_MESSAGES.append(msg)
     if SERVER_SENT['another'] < 100:
         SERVER_SENT['another'] = SERVER_SENT['another'] + 1
         rammbock.save_template("__backup_template")
         try:
             rammbock.load_template("another")
-            rammbock.server_sends_message()
+            rammbock.server_sends_message('name=%s' % server.name, 'connection=%s' % connection.name)
         finally:
             rammbock.load_template("__backup_template")
     else:

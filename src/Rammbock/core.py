@@ -508,6 +508,7 @@ class RammbockCore(object):
             raise Exception('Message definition not complete. %s not completed.' % self._current_container.name)
         return self._message_stack[0]
 
+    # FIXME: how to support kwargs from new robot versions?
     def client_sends_message(self, *parameters):
         """Send a message defined with `New Message`.
 
