@@ -303,7 +303,7 @@ class RammbockCore(object):
         """
         return self._clients.get(name).protocol_name or ''
 
-    def accept_connection(self, name=None, alias=None):
+    def accept_connection(self, name=None, alias=None, timeout=0):
         """Accepts a connection to server identified by `name` or the latest
         server if `name` is empty.
 
@@ -315,7 +315,7 @@ class RammbockCore(object):
         | Accept connection | Server1 | my_connection |
         """
         server = self._servers.get(name)
-        server.accept_connection(alias)
+        server.accept_connection(alias, timeout)
 
     def connect(self, host, port, name=None):
         """Connects a client to given `host` and `port`. If client `name` is not

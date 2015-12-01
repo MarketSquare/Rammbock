@@ -75,3 +75,15 @@ Error for missing server connection
     [Setup]   Define example protocol
     Start TCP server    ${SERVER}    ${SERVER PORT}    protocol=Example
     Run keyword and expect error  No connections accepted!   Server receives binary
+
+Timeouts failure when accepting connection
+    [Setup]
+    Start TCP server    ${SERVER}    ${SERVER PORT}    name=ExampleServer
+    Run Keyword and Expect Error   * timed out  Accept Connection    ExampleServer  alias_example   timeout=1
+
+Timeouts when successfully accepting connection
+    [Setup]
+    Start TCP server    ${SERVER}    ${SERVER PORT}    name=ExampleServer
+    Start TCP client    name=ExampleClient
+    connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient
+    Accept Connection    ExampleServer  alias_example   timeout=1
