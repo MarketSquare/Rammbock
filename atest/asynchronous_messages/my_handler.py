@@ -16,6 +16,8 @@ def reset_received_messages():
 
 
 def respond_to_sample(rammbock, msg, client):
+    foo = "adding Extra Variable to replicate ArgCount bug"
+    bar = "adding Extra Variable to replicate ArgCount bug"
     RECEIVED_MESSAGES.append(msg)
     rammbock.save_template("__backup_template")
     try:
