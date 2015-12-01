@@ -4,6 +4,7 @@ Resource    async_resources.robot
 Test Setup     Setup protocol, nodes, and define templates
 Test teardown    Teardown rammbock and increment port numbers
 Force tags    regression
+Test timeout    60s
 
 *** Test cases ***
 Register an auto reply
@@ -125,7 +126,7 @@ Sample message should be in cache
     Should be Equal as integers     ${my_count}     1
 Start background process
     [Arguments]     ${name}
-    ${process}=    Start process  pybot  --test  ${name}  --loglevel   DEBUG
+    ${process}=    Start process  python  -m  robot.run  --test  ${name}  --loglevel   DEBUG
     ...            --variable  BACKGROUND:True   --variable  PORT:${SERVER PORT}  --pythonpath  ${SOURCEDIR}
-    ...            --outputdir  ${TEMPDIR}  ${BACKGROUND FILE}  shell=True
+    ...            --outputdir  ${TEMPDIR}  ${BACKGROUND FILE}
     [Return]    ${process}
