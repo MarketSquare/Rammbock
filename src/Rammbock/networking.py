@@ -251,7 +251,10 @@ class StreamServer(_Server):
         connection = self._connections.get(alias)
         return connection.receive_from(timeout=timeout)
 
-    def accept_connection(self, alias=None):
+    def accept_connection(self, alias=None, timeout=0):
+        timeout = self._get_timeout(timeout)
+        if timeout > 0:
+            self._socket.settimeout(timeout)
         connection, client_address = self._socket.accept()
         self._connections.add(_TCPConnection(self, connection, protocol=self._protocol), alias)
         return client_address

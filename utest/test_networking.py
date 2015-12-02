@@ -1,10 +1,12 @@
+from contextlib import contextmanager
 from unittest import TestCase, main
 import time
 import socket
-from threading import Timer
+from threading import Timer, Semaphore
 from Rammbock.networking import UDPServer, TCPServer, UDPClient, TCPClient, BufferedStream
 from Rammbock.templates.containers import Protocol
 from Rammbock.templates.primitives import UInt, PDU
+from Rammbock import synchronization
 
 
 LOCAL_IP = '127.0.0.1'
@@ -146,6 +148,40 @@ class TestNetworking(_NetworkingTests):
     def test_setting_server_default_timeout(self):
         server, _ = self._udp_server_and_client(ports['SERVER_PORT'], ports['CLIENT_PORT'], timeout=0.1)
         self._assert_timeout(server)
+
+    @contextmanager
+    def _without_sync(self):
+        original_LOCK = synchronization.LOCK
+        try:
+            synchronization.LOCK = Semaphore(100)
+            yield
+        finally:
+            synchronization.LOCK = original_LOCK
+
+    @contextmanager
+    def _client_and_server(self, port):
+        server = TCPServer(LOCAL_IP, port)
+        client = TCPClient()
+        try:
+            yield client, server
+        finally:
+            server.close()
+            client.close()
+
+    def test_connection_timeout(self):
+        with self._without_sync():
+            with self._client_and_server(ports['SERVER_PORT']) as (client, server):
+                timer_obj = Timer(0.1, client.connect_to, [LOCAL_IP, ports['SERVER_PORT']])
+                timer_obj.start()
+                server.accept_connection(timeout="0.5")
+
+    def test_connection_timeout_failure(self):
+        with self._without_sync():
+            with self._client_and_server(ports['SERVER_PORT']) as (client, server):
+                timer_obj = Timer(0.2, client.connect_to, [LOCAL_IP, ports['SERVER_PORT']])
+                timer_obj.start()
+                self.assertRaises(socket.timeout, server.accept_connection, timeout=0.1)
+                timer_obj.cancel()
 
     # FIXME: this deadlocks
     def xtest_blocking_timeout(self):
