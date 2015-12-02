@@ -53,3 +53,22 @@ class TestConditionParser(TestCase):
 
     def test_failing_evaluate(self):
         self.condition_evaluate_exception('mycondition != 1', {'foo': 0})
+
+    def test_evaluate_or_conditional(self):
+        values = {'foo': 2, 'bar': 3}
+        self.condition('foo == 2 || bar != 2', values, True)
+        self.condition('foo != 2 || bar != 2', values, True)
+        self.condition('foo != 2 || bar != 3', values, False)
+        self.condition('foo == 2 || bar != 3', values, True)
+
+    def test_evaluate_and_conditional(self):
+        values = {'foo': 2, 'bar': 3}
+        self.condition('foo == 2 && bar == 3', values, True)
+        self.condition('foo != 1 && bar == 2', values, False)
+        self.condition('foo == 3 && bar != 1', values, False)
+        self.condition('foo == 1 && bar == 0', values, False)
+
+    def test_evaluate_multiple_and_conditions(self):
+        values = {'foo': 2, 'bar': 3}
+        self.condition('foo == 2 && bar == 3 && foo == 2', values, True)
+        self.condition('foo == 1 || bar == 2 || foo == 4', values, False)
