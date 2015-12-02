@@ -310,9 +310,14 @@ class RammbockCore(object):
         If given an `alias`, the connection is named and can be later referenced
         with that name.
 
+        If `timeout` is > 0, the connection times out after the time specified.
+        `timeout` defaults to 0 which will wait indefinitely.
+        Empty value or None will use socket default timeout.
+
         Examples:
         | Accept connection |
         | Accept connection | Server1 | my_connection |
+        | Accept connection | Server1 | my_connection | timeout=5 |
         """
         server = self._servers.get(name)
         server.accept_connection(alias, timeout)
