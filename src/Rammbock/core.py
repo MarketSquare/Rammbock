@@ -700,6 +700,8 @@ class RammbockCore(object):
         length of value and decoded as all available bytes.
 
         `value` is optional.
+        `value` could be either a "String" or a "Regular Expression" and
+        if it is a Regular Expression it must be prefixed by 'REGEXP:'.
 
         Examples:
         | chars | 16 | field | Hello World! |
@@ -708,6 +710,7 @@ class RammbockCore(object):
         | chars | charLength | field |
 
         | chars | * | field | Hello World! |
+        | chars | * | field | REGEXP:^{[a-zA-Z ]+}$ |
         """
 
         self._add_field(Char(length, name, value, terminator))

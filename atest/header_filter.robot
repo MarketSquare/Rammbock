@@ -3,6 +3,7 @@ Test Setup          Setup up server for test
 Test Teardown       Reset Rammbock
 Library             Rammbock
 Resource            Protocols.robot
+Default Tags        regression
 
 *** Test Cases ***
 String message field matching the header filter
@@ -17,6 +18,43 @@ String message field not matching the header filter with unicode value
     Define and send example message
     Run keyword and expect error  * timed out  Receive example message with filter value     देवनागरी
 
+String message field matching the header filter with regexp
+    Define and send example message
+    Receive example message with filter value    REGEXP:.*message
+
+String message field not matching the header filter with regexp
+    Define and send example message
+    Run keyword and expect error  * timed out  Receive example message with filter value    REGEXP:.*message.
+
+String message field matching the header filter with invalid regexp
+    Define and send example message
+    Run keyword and expect error  Invalid RegEx *  Receive example message with filter value    REGEXP:**
+
+String message field matching the regexp
+    Define and send example message
+    Receive example message with regexp value    REGEXP:.*message
+
+String message field not matching the regexp
+    Define and send example message
+    Run keyword and expect error  * does not match the RegEx *  Receive example message with regexp value    REGEXP:.*message.
+
+Comparing string message field with an invalid regexp
+    Define and send example message
+    Run keyword and expect error  Invalid RegEx *  Receive example message with regexp value    REGEXP:[0-9]++
+
+Comparing string message field with a blank regexp
+    Define and send example message
+    Receive example message with regexp value    REGEXP:
+
+Comparing string message field with a invalid ending regexp
+    Define and send example message
+    Run keyword and expect error  Invalid RegEx *  Receive example message with regexp value    REGEXP:[]
+
+Comparing integer message field with a regexp
+    Define and send example message
+    New message  exMessage  StringInHeader  header:integer_field:REGEXP:.*
+    Run keyword and expect error  * can not be matched to regular expression pattern *  Server receives message
+
 *** Keywords ***
 Setup up server for test
     Define a protocol with string field in header
@@ -24,11 +62,12 @@ Setup up server for test
 
 Define a protocol with string field in header
     New protocol    StringInHeader
-    Chars     *     string_field 
+    Uint      1     integer_field
+    Chars     *     string_field
     End protocol
 
 Define and send example message
-    New message  exMessage  StringInHeader  header:string_field:match string message
+    New message  exMessage  StringInHeader  header:string_field:match string message  header:integer_field:10
     Client sends message
 
 Receive example message matching filter
@@ -38,4 +77,9 @@ Receive example message matching filter
 Receive example message with filter value
     [arguments]    ${value}
     New message  exMessage  StringInHeader  header:string_field:${value}
-    Server receives message  header_filter=string_field
+    Server receives message   header_filter=string_field
+
+Receive example message with regexp value
+    [arguments]    ${value}
+    New message  exMessage  StringInHeader  header:string_field:${value}
+    Server receives message

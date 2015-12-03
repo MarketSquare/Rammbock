@@ -146,6 +146,7 @@ class TestTemplateFieldValidation(TestCase):
         self._should_pass(UInt(2, 'field', '0x04').validate({'field': field}, {}))
         self._should_pass(UInt(2, 'field', '0x0004').validate({'field': field}, {}))
         self._should_pass(UInt(2, 'field', '(0|4)').validate({'field': field}, {}))
+        self._should_fail(UInt(2, 'field', 'REGEXP:.*').validate({'field': field}, {}), 1)
 
     def test_validate_int(self):
         field = Field('int', 'field', to_bin('0xffb8'))
@@ -154,11 +155,17 @@ class TestTemplateFieldValidation(TestCase):
         self._should_pass(Int(2, 'field', '-0x48').validate({'field': field}, {}))
         self._should_pass(Int(2, 'field', '-0x0048').validate({'field': field}, {}))
         self._should_pass(Int(2, 'field', '(0|-72)').validate({'field': field}, {}))
+        self._should_fail(Int(2, 'field', 'REGEXP:.*').validate({'field': field}, {}), 1)
 
     def test_validate_chars(self):
         field = Field('chars', 'field', 'foo\x00\x00')
+        field_regEx = Field('chars', 'field', '{ Message In Braces }')
         self._should_pass(Char(5, 'field', 'foo').validate({'field': field}, {}))
         self._should_pass(Char(5, 'field', '(what|foo|bar)').validate({'field': field}, {}))
+        self._should_pass(Char(5, 'field', 'REGEXP:^{[a-zA-Z ]+}$').validate({'field': field_regEx}, {}))
+        self._should_pass(Char(5, 'field', 'REGEXP:^foo').validate({'field': field}, {}))
+        self._should_pass(Char(5, 'field', 'REGEXP:').validate({'field': field}, {}))
+        self._should_fail(Char(5, 'field', 'REGEXP:^abc').validate({'field': field}, {}), 1)
 
     def _should_pass(self, validation):
         self.assertEquals(validation, [])

@@ -14,6 +14,7 @@
 import time
 import threading
 import traceback
+import re
 
 from Rammbock.logger import logger
 from Rammbock.binary_tools import to_bin, to_int
@@ -100,6 +101,12 @@ class MessageStream(object):
                                      (header_filter, header_filter))
             field = header[header_filter]
             if field._type == 'chars':
+                if fields[header_filter].startswith('REGEXP:'):
+                    try:
+                        regexp = fields[header_filter].split(':')[1].strip()
+                        return bool(re.match(regexp, field.ascii))
+                    except re.error as e:
+                        raise Exception("Invalid RegEx Error : " + str(e))
                 return field.ascii == fields[header_filter]
             if field._type == 'uint':
                 return field.uint == to_int(fields[header_filter])
