@@ -16,7 +16,7 @@ import threading
 import traceback
 
 from Rammbock.logger import logger
-from Rammbock.binary_tools import to_bin
+from Rammbock.binary_tools import to_bin, to_int
 from Rammbock.synchronization import LOCK
 
 
@@ -94,11 +94,15 @@ class MessageStream(object):
         return msg
 
     def _matches(self, header, fields, header_filter):
-        # FIXME: Matching should not be assuming matching string presentation
         if header_filter:
             if header_filter not in fields:
                 raise AssertionError('Trying to filter messages by header field %s, but no value has been set for %s' %
                                      (header_filter, header_filter))
+            field = header[header_filter]
+            if field._type == 'chars':
+                return field.ascii == fields[header_filter]
+            if field._type == 'uint':
+                return field.uint == to_int(fields[header_filter])
             if header[header_filter].bytes != to_bin(fields[header_filter]):
                 return False
         return True
