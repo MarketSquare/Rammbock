@@ -1,6 +1,35 @@
-
-
 class ConditionParser(object):
+
+    def __init__(self, condition):
+        import re
+        logicals = re.split('(&&|\|\|)', condition)
+        self.conditions = self._get_individual_conditions(logicals)
+
+    def _get_individual_conditions(self, logicals):
+        conditions = []
+        for element in logicals:
+            if element in ('&&', '||'):
+                conditions.append(element)
+            else:
+                conditions.append(ExpressionEvaluator(element))
+        return conditions
+
+    def evaluate(self, msg_fields):
+        status = True
+        operator = '&&'
+        for condition in self.conditions:
+            if condition in ('&&', '||'):
+                operator = condition
+            else:
+                evaluated = condition.evaluate(msg_fields)
+                if operator == '&&':
+                    status = status and evaluated
+                else:
+                    status = status or evaluated
+        return status
+
+
+class ExpressionEvaluator(object):
 
     def __init__(self, condition):
         if '==' in condition:

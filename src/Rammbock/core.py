@@ -832,6 +832,8 @@ class RammbockCore(object):
         length of value and decoded as all available bytes.
 
         `value` is optional.
+        `value` could be either a "String" or a "Regular Expression" and
+        if it is a Regular Expression it must be prefixed by 'REGEXP:'.
 
         Examples:
         | chars | 16 | field | Hello World! |
@@ -840,6 +842,7 @@ class RammbockCore(object):
         | chars | charLength | field |
 
         | chars | * | field | Hello World! |
+        | chars | * | field | REGEXP:^{[a-zA-Z ]+}$ |
         """
 
         self._add_field(Char(length, name, value, terminator))
@@ -1150,11 +1153,16 @@ class RammbockCore(object):
 
     def conditional(self, condition, name):
         """Defines a 'condition' when conditional element of 'name' exists if `condition` is true.
+           `condition` can contain multiple conditions combined together using Logical Expressions(&&,||).
 
         Example:
         | Conditional | mycondition == 1 | foo |
         | u8   | myelement | 42 |
         | End conditional |
+
+        | Conditional | condition1 == 1 && condition2 != 2 | bar |
+        | u8   | myelement | 8 |
+        | End condtional |
         """
         self._message_stack.append(ConditionalTemplate(condition, name, self._current_container))
 
