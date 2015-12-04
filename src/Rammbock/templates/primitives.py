@@ -388,9 +388,28 @@ class _DynamicLength(_Length):
         return self._get_aligned_lengths(self.calc_value(reference.int))
 
     def _find_reference(self, parent):
+        if not '.' in self.field:
+            return self._find_non_struct_reference(parent)
+        else:
+            return self._find_struct_reference(parent)
+
+    def _find_non_struct_reference(self,parent):
         if self.field in parent:
             return parent[self.field]
-        return self._find_reference(parent._parent) or None
+        return self._find_non_struct_reference(parent._parent) or None
+
+    def _find_struct_reference(self,parent):
+        field, sub_field = self.field.split('.', 1)
+        if field in parent:
+            return self._get_field(parent)
+        return self._find_struct_reference(parent._parent) or None
+
+    def _get_field(self, elem):
+        for part in self.field.split('.'):
+            if part not in elem:
+                raise IllegalDynamicLengtException('Given name condition: %s not found in message fields' % self.field)
+            elem = elem[part]
+        return elem
 
     def _has_been_set(self, reference):
         return reference._type != 'referenced_later'
@@ -421,6 +440,8 @@ class _DynamicLength(_Length):
     def value(self):
         raise IndexError('Length is dynamic.')
 
+class IllegalDynamicLengtException(Exception):
+    pass
 
 def _partition(operator, value):
     return (val.strip() for val in value.rpartition(operator))

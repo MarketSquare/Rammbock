@@ -8,6 +8,20 @@ Default Tags      Regression
 ${HEADER} =    0x0100aaaa000f0000
 
 *** Test Cases ***
+Receive dynamic message with structural length
+    Client Sends hex    ${HEADER} 03 cafe babe d00d
+    ${msg} =    Server Receives dynamic request with structural length
+    Should be equal    ${msg.pairList[0].first.hex}     0xca
+    Should be equal    ${msg.pairList[0].second.hex}    0xfe
+    Should be equal    ${msg.pairList[2].first.hex}     0xd0
+
+Encode dynamic message with structural length
+    Populate dynamic message with structural length  2  0x01  0x02  0x11  0x22
+    ${msg} =    Get message
+    Should be equal    ${msg.pairList[0].first.hex}     0x01
+    Should be equal    ${msg.pairList[0].second.hex}    0x02
+    Should be equal    ${msg.pairList[1].first.hex}     0x11
+
 Receive dynamic message
     Client Sends hex    ${HEADER} 03 cafe babe d00d
     ${msg} =    Server Receives dynamic request
@@ -209,9 +223,21 @@ Pair
     u8    second      ${value}
     End struct
 
+length struct
+    [arguments]     ${name}=     ${value}=
+    New Struct    Length    ${name}
+    u8    value    ${value}
+    End Struct
+
 Server Receives dynamic request
     [Arguments]    @{params}
     Dynamic message
+    ${msg} =    Server Receives message    @{params}
+    [return]    ${msg}
+
+Server Receives dynamic request with structural length
+    [Arguments]    @{params}
+    Dynamic message with structural length
     ${msg} =    Server Receives message    @{params}
     [return]    ${msg}
 
@@ -229,6 +255,15 @@ Populate dynamic message with value [*] all set to '${value}'
     value   pairList[*].first     ${value}
     value   pairList[*].second    ${value}
 
+Populate dynamic message with structural length
+    [Arguments]   ${len}  ${0 first}  ${0 second}  ${1 first}  ${1 second}
+    Dynamic Message with structural length
+    value   numberOfPairs.value   ${len}
+    value   pairList[0].first   ${0 first}
+    value   pairList[0].second   ${0 second}
+    value   pairList[1].first   ${1 first}
+    value   pairList[1].second   ${1 second}
+
 Message with struct
     [arguments]    ${pair values}=
     New Message    StructRequest  Example    header:messageType:0xaaaa
@@ -238,6 +273,10 @@ Dynamic message
     New Message    DynamicRequest  Example    header:messageType:0xaaaa
     Dynamic pair array
 
+Dynamic message with structural length
+    New Message    DynamicRequest  Example    header:messageType:0xaaaa
+    Dynamic array with struct length
+
 Dynamic pair array
     u8      numberOfPairs
     Array   numberOfPairs    Pair    pairList
@@ -245,6 +284,10 @@ Dynamic pair array
 Complicated Dynamic message
     New Message    DynamicRequest  Example    header:messageType:0xaaaa
     Dynamic named pair array
+
+Dynamic array with struct length
+    length struct    numberOfPairs
+    Array   numberOfPairs.value    Pair    pairList
 
 Dynamic named pair array
     u8      length
@@ -319,3 +362,4 @@ Get dynamic message with list
     Populate dynamic message    2    1   2   3   4
     ${msg}=    Get message
     [Return]    ${msg}
+
