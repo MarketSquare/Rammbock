@@ -46,6 +46,8 @@ class RammbockCore(object):
         self._message_stack = []
         self._header_values = {}
         self._field_values = {}
+        self._local_header_values = {}
+        self._local_field_values = {}
         self._message_sequence = MessageSequence()
         self._message_templates = {}
         self.reset_handler_messages()
@@ -469,6 +471,17 @@ class RammbockCore(object):
         template, fields, header_fields = self._set_templates_fields_and_header_fields(name, parameters)
         self._init_new_message_stack(template, fields, header_fields)
 
+    def get_template(self, name):
+        """Load a message template saved with `Save template`.
+        Optional parameters are default values for message header separated with
+        colon.
+
+        Examples:
+        | Load Template | MyMessage | header_field:value |
+        """
+        template, fields, header_fields = self._set_templates_fields_and_header_fields(name,[])
+        return template, fields, header_fields
+
     def load_copy_of_template(self, name, *parameters):
         """Load a copy of message template saved with `Save template` when originally saved values need to be preserved
         from test to test.
@@ -502,9 +515,19 @@ class RammbockCore(object):
         """
         _, message_fields, header_fields = self._get_parameters_with_defaults(parameters)
         return self._encode_message(message_fields, header_fields)
-
+    
+    def _encode_message(self, message_fields, header_fields):
+        msg = self._encode_given_message(self._get_message_template(), message_fields, header_fields)
+        return msg
+    
+    """
     def _encode_message(self, message_fields, header_fields):
         msg = self._get_message_template().encode(message_fields, header_fields)
+        logger.debug('%s' % repr(msg))
+        return msg
+    """
+    def _encode_given_message(self, template, message_fields, header_fields):
+        msg = template.encode(message_fields, header_fields)
         logger.debug('%s' % repr(msg))
         return msg
 
@@ -513,6 +536,8 @@ class RammbockCore(object):
             raise Exception('Message definition not complete. %s not completed.' % self._current_container.name)
         return self._message_stack[0]
 
+
+    
     # FIXME: how to support kwargs from new robot versions?
     def client_sends_message(self, *parameters):
         """Send a message defined with `New Message`.
@@ -527,6 +552,20 @@ class RammbockCore(object):
         | Client sends message | name=Client1 | header:message_code:0x32 |
         """
         self._send_message(self.client_sends_binary, parameters)
+    
+    def client_sends_given_message(self, template, *parameters):
+        """Send a message defined with `New Message`.
+
+        Optional parameters are client `name` separated with equals and message
+        field values separated with colon. Protocol header values can be set
+        with syntax header:header_field_name:value.
+
+        Examples:
+        | Client sends message |
+        | Client sends message | field_name:value | field_name2:value |
+        | Client sends message | name=Client1 | header:message_code:0x32 |
+        """
+        self._send_given_message(self.client_sends_binary, template, parameters)
 
     # FIXME: support "send to" somehow. A new keyword?
     def server_sends_message(self, *parameters):
@@ -543,11 +582,33 @@ class RammbockCore(object):
         """
         self._send_message(self.server_sends_binary, parameters)
 
+    def server_sends_given_message(self, template, *parameters):
+        """Send a message defined with `New Message`.
+
+        Optional parameters are server `name` and possible `connection` alias
+        separated with equals and message field values separated with colon.
+        Protocol header values can be set with syntax header:header_field_name:value.
+
+        Examples:
+        | Server sends message |
+        | Server sends message | field_name:value | field_name2:value |
+        | Server sends message | name=Server1 | connection=my_connection | header:message_code:0x32 |
+        """
+        self._send_given_message(self.server_sends_binary, template, parameters)
+
     def _send_message(self, callback, parameters):
         configs, message_fields, header_fields = self._get_parameters_with_defaults(parameters)
         msg = self._encode_message(message_fields, header_fields)
+        logger.debug("sending message %s" % msg)
         callback(msg._raw, label=self._current_container.name, **configs)
-
+    
+    def _send_given_message(self, callback, template, parameters):
+        configs, message_fields, header_fields = self._get_parameters_with_defaults_and_local_data(parameters)
+        msg = self._encode_given_message(template,message_fields, header_fields)
+        logger.debug("sending message %s" % msg)
+        callback(msg._raw, label=self._current_container.name)
+    
+    
     def client_receives_message(self, *parameters):
         """Receive a message with template defined using `New Message` and
         validate field values.
@@ -570,6 +631,28 @@ class RammbockCore(object):
             self._validate_message(msg, message_fields, header_fields)
             return msg
 
+    def client_receives_given_message(self, template, *parameters):
+        """Receive a message with template defined using `New Message` and
+        validate field values.
+
+        Message template has to be defined with `New Message` before calling
+        this.
+
+        Optional parameters:
+        - `name` the client name (default is the latest used) example: `name=Client 1`
+        - `timeout` for receiving message. example: `timeout=0.1`
+        - `latest` if set to True, get latest message from buffer instead first. Default is False. Example: `latest=True`
+        -  message field values for validation separated with colon. example: `some_field:0xaf05`
+
+        Examples:
+        | ${msg} = | Client receives message |
+        | ${msg} = | Client receives message | name=Client1 | timeout=5 |
+        | ${msg} = | Client receives message | message_field:(0|1) |
+        """
+        with self._receive_message_using_given_template(self._clients, template, *parameters) as (msg, message_fields, header_fields):
+            self._validate_message_with_given_template(template, msg, message_fields, header_fields)
+            return msg
+        
     def client_receives_without_validation(self, *parameters):
         """Receive a message with template defined using `New Message`.
 
@@ -614,7 +697,34 @@ class RammbockCore(object):
         with self._receive(self._servers, *parameters) as (msg, message_fields, header_fields):
             self._validate_message(msg, message_fields, header_fields)
             return msg
+        
+    def server_receives_given_message(self, template, *parameters):
+        """Receive a message with template defined using `New Message` and
+        validate field values.
 
+        Message template has to be defined with `New Message` before calling
+        this.
+
+        Optional parameters:
+        - `name` the client name (default is the latest used) example: `name=Client 1`
+        - `connection` alias. example: `connection=connection 1`
+        - `timeout` for receiving message. example: `timeout=0.1`
+        - `latest` if set to True, get latest message from buffer instead first. Default is False. Example: `latest=True`
+        -  message field values for validation separated with colon. example: `some_field:0xaf05`
+
+        Optional parameters are server `name`, `connection` alias and
+        possible `timeout` separated with equals and message field values for
+        validation separated with colon.
+
+        Examples:
+        | ${msg} = | Server receives message |
+        | ${msg} = | Server receives message | name=Server1 | alias=my_connection | timeout=5 |
+        | ${msg} = | Server receives message | message_field:(0|1) |
+        """
+        with self._receive_message_using_given_template(self._servers, template, *parameters) as (msg, message_fields, header_fields):
+            self._validate_message_with_given_template(template, msg, message_fields, header_fields)
+            return msg
+        
     def server_receives_without_validation(self, *parameters):
         """Receive a message with template defined using `New Message`.
 
@@ -651,12 +761,34 @@ class RammbockCore(object):
             logger.info("Validation failed for %s" % repr(msg))
             logger.info('\n'.join(errors))
             raise AssertionError(errors[0])
-
+    
+    def _validate_message_with_given_template(self,template, msg, message_fields, header_fields):
+        errors = template.validate(msg, message_fields, header_fields)
+        if errors:
+            logger.info("Validation failed for %s" % repr(msg))
+            logger.info('\n'.join(errors))
+            raise AssertionError(errors[0])
+        
     @contextmanager
     def _receive(self, nodes, *parameters):
         configs, message_fields, header_fields = self._get_parameters_with_defaults(parameters)
         node, name = nodes.get_with_name(configs.pop('name', None))
         msg = node.get_message(self._get_message_template(), **configs)
+        try:
+            yield msg, message_fields, header_fields
+            self._register_receive(node, self._current_container.name, name)
+            logger.debug("Received %s" % repr(msg))
+        except AssertionError, e:
+            self._register_receive(node, self._current_container.name, name, error=e.args[0])
+            raise e
+
+    @contextmanager
+    def _receive_message_using_given_template(self, nodes, template, *parameters):
+        #configs, message_fields, header_fields = self._get_parameters_with_defaults_and_local_data(parameters)
+        configs, message_fields, header_fields = self._get_parameters_with_defaults_and_local_data(parameters) 
+        #(self._to_dict(['headerfiter','t1'])[0],dict([]),dict([]))
+        node, name = nodes.get_with_name(configs.pop('name', None))
+        msg = node.get_message(template, **configs)
         try:
             yield msg, message_fields, header_fields
             self._register_receive(node, self._current_container.name, name)
@@ -923,7 +1055,13 @@ class RammbockCore(object):
         fields = self._populate_defaults(fields, self._field_values)
         headers = self._populate_defaults(headers, self._header_values)
         return config, fields, headers
-
+    
+    def _get_parameters_with_defaults_and_local_data(self, parameters):
+        config, fields, headers = self._parse_parameters([])
+        fields = self._populate_defaults(fields, self._local_field_values)
+        headers = self._populate_defaults(headers, self._local_header_values)
+        return config, fields, headers
+    
     def _populate_defaults(self, fields, default_values):
         ret_val = default_values
         ret_val.update(fields)
@@ -945,6 +1083,23 @@ class RammbockCore(object):
             self._header_values[name.partition(':')[-1]] = value
         else:
             self._field_values[name] = value
+
+    def update_value_of_given_template(self, name, value):
+        """Defines a default `value` for a template field identified by `name`.
+
+        Default values for header fields can be set with header:field syntax.
+
+        Examples:
+        | Value | foo | 42 |
+        | Value | struct.sub_field | 0xcafe |
+        | Value | header:version | 0x02 |
+        """
+        if isinstance(value, _StructuredElement):
+            self._struct_fields_as_values(name, value)
+        elif name.startswith('header:'):
+            self._local_header_values[name.partition(':')[-1]] = value
+        else:
+            self._local_field_values[name] = value
 
     def _struct_fields_as_values(self, name, value):
         for field_name in value._fields:
