@@ -24,7 +24,7 @@ String message field matching the header filter with regexp
 
 String message field not matching the header filter with regexp
     Define and send example message
-    Run keyword and expect error  * timed out  Receive example message with filter value    REGEXP:.*message.
+    Run keyword and expect error  * timed out  Receive example message with filter value    REGEXP:.*invalid
 
 String message field matching the header filter with invalid regexp
     Define and send example message
@@ -36,7 +36,7 @@ String message field matching the regexp
 
 String message field not matching the regexp
     Define and send example message
-    Run keyword and expect error  * does not match the RegEx *  Receive example message with regexp value    REGEXP:.*message.
+    Run keyword and expect error  * does not match the RegEx *  Receive example message with regexp value    REGEXP:.*invalid
 
 Comparing string message field with an invalid regexp
     Define and send example message
@@ -55,6 +55,10 @@ Comparing integer message field with a regexp
     New message  exMessage  StringInHeader  header:integer_field:REGEXP:.*
     Run keyword and expect error  * can not be matched to regular expression pattern *  Server receives message
 
+String message field matching the header filter with multiple messages in stream
+    Define and send multiple messages
+    Receive example message with filter value    REGEXP:^first
+
 *** Keywords ***
 Setup up server for test
     Define a protocol with string field in header
@@ -63,15 +67,21 @@ Setup up server for test
 Define a protocol with string field in header
     New protocol    StringInHeader
     Uint      1     integer_field
-    Chars     *     string_field
+    Chars     *     string_field    terminator=0x0e
     End protocol
 
 Define and send example message
-    New message  exMessage  StringInHeader  header:string_field:match string message  header:integer_field:10
+    New message  exMessage  StringInHeader  header:string_field:match string message.  header:integer_field:10
+    Client sends message
+
+Define and send multiple messages
+    New message  exMessage1  StringInHeader  header:string_field:first string message.  header:integer_field:10
+	Client sends message
+	New message  exMessage2  StringInHeader  header:string_field:sencond string message.  header:integer_field:10
     Client sends message
 
 Receive example message matching filter
-    New message  exMessage  StringInHeader  header:string_field:match string message
+    New message  exMessage  StringInHeader  header:string_field:match string message.
     Server receives message  header_filter=string_field
 
 Receive example message with filter value
