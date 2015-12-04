@@ -67,21 +67,21 @@ Setup up server for test
 Define a protocol with string field in header
     New protocol    StringInHeader
     Uint      1     integer_field
-    Chars     *     string_field    terminator=0x0e
+    Chars     *     string_field    terminator=0x00
     End protocol
 
 Define and send example message
-    New message  exMessage  StringInHeader  header:string_field:match string message.  header:integer_field:10
+    New message  exMessage  StringInHeader  header:string_field:match string message  header:integer_field:10
     Client sends message
 
 Define and send multiple messages
-    New message  exMessage1  StringInHeader  header:string_field:first string message.  header:integer_field:10
+    New message  exMessage1  StringInHeader  header:string_field:first string message  header:integer_field:10
 	Client sends message
-	New message  exMessage2  StringInHeader  header:string_field:sencond string message.  header:integer_field:10
+	New message  exMessage2  StringInHeader  header:string_field:second string message  header:integer_field:10
     Client sends message
 
 Receive example message matching filter
-    New message  exMessage  StringInHeader  header:string_field:match string message.
+    New message  exMessage  StringInHeader  header:string_field:match string message
     Server receives message  header_filter=string_field
 
 Receive example message with filter value
