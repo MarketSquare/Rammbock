@@ -83,7 +83,13 @@ class _TemplateField(object):
             e.args = ('Validating {}:{} failed. {}.\n    Did you set default value as numeric object instead of string?'
                       .format(name, forced_value, e.args[0]),)
             raise e
+        if forced_value.startswith('REGEXP'):
+            return self._validate_regexp(forced_value, value, field)
         return self._validate_exact_match(forced_value, value, field)
+
+    def _validate_regexp(self, forced_pattern, value, field):
+        return ["Value of field '%s' can not be matched to regular expression pattern '%s'" %
+                (field._get_recursive_name(), forced_pattern)]
 
     def _validate_pattern(self, forced_pattern, value, field):
         if self._validate_or(forced_pattern, value, field):
@@ -214,6 +220,17 @@ class Char(_TemplateField):
         if self._terminator:
             return data[0:data.index(self._terminator) + len(self._terminator)]
         return data
+
+    def _validate_regexp(self, forced_pattern, value, field):
+        try:
+            regexp = forced_pattern.split(':')[1].strip()
+            if bool(re.match(regexp, field.ascii)):
+                return []
+            else:
+                return ['Value of field %s does not match the RegEx %s!=%s' %
+                        (field._get_recursive_name(), self._default_presentation_format(value), forced_pattern)]
+        except re.error as e:
+            raise Exception("Invalid RegEx Error : " + str(e))
 
 
 class Binary(_TemplateField):
