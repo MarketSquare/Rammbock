@@ -998,11 +998,16 @@ class RammbockCore(object):
 
     def conditional(self, condition, name):
         """Defines a 'condition' when conditional element of 'name' exists if `condition` is true.
+           `condition` can contain multiple conditions combined together using Logical Expressions(&&,||).
 
         Example:
         | Conditional | mycondition == 1 | foo |
         | u8   | myelement | 42 |
         | End conditional |
+
+        | Conditional | condition1 == 1 && condition2 != 2 | bar |
+        | u8   | myelement | 8 |
+        | End condtional |
         """
         self._message_stack.append(ConditionalTemplate(condition, name, self._current_container))
 
