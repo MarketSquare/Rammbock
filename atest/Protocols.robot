@@ -165,3 +165,10 @@ Setup SCTP server and client
     connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient
     Accept connection    name=ExampleServer
 
+Close client '${client_original}' and switch to client '${alternate_client}'
+   Close Client   name=${client_original}
+   Switch Client   name=${alternate_client}
+
+Close server '${original_server}' and switch to server '${alternate_server}'
+   Close Server   name=${original_server}
+   Switch Server   name=${alternate_server}
