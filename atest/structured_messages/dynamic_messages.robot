@@ -16,11 +16,15 @@ Receive dynamic message with structural length
     Should be equal    ${msg.pairList[2].first.hex}     0xd0
 
 Encode dynamic message with structural length
-    Populate dynamic message with structural length  2  0x01  0x02  0x11  0x22
+    Populate dynamic message with structural length    2  0x01  0x02  0x11  0x22
     ${msg} =    Get message
     Should be equal    ${msg.pairList[0].first.hex}     0x01
     Should be equal    ${msg.pairList[0].second.hex}    0x02
     Should be equal    ${msg.pairList[1].first.hex}     0x11
+
+Encoding dynamic list with structural length without defining fails
+    Populate dynamic message with structural length    ${EMPTY}  0x01  0x02  0x11  0x22
+    Run keyword and expect error   Value of numberOfPairs.value not set    Get message
 
 Receive dynamic message
     Client Sends hex    ${HEADER} 03 cafe babe d00d
@@ -105,6 +109,18 @@ Encoding variable length container with multiple fields
     Define variable length container    multiple fields
     ${msg}=    get message
     should be equal as integers    ${msg.length_field.int}    10
+
+#TO-DO should make below testcases work
+#Encoding variable length container with structural length and multiple fields
+#    Define structural variable length container    multiple fields
+#    ${msg}=    get message
+#    should be equal as integers    ${msg.length_field.value.int}    10
+#
+#Encoding variable length container with dynamic length content and structural length
+#    Define structural variable length container    Dynamic string
+#    ${msg}=    get message    container.name:fobbabobba
+#    should be equal as integers    ${msg.length_field.value.int}    11
+#    should be equal as integers    ${msg.container.stringLen.int}   10
 
 Encoding variable length container with dynamic length content
     Define variable length container    Dynamic string
@@ -302,6 +318,13 @@ Define variable length container
     New message   FooExample   Example    header:messageType:0xb0b0
     u8    length_field
     container    container    length_field     ${content}
+    u16   field_after_container       0xcafe
+
+Define structural variable length container
+    [Arguments]    ${content}
+    New message   FooExample   Example    header:messageType:0xb0b0
+    length struct    length_field
+    container    container    length_field.value     ${content}
     u16   field_after_container       0xcafe
 
 2byte struct with given length

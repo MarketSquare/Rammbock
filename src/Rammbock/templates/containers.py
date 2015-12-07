@@ -59,8 +59,16 @@ class _Template(object):
     def _get_field(self, field_name):
         return self._fields.get(field_name)
 
+    def _get_struct_field(self, field_name):
+        name_split = field_name.split('.', 1)
+        struct_field = self._get_field(name_split[0])
+        if len(name_split) == 1:
+            return struct_field
+        else:
+            return struct_field._get_struct_field(name_split[1])
+
     def _get_field_recursive(self, field_name):
-        if not '.' in field_name:
+        if '.' not in field_name:
             return self._get_non_struct_field_recursive(field_name)
         else:
             return self._get_struct_field_recursive(field_name)
@@ -69,8 +77,7 @@ class _Template(object):
         return self._get_field(field_name) or self.parent and self.parent._get_non_struct_field_recursive(field_name)
 
     def _get_struct_field_recursive(self, field_name):
-        field, sub_field = field_name.split('.', 1)
-        return self._get_field(field) or self.parent and self.parent._get_struct_field_recursive(sub_field)
+        return self._get_struct_field(field_name) or self.parent and self.parent._get_struct_field_recursive(sub_field)
 
     def _check_params_empty(self, message_fields, name):
         for key in message_fields.keys():
