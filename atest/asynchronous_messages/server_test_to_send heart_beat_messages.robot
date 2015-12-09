@@ -7,6 +7,38 @@ Force tags    regression
 Test timeout    60s
 
 *** Test cases ***
+
+
+Multiple clients with failure scenario
+
+    
+
+*** Variables ***
+${SOURCEDIR}=   ${CURDIR}${/}..${/}..${/}src
+${BACKGROUND FILE}=    ${CURDIR}${/}background_server.robot
+
+*** Keywords ***
+ttt
+
+    Server sends sample message   Connection1
+    run keyword and continue on failure  server receives message  timeout=0.1
+    Server sends sample message   Connection2
+    run keyword and continue on failure  server receives message  timeout=0.1
+    Server sends sample message   Connection1
+    run keyword and continue on failure  server receives message  timeout=0.1
+    Server sends sample message   Connection2
+    run keyword and continue on failure  server receives message  timeout=0.1
+    Server sends sample message   Connection1
+    run keyword and continue on failure  server receives message  timeout=0.1
+    Server sends sample message   Connection2
+    run keyword and continue on failure  server receives message  timeout=0.1
+    Server sends sample message   Connection1
+    run keyword and continue on failure  server receives message  timeout=0.1
+    Server sends sample message   Connection2
+    run keyword and continue on failure  server receives message  timeout=0.1
+    Server sends sample message   Connection1
+    run keyword and continue on failure  server receives message	 timeout=0.1
+
 Register an auto reply
     Load Template   sample
     Reset received messages
@@ -16,16 +48,10 @@ Register an auto reply
     Client receives another message
     Handler should have been called with '1' sample messages
     Message cache should be empty
-Respond to an asynchronous message
-    Load Template   sample
-    Reset received messages
-    Set client handler  my_handler.respond_to_sample    header_filter=messageType
-    Server sends sample message
-    Server sends another message
-    Client receives another message
-    Server should receive response to sample
+
 Multiple clients
-    [Setup]   Setup protocol, server, two clients, and define templates
+    #[Setup]   Setup protocol, server, two clients, and define templates
+    Define sample response template
     Load Template   sample
     Reset received messages
     Set client handler  my_handler.respond_to_sample    name=ExampleClient2    header_filter=messageType
@@ -37,8 +63,47 @@ Multiple clients
     Server sends another message  Connection2
     Client receives another message    name=ExampleClient2
     Server should receive response to sample
+    
+    
+    #[Setup]   Setup protocol, server, four clients, and define templates
+    Define sample response template
+    Reset received messages
+    Load Template   sample
+    Set client handler  my_handler.respond_to_sample2    name=ExampleClient3    header_filter=messageType
+    Load Template   sample
+    Server sends message   connection=Connection3
+    Load Template   sample
+    run keyword and continue on failure  server receives message   timeout=0.1
+    
+Server receives message of client1 auto response    
+    Load Template   sample response
+    value    foo    11
+    #run keyword and continue on failure    Server receives message    alias=Connection1    timeout=0.2
+    run keyword and continue on failure    Server receives message    timeout=0.1
+    
+Server receives message of client2 auto response
+    Load Template   sample
+    value    foo    22
+    #run keyword and continue on failure    Server receives message    alias=Connection1    timeout=0.2
+    run keyword and continue on failure    Server receives message    timeout=0.1
+
+Server receives message of client3 auto response
+    Load Template   sample
+    value    foo    33
+    #run keyword and continue on failure    Server receives message    alias=Connection3    timeout=0.2
+    run keyword and continue on failure    Server receives message    timeout=0.1
+        
+Respond to an asynchronous message
+    Load Template   sample
+    Reset received messages
+    Set client handler  my_handler.respond_to_sample    header_filter=messageType
+    Server sends sample message
+    Server sends another message
+    Client receives another message
+    Server should receive response to sample
+
 Asynchronous messages on background
-    [Setup]    Setup protocol, one client, background server, and define templates      Serve on background
+    #[Setup]    Setup protocol, one client, background server, and define templates      Serve on background
     Load Template   sample
     Reset received messages
     Set client handler  my_handler.respond_to_sample     header_filter=messageType
@@ -50,7 +115,7 @@ Asynchronous messages on background
 100 asynchronous messages on background
     [Documentation]     This test is rather slow, so run with --exclude slow to skip this.
     [Tags]     slow
-    [Setup]    Setup protocol, one client, background server, and define templates      Loop on background
+    #[Setup]    Setup protocol, one client, background server, and define templates      Loop on background
     Load Template   sample
     Reset received messages
     Set client handler  my_handler.respond_to_sample     header_filter=messageType     interval=0.01
@@ -65,32 +130,16 @@ Register an auto reply to work on background
     Wait until keyword succeeds   2s  0.1s   Handler should have been called with '1' sample messages
     Message cache should be empty
 Timeout at background
-    [timeout]    4s
-    [Setup]    Setup protocol, one client, background server, and define templates  Send 10 messages every 0.5 seconds
+    [timeout]    3s
+    #[Setup]    Setup protocol, one client, background server, and define templates  Send 10 messages every 0.5 seconds
     Load Template   sample
     Reset received messages
     Set client handler  my_handler.respond_to_sample    header_filter=messageType
     Load Template   another
-    Run keyword and expect error  Timeout*  Client receives message   header_filter=messageType   timeout=0.6
+    Run keyword and expect error  Timeout 0.6*  Client receives message   header_filter=messageType   timeout=0.6
     [Teardown]     Get background results and reset
-Two clients handling same message asynchronously without any effect from main message 
-    [Setup]    Setup protocol, two clients, background server, and define templates  Send 10 messages every 0.5 seconds using given connection
-    Load Template   sample
-    Reset received messages
-    Set client handler  my_handler.respond_to_sample    name=client1    header_filter=messageType
-    Set client handler  my_handler.respond_to_sample    name=client2    header_filter=messageType
-    Load Template   sample response
-    Client receives message   name=client1    header_filter=messageType   timeout=5
-    sleep   2
-    [Teardown]     Get background results and reset
-
-*** Variables ***
-${SOURCEDIR}=   ${CURDIR}${/}..${/}..${/}src
-${BACKGROUND FILE}=    ${CURDIR}${/}background_server.robot
-
-*** Keywords ***
-
-
+    
+    
 Send receive another
     Load template    another
     client sends message
@@ -108,22 +157,8 @@ Setup protocol, one client, background server, and define templates
     Start background process    ${background operation}
     Start TCP client    127.0.0.1   45555   name=client   protocol=Example
     Wait Until Created    ${SIGNAL FILE}     timeout=10 seconds
-    sleep   0.2s     # Just to make sure we dont get inbetween keywordcalls
+    sleep   0.1s     # Just to make sure we dont get inbetween keywordcalls
     Connect     127.0.0.1   ${SERVER PORT}
-
-Setup protocol, two clients, background server, and define templates
-    [Arguments]    ${background operation}
-    Define Example protocol
-    Define templates
-    Remove File     ${SIGNAL FILE}
-    Start background process    ${background operation}
-    sleep  0.1
-    Wait Until Created    ${SIGNAL FILE}     timeout=10 seconds
-    Start TCP client    127.0.0.1   48888   name=client1   protocol=Example
-    Connect     127.0.0.1   ${SERVER PORT}
-    Start TCP client    127.0.0.1   47777   name=client2   protocol=Example
-    Connect     127.0.0.1   ${SERVER PORT}
-        
 Setup protocol, server, two clients, and define templates
     Define protocol, start tcp server and two clients    protocol=Example
     Define templates
@@ -131,6 +166,7 @@ Setup protocol, server, two clients, and define templates
 Setup protocol, server, four clients, and define templates    
 	Define protocol, start tcp server and four clients    protocol=Example
 	Define templates
+	
 Setup protocol, nodes, and define templates
     Setup protocol, TCP server, and client
     Define Templates
