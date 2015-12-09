@@ -1034,7 +1034,7 @@ class RammbockCore(object):
         """Closes the client connection based on the `client_name`.
 
         If no name provided it will close the current active connection.
-        You have to explicitly Switch Client after close when sending or
+        You have to explicitly `Switch Client` after close when sending or
         receiving any message without explicitly passing the client name.
 
         Example:
@@ -1046,7 +1046,7 @@ class RammbockCore(object):
         """Closes the Server connection based on the `server_name`.
 
         If no name provided it will close the current active connection.
-        You have to explicitly Switch Server after close when sending or
+        You have to explicitly `Switch Server` after close when sending or
         receiving any message without explicitly passing the server
         name.
 
