@@ -384,6 +384,12 @@ class _NamedCache(object):
     def __iter__(self):
         return self._cache.itervalues()
 
+    def set_current(self, name):
+        if name in self._cache:
+            self._current = name
+        else:
+            raise KeyError("Name %s unknown." % name)
+
 
 class BufferedStream(_WithTimeouts):
 

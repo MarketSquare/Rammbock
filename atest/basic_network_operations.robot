@@ -87,3 +87,61 @@ Timeouts when successfully accepting connection
     Start TCP client    name=ExampleClient
     connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient
     Accept Connection    ExampleServer  alias_example   timeout=1
+
+Multiple TCP Clients Closing Particular client and Switch Client
+    [Setup]    Start two tcp clients
+    Start tcp server    ${SERVER}    ${SERVER PORT}    name=ExampleServer
+    Connect two clients and accept connections
+    Two clients send foo and bar
+    'Connection_1' on 'ExampleServer' should get 'foo' from '${CLIENT}':'${CLIENT 1 PORT}'
+    'Connection_2' on 'ExampleServer' should get 'bar' from '${CLIENT}':'${CLIENT 2 PORT}'
+    Close client 'Client_2' and switch to client 'Client_1'
+    Client Sends binary    fooswitch
+    'Connection_1' on 'ExampleServer' should get 'fooswitch' from '${CLIENT}':'${CLIENT 1 PORT}'
+
+Multiple TCP Clients Closing Particular client and not performing switch client.
+    [Setup]    Start two tcp clients
+    Start tcp server    ${SERVER}    ${SERVER PORT}    name=ExampleServer
+    Connect two clients and accept connections
+    Two clients send foo and bar
+    'Connection_1' on 'ExampleServer' should get 'foo' from '${CLIENT}':'${CLIENT 1 PORT}'
+    'Connection_2' on 'ExampleServer' should get 'bar' from '${CLIENT}':'${CLIENT 2 PORT}'
+    Close client    name=Client_2
+    Client Sends binary   bar   name=Client_1
+    'Connection_1' on 'ExampleServer' should get 'bar' from '${CLIENT}':'${CLIENT 1 PORT}'
+
+Multiple TCP Clients Closing Particlar client without Switch Client
+    [Setup]    Start two tcp clients
+    Start tcp server    ${SERVER}    ${SERVER PORT}    name=ExampleServer
+    Connect two clients and accept connections
+    Two clients send foo and bar
+    'Connection_1' on 'ExampleServer' should get 'foo' from '${CLIENT}':'${CLIENT 1 PORT}'
+    'Connection_2' on 'ExampleServer' should get 'bar' from '${CLIENT}':'${CLIENT 2 PORT}'
+    Close Client   name=Client_2
+    Run keyword and expect error   *Bad file descriptor   Client Sends binary    fooswitch
+
+Multiple TCP Clients and TCP Server with Close and Switch Client and Server
+    [Setup]    Start two tcp clients
+    Start tcp server    ${SERVER}    ${SERVER PORT}    name=Server_1
+    Start tcp server    ${SERVER}    ${SERVER PORT 2}    name=Server_2
+    Connect two clients and accept connections    Server_1    ${SERVER PORT}    Server_2    ${SERVER PORT 2}
+    Two clients send foo and bar
+    Server 'Server_1' should get 'foo' from '${CLIENT}':'${CLIENT 1 PORT}'
+    Server 'Server_2' should get 'bar' from '${CLIENT}':'${CLIENT 2 PORT}'
+    Close server 'Server_2' and switch to server 'Server_1'
+    Close client 'Client_2' and switch to client 'Client_1'
+    Client Sends binary   bar
+    Server 'Server_1' should get 'bar' from '${CLIENT}':'${CLIENT 1 PORT}'
+
+Multiple TCP Servers and TCP Client with Close and not performing Switch Server
+    [Setup]    Start two tcp clients
+    Start tcp server    ${SERVER}    ${SERVER PORT}    name=Server_1
+    Start tcp server    ${SERVER}    ${SERVER PORT 2}    name=Server_2
+    Connect two clients and accept connections    Server_1    ${SERVER PORT}    Server_2    ${SERVER PORT 2}
+    Two clients send foo and bar
+    Server 'Server_1' should get 'foo' from '${CLIENT}':'${CLIENT 1 PORT}'
+    Server 'Server_2' should get 'bar' from '${CLIENT}':'${CLIENT 2 PORT}'
+    Close server    name=Server_2
+    Client Sends binary   bar   name=Client_1
+    Run keyword and expect error   *No connections accepted*    Server Receives Binary
+    Server 'Server_1' should get 'bar' from '${CLIENT}':'${CLIENT 1 PORT}'
