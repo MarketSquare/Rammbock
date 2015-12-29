@@ -112,13 +112,11 @@ Encoding variable length container with multiple fields
 
 #TO-DO should make below testcases work
 Encoding variable length container with structural length and multiple fields
-    [Tags]      None
     Define structural variable length container    multiple fields
     ${msg}=    get message
     should be equal as integers    ${msg.length_field.value.int}    10
 
 Encoding variable length container with dynamic length content and structural length
-    [Tags]      None
     Define structural variable length container    Dynamic string
     ${msg}=    get message    container.name:fobbabobba
     should be equal as integers    ${msg.length_field.value.int}    11

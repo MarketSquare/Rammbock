@@ -373,6 +373,7 @@ class _DynamicLength(_Length):
 
     def __init__(self, value, align):
         self.field, self.value_calculator = parse_field_and_calculator(value)
+        self.field_parts = self.field.split('.')
         self.align = int(align)
 
     def calc_value(self, param):
@@ -388,26 +389,17 @@ class _DynamicLength(_Length):
         return self._get_aligned_lengths(self.calc_value(reference.int))
 
     def _find_reference(self, parent):
-        if '.' not in self.field:
-            return self._find_non_struct_reference(parent)
+        field = self._get_field(parent)
+        if field:
+            return field
         else:
-            return self._find_struct_reference(parent)
-
-    def _find_non_struct_reference(self, parent):
-        if self.field in parent:
-            return parent[self.field]
-        return self._find_non_struct_reference(parent._parent) or None
-
-    def _find_struct_reference(self, parent):
-        field, sub_field = self.field.split('.', 1)
-        if field in parent:
-            return self._get_field(parent)
-        return self._find_struct_reference(parent._parent) or None
+            parent = parent._parent
+            return self._find_reference(parent) if parent else None
 
     def _get_field(self, elem):
-        for part in self.field.split('.'):
+        for part in self.field_parts:
             if part not in elem:
-                raise IllegalDynamicLengthException('Given length: %s not found in message fields' % self.field)
+                return None
             elem = elem[part]
         return elem
 
@@ -416,13 +408,14 @@ class _DynamicLength(_Length):
 
     def _set_length(self, reference, min_length, little_endian=False):
         value_len, aligned_len = self._get_aligned_lengths(min_length)
-        reference._parent[self.field] = self._encode_ref_length(self.solve_parameter(aligned_len),
-                                                                reference,
-                                                                little_endian=little_endian)
+        reference._parent[self.field_parts[-1]] = \
+            self._encode_ref_length(self.solve_parameter(aligned_len),
+                                    reference,
+                                    little_endian=little_endian)
         return value_len, aligned_len
 
     def _encode_ref_length(self, aligned_len, reference, little_endian=False):
-        return reference.template.encode({self.field: str(aligned_len)},
+        return reference.template.encode({self.field_parts[-1]: str(aligned_len)},
                                          reference._parent, little_endian=little_endian)
 
     def find_length_and_set_if_necessary(self, parent, min_length, little_endian=False):

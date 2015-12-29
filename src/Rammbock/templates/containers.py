@@ -68,16 +68,12 @@ class _Template(object):
             return struct_field._get_struct_field(name_split[1])
 
     def _get_field_recursive(self, field_name):
-        if '.' not in field_name:
-            return self._get_non_struct_field_recursive(field_name)
+        field = self._get_struct_field(field_name)
+        if field:
+            return field
         else:
-            return self._get_struct_field_recursive(field_name)
-
-    def _get_non_struct_field_recursive(self, field_name):
-        return self._get_field(field_name) or self.parent and self.parent._get_non_struct_field_recursive(field_name)
-
-    def _get_struct_field_recursive(self, field_name):
-        return self._get_struct_field(field_name) or self.parent and self.parent._get_struct_field_recursive(sub_field)
+            return self.parent._get_field_recursive(field_name) \
+                if self.parent else None
 
     def _check_params_empty(self, message_fields, name):
         for key in message_fields.keys():
@@ -153,7 +149,7 @@ class Protocol(_Template):
         header = Header(self.name)
         self._encode_fields(header, header_params, little_endian=self.little_endian)
         if self.pdu_length:
-            self.pdu_length.find_length_and_set_if_necessary(header, len(message._raw), little_endian=self.little_endian)
+            self.pdu_length.find_length_and_set_if_necessary(header, len(message._get_raw_bytes()), little_endian=self.little_endian)
         return header
 
     def _handle_pdu_field(self, field):
