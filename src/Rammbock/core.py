@@ -16,7 +16,6 @@ from __future__ import with_statement
 import copy
 from contextlib import contextmanager
 from .logger import logger
-from .synchronization import SynchronizedType
 from .templates.containers import BagTemplate, CaseTemplate
 from .message import _StructuredElement
 from .networking import (TCPServer, TCPClient, UDPServer, UDPClient, SCTPServer,
@@ -33,8 +32,6 @@ class RammbockCore(object):
 
     ROBOT_LIBRARY_SCOPE = 'GLOBAL'
 
-    __metaclass__ = SynchronizedType
-
     def __init__(self):
         self._init_caches()
 
@@ -46,8 +43,6 @@ class RammbockCore(object):
         self._message_stack = []
         self._header_values = {}
         self._field_values = {}
-        self._local_header_values = {}
-        self._local_field_values = {}
         self._message_sequence = MessageSequence()
         self._message_templates = {}
         self.reset_handler_messages()
@@ -94,7 +89,7 @@ class RammbockCore(object):
         |         rammbock.load_template("__backup_template")
         """
         msg_template = self._get_message_template()
-        client, client_name = self._clients.get_with_name(name)
+        client = self._clients.get_with_name(name)[0]
         client.set_handler(msg_template, handler_func, header_filter=header_filter, interval=interval)
 
     def set_server_handler(self, handler_func, name=None, header_filter=None, alias=None, interval=0.5):
@@ -132,7 +127,7 @@ class RammbockCore(object):
         |         rammbock.load_template("__backup_template")
         """
         msg_template = self._get_message_template()
-        server, server_name = self._servers.get_with_name(name)
+        server = self._servers.get_with_name(name)[0]
         server.set_handler(msg_template, handler_func, header_filter=header_filter, alias=alias, interval=interval)
 
     def reset_rammbock(self):
@@ -471,7 +466,7 @@ class RammbockCore(object):
         template, fields, header_fields = self._set_templates_fields_and_header_fields(name, parameters)
         self._init_new_message_stack(template, fields, header_fields)
 
-    def get_template(self, name):
+    def get_template(self, name, *parameters):
         """Load a message template saved with `Save template`.
         Optional parameters are default values for message header separated with
         colon.
@@ -479,7 +474,7 @@ class RammbockCore(object):
         Examples:
         | Load Template | MyMessage | header_field:value |
         """
-        template, fields, header_fields = self._set_templates_fields_and_header_fields(name,[])
+        template, fields, header_fields = self._set_templates_fields_and_header_fields(name, parameters)
         return template, fields, header_fields
 
     def load_copy_of_template(self, name, *parameters):
@@ -515,11 +510,11 @@ class RammbockCore(object):
         """
         _, message_fields, header_fields = self._get_parameters_with_defaults(parameters)
         return self._encode_message(message_fields, header_fields)
-    
+
     def _encode_message(self, message_fields, header_fields):
         msg = self._encode_given_message(self._get_message_template(), message_fields, header_fields)
         return msg
-    
+
     """
     def _encode_message(self, message_fields, header_fields):
         msg = self._get_message_template().encode(message_fields, header_fields)
@@ -536,8 +531,6 @@ class RammbockCore(object):
             raise Exception('Message definition not complete. %s not completed.' % self._current_container.name)
         return self._message_stack[0]
 
-
-    
     # FIXME: how to support kwargs from new robot versions?
     def client_sends_message(self, *parameters):
         """Send a message defined with `New Message`.
@@ -552,8 +545,8 @@ class RammbockCore(object):
         | Client sends message | name=Client1 | header:message_code:0x32 |
         """
         self._send_message(self.client_sends_binary, parameters)
-    
-    def client_sends_given_message(self, template, *parameters):
+
+    def client_sends_given_message(self, template, fields, header_fields, *parameters):
         """Send a message defined with `New Message`.
 
         Optional parameters are client `name` separated with equals and message
@@ -565,7 +558,7 @@ class RammbockCore(object):
         | Client sends message | field_name:value | field_name2:value |
         | Client sends message | name=Client1 | header:message_code:0x32 |
         """
-        self._send_given_message(self.client_sends_binary, template, parameters)
+        self._send_given_message(self.client_sends_binary, template, fields, header_fields, parameters)
 
     # FIXME: support "send to" somehow. A new keyword?
     def server_sends_message(self, *parameters):
@@ -582,7 +575,7 @@ class RammbockCore(object):
         """
         self._send_message(self.server_sends_binary, parameters)
 
-    def server_sends_given_message(self, template, *parameters):
+    def server_sends_given_message(self, template, fields, header_fields, *parameters):
         """Send a message defined with `New Message`.
 
         Optional parameters are server `name` and possible `connection` alias
@@ -594,21 +587,20 @@ class RammbockCore(object):
         | Server sends message | field_name:value | field_name2:value |
         | Server sends message | name=Server1 | connection=my_connection | header:message_code:0x32 |
         """
-        self._send_given_message(self.server_sends_binary, template, parameters)
+        self._send_given_message(self.server_sends_binary, template, fields, header_fields, parameters)
 
     def _send_message(self, callback, parameters):
         configs, message_fields, header_fields = self._get_parameters_with_defaults(parameters)
         msg = self._encode_message(message_fields, header_fields)
         logger.debug("sending message %s" % msg)
         callback(msg._raw, label=self._current_container.name, **configs)
-    
-    def _send_given_message(self, callback, template, parameters):
-        configs, message_fields, header_fields = self._get_parameters_with_defaults_and_local_data(parameters)
-        msg = self._encode_given_message(template,message_fields, header_fields)
+
+    def _send_given_message(self, callback, template, message_fields, header_fields, parameters):
+        configs, message_fields, header_fields = self._get_parameters_with_given_data(message_fields, header_fields, parameters)
+        msg = self._encode_given_message(template, message_fields, header_fields)
         logger.debug("sending message %s" % msg)
-        callback(msg._raw, label=self._current_container.name)
-    
-    
+        callback(msg._raw, label=template.name, **configs)
+
     def client_receives_message(self, *parameters):
         """Receive a message with template defined using `New Message` and
         validate field values.
@@ -631,7 +623,7 @@ class RammbockCore(object):
             self._validate_message(msg, message_fields, header_fields)
             return msg
 
-    def client_receives_given_message(self, template, *parameters):
+    def client_receives_given_message(self, template, message_fields, header_fields, *parameters):
         """Receive a message with template defined using `New Message` and
         validate field values.
 
@@ -649,10 +641,10 @@ class RammbockCore(object):
         | ${msg} = | Client receives message | name=Client1 | timeout=5 |
         | ${msg} = | Client receives message | message_field:(0|1) |
         """
-        with self._receive_message_using_given_template(self._clients, template, *parameters) as (msg, message_fields, header_fields):
+        with self._receive_message_using_given_template(self._clients, template, message_fields, header_fields, *parameters) as (msg, message_fields, header_fields):
             self._validate_message_with_given_template(template, msg, message_fields, header_fields)
             return msg
-        
+
     def client_receives_without_validation(self, *parameters):
         """Receive a message with template defined using `New Message`.
 
@@ -697,8 +689,8 @@ class RammbockCore(object):
         with self._receive(self._servers, *parameters) as (msg, message_fields, header_fields):
             self._validate_message(msg, message_fields, header_fields)
             return msg
-        
-    def server_receives_given_message(self, template, *parameters):
+
+    def server_receives_given_message(self, template, message_fields, header_fields, *parameters):
         """Receive a message with template defined using `New Message` and
         validate field values.
 
@@ -721,10 +713,10 @@ class RammbockCore(object):
         | ${msg} = | Server receives message | name=Server1 | alias=my_connection | timeout=5 |
         | ${msg} = | Server receives message | message_field:(0|1) |
         """
-        with self._receive_message_using_given_template(self._servers, template, *parameters) as (msg, message_fields, header_fields):
+        with self._receive_message_using_given_template(self._servers, template, message_fields, header_fields, *parameters) as (msg, message_fields, header_fields):
             self._validate_message_with_given_template(template, msg, message_fields, header_fields)
             return msg
-        
+
     def server_receives_without_validation(self, *parameters):
         """Receive a message with template defined using `New Message`.
 
@@ -761,14 +753,14 @@ class RammbockCore(object):
             logger.info("Validation failed for %s" % repr(msg))
             logger.info('\n'.join(errors))
             raise AssertionError(errors[0])
-    
-    def _validate_message_with_given_template(self,template, msg, message_fields, header_fields):
+
+    def _validate_message_with_given_template(self, template, msg, message_fields, header_fields):
         errors = template.validate(msg, message_fields, header_fields)
         if errors:
             logger.info("Validation failed for %s" % repr(msg))
             logger.info('\n'.join(errors))
             raise AssertionError(errors[0])
-        
+
     @contextmanager
     def _receive(self, nodes, *parameters):
         configs, message_fields, header_fields = self._get_parameters_with_defaults(parameters)
@@ -783,10 +775,8 @@ class RammbockCore(object):
             raise e
 
     @contextmanager
-    def _receive_message_using_given_template(self, nodes, template, *parameters):
-        #configs, message_fields, header_fields = self._get_parameters_with_defaults_and_local_data(parameters)
-        configs, message_fields, header_fields = self._get_parameters_with_defaults_and_local_data(parameters) 
-        #(self._to_dict(['headerfiter','t1'])[0],dict([]),dict([]))
+    def _receive_message_using_given_template(self, nodes, template, message_fields, header_fields, *parameters):
+        configs, message_fields, header_fields = self._get_parameters_with_given_data(message_fields, header_fields, parameters)
         node, name = nodes.get_with_name(configs.pop('name', None))
         msg = node.get_message(template, **configs)
         try:
@@ -852,7 +842,7 @@ class RammbockCore(object):
             raise AssertionError('Adding fields to message loaded with Load template is not allowed')
         self._current_container.add(field)
 
-    def new_struct(self, type, name, *parameters):
+    def new_struct(self, struct_type, name, *parameters):
         """Defines a new struct to template.
 
         You must call `End Struct` to end struct definition. `type` is the name
@@ -871,7 +861,7 @@ class RammbockCore(object):
         """
         configs, parameters, _ = self._get_parameters_with_defaults(parameters)
         self._add_struct_name_to_params(name, parameters)
-        self._message_stack.append(StructTemplate(type, name, self._current_container, parameters, length=configs.get('length'), align=configs.get('align')))
+        self._message_stack.append(StructTemplate(struct_type, name, self._current_container, parameters, length=configs.get('length'), align=configs.get('align')))
 
     def _add_struct_name_to_params(self, name, parameters):
         for param_key in parameters.keys():
@@ -910,8 +900,8 @@ class RammbockCore(object):
     def _end_list(self):
         """End list definition. See `New List`.
         """
-        list = self._message_stack.pop()
-        self._add_field(list)
+        list_data = self._message_stack.pop()
+        self._add_field(list_data)
 
     def new_binary_container(self, name):
         """Defines a new binary container to template.
@@ -952,7 +942,7 @@ class RammbockCore(object):
     def tbcd(self, size, name, value=None):
         self._add_field(TBCD(size, name, value))
 
-    def new_union(self, type, name):
+    def new_union(self, union_type, name):
         """Defines a new union to template of `type` and `name`.
 
         Fields inside the union are alternatives and the length of the union is
@@ -964,7 +954,7 @@ class RammbockCore(object):
         | u32   | int |
         | End union |
         """
-        self._message_stack.append(UnionTemplate(type, name, self._current_container))
+        self._message_stack.append(UnionTemplate(union_type, name, self._current_container))
 
     def end_union(self):
         """End union definition. See `New Union`.
@@ -1058,13 +1048,13 @@ class RammbockCore(object):
         fields = self._populate_defaults(fields, self._field_values)
         headers = self._populate_defaults(headers, self._header_values)
         return config, fields, headers
-    
-    def _get_parameters_with_defaults_and_local_data(self, parameters):
+
+    def _get_parameters_with_given_data(self, message_fields, header_fields, parameters):
         config, fields, headers = self._parse_parameters([])
-        fields = self._populate_defaults(fields, self._local_field_values)
-        headers = self._populate_defaults(headers, self._local_header_values)
+        fields = self._populate_defaults(fields, message_fields or {})
+        headers = self._populate_defaults(headers, header_fields or {})
         return config, fields, headers
-    
+
     def _populate_defaults(self, fields, default_values):
         ret_val = default_values
         ret_val.update(fields)
@@ -1086,23 +1076,6 @@ class RammbockCore(object):
             self._header_values[name.partition(':')[-1]] = value
         else:
             self._field_values[name] = value
-
-    def update_value_of_given_template(self, name, value):
-        """Defines a default `value` for a template field identified by `name`.
-
-        Default values for header fields can be set with header:field syntax.
-
-        Examples:
-        | Value | foo | 42 |
-        | Value | struct.sub_field | 0xcafe |
-        | Value | header:version | 0x02 |
-        """
-        if isinstance(value, _StructuredElement):
-            self._struct_fields_as_values(name, value)
-        elif name.startswith('header:'):
-            self._local_header_values[name.partition(':')[-1]] = value
-        else:
-            self._local_field_values[name] = value
 
     def _struct_fields_as_values(self, name, value):
         for field_name in value._fields:
@@ -1127,7 +1100,7 @@ class RammbockCore(object):
         return headers, fields
 
     def _to_dict(self, *lists):
-        return (dict(list) for list in lists)
+        return (dict(data_list) for data_list in lists)
 
     def _parse_entry(self, param, configs, fields):
         colon_index = param.find(':')

@@ -19,7 +19,9 @@ Loop on background
 Send 10 messages every 0.5 seconds
     Run keyword if   ${BACKGROUND}     Send 10 messages every 0.5 seconds
     ...              ELSE              Set test documentation    Skipped because not run on background.
-
+Send 10 messages every 0.5 seconds using given connection
+    Run keyword if   ${BACKGROUND}     Send 10 messages every 0.5 seconds using given connection
+    ...              ELSE              Set test documentation    Skipped because not run on background.
 *** Keywords ***
 Serve on loop
     Setup connection
@@ -35,7 +37,7 @@ Serve
     Receive   another
     Send sample receive sample
     Send  another
-    Sleep    5
+    Sleep    10
 
 Send 10 messages every 0.5 seconds
     Setup connection
@@ -43,16 +45,16 @@ Send 10 messages every 0.5 seconds
     \   Send sample receive sample
     \   Sleep   0.5
 
-Send sample receive sample
-    Send   sample
-    Receive  sample response
-
 Setup connection
     Define example protocol
     Define Templates
     Start TCP server    127.0.0.1    ${PORT}    name=ExampleServer    protocol=Example
     Touch    ${SIGNAL FILE}
     Accept connection
+
+Send sample receive sample
+    Send   sample
+    Receive  sample response
 
 Send   [arguments]    ${message}
     Load template    ${message}
@@ -62,4 +64,42 @@ Receive   [arguments]    ${message}
     Load template    ${message}
     Server receives message     header_filter=messageType
 
+Setup connection with two clients
+    Define example protocol
+    Define Templates
+    Start TCP server    127.0.0.1    ${PORT}    name=ExampleServer    protocol=Example
+    Touch    ${SIGNAL FILE}
+    Accept connection    alias=Connection1
+    Accept connection    alias=Connection2
 
+Send 10 messages every 0.5 seconds using given connection
+    Setup connection with two clients
+    log  Started handling ten messages for client1
+    :FOR  ${i}  IN RANGE  10
+    \   Send sample and receive sample using connection1
+    \   Sleep   0.2
+    log  Successfully handled ten messages for client1
+    log  Started handling ten messages for client2
+    :FOR  ${i}  IN RANGE  10
+    \   Send sample and receive sample using connection2
+    \   Sleep   0.2
+    log  Successfully handled ten messages for client1
+    load template  sample response
+    server sends message   connection=Connection1
+    
+Send sample and receive sample using connection1
+    Send using given connection   sample    Connection1
+    Receive using given connection  sample response    Connection1
+
+Send sample and receive sample using connection2
+    Send using given connection   sample    Connection2
+    run keyword and continue on failure  Receive using given connection  sample response    Connection1
+    run keyword and continue on failure  Receive using given connection  sample response    Connection2
+    
+Send using given connection  [arguments]    ${message}   ${connection}
+    Load template    ${message}
+    Server sends message    connection=${connection}
+
+Receive using given connection   [arguments]    ${message}   ${connection}
+    Load template    ${message}
+    Server receives message     alias=${connection}    header_filter=messageType   timeout=0.1
