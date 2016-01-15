@@ -34,6 +34,12 @@ class TestMessages(TestCase):
         self.assertEquals(field.chars, 'ab')
         self.assertEquals(field.bin, '0b00000000' + '01100001' + '01100010' + '00000000')
 
+    def test_not_iterable(self):
+        msg = Struct('foo', 'foo_type')
+        msg['a'] = uint_field()
+        self.assertRaises(TypeError, iter, msg)
+        self.assertRaises(TypeError, iter, msg.a)
+
 
 class TestBinaryContainer(TestCase):
 

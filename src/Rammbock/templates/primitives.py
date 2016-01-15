@@ -83,7 +83,13 @@ class _TemplateField(object):
             e.args = ('Validating {}:{} failed. {}.\n    Did you set default value as numeric object instead of string?'
                       .format(name, forced_value, e.args[0]),)
             raise e
+        if forced_value.startswith('REGEXP'):
+            return self._validate_regexp(forced_value, value, field)
         return self._validate_exact_match(forced_value, value, field)
+
+    def _validate_regexp(self, forced_pattern, value, field):
+        return ["Value of field '%s' can not be matched to regular expression pattern '%s'" %
+                (field._get_recursive_name(), forced_pattern)]
 
     def _validate_pattern(self, forced_pattern, value, field):
         if self._validate_or(forced_pattern, value, field):
@@ -214,6 +220,17 @@ class Char(_TemplateField):
         if self._terminator:
             return data[0:data.index(self._terminator) + len(self._terminator)]
         return data
+
+    def _validate_regexp(self, forced_pattern, value, field):
+        try:
+            regexp = forced_pattern.split(':')[1].strip()
+            if bool(re.match(regexp, field.ascii)):
+                return []
+            else:
+                return ['Value of field %s does not match the RegEx %s!=%s' %
+                        (field._get_recursive_name(), self._default_presentation_format(value), forced_pattern)]
+        except re.error as e:
+            raise Exception("Invalid RegEx Error : " + str(e))
 
 
 class Binary(_TemplateField):
@@ -356,6 +373,7 @@ class _DynamicLength(_Length):
 
     def __init__(self, value, align):
         self.field, self.value_calculator = parse_field_and_calculator(value)
+        self.field_parts = self.field.split('.')
         self.align = int(align)
 
     def calc_value(self, param):
@@ -371,22 +389,33 @@ class _DynamicLength(_Length):
         return self._get_aligned_lengths(self.calc_value(reference.int))
 
     def _find_reference(self, parent):
-        if self.field in parent:
-            return parent[self.field]
-        return self._find_reference(parent._parent) or None
+        field = self._get_field(parent)
+        if field:
+            return field
+        else:
+            parent = parent._parent
+            return self._find_reference(parent) if parent else None
+
+    def _get_field(self, elem):
+        for part in self.field_parts:
+            if part not in elem:
+                return None
+            elem = elem[part]
+        return elem
 
     def _has_been_set(self, reference):
         return reference._type != 'referenced_later'
 
     def _set_length(self, reference, min_length, little_endian=False):
         value_len, aligned_len = self._get_aligned_lengths(min_length)
-        reference._parent[self.field] = self._encode_ref_length(self.solve_parameter(aligned_len),
-                                                                reference,
-                                                                little_endian=little_endian)
+        reference._parent[self.field_parts[-1]] = \
+            self._encode_ref_length(self.solve_parameter(aligned_len),
+                                    reference,
+                                    little_endian=little_endian)
         return value_len, aligned_len
 
     def _encode_ref_length(self, aligned_len, reference, little_endian=False):
-        return reference.template.encode({self.field: str(aligned_len)},
+        return reference.template.encode({self.field_parts[-1]: str(aligned_len)},
                                          reference._parent, little_endian=little_endian)
 
     def find_length_and_set_if_necessary(self, parent, min_length, little_endian=False):
@@ -403,6 +432,10 @@ class _DynamicLength(_Length):
     @property
     def value(self):
         raise IndexError('Length is dynamic.')
+
+
+class IllegalDynamicLengthException(Exception):
+    pass
 
 
 def _partition(operator, value):

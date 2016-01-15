@@ -77,6 +77,9 @@ class _StructuredElement(object):
     def _get_recursive_name(self):
         return (self._parent._get_recursive_name() if self._parent else '') + self._name + '.'
 
+    def __iter__(self):
+        raise TypeError("%s not iterable." % self._type)
+
 
 class List(_StructuredElement):
 

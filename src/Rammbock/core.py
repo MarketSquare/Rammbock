@@ -832,6 +832,8 @@ class RammbockCore(object):
         length of value and decoded as all available bytes.
 
         `value` is optional.
+        `value` could be either a "String" or a "Regular Expression" and
+        if it is a Regular Expression it must be prefixed by 'REGEXP:'.
 
         Examples:
         | chars | 16 | field | Hello World! |
@@ -840,6 +842,7 @@ class RammbockCore(object):
         | chars | charLength | field |
 
         | chars | * | field | Hello World! |
+        | chars | * | field | REGEXP:^{[a-zA-Z ]+}$ |
         """
 
         self._add_field(Char(length, name, value, terminator))
@@ -1151,10 +1154,16 @@ class RammbockCore(object):
     def conditional(self, condition, name):
         """Defines a 'condition' when conditional element of 'name' exists if `condition` is true.
 
+        `condition` can contain multiple conditions combined together using Logical Expressions(&&,||).
+
         Example:
         | Conditional | mycondition == 1 | foo |
         | u8   | myelement | 42 |
         | End conditional |
+
+        | Conditional | condition1 == 1 && condition2 != 2 | bar |
+        | u8   | myelement | 8 |
+        | End condtional |
         """
         self._message_stack.append(ConditionalTemplate(condition, name, self._current_container))
 
@@ -1175,3 +1184,44 @@ class RammbockCore(object):
         """
         server = self._servers.get(server_name)
         return server.get_messages_count_in_buffer()
+
+    def close_client(self, name=None):
+        """Closes the client connection based on the `client_name`.
+
+        If no name provided it will close the current active connection.
+        You have to explicitly `Switch Client` after close when sending or
+        receiving any message without explicitly passing the client name.
+
+        Example:
+        | Close Client | client |
+        """
+        self._clients.get(name).close()
+
+    def close_server(self, name=None):
+        """Closes the Server connection based on the `server_name`.
+
+        If no name provided it will close the current active connection.
+        You have to explicitly `Switch Server` after close when sending or
+        receiving any message without explicitly passing the server
+        name.
+
+        Example:
+        | Close Server | server |
+        """
+        self._servers.get(name).close()
+
+    def switch_client(self, name):
+        """ Switches the current active client to the `client_name` specified.
+
+        Example:
+        | Switch Client | client |
+        """
+        self._clients.set_current(name)
+
+    def switch_server(self, name):
+        """ Switches the current active server to the `server_name` specified.
+
+        Example:
+        | Switch Server | server |
+        """
+        self._servers.set_current(name)
