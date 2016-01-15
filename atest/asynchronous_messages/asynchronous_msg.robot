@@ -1,5 +1,6 @@
 *** Settings ***
 Library     Process
+Library     Collections
 Resource    async_resources.robot
 Test Setup     Setup protocol, nodes, and define templates
 Test teardown    Teardown rammbock and increment port numbers
@@ -74,20 +75,48 @@ Timeout at background
     Run keyword and expect error  Timeout*  Client receives message   header_filter=messageType   timeout=0.6
     [Teardown]     Get background results and reset
 Two clients handling same message asynchronously without any effect from main message 
+    [Documentation]     This test is rather slow will handle multiple messages related to two clients at a time, so run with --exclude slow to skip this.
     [Setup]    Setup protocol, two clients, background server, and define templates  Send 10 messages every 0.5 seconds using given connection
     Load Template   sample
     Reset received messages
     Set client handler  my_handler.respond_to_sample    name=client1    header_filter=messageType
     Set client handler  my_handler.respond_to_sample    name=client2    header_filter=messageType
     Load Template   sample response
-    Client receives message   name=client1    header_filter=messageType   timeout=5
+    Client receives message   name=client2    header_filter=messageType   timeout=10
+    Client receives message   name=client1    header_filter=messageType   timeout=10
+    Client receives message   name=client2    header_filter=messageType   timeout=10
+    Client receives message   name=client1    header_filter=messageType   timeout=10
+    Client receives message   name=client2    header_filter=messageType   timeout=10
     sleep   2
     [Teardown]     Get background results and reset
+Get message using get message template keyword and perform send and receive operations with validation
+    [Setup]    Setup protocol, server, two clients, and define templates
+    ${message_and_fields}=    Get Message Template   sample
+    client sends given message    ${message_and_fields}    name=ExampleClient1
+    client sends given message    ${message_and_fields}    name=ExampleClient1
+    ${message_and_fields}=    Get Message Template   sample response
+    Run Keyword And Expect Error    timeout: timed out    server receives given message    ${message_and_fields}    alias=Connection1    header_filter=messageType    timeout=0.2
+    ${message_and_fields}=    Get Message Template   sample
+    Set To Dictionary    ${message_and_fields[1]}    foo    12
+    Run Keyword And Expect Error    Value of field foo does not match 0x0001!=12    server receives given message    ${message_and_fields}    alias=Connection1    header_filter=messageType
+    ${message_and_fields}=    Get Message Template   sample
+    server receives given message    ${message_and_fields}    alias=Connection1    header_filter=messageType
+    ${message_and_fields}=    Get Message Template   sample response
+    server sends given message    ${message_and_fields}    connection=Connection2
+    server sends given message    ${message_and_fields}    connection=Connection2
+    ${message_and_fields}=    Get Message Template   sample
+    Run Keyword And Expect Error    timeout: timed out    client receives given message    ${message_and_fields}    name=ExampleClient2    header_filter=messageType    timeout=0.2
+    ${message_and_fields}=    Get Message Template   sample response
+    Set To Dictionary    ${message_and_fields[1]}    bar    12
+    Run Keyword And Expect Error    Value of field bar does not match 0x0064!=12    client receives given message    ${message_and_fields}    name=ExampleClient2    header_filter=messageType
+    ${message_and_fields}=    Get Message Template   sample response
+    client receives given message    ${message_and_fields}    name=ExampleClient2    header_filter=messageType
+
 
 *** Variables ***
 ${SOURCEDIR}=   ${CURDIR}${/}..${/}..${/}src
 ${BACKGROUND FILE}=    ${CURDIR}${/}background_server.robot
-
+${PORT2}=    44488
 *** Keywords ***
 
 
@@ -118,19 +147,15 @@ Setup protocol, two clients, background server, and define templates
     Remove File     ${SIGNAL FILE}
     Start background process    ${background operation}
     sleep  0.1
+    Start TCP client    127.0.0.1   ${CLIENT 1 PORT}   name=client1   protocol=Example
     Wait Until Created    ${SIGNAL FILE}     timeout=10 seconds
-    Start TCP client    127.0.0.1   48888   name=client1   protocol=Example
-    Connect     127.0.0.1   ${SERVER PORT}
-    Start TCP client    127.0.0.1   47777   name=client2   protocol=Example
-    Connect     127.0.0.1   ${SERVER PORT}
+    Connect     127.0.0.1   ${PORT2}
+    Start TCP client    127.0.0.1   ${CLIENT 2 PORT}   name=client2   protocol=Example
+    Connect     127.0.0.1   ${PORT2}
         
 Setup protocol, server, two clients, and define templates
     Define protocol, start tcp server and two clients    protocol=Example
     Define templates
-
-Setup protocol, server, four clients, and define templates    
-	Define protocol, start tcp server and four clients    protocol=Example
-	Define templates
 Setup protocol, nodes, and define templates
     Setup protocol, TCP server, and client
     Define Templates

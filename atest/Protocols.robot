@@ -60,25 +60,7 @@ Define protocol, start tcp server and two clients
     Accept connection    alias=Connection1
     connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient2
     Accept connection    alias=Connection2
-    
-Define protocol, start tcp server and four clients
-    [Arguments]    ${protocol}=
-    Define example protocol
-    Start TCP server    ${SERVER}    ${SERVER PORT}    name=ExampleServer    protocol=${protocol}
-    Start TCP client    name=ExampleClient1    protocol=${protocol}
-    Start TCP client    name=ExampleClient2    protocol=${protocol}
-    Start TCP client    name=ExampleClient3    protocol=${protocol}
-    Start TCP client    name=ExampleClient4    protocol=${protocol}
-    connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient1
-    Accept connection    alias=Connection1
-    connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient2
-    Accept connection    alias=Connection2
-    connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient3
-    Accept connection    alias=Connection3
-    connect    ${SERVER}    ${SERVER PORT}    name=ExampleClient4
-    Accept connection    alias=Connection4
-    
-    
+
 Setup UDP server and client
     [Arguments]    ${protocol}=
     Start udp server    ${SERVER}    ${SERVER PORT}    name=ExampleServer    protocol=${protocol}    timeout=1

@@ -8,6 +8,7 @@ Force tags   background
 *** Variables ***
 ${BACKGROUND}=    ${False}
 ${PORT}=          44455
+${PORT2}=         44488
 
 *** Test Cases ***
 Serve on background
@@ -67,39 +68,48 @@ Receive   [arguments]    ${message}
 Setup connection with two clients
     Define example protocol
     Define Templates
-    Start TCP server    127.0.0.1    ${PORT}    name=ExampleServer    protocol=Example
+    Start TCP server    127.0.0.1    ${PORT2}    name=ExampleServer    protocol=Example
     Touch    ${SIGNAL FILE}
     Accept connection    alias=Connection1
     Accept connection    alias=Connection2
 
 Send 10 messages every 0.5 seconds using given connection
     Setup connection with two clients
-    log  Started handling ten messages for client1
+    load template  sample response
+    server sends message   connection=Connection2
     :FOR  ${i}  IN RANGE  10
     \   Send sample and receive sample using connection1
-    \   Sleep   0.2
-    log  Successfully handled ten messages for client1
-    log  Started handling ten messages for client2
-    :FOR  ${i}  IN RANGE  10
-    \   Send sample and receive sample using connection2
-    \   Sleep   0.2
-    log  Successfully handled ten messages for client1
+    \   Sleep   0.01
     load template  sample response
     server sends message   connection=Connection1
-    
+    :FOR  ${i}  IN RANGE  10
+    \   Send sample and receive sample using connection2
+    \   Sleep   0.01
+    load template  sample response
+    server sends message   connection=Connection2
+    :FOR  ${i}  IN RANGE  10
+    \   Send sample and receive sample using connection2
+    \   Sleep   0.01
+    load template  sample response
+    server sends message   connection=Connection1
+    :FOR  ${i}  IN RANGE  10
+    \   Send sample and receive sample using connection1
+    \   Sleep   0.01
+    load template  sample response
+    server sends message   connection=Connection2
+
 Send sample and receive sample using connection1
-    Send using given connection   sample    Connection1
-    Receive using given connection  sample response    Connection1
+    Send message using given connection   sample    Connection1
+    Receive message using given connection  sample response    Connection1
 
 Send sample and receive sample using connection2
-    Send using given connection   sample    Connection2
-    run keyword and continue on failure  Receive using given connection  sample response    Connection1
-    run keyword and continue on failure  Receive using given connection  sample response    Connection2
-    
-Send using given connection  [arguments]    ${message}   ${connection}
-    Load template    ${message}
-    Server sends message    connection=${connection}
+    Send message using given connection   sample    Connection2
+    Receive message using given connection  sample response    Connection2
 
-Receive using given connection   [arguments]    ${message}   ${connection}
-    Load template    ${message}
-    Server receives message     alias=${connection}    header_filter=messageType   timeout=0.1
+Send message using given connection  [arguments]    ${message}   ${connection}
+    ${data}=    get message template    ${message}
+    Server sends given message    ${data}    connection=${connection}
+
+Receive message using given connection   [arguments]    ${message}   ${connection}
+    ${data}=    get message template    ${message}
+    Server receives given message    ${data}    alias=${connection}    header_filter=messageType
