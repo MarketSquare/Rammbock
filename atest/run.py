@@ -2,21 +2,21 @@
 
 """Script to run Rammbock acceptance tests.
 
-Usage:
-
-    atest/run.py [options] [arguments]
+Usage:  [interpreter] atest/run.py [options] [arguments]
 
 Options and arguments are same as accepted by Robot Framework itself. The only
-exception is `--help` which prints this help text. If no options or arguments
-are given, run all tests under the `atest` directory.
+exception is `--help` which prints this help text. Given options are added
+after the default configuration. Executes the whole `atest` directory if no
+files or directories are given as arguments.
 
 Examples:
 
-    atest/run.py                        # All tests using system default Python
-    python3 atest/run.py                # All tests using specified Python
-    atest/run.py --test Receiver        # Use certain options
-    atest/run.py atest/ipv6.robot       # Specific file as argument
-    atest/run.py -X atest/ipv6.robot    # Options and arguments
+    atest/run.py                        # Run tests using system default Python
+    python3 atest/run.py                # Run tests using specified Python
+    atest/run.py --test IPv6TCP         # Use certain options
+    atest/run.py atest/ipv6.robot       # Specific file as an argument
+    atest/run.py -X atest/ipv6.robot    # Use both options and arguments
+    atest/run.py --help                 # Show this help
 """
 
 from os.path import abspath, dirname, exists, join
@@ -25,18 +25,28 @@ import sys
 from robot import run_cli
 
 
-args = [
+ROOT = dirname(dirname(abspath(__file__)))
+CONFIG = [
     '--critical', 'regression',
     '--exclude', 'background',
     '--loglevel', 'debug',
     '--dotted'
 ]
-root = dirname(dirname(abspath(__file__)))
-sys.path.insert(0, join(root, 'src'))
-given_args = sys.argv[1:]
-if '--help' in given_args:
-    sys.exit(__doc__)
-if not given_args or not exists(given_args[-1]):
-    given_args.append(join(root, 'atest'))
 
-run_cli(args + given_args)
+
+def run_atests(args):
+    if '--help' in args:
+        print(__doc__)
+        return 251
+    if not args or not exists(args[-1]):
+        args.append(join(ROOT, 'atest'))
+    try:
+        run_cli(CONFIG + args)
+    except SystemExit as exit:
+        return exit.code
+
+
+if __name__ == '__main__':
+    sys.path.insert(0, join(ROOT, 'src'))
+    rc = run_atests(sys.argv[1:])
+    sys.exit(rc)
