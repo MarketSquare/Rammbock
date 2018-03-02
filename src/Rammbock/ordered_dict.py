@@ -21,15 +21,28 @@
 # Backport of OrderedDict() class that runs on Python 2.4, 2.5, 2.6, 2.7 and pypy.
 # Passes Python2.7's test suite and incorporates all the latest updates.
 
-try:
-    from thread import get_ident as _get_ident
-except ImportError:
-    from dummy_thread import get_ident as _get_ident
+import sys
 
-try:
-    from _abcoll import KeysView, ValuesView, ItemsView
-except ImportError:
-    pass
+from six import itervalues
+
+if sys.version_info < (3,):
+    try:
+        from thread import get_ident as _get_ident
+    except ImportError:
+        from dummy_thread import get_ident as _get_ident
+    try:
+        from collections import KeysView, ValuesView, ItemsView
+    except ImportError:
+        pass
+else:
+    try:
+        from _thread import get_ident as _get_ident
+    except ImportError:
+        from _dummy_thread import get_ident as _get_ident
+    try:
+        from collections.abc import KeysView, ValuesView, ItemsView
+    except ImportError:
+        pass
 
 
 class OrderedDict(dict):
@@ -98,7 +111,7 @@ class OrderedDict(dict):
     def clear(self):
         'od.clear() -> None.  Remove all items from od.'
         try:
-            for node in self.__map.itervalues():
+            for node in itervalues(self.__map):
                 del node[:]
             root = self.__root
             root[:] = [root, root, None]

@@ -118,7 +118,7 @@ Server '${server}' should get '${msg}' from '${ip}':'${port}'
 Verify server gets from
     [Arguments]    ${ip}    ${port}    ${expected}    ${server}    ${connection}=
     ${msg}    ${from ip}    ${from port} =    Server receives binary from    name=${server}    connection=${connection}
-    Should be equal    ${msg}    ${expected}
+    Should be equal as Strings   ${msg}    ${expected}
     Should be equal    ${from ip}    ${ip}
     Should be equal as integers    ${from port}    ${port}
 

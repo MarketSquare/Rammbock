@@ -28,6 +28,9 @@ from .templates import (Protocol, UInt, Int, PDU, MessageTemplate, Char, Binary,
                         TBCDContainerTemplate)
 from .binary_tools import to_0xhex, to_bin
 
+from robot.libraries.BuiltIn import BuiltIn
+from robot.utils import is_string, PY3
+
 
 class RammbockCore(object):
 
@@ -351,6 +354,8 @@ class RammbockCore(object):
         | Client sends binary | Hello! |
         | Client sends binary | ${some binary} | Client1 | label=DebugMessage |
         """
+        if PY3 and isinstance(message, str):
+            message = BuiltIn().convert_to_bytes(message)
         client, name = self._clients.get_with_name(name)
         client.send(message)
         self._register_send(client, label, name)
@@ -367,6 +372,8 @@ class RammbockCore(object):
         | Server sends binary | ${some binary} | Server1 | label=DebugMessage |
         | Server sends binary | ${some binary} | connection=my_connection |
         """
+        if PY3 and isinstance(message, str):
+            message = message.encode()
         server, name = self._servers.get_with_name(name)
         server.send(message, alias=connection)
         self._register_send(server, label, name, connection=connection)
@@ -451,7 +458,7 @@ class RammbockCore(object):
         | Save Template | MyMessage |
         | Save Template | MyOtherMessage | unlocked=True |
         """
-        if isinstance(unlocked, basestring):
+        if is_string(unlocked):
             unlocked = unlocked.lower() != 'false'
         template = self._get_message_template()
         if not unlocked:
@@ -661,7 +668,7 @@ class RammbockCore(object):
             yield msg, message_fields, header_fields
             self._register_receive(node, self._current_container.name, name)
             logger.debug("Received %s" % repr(msg))
-        except AssertionError, e:
+        except AssertionError as e:
             self._register_receive(node, self._current_container.name, name, error=e.args[0])
             raise e
 
@@ -992,6 +999,8 @@ class RammbockCore(object):
         index = parameter.find(separator)
         try:
             key = str(parameter[:index].strip())
+            if PY3:
+                key.encode('ascii')
         except UnicodeError:
             raise Exception("Only ascii characters are supported in parameters.")
         return key, parameter[index + 1:].strip()

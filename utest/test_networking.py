@@ -29,17 +29,17 @@ class _NetworkingTests(TestCase):
         return TestCase.tearDown(self)
 
     def _verify_emptying(self, server, client):
-        client.send('to connect')
+        client.send(b'to connect')
         server.receive()
-        client.send('before emptying')
-        server.send('before emptying')
+        client.send(b'before emptying')
+        server.send(b'before emptying')
         time.sleep(0.01)
         client.empty()
         server.empty()
-        client.send('after')
-        server.send('after')
-        self._assert_receive(client, 'after')
-        self._assert_receive(server, 'after')
+        client.send(b'after')
+        server.send(b'after')
+        self._assert_receive(client, b'after')
+        self._assert_receive(server, b'after')
 
     def _assert_timeout(self, node, timeout=None):
         self._assert_timeout_with_type(node, socket.timeout, timeout)
@@ -79,25 +79,25 @@ class TestNetworking(_NetworkingTests):
 
     def test_send_and_receive_udp(self):
         server, client = self._udp_server_and_client(ports['SERVER_PORT'], ports['CLIENT_PORT'])
-        client.send('foofaa')
-        self._assert_receive(server, 'foofaa')
+        client.send(b'foofaa')
+        self._assert_receive(server, b'foofaa')
 
     def test_server_send_udp(self):
         server, client = self._udp_server_and_client(ports['SERVER_PORT'], ports['CLIENT_PORT'])
-        server.send_to('foofaa', LOCAL_IP, ports['CLIENT_PORT'])
-        self._assert_receive(client, 'foofaa')
+        server.send_to(b'foofaa', LOCAL_IP, ports['CLIENT_PORT'])
+        self._assert_receive(client, b'foofaa')
 
     def test_server_send_tcp(self):
         server, client = self._tcp_server_and_client(ports['SERVER_PORT'])
         server.accept_connection()
-        server.send('foofaa')
-        self._assert_receive(client, 'foofaa')
+        server.send(b'foofaa')
+        self._assert_receive(client, b'foofaa')
 
     def test_send_and_receive_tcp(self):
         server, client = self._tcp_server_and_client(ports['SERVER_PORT'])
-        client.send('foofaa')
+        client.send(b'foofaa')
         server.accept_connection()
-        self._assert_receive(server, 'foofaa')
+        self._assert_receive(server, b'foofaa')
 
     def test_tcp_server_with_queued_connections(self):
         server, client = self._tcp_server_and_client(ports['SERVER_PORT'])
@@ -115,18 +115,18 @@ class TestNetworking(_NetworkingTests):
         server = TCPServer(LOCAL_IP, 1338)
         client = TCPClient()
         client.connect_to(LOCAL_IP, 1338)
-        client.send('foofaa')
+        client.send(b'foofaa')
         self.assertRaises(AssertionError, server.receive)
 
     def test_setting_port_no_ip(self):
         server, client = self._udp_server_and_client(ports['SERVER_PORT'], ports['CLIENT_PORT'], client_ip='')
-        server.send_to('foofaa', LOCAL_IP, client.get_own_address()[1])
-        self._assert_receive(client, 'foofaa')
+        server.send_to(b'foofaa', LOCAL_IP, client.get_own_address()[1])
+        self._assert_receive(client, b'foofaa')
 
     def test_setting_ip_no_port(self):
         server, client = self._udp_server_and_client(ports['SERVER_PORT'], '')
-        server.send_to('foofaa', *client.get_own_address())
-        self._assert_receive(client, 'foofaa')
+        server.send_to(b'foofaa', *client.get_own_address())
+        self._assert_receive(client, b'foofaa')
 
     def test_setting_client_default_timeout(self):
         _, client = self._udp_server_and_client(ports['SERVER_PORT'], ports['CLIENT_PORT'], timeout=0.1)
@@ -186,9 +186,9 @@ class TestNetworking(_NetworkingTests):
     # FIXME: this deadlocks
     def xtest_blocking_timeout(self):
         server, client = self._udp_server_and_client(ports['SERVER_PORT'], ports['CLIENT_PORT'], timeout=0.1)
-        t = Timer(0.2, client.send, args=['foofaa'])
+        t = Timer(0.2, client.send, args=[b'foofaa'])
         t.start()
-        self.assertEquals(server.receive(timeout='blocking'), 'foofaa')
+        self.assertEquals(server.receive(timeout='blocking'), b'foofaa')
 
     def test_empty_udp_stream(self):
         server, client = self._udp_server_and_client(ports['SERVER_PORT'], ports['CLIENT_PORT'], timeout=0.1)
@@ -204,7 +204,7 @@ class TestGetEndPoints(_NetworkingTests):
 
     def test_get_udp_endpoints(self):
         server, client = self._udp_server_and_client(ports['SERVER_PORT'], ports['CLIENT_PORT'])
-        client.send('foofaa')
+        client.send(b'foofaa')
         server.receive()
         self.assertEquals(client.get_own_address(), (LOCAL_IP, ports['CLIENT_PORT']))
         self.assertEquals(server.get_own_address(), (LOCAL_IP, ports['SERVER_PORT']))
@@ -230,7 +230,7 @@ def _get_template():
 
 class TestBufferedStream(TestCase):
 
-    DATA = 'foobardiibadaa'
+    DATA = b'foobardiibadaa'
 
     def setUp(self):
         self._buffered_stream = BufferedStream(MockConnection(self.DATA), 0.1)
@@ -239,9 +239,9 @@ class TestBufferedStream(TestCase):
         self.assertEquals(self.DATA, self._buffered_stream.read(len(self.DATA)))
 
     def test_empty(self):
-        self._buffered_stream.read(len('foobar'))
+        self._buffered_stream.read(len(b'foobar'))
         self._buffered_stream.empty()
-        self.assertRaises(AssertionError, self._buffered_stream.read, len(self.DATA) - len('foobar'))
+        self.assertRaises(AssertionError, self._buffered_stream.read, len(self.DATA) - len(b'foobar'))
 
     def test_read_all(self):
         data = self._buffered_stream.read(-1)
@@ -249,9 +249,9 @@ class TestBufferedStream(TestCase):
 
     def test_read_and_return(self):
         self._buffered_stream.read(-1)
-        self._buffered_stream.return_data('badaa')
+        self._buffered_stream.return_data(b'badaa')
         data = self._buffered_stream.read(-1)
-        self.assertEquals(data, 'badaa')
+        self.assertEquals(data, b'badaa')
 
 
 class MockConnection(object):
@@ -261,7 +261,7 @@ class MockConnection(object):
 
     def receive(self, timeout):
         ret = self._data
-        self._data = ''
+        self._data = b''
         return ret
 
 

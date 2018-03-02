@@ -28,14 +28,14 @@ class TestTemplateFields(TestCase):
         self.assertEquals(field.name, "char_field")
         self.assertEquals(field.default_value, 'foo')
         self.assertEquals(field.type, 'chars')
-        self.assertEquals(field.encode({}, {}, None)._raw, 'foo\x00\x00')
-        self.assertEquals(field.encode({}, {}, None).bytes, 'foo\x00\x00')
+        self.assertEquals(field.encode({}, {}, None)._raw, b'foo\x00\x00')
+        self.assertEquals(field.encode({}, {}, None).bytes, b'foo\x00\x00')
 
     def test_set_char_value_from_message_field(self):
-        msg_field = Field('chars', 'char_field', '\x00a\x00b', aligned_len=5)
+        msg_field = Field('chars', 'char_field', b'\x00a\x00b', aligned_len=5)
         field = Char(5, "char_field", '')
-        self.assertEquals(field.encode({'char_field': msg_field}, {}, None)._raw, '\x00a\x00b\x00')
-        self.assertEquals(field.encode({'char_field': msg_field}, {}, None).bytes, '\x00a\x00b\x00')
+        self.assertEquals(field.encode({'char_field': msg_field}, {}, None)._raw, b'\x00a\x00b\x00')
+        self.assertEquals(field.encode({'char_field': msg_field}, {}, None).bytes, b'\x00a\x00b\x00')
 
     def test_binary_field(self):
         field = Binary(3, 'field', 1)
@@ -118,8 +118,8 @@ class TestLittleEndian(TestCase):
     def test_little_endian_char_decode(self):
         template = Char(5, 'field', None)
         field = template.decode('hello', None, little_endian=True)
-        self.assertEquals(field._raw, 'hello')
-        self.assertEquals(field.bytes, 'hello')
+        self.assertEquals(field._raw, b'hello')
+        self.assertEquals(field.bytes, b'hello')
         self.assertEquals(field.ascii, 'hello')
 
     def test_little_endian_uint_encode(self):
@@ -158,7 +158,7 @@ class TestTemplateFieldValidation(TestCase):
         self._should_fail(Int(2, 'field', 'REGEXP:.*').validate({'field': field}, {}), 1)
 
     def test_validate_chars(self):
-        field = Field('chars', 'field', 'foo\x00\x00')
+        field = Field('chars', 'field', b'foo\x00\x00')
         field_regEx = Field('chars', 'field', '{ Message In Braces }')
         self._should_pass(Char(5, 'field', 'foo').validate({'field': field}, {}))
         self._should_pass(Char(5, 'field', '(what|foo|bar)').validate({'field': field}, {}))

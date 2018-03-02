@@ -16,8 +16,11 @@ from math import ceil
 from .binary_tools import to_0xhex, to_binary_string_of_length, \
     to_bin_of_length, to_tbcd_value, to_tbcd_binary, from_twos_comp
 from .ordered_dict import OrderedDict
+from robot.libraries.BuiltIn import BuiltIn
+from robot.utils import py2to3, unic
 
 
+@py2to3
 class _StructuredElement(object):
 
     _type = None
@@ -28,17 +31,17 @@ class _StructuredElement(object):
         self._parent = None
 
     def __setitem__(self, name, child):
-        self._fields[unicode(name)] = child
+        self._fields[unic(name)] = child
         child._parent = self
 
     def __getitem__(self, name):
-        return self._fields[unicode(name)]
+        return self._fields[unic(name)]
 
     def __getattr__(self, name):
         return self[name]
 
     def __delitem__(self, name):
-        name = unicode(name)
+        name = unic(name)
         item = self._fields[name]
         del self._fields[name]
         item._parent = None
@@ -53,7 +56,7 @@ class _StructuredElement(object):
         return result
 
     def __contains__(self, key):
-        return unicode(key) in self._fields
+        return unic(key) in self._fields
 
     def _format_indented(self, text):
         return ''.join(['  %s\n' % line for line in text.splitlines()])
@@ -66,7 +69,7 @@ class _StructuredElement(object):
         return '%s %s' % (self._type, self._name)
 
     def _get_raw_bytes(self):
-        return ''.join((field._raw for field in self._fields.values()))
+        return b''.join((field._raw for field in self._fields.values()))
 
     def __len__(self):
         return sum(len(field) for field in self._fields.values())
@@ -134,8 +137,8 @@ class Struct(_StructuredElement):
         return length + (self._align - length % self._align) % self._align
 
     def _get_raw_bytes(self):
-        result = ''.join((field._raw for field in self._fields.values()))
-        return result.ljust(self._get_aligned(len(result)), '\x00')
+        result = b''.join((field._raw for field in self._fields.values()))
+        return result.ljust(self._get_aligned(len(result)), b'\x00')
 
 
 class Union(_StructuredElement):
@@ -151,7 +154,7 @@ class Union(_StructuredElement):
         for field in self._fields.values():
             if len(field._raw) > len(max_raw):
                 max_raw = field._raw
-        return max_raw.ljust(self._length, '\x00')
+        return max_raw.ljust(self._length, b'\x00')
 
     def __len__(self):
         return self._length
@@ -169,7 +172,7 @@ class BinaryContainer(_StructuredElement):
         return sum(field.binlength for field in self._fields.values())
 
     def __len__(self):
-        return self._binlength() / 8
+        return self._binlength() // 8
 
     def _get_raw_bytes(self):
         # TODO: faster implementation...
@@ -219,6 +222,7 @@ class Header(_StructuredElement):
     _type = 'Header'
 
 
+@py2to3
 class Field(object):
 
     def __init__(self, type, name, value, aligned_len=None, little_endian=False):
@@ -258,14 +262,11 @@ class Field(object):
 
     @property
     def hex(self):
-        return hex(self)
+        return BuiltIn().convert_to_string(to_0xhex(self._value))
 
     @property
     def tbcd(self):
         return to_tbcd_value(self._original_value)
-
-    def __hex__(self):
-        return to_0xhex(self._value)
 
     def __nonzero__(self):
         return True
@@ -287,11 +288,15 @@ class Field(object):
 
     @property
     def ascii(self):
-        return ''.join(i for i in self._value if 128 > ord(i) >= 32)
+        try:
+            result = ''.join(i for i in self._value if 128 > ord(i) >= 32)
+        except TypeError:
+            result = ''.join(chr(i) for i in self._value if 128 > i >= 32)
+        return result
 
     @property
     def _raw(self):
-        return self._original_value.ljust(self._length, '\x00')
+        return self._original_value.ljust(self._length, b'\x00')
 
     def __str__(self):
         return str(self.__getattribute__(self._type))

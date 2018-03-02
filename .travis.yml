@@ -1,0 +1,17 @@
+language: python
+dist: trusty
+sudo: required
+
+python:
+  - "2.7"
+  - "3.6"
+
+install:
+  - "pip install nose-cov"
+  - "pip install pep8"
+  - "pip install robotframework"
+  - "pip install six"
+  - "pip install ."
+
+script:
+  - python utest/run.py

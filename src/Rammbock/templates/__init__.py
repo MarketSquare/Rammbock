@@ -12,6 +12,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from containers import Protocol, MessageTemplate, StructTemplate, ListTemplate, \
+from .containers import Protocol, MessageTemplate, StructTemplate, ListTemplate, \
     UnionTemplate, BinaryContainerTemplate, ConditionalTemplate, TBCDContainerTemplate
-from primitives import UInt, Int, Char, PDU, Binary, Length, TBCD
+from .primitives import UInt, Int, Char, PDU, Binary, Length, TBCD

@@ -82,13 +82,13 @@ class TestMessageSequence(TestCase):
 
     def test_send_binary_without_protocol(self):
         self._start_client_server()
-        self.rammbock.client_sends_binary('foobar')
+        self.rammbock.client_sends_binary(b'foobar')
         self._sequence_should_equal(self.rammbock._message_sequence.get(),
                                     [['Client', '127.0.0.1:12345', 'binary', '', 'sent']])
 
     def test_receive_binary_without_protocol(self):
         self._start_client_server()
-        self.rammbock.client_sends_binary('foobar')
+        self.rammbock.client_sends_binary(b'foobar')
         self.rammbock.server_receives_binary()
         self._sequence_should_equal(self.rammbock._message_sequence.get(),
                                     [['Client', 'Server', 'binary', '', 'received']])

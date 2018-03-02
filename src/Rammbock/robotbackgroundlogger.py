@@ -72,13 +72,13 @@ class BackgroundLogger(Logger):
 
     def _log_messages_by_thread(self, name):
         for message in self._messages.pop(name, []):
-            print message.format()
+            print(message.format())
 
     def _log_all_messages(self):
         for thread in list(self._messages):
-            print "*HTML* <b>Messages by '%s'</b>" % thread
+            print("*HTML* <b>Messages by '%s'</b>" % thread)
             for message in self._messages.pop(thread):
-                print message.format()
+                print(message.format())
 
     def reset_background_messages(self, name=None):
         with self.lock:

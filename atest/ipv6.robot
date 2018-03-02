@@ -35,7 +35,7 @@ IPv6 with protocols
 Client and server send and receive binary
     Client sends binary    foo
     ${message}=    Server receives binary
-    Should be equal    ${message}    foo
+    Should be equal as strings    ${message}    foo
     Server sends binary    bar
     ${message}=    Client receives binary
-    Should be equal    ${message}    bar
+    Should be equal as strings    ${message}    bar

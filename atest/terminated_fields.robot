@@ -16,7 +16,7 @@ Get message with chars and end byte long termination
     Message with chars and end byte    0x0d0a
     ${msg}    get message    arbitrary_length:foo.bar.zig
     Should be equal    foo.bar.zig    ${msg.arbitrary_length.ascii}
-    Should be equal    foo.bar.zig\r\n    ${msg.arbitrary_length._raw}
+    Should be equal as strings    foo.bar.zig\r\n    ${msg.arbitrary_length._raw}
     should be equal as integers   13    ${msg.arbitrary_length.len}
 
 Send and receive message with chars with end byte
