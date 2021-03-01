@@ -4,7 +4,7 @@ Rammbock
 .. contents::
    :local:
    
-** Note: ** This project is currently without a maintainer and is not being updated. If you are interested in taking over maintaining this project, please contact chair@robotframework.org
+**Note:** This project is currently without a maintainer and is not being updated. If you are interested in taking over maintaining this project, please contact chair@robotframework.org
 
 Introduction
 ------------
