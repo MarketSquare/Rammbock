@@ -1,10 +1,11 @@
+**Note:** This project is currently without a maintainer and is not being updated. If you are interested in taking over maintaining this project, please contact foundation@robotframework.org
+
 Rammbock
 ========
 
 .. contents::
    :local:
    
-**Note:** This project is currently without a maintainer and is not being updated. If you are interested in taking over maintaining this project, please contact chair@robotframework.org
 
 Introduction
 ------------
