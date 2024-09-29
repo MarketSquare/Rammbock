@@ -18,7 +18,7 @@ class TestProtocolMessageReceiving(TestCase):
         stream = MockStream(to_bin('0xff0004cafe'))
         header, data = self._protocol.read(stream)
         self.assertEquals(header.id.hex, '0xff')
-        self.assertEquals(data, '\xca\xfe')
+        self.assertEquals(data, b'\xca\xfe')
 
 
 class TestMessageStream(TestCase):

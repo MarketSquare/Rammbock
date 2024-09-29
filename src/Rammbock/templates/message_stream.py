@@ -161,7 +161,10 @@ class MessageStream(object):
     def _call_handler_function(self, func, msg):
         func = self._get_call_handler(func)
         node, connection = self._get_node_and_connection()
-        args = func.func_code.co_argcount
+        try:
+            args = func.func_code.co_argcount
+        except AttributeError:
+            args = func.__code__.co_argcount
         if args == 3:
             return func(self._protocol.library, msg, node)
         if args == 4:

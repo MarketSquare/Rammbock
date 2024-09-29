@@ -8,12 +8,12 @@ Resource          Protocols.robot
 TCP Client sends binary to server
     Client sends binary    foo
     ${message}=    Server receives binary
-    Should be equal    ${message}    foo
+    Should be equal as strings    ${message}    foo
 
 TCP Server sends binary to client
     Server sends binary    foo
     ${message}=    Client receives binary
-    Should be equal    ${message}    foo
+    Should be equal as strings    ${message}    foo
 
 Multiple UDP clients
     [Setup]    Start two udp clients

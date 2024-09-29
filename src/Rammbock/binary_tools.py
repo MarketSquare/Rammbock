@@ -15,10 +15,12 @@
 import binascii
 import struct
 
+from robot.libraries.BuiltIn import BuiltIn
+
 try:
     if bin(0):
         pass
-except NameError, name_error:
+except NameError as name_error:
     def bin(value):
         """
         Support for Python 2.5
@@ -44,8 +46,8 @@ LONGLONG = struct.Struct('>Q')
 
 def to_bin(string_value):
     if string_value in (None, ''):
-        return ''
-    string_value = str(string_value)
+        return b''
+    string_value = BuiltIn().convert_to_string(string_value)
     if string_value.startswith('0x'):
         return _hex_to_bin(string_value)
     elif string_value.startswith('0b'):
@@ -55,9 +57,9 @@ def to_bin(string_value):
 
 
 def _int_to_bin(integer):
-    if integer >= 18446744073709551616L:
+    if integer >= 18446744073709551616:
         return to_bin(hex(integer))
-    return LONGLONG.pack(integer).lstrip('\x00') or '\x00'
+    return LONGLONG.pack(integer).lstrip(b'\x00') or b'\x00'
 
 
 def _hex_to_bin(string_value):
@@ -72,7 +74,7 @@ def to_bin_of_length(length, string_value):
     if len(bin) > length:
         raise AssertionError('Too long binary value %s (max length %d)'
                              % (string_value, length))
-    return bin.rjust(length, '\x00')
+    return bin.rjust(length, b'\x00')
 
 
 def to_hex(binary):
@@ -80,7 +82,7 @@ def to_hex(binary):
 
 
 def to_0xhex(binary):
-    return '0x' + to_hex(binary)
+    return b'0x' + to_hex(binary)
 
 
 def to_binary_string_of_length(length, bytes):
@@ -136,8 +138,9 @@ def _invert(value):
 
 
 def to_int(string_value):
-    if string_value in (None, ''):
+    if string_value in (None, '', b''):
         raise Exception("No value or empty value given")
+    string_value = BuiltIn().convert_to_string(string_value)
     if string_value.startswith('0x') or string_value[:3] == '-0x':
         return int(string_value, 16)
     elif string_value.startswith('0b') or string_value[:3] == '-0b':

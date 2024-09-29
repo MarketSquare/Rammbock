@@ -20,8 +20,11 @@ import re
 from Rammbock.message import Field, BinaryField
 from Rammbock.binary_tools import to_bin_of_length, to_0xhex, to_tbcd_binary, \
     to_tbcd_value, to_bin, to_twos_comp, to_int
+from robot.libraries.BuiltIn import BuiltIn
+from robot.utils import PY3, is_bytes, py2to3
 
 
+@py2to3
 class _TemplateField(object):
 
     def __init__(self, name, default_value):
@@ -67,24 +70,27 @@ class _TemplateField(object):
                      little_endian=little_endian and self.can_be_little_endian)
 
     def _prepare_data(self, data):
-        return data
+        return BuiltIn().convert_to_bytes(data)
 
     def validate(self, parent, paramdict, name=None):
         name = name or self.name
         field = parent[name]
         value = field.bytes
         forced_value = self._get_element_value_and_remove_from_params(paramdict, name)
+        forced_value_unicode = forced_value
+        if PY3 and is_bytes(forced_value):
+            forced_value_unicode = BuiltIn().convert_to_string(forced_value)
         try:
-            if not forced_value or forced_value == 'None':
+            if not forced_value_unicode or forced_value_unicode == 'None':
                 return []
-            elif forced_value.startswith('('):
-                return self._validate_pattern(forced_value, value, field)
+            elif forced_value_unicode.startswith('('):
+                return self._validate_pattern(forced_value_unicode, value, field)
         except AttributeError as e:
             e.args = ('Validating {}:{} failed. {}.\n    Did you set default value as numeric object instead of string?'
-                      .format(name, forced_value, e.args[0]),)
+                      .format(name, forced_value_unicode, e.args[0]),)
             raise e
-        if forced_value.startswith('REGEXP'):
-            return self._validate_regexp(forced_value, value, field)
+        if forced_value_unicode.startswith('REGEXP'):
+            return self._validate_regexp(forced_value_unicode, value, field)
         return self._validate_exact_match(forced_value, value, field)
 
     def _validate_regexp(self, forced_pattern, value, field):
@@ -97,7 +103,7 @@ class _TemplateField(object):
         if self._validate_masked(forced_pattern, value):
             return []
         return ["Value of field '%s' does not match pattern '%s!=%s'" %
-                (field._get_recursive_name(), to_0xhex(value), forced_pattern)]
+                (field._get_recursive_name(), BuiltIn().convert_to_string(to_0xhex(value)), forced_pattern)]
 
     def _validate_or(self, forced_pattern, value, field):
         if forced_pattern.find('|') != -1:
@@ -127,7 +133,7 @@ class _TemplateField(object):
     def _validate_exact_match(self, forced_value, value, field):
         if not self._is_match(forced_value, value, field._parent):
             return ['Value of field %s does not match %s!=%s' %
-                    (field._get_recursive_name(), self._default_presentation_format(value), forced_value)]
+                    (field._get_recursive_name(), BuiltIn().convert_to_string(self._default_presentation_format(value)), forced_value)]
         return []
 
     def _default_presentation_format(self, value):
@@ -146,7 +152,7 @@ class _TemplateField(object):
         return parent._get_recursive_name() + self.name
 
     def _set_default_value(self, value):
-        self.default_value = str(value) if value and value != '""' else None
+        self.default_value = BuiltIn().convert_to_string(value) if value and value != '""' else None
 
 
 class PlaceHolderField(object):
@@ -211,12 +217,17 @@ class Char(_TemplateField):
         if isinstance(value, Field):
             value = value._value
         else:
-            value = str(value or '')
+            if not is_bytes(value):
+                value = str(value or '')
+                if PY3:
+                    value = BuiltIn().convert_to_bytes(value)
             value += self._terminator
         length, aligned_length = self.length.find_length_and_set_if_necessary(message, len(value))
-        return value.ljust(length, '\x00'), aligned_length
+        return value.ljust(length, b'\x00'), aligned_length
 
     def _prepare_data(self, data):
+        if PY3 and isinstance(data, str):
+            data = data.encode("UTF-8")
         if self._terminator:
             return data[0:data.index(self._terminator) + len(self._terminator)]
         return data
@@ -509,7 +520,7 @@ class BagSize(object):
         # TODO: add open range 2-n
         size = size.strip()
         if size == '*':
-            self._set_min_max(0, sys.maxint)
+            self._set_min_max(0, sys.maxsize)
         elif self.fixed.match(size):
             self._set_min_max(size, size)
         elif self.range.match(size):
@@ -526,6 +537,6 @@ class BagSize(object):
     def __str__(self):
         if self.min == self.max:
             return str(self.min)
-        elif self.min == 0 and self.max == sys.maxint:
+        elif self.min == 0 and self.max == sys.maxsize:
             return '*'
         return '%s-%s' % (self.min, self.max)

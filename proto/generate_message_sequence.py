@@ -15,10 +15,10 @@ def _get_message_text(messages):
     return "Message content not found, run at DEBUG level to generate message contents"  
 
 def _print_element(elem, separator):
-    print '\n'.join(kw_stack)
-    print separator
-    print _get_message_text(elem.findall('msg'))
-    print '--------------------------------------'    
+    print('\n'.join(kw_stack))
+    print(separator)
+    print(_get_message_text(elem.findall('msg')))
+    print('--------------------------------------')
 
 for event, elem in ET.iterparse(source, events=('start', 'end')):
     if elem.tag not in ("kw", "test", "suite", "statistics"):

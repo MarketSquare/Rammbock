@@ -18,8 +18,8 @@ import re
 from Rammbock.message import (Field, Union, Message, Header, List, Struct,
                               BinaryContainer, BinaryField, TBCDContainer,
                               Conditional, Bag)
-from message_stream import MessageStream
-from primitives import Length, Binary, TBCD, BagSize
+from .message_stream import MessageStream
+from .primitives import Length, Binary, TBCD, BagSize
 from Rammbock.ordered_dict import OrderedDict
 from Rammbock.binary_tools import (to_binary_string_of_length, to_bin,
                                    to_tbcd_value, to_tbcd_binary)
@@ -76,7 +76,7 @@ class _Template(object):
                 if self.parent else None
 
     def _check_params_empty(self, message_fields, name):
-        for key in message_fields.keys():
+        for key in list(message_fields):
             if key.startswith('*'):
                 message_fields.pop(key)
         if message_fields:
@@ -113,7 +113,7 @@ class _Template(object):
     def _get_params_sub_tree(self, params, name=None):
         result = {'*': params['*']} if '*' in params else {}
         name = name or self.name
-        for key in params.keys():
+        for key in list(params):
             prefix, _, ending = key.partition('.')
             if prefix == name:
                 result[ending] = params.pop(key)
@@ -312,7 +312,7 @@ class StructTemplate(_Template):
         return errors + _Template.validate(self, message, self._get_params_sub_tree(message_fields, name))
 
     def _add_struct_params(self, params):
-        for key in self._parameters.keys():
+        for key in list(self._parameters):
             params[key] = self._parameters.pop(key) if key not in params else params[key]
 
 
@@ -392,7 +392,7 @@ class BagTemplate(_Template):
                 logger.trace("'%s' matches in bag '%s'. value: %r" % (case.name, self.name, match[match.len - 1]))
                 return match
             except Exception as e:
-                logger.trace("'%s' does not match in bag '%s'. Error: %s" % (case.name, self.name, e.message))
+                logger.trace("'%s' does not match in bag '%s'. Error: %s" % (case.name, self.name, str(e)))
         raise AssertionError("Unable to decode bag value.")
 
     def _get_struct(self, name, parent):
@@ -423,7 +423,7 @@ class CaseTemplate(_Template):
 
     @property
     def field(self):
-        return self._fields.values()[0]
+        return list(self._fields.values())[0]
 
     def add(self, field):
         self.name = field.name
@@ -488,7 +488,7 @@ class ListTemplate(_Template):
 
     @property
     def field(self):
-        return self._fields.values()[0]
+        return list(self._fields.values())[0]
 
     def _get_struct(self, name=None, parent=None):
         ls = List(name or self.name, self.field.type)
@@ -520,7 +520,7 @@ class ListTemplate(_Template):
     def _get_params_sub_tree(self, params, name=None):
         result = OrderedDict({'*': params['*']} if '*' in params else {})
         name = name or self.name
-        for key in params.keys():
+        for key in list(params):
             self._consume_params_with_brackets(name, params, result, key)
             self._consume_dot_syntax(name, params, result, key)
         return result
@@ -548,7 +548,7 @@ class BinaryContainerTemplate(_Template):
     type = 'BinaryContainer'
 
     def get_static_length(self):
-        return self.binlength / 8
+        return self.binlength // 8
 
     def add(self, field):
         if not isinstance(field, Binary):
@@ -572,7 +572,7 @@ class BinaryContainerTemplate(_Template):
         container = self._get_struct(name, parent, little_endian=little_endian)
         if little_endian:
             data = data[::-1]
-        bin_str = to_binary_string_of_length(self.binlength, data[:self.binlength / 8])
+        bin_str = to_binary_string_of_length(self.binlength, data[:self.binlength // 8])
         data_index = 2
         for field in self._fields.values():
             container[field.name] = self._create_field(bin_str, data_index,
@@ -606,7 +606,7 @@ class TBCDContainerTemplate(_Template):
     type = 'TBCDContainer'
 
     def get_static_length(self):
-        return self.binlength / 8
+        return self.binlength // 8
 
     def _verify_not_little_endian(self, little_endian):
         if little_endian:

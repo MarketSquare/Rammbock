@@ -28,7 +28,7 @@ class TestMessageTemplate(TestCase):
         msg = self.tmp.encode({'field_1': 1024}, {})
         self.assertEquals(msg.field_1.int, 1024)
         self.assertEquals(msg.field_1.hex, '0x0400')
-        self.assertEquals(msg.field_1.bytes, '\x04\x00')
+        self.assertEquals(msg.field_1.bytes, b'\x04\x00')
 
     def test_encode_template_with_params(self):
         msg = self.tmp.encode({'field_1': 111, 'field_2': 222}, {})

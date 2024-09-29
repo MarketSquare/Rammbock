@@ -19,6 +19,9 @@ from .logger import logger
 from .synchronization import SynchronizedType
 from .binary_tools import to_hex
 
+from robot.libraries.BuiltIn import BuiltIn
+from six import itervalues
+
 try:
     from sctp import sctpsocket_tcp
     SCTP_ENABLED = True
@@ -97,10 +100,18 @@ class _NetworkNode(_WithTimeouts):
         return stream.get(message_template, timeout=timeout, header_filter=header_filter, latest=latest)
 
     def log_send(self, binary, ip, port):
-        logger.debug("Send %d bytes: %s to %s:%s over %s" % (len(binary), to_hex(binary), ip, port, self._transport_layer_name))
+        logger.debug("Send %d bytes: %s to %s:%s over %s" % (len(binary),
+                                                             BuiltIn().convert_to_string(to_hex(binary)),
+                                                             ip,
+                                                             port,
+                                                             self._transport_layer_name))
 
     def log_receive(self, binary, ip, port):
-        logger.trace("Trying to read %d bytes: %s from %s:%s over %s" % (len(binary), to_hex(binary), ip, port, self._transport_layer_name))
+        logger.trace("Trying to read %d bytes: %s from %s:%s over %s" % (len(binary),
+                                                                         BuiltIn().convert_to_string(to_hex(binary)),
+                                                                         ip,
+                                                                         port,
+                                                                         self._transport_layer_name))
 
     def empty(self):
         result = True
@@ -190,8 +201,8 @@ class _Server(_NetworkNode):
     def _bind_socket(self):
         try:
             self._socket.bind((self._ip, self._port))
-        except socket.error, e:
-            raise Exception("error: [Errno %d] %s for address %s:%d" % (e[0], e[1], self._ip, self._port))
+        except socket.error as e:
+            raise Exception("error: [Errno %d] %s for address %s:%d" % (e.args[0], e.args[1], self._ip, self._port))
         self._is_connected = True
 
 
@@ -382,7 +393,7 @@ class _NamedCache(object):
         return self.get_with_name(name)[0]
 
     def __iter__(self):
-        return self._cache.itervalues()
+        return itervalues(self._cache)
 
     def set_current(self, name):
         if name in self._cache:
@@ -395,11 +406,11 @@ class BufferedStream(_WithTimeouts):
 
     def __init__(self, connection, default_timeout):
         self._connection = connection
-        self._buffer = ''
+        self._buffer = b''
         self._default_timeout = default_timeout
 
     def read(self, size, timeout=None):
-        result = ''
+        result = b''
         timeout = float(timeout if timeout else self._default_timeout)
         cutoff = time.time() + timeout
         while time.time() < cutoff:
@@ -420,7 +431,7 @@ class BufferedStream(_WithTimeouts):
         if size == -1:
             size = len(self._buffer)
         if not self._buffer:
-            return ''
+            return b''
         result = self._buffer[:size]
         self._buffer = self._buffer[size:]
         return result
@@ -429,4 +440,4 @@ class BufferedStream(_WithTimeouts):
         self._buffer += self._connection.receive(timeout=timeout)
 
     def empty(self):
-        self._buffer = ''
+        self._buffer = b''
